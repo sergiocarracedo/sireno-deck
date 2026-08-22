@@ -23,7 +23,7 @@ export type RequirementsCheckResult = Readonly<
 export interface RequirementsCheckDeps {
   readonly platform: string
   readonly executor: CommandExecutor
-  readonly env?: Readonly<Record<string, string>>
+  readonly env?: NodeJS.ProcessEnv
   // ponytail: fallback probe for stripped-PATH environments
   // (systemd/launchd/IDE). `which` may return nothing even when the binary
   // exists on disk at a non-default bin dir. The caller wires this with a
@@ -126,7 +126,6 @@ export const checkRequirements = async ({
   extraFsProbe,
 }: RequirementsCheckDeps): Promise<RequirementsCheckResult> => {
   const result: Partial<Record<SystemCapability, CapabilityStatus>> = {}
-  const processEnv = env as NodeJS.ProcessEnv
 
   for (const [name, config] of Object.entries(capabilityConfig)) {
     const availability = await Promise.all(
@@ -141,7 +140,7 @@ export const checkRequirements = async ({
       commands: found,
       missingCommands: missing,
       reason: config.reason,
-      preferred: config.preferred(platform, processEnv),
+      preferred: config.preferred(platform, env),
     }
   }
 

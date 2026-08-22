@@ -34,7 +34,10 @@ describe("openBrowser", () => {
   it("calls execFile with the URL when noOpen is not set", () => {
     openBrowser("http://127.0.0.1:52938", silentLogger())
     expect(execFileMock).toHaveBeenCalledTimes(1)
-    const [cmd, args] = execFileMock.mock.calls[0] as [string, string[]]
+    const [cmd, args] = execFileMock.mock.calls[0] as unknown as [
+      string,
+      string[],
+    ]
     expect(args[args.length - 1]).toBe("http://127.0.0.1:52938")
   })
 

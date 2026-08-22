@@ -96,7 +96,8 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
 
   if (alive) {
     if (state !== null) {
-      log.info(`URL:       ${state.emulatorUrl}`)
+      const url = state.emulatorMode ? state.emulatorUrl : state.frontendUrl
+      log.info(`URL:       ${url}`)
     }
     // ponytail: printDaemonUrl opens its own intro/outro block. Close
     // *this* section first so the URL block renders as a sibling, not a

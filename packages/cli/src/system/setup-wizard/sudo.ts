@@ -27,7 +27,6 @@ export const isSudoNopasswd = async (): Promise<boolean> => {
   try {
     await execFileAsync("sudo", ["-n", "true"], {
       timeout: PROBE_TIMEOUT_MS,
-      stdio: ["ignore", "pipe", "pipe"],
     })
     return true
   } catch {

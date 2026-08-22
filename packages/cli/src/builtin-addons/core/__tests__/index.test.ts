@@ -32,7 +32,8 @@ describe("core addon", () => {
   it("toggle configSchema uses default false", () => {
     const result = ToggleButtonBackend.configSchema.safeParse({ key: "k" })
     expect(result.success).toBe(true)
-    if (result.success) expect(result.data.default).toBe(false)
+    if (result.success)
+      expect((result.data as { default?: boolean }).default).toBe(false)
   })
 
   it("sirenodeck.json points at the entry", async () => {

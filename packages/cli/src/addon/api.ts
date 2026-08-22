@@ -135,6 +135,8 @@ export interface AddonButtonTypeDef<Config = unknown> {
 export interface AddonButtonTypeDefAny {
   readonly frontend: AddonFrontendButton<any>
   readonly service: AddonButtonTypeService<any>
+  readonly name?: string
+  readonly internal?: boolean
 }
 
 export type AddonDeckFactory = (page: number) => AddonGeneratedDeck
@@ -209,11 +211,13 @@ export type AddonDeckEntry =
       id: string
       createDeck?: never
       createDecks?: never
+      internal?: boolean
     })
   | {
       id: string
       createDeck: (ctx: AddonDeckEntryCtx) => AddonGeneratedDeck
       createDecks?: never
+      internal?: boolean
     }
   | {
       id?: undefined
@@ -221,6 +225,7 @@ export type AddonDeckEntry =
       createDecks: (
         ctx: AddonDeckEntryCtx,
       ) => Record<string, AddonGeneratedDeck>
+      internal?: boolean
     }
 
 /**
@@ -370,6 +375,8 @@ export interface AddonButtonService<Config = unknown> {
 export interface AddonButtonServiceContext<Config = unknown> {
   readonly config: Config
   readonly buttonId: string
+  /** Declared button position within its deck, when the deck defines one. */
+  readonly position?: number
   readonly addonName: string
   /** Namespaced addon-global methods (`<addonName>:<methodName>` keys). */
   readonly methods: Readonly<Record<string, AddonServiceMethod>>

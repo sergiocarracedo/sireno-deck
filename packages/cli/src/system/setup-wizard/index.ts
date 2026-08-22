@@ -31,3 +31,4 @@ export {
 } from "./format"
 export { defaultConfigSourcePath, seedDefaultConfig } from "./config-seed"
 export { isSudoNopasswd, runWithSudo, capturePassword } from "./sudo"
+export type { SudoRunResult } from "./sudo"

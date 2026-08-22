@@ -48,11 +48,58 @@ export const deviceInfoMessageSchema = baseServerMessage
   })
   .strict()
 
+export const deckConfigSurfaceButtonSchema = z
+  .object({
+    id: z.string(),
+    type: z.string(),
+    position: z.number().optional(),
+    config: z
+      .object({
+        icon: z.string().optional(),
+        label: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+    label: z.string().optional(),
+    icon: z.string().optional(),
+    full: z.boolean().optional(),
+    variant: z.string().optional(),
+    addonName: z.string().optional(),
+    frontendEntry: z.string().optional(),
+    buttonColor: z.string().optional(),
+    actions: z
+      .object({
+        tap: z.string().optional(),
+        dbltap: z.string().optional(),
+        hold: z.string().optional(),
+      })
+      .optional(),
+  })
+  .passthrough()
+
+export const deckConfigSurfaceSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  buttons: z.array(deckConfigSurfaceButtonSchema),
+  buttonColor: z.string().optional(),
+  variant: z.string().optional(),
+  buttonErrors: z
+    .array(
+      z.object({
+        position: z.number(),
+        buttonId: z.string().optional(),
+        details: z.string(),
+        expiresAt: z.number().optional(),
+      }),
+    )
+    .optional(),
+})
+
 export const deckConfigMessageSchema = baseServerMessage
   .extend({
     type: z.literal("deck-config"),
     deckId: z.string(),
-    surfaces: z.record(z.string(), z.unknown()),
+    surfaces: z.record(z.string(), deckConfigSurfaceSchema),
     navMode: z.enum(["regular", "paginated", "overlay"]).default("regular"),
     isCompact: z.boolean().default(false),
     hasOverlayDeckAvailable: z.boolean().default(false),

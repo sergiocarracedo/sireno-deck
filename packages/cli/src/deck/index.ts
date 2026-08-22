@@ -24,6 +24,7 @@ export {
   createRuntime,
   type Runtime,
   type RuntimeDeck,
+  type RuntimeButton,
   type RuntimeButtonHandler,
   type ButtonActionContext,
   type GestureEvent,

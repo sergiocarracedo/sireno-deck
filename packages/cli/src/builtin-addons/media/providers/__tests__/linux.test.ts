@@ -236,7 +236,7 @@ describe("createLinuxProvider", () => {
     await provider.toggle()
     await provider.next()
     await provider.previous()
-    const calls = run.mock.calls.map(
+    const calls = (run.mock.calls as unknown as Array<[string, string[]]>).map(
       ([cmd, args]) => `${cmd} ${args.join(" ")}`,
     )
     expect(calls).toEqual([

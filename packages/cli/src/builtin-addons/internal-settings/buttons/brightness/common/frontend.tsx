@@ -1,4 +1,4 @@
-import type { AddonFrontendButton, AddonGestureEvent } from "@/addon/api"
+import type { AddonGestureEvent } from "@/addon/api"
 import { useAddonChannel } from "@/api/react"
 import { IconLabelProgressSurface } from "@/ui/index"
 import { useEffect, useRef, useState } from "react"
@@ -48,5 +48,3 @@ export const BrightnessButtonFrontend = ({
     />
   )
 }
-
-export default BrightnessButtonFrontend as AddonFrontendButton<unknown>

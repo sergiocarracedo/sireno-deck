@@ -128,10 +128,10 @@ describe("loadAddons — npm path", () => {
   })
 
   it("calls npm install when the package is not cached", async () => {
-    vi.mocked(execa).mockImplementation(async () => {
+    vi.mocked(execa).mockImplementation((async () => {
       writeFakePackage("uncached-addon", SIRENO_ADDON_API_VERSION, false)
       return {} as never
-    })
+    }) as never)
 
     const loadAddons = await loader()
     await loadAddons({

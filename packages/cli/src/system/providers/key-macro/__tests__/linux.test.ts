@@ -206,7 +206,7 @@ describe("createLinuxKeyMacroProvider", () => {
 
     const wlCopyCall = calls.find(
       (c) =>
-        c.tool === "sh" && c.args[0] === "-c" && c.args[1].includes("wl-copy"),
+        c.tool === "sh" && c.args[0] === "-c" && c.args[1]!.includes("wl-copy"),
     )
     expect(wlCopyCall).toBeDefined()
     expect(wlCopyCall!.args[1]).toContain("printf '%s'")

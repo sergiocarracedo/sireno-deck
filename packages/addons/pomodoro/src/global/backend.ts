@@ -75,11 +75,7 @@ export const globalService = {
     },
   ],
   methods: {
-    register: (
-      buttonId: unknown,
-      durationSec: unknown,
-      notification?: { title?: string; body?: string },
-    ): void => {
+    register: (buttonId, durationSec, notification) => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
       buttons.set(id, {
@@ -87,17 +83,13 @@ export const globalService = {
         durationSec,
         notification: notification
           ? {
-              title: notification.title ?? "Pomodoro",
-              body: notification.body ?? "Time's up!",
+              title: (notification as { title?: string }).title ?? "Pomodoro",
+              body: (notification as { body?: string }).body ?? "Time's up!",
             }
           : undefined,
       })
     },
-    start: (
-      buttonId: unknown,
-      durationSec: unknown,
-      notification?: { title?: string; body?: string },
-    ): void => {
+    start: (buttonId, durationSec, notification) => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
       const existing = buttons.get(id)
@@ -107,19 +99,14 @@ export const globalService = {
         notified: existing?.notified,
         notification: notification
           ? {
-              title: notification.title ?? "Pomodoro",
-              body: notification.body ?? "Time's up!",
+              title: (notification as { title?: string }).title ?? "Pomodoro",
+              body: (notification as { body?: string }).body ?? "Time's up!",
             }
           : existing?.notification,
       })
       publishNow()
     },
-    startWith: (
-      buttonId: unknown,
-      startTsMs: unknown,
-      durationSec: unknown,
-      notification?: { title?: string; body?: string },
-    ): void => {
+    startWith: (buttonId, startTsMs, durationSec, notification) => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
       if (typeof startTsMs !== "number") return
@@ -130,14 +117,14 @@ export const globalService = {
         notified: existing?.notified,
         notification: notification
           ? {
-              title: notification.title ?? "Pomodoro",
-              body: notification.body ?? "Time's up!",
+              title: (notification as { title?: string }).title ?? "Pomodoro",
+              body: (notification as { body?: string }).body ?? "Time's up!",
             }
           : existing?.notification,
       })
       publishNow()
     },
-    pause: (buttonId: unknown): void => {
+    pause: (buttonId) => {
       const id = String(buttonId)
       const info = buttons.get(id)
       if (info === undefined || info.pausedRemainingSec !== undefined) return
@@ -150,7 +137,7 @@ export const globalService = {
       info.pausedRemainingSec = remaining
       publishNow()
     },
-    resume: (buttonId: unknown): void => {
+    resume: (buttonId) => {
       const id = String(buttonId)
       const info = buttons.get(id)
       if (info === undefined || info.pausedRemainingSec === undefined) return
@@ -159,17 +146,17 @@ export const globalService = {
       info.startTsMs = Date.now() - (info.durationSec - remaining) * 1000
       publishNow()
     },
-    stop: (buttonId: unknown): void => {
+    stop: (buttonId) => {
       buttons.delete(String(buttonId))
       publishNow()
     },
-    isFinished: (buttonId: unknown): boolean => {
+    isFinished: (buttonId) => {
       const info = buttons.get(String(buttonId))
       if (info === undefined) return false
       if (info.pausedRemainingSec !== undefined) return false
       return computeRemaining(info.startTsMs, info.durationSec, Date.now()) <= 0
     },
-  },
+  } as Record<string, (...args: unknown[]) => unknown>,
   onLoad: (ctx: unknown) => {
     ctxRef = ctx as AddonServiceContextLike
   },

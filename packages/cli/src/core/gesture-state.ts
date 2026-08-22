@@ -27,7 +27,7 @@ type KeyState =
   | {
       name: "holding"
       downAt: number
-      timer: ReturnType<typeof setTimeout>
+      timer?: ReturnType<typeof setTimeout>
       keyIndex?: number
       emittedHold?: boolean
     }
@@ -35,7 +35,7 @@ type KeyState =
       name: "waiting-second"
       firstUpAt: number
       firstDownAt: number
-      timer: ReturnType<typeof setTimeout>
+      timer?: ReturnType<typeof setTimeout>
       keyIndex?: number
     }
   | {

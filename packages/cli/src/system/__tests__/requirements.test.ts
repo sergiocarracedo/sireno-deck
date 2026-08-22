@@ -5,7 +5,7 @@ import {
   formatCapabilityWarning,
   getRequiredCapability,
 } from "@/system/requirements"
-import type { CommandExecutor } from "./providers/shared"
+import type { CommandExecutor } from "@/system/providers/shared"
 
 const createExecutor = (
   availableCommands: ReadonlyArray<string>,

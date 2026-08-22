@@ -64,12 +64,6 @@ const serviceWithLifecycle: AddonButtonService<unknown> = {
   onTap: () => {
     calls.onTap += 1
   },
-  suspend: () => {
-    calls.onSuspend += 1
-  },
-  resume: () => {
-    calls.onResume += 1
-  },
   dispose: () => {
     calls.onDispose += 1
   },

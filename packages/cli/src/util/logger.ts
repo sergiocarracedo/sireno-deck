@@ -174,10 +174,16 @@ class HumanWritable extends Writable {
         } catch {
           // not JSON — fall back to plain
         }
-        if (entry !== null && typeof entry["level"] === "number" && typeof entry["msg"] === "string") {
+        if (
+          entry !== null &&
+          typeof entry["level"] === "number" &&
+          typeof entry["msg"] === "string"
+        ) {
           const levelNum = entry["level"] as number
           const component =
-            typeof entry["component"] === "string" ? ` [${entry["component"]}]` : ""
+            typeof entry["component"] === "string"
+              ? ` [${entry["component"]}]`
+              : ""
           // ponytail: keep CONTEXT_FIELDS + err inline so operators still see
           // deckId / position / err details on the terminal, just without the
           // "INFO"/"WARN" text label — the icon + color from log.* conveys level.
@@ -185,7 +191,8 @@ class HumanWritable extends Writable {
           for (const key of CONTEXT_FIELDS) {
             const value = entry[key]
             if (value === undefined || value === null) continue
-            const display = typeof value === "string" ? value : JSON.stringify(value)
+            const display =
+              typeof value === "string" ? value : JSON.stringify(value)
             if (display.length === 0) continue
             ctxParts.push(`${key}: ${display}`)
           }

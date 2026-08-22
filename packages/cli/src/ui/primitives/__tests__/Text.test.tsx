@@ -98,21 +98,21 @@ describe("resolveTextFit", () => {
   })
 
   it("clamps lines to [1, 3]", () => {
-    expect(resolveTextFit({ type: "fit", lines: 0 })).toEqual({
+    expect(resolveTextFit({ type: "fit", lines: 0 as never })).toEqual({
       type: "fit",
       lines: 1,
       reserveSpace: false,
       ellipsis: false,
       minSize: undefined,
     })
-    expect(resolveTextFit({ type: "fit", lines: -3 })).toEqual({
+    expect(resolveTextFit({ type: "fit", lines: -3 as never })).toEqual({
       type: "fit",
       lines: 1,
       reserveSpace: false,
       ellipsis: false,
       minSize: undefined,
     })
-    expect(resolveTextFit({ type: "fit", lines: 99 })).toEqual({
+    expect(resolveTextFit({ type: "fit", lines: 99 as never })).toEqual({
       type: "fit",
       lines: 3,
       reserveSpace: false,
@@ -278,7 +278,10 @@ describe("Text render — reserveSpace", () => {
 
   it("reserves full height even when content is short", () => {
     const { container } = render(
-      <Text fit={{ type: "fit", lines: 4, reserveSpace: true }} text="hi" />,
+      <Text
+        fit={{ type: "fit", lines: 4 as never, reserveSpace: true }}
+        text="hi"
+      />,
     )
     const root = container.firstElementChild as HTMLElement
     expect(root.style.minHeight).toBe("3em")

@@ -57,7 +57,7 @@ export const isLogSuppressed = (
 const DEFAULT_PORT = 52937
 const READY_TIMEOUT_MS = 30_000
 const READY_INTERVAL_MS = 100
-const RUNTIME_STATE_TIMEOUT_MS = 10_000
+const RUNTIME_STATE_TIMEOUT_MS = 30_000
 const PORT_FREE_TIMEOUT_MS = 3_000
 
 const checkTcp = (
@@ -287,38 +287,49 @@ export const printDaemonEvents = (events: ReadonlyArray<DaemonEvent>): void => {
 // URL — operators copy-paste the URL into the browser. For `--remote`
 // we use the existing QR banner (phone-friendly); for plain
 // `--emulator` we print a plain text URL — no QR/LAN section, since the daemon only binds 127.0.0.1.
+// For real (hardware) mode we print the frontend URL.
 export const printDaemonUrl = async (
   state: RuntimeState,
   output: (text: string) => void = (text) => process.stdout.write(text),
 ): Promise<void> => {
-  const port = state.emulatorUrl.split(":").pop() ?? ""
-  const buildUrl = (host: string, deckOnly: boolean): string => {
-    const params = new URLSearchParams()
-    if (state.token.length > 0) params.set("token", state.token)
-    if (deckOnly) params.set("deckOnly", "1")
-    return `http://${host}:${port}?${params.toString()}`
-  }
-  const localUrl = buildUrl("127.0.0.1", false)
-  output(`\n  Emulator:  ${localUrl}\n`)
-  if (state.remote && state.addresses.length > 0) {
-    const isTty = Boolean(process.stdout.isTTY)
-    if (isTty) {
-      output("\n  Emulator (LAN):\n")
-      for (const addr of state.addresses) {
-        const url = buildUrl(addr, true)
-        // ponytail: qrcode.toString returns a Promise — awaiting renders the
-        // QR ASCII art inline. Without the await the raw Promise object
-        // stringifies as "[object Promise]" and the operator sees no QR.
-        const qr = await qrcode.toString(url, { type: "terminal", small: true })
-        output(`\n${qr}  ${url}\n`)
-      }
-    } else {
-      for (const addr of state.addresses) {
-        output(`  ${addr}: ${buildUrl(addr, false)}\n`)
+  if (state.emulatorMode) {
+    const port = state.emulatorUrl.split(":").pop() ?? ""
+    const buildUrl = (host: string, deckOnly: boolean): string => {
+      const params = new URLSearchParams()
+      if (state.token.length > 0) params.set("token", state.token)
+      if (deckOnly) params.set("deckOnly", "1")
+      return `http://${host}:${port}?${params.toString()}`
+    }
+    const localUrl = buildUrl("127.0.0.1", false)
+    output(`\n  Emulator:  ${localUrl}\n`)
+    if (state.remote && state.addresses.length > 0) {
+      const isTty = Boolean(process.stdout.isTTY)
+      if (isTty) {
+        output("\n  Emulator (LAN):\n")
+        for (const addr of state.addresses) {
+          const url = buildUrl(addr, true)
+          const qr = await qrcode.toString(url, {
+            type: "terminal",
+            small: true,
+          })
+          output(`\n${qr}  ${url}\n`)
+        }
+      } else {
+        for (const addr of state.addresses) {
+          output(`  ${addr}: ${buildUrl(addr, false)}\n`)
+        }
       }
     }
+    output("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
+  } else {
+    const url = state.frontendUrl
+    const withToken =
+      state.token.length > 0
+        ? `${url}${url.includes("?") ? "&" : "?"}token=${state.token}`
+        : url
+    output(`\n  Frontend:  ${withToken}\n`)
+    output("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
   }
-  output("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
 }
 
 // ponytail: the load-bearing function for the CLI's "wait until fully

@@ -1,9 +1,6 @@
 import type { AddonServiceContext, AddonGlobalService } from "@/addon/api"
 
-import type {
-  WeatherSnapshot,
-  WeatherStateSnapshot,
-} from "./buttons/weather/config"
+import type { WeatherSnapshot, WeatherStateSnapshot } from "./provider/types"
 import { cityKey } from "./provider/city-key"
 import { fetchWeather } from "./provider/fetch"
 import { resolveLocation, type GeocodedLocation } from "./provider/geocode"

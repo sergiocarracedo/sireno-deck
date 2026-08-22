@@ -21,6 +21,7 @@ const defaultCtx = (): AddonServiceContext => ({
   executor: {
     run: vi.fn(async () => ({ exitCode: 0, stdout: "", stderr: "" })),
   } as unknown as AddonServiceContext["executor"],
+  notify: async () => undefined,
 })
 
 const execCtx = (runMock: ReturnType<typeof vi.fn>): AddonServiceContext => ({
@@ -28,6 +29,7 @@ const execCtx = (runMock: ReturnType<typeof vi.fn>): AddonServiceContext => ({
   poll: vi.fn(async () => undefined),
   signal: new AbortController().signal,
   executor: { run: runMock } as unknown as AddonServiceContext["executor"],
+  notify: async () => undefined,
 })
 
 describe("value-display backend", () => {
@@ -58,7 +60,7 @@ describe("value-display backend", () => {
     }
 
     expect(result.byButton["btn-1"]).toHaveLength(1)
-    expect(result.byButton["btn-1"][0].value).toBe("8")
+    expect(result.byButton["btn-1"]![0]!.value).toBe("8")
     expect(run).toHaveBeenCalledWith("nproc", { timeoutMs: 5000 })
   })
 
@@ -150,7 +152,7 @@ describe("value-display backend", () => {
     }
 
     expect(result.byButton["btn-1"]).toHaveLength(2)
-    expect(result.byButton["btn-1"][0].value).toBe("42")
-    expect(result.byButton["btn-1"][1].value).toBe("err")
+    expect(result.byButton["btn-1"]![0]!.value).toBe("42")
+    expect(result.byButton["btn-1"]![1]!.value).toBe("err")
   })
 })

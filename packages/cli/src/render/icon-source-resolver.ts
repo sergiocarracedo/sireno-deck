@@ -1,7 +1,11 @@
 import { isAbsolute, join } from "node:path"
 
 import { EMOJI_RE } from "../core/icon-source"
-import type { ResolveIconPathOptions } from "./icon-resolver"
+
+export interface ResolveIconPathOptions {
+  readonly addonDirs?: ReadonlyMap<string, string>
+  readonly baseDirs?: ReadonlyArray<string>
+}
 
 export type ResolvedIconSource =
   | { kind: "generic"; name: string }
@@ -24,8 +28,8 @@ export const resolveIconSource = (
   }
   if (source.startsWith("addon://")) {
     const match = /^addon:\/\/([^/]+)\/(.*)$/.exec(source)
-    if (match) {
-      const [, addonName, assetPath] = match
+    const [, addonName, assetPath] = match ?? []
+    if (addonName !== undefined && assetPath !== undefined) {
       const addonDir = options.addonDirs?.get(addonName)
       if (addonDir) {
         return { kind: "asset", fullPath: join(addonDir, assetPath) }

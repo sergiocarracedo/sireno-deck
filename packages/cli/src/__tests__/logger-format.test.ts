@@ -64,8 +64,14 @@ describe("default human format renders inline context", () => {
     Object.defineProperty(process.stdout, "isTTY", { value: true })
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
-    process.stdout.write = ((chunk: string | Uint8Array): boolean => {
-      writes.push(typeof chunk === "string" ? chunk : chunk.toString("utf8"))
+    process.stdout.write = ((
+      chunk: string | Uint8Array,
+      _encoding?: BufferEncoding,
+      _cb?: (error?: Error | null) => void,
+    ): boolean => {
+      writes.push(
+        typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf8"),
+      )
       return true
     }) as typeof process.stdout.write
     try {
@@ -91,8 +97,14 @@ describe("default human format renders inline context", () => {
     Object.defineProperty(process.stdout, "isTTY", { value: true })
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
-    process.stdout.write = ((chunk: string | Uint8Array): boolean => {
-      writes.push(typeof chunk === "string" ? chunk : chunk.toString("utf8"))
+    process.stdout.write = ((
+      chunk: string | Uint8Array,
+      _encoding?: BufferEncoding,
+      _cb?: (error?: Error | null) => void,
+    ): boolean => {
+      writes.push(
+        typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf8"),
+      )
       return true
     }) as typeof process.stdout.write
     try {
@@ -143,7 +155,7 @@ describe("multi-line msg gutter", () => {
         msg: "stdout:\nVITE v6.4.3  ready in 186 ms\n  ➜  Local:   http://127.0.0.1:5180/",
       }),
     )
-    const lines = formatted.split("\n")
+    const lines = formatted!.split("\n")
     expect(lines.length).toBe(3)
     expect(lines[1]).toBe("VITE v6.4.3  ready in 186 ms")
     expect(lines[2]).toBe("  ➜  Local:   http://127.0.0.1:5180/")
@@ -160,7 +172,7 @@ describe("multi-line msg gutter", () => {
     // ponytail: operator-facing logs dropped the gutter. Newlines in the
     // msg stay (so multi-line stdout is readable) but they're NOT prefixed
     // with `│ ` indentation.
-    const lines = formatted.split("\n")
+    const lines = formatted!.split("\n")
     expect(lines[1]).toBe("body")
   })
 

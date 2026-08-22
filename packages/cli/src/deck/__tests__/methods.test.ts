@@ -226,7 +226,7 @@ describe("createMethods", () => {
         reason: "",
         preferred: "wtype",
       },
-    })
+    } as unknown as Parameters<typeof methods.setRequirements>[0])
     expect(methods.checkRequirement("keyMacro")).toBe(true)
   })
 
@@ -242,7 +242,7 @@ describe("createMethods", () => {
         reason: "no key input tool",
         preferred: "wtype",
       },
-    })
+    } as unknown as Parameters<typeof methods.setRequirements>[0])
     expect(methods.checkRequirement("keyMacro")).toBe(false)
   })
 

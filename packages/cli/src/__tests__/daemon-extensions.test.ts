@@ -1,3 +1,4 @@
+import type { Logger } from "pino"
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import {
   existsSync,
@@ -23,6 +24,7 @@ const testPaths = {
   tokenFile: join(testDir, "test.token"),
   childrenFile: join(testDir, "test.children.json"),
   configPathFile: join(testDir, "test.config"),
+  flagsFile: join(testDir, "test.flags"),
 }
 
 beforeEach(() => {
@@ -82,7 +84,7 @@ describe("terminateChildren", () => {
   afterEach(cleanup)
 
   it("does nothing when no children file exists", async () => {
-    const logger = { debug: vi.fn(), info: vi.fn() }
+    const logger = { debug: vi.fn(), info: vi.fn() } as unknown as Logger
     const result = await terminateChildren({ logger, paths: testPaths })
     expect(result).toBeUndefined()
     expect(logger.debug).not.toHaveBeenCalled()
@@ -90,7 +92,7 @@ describe("terminateChildren", () => {
 
   it("does nothing when children list is empty", async () => {
     writeFileSync(testPaths.childrenFile, '{"pids":[]}', { encoding: "utf8" })
-    const logger = { debug: vi.fn(), info: vi.fn() }
+    const logger = { debug: vi.fn(), info: vi.fn() } as unknown as Logger
     await terminateChildren({ logger, paths: testPaths })
     expect(logger.debug).not.toHaveBeenCalled()
   })

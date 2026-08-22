@@ -22,6 +22,7 @@ describe("chrome button icon resolution (user config)", () => {
       id: "main",
       name: "Main",
       isMain: true,
+      icon: undefined as string | undefined,
       buttons: [
         {
           id: "10",
@@ -44,7 +45,7 @@ describe("chrome button icon resolution (user config)", () => {
       false,
       (fullPath) => getAssetByPath(fullPath)?.id,
     )
-    const btn = msg.surfaces.main?.buttons.find((b) => b.id === "10")
+    const btn = msg.surfaces["main"]?.buttons.find((b) => b.id === "10")
     expect(btn?.config?.icon).toBe(`asset://${asset?.id}`)
   })
 })

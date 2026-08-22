@@ -44,7 +44,6 @@ export const manifest: AddonManifestV1 = {
   globalService: toggleGlobalService,
   decks: [
     {
-      id: "core:lock",
       createDecks: ({ config, keyCount }) => {
         const userButtons = (
           config as { lockButtons?: ReadonlyArray<Record<string, unknown>> }
@@ -83,7 +82,7 @@ export const manifest: AddonManifestV1 = {
             buttons:
               userButtons !== undefined && userButtons.length > 0
                 ? positionButtons(
-                    userButtons as Array<{ position?: number }>,
+                    userButtons as Array<{ position?: number; id?: string }>,
                     keyCount,
                   ).map((b, i) => {
                     // ponytail: strip the user-supplied `id` (if any) before

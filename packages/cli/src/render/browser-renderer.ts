@@ -14,7 +14,9 @@ export interface PlaywrightLike {
   }
 }
 export interface BrowserLike {
-  newContext(): Promise<ContextLike>
+  newContext(opts?: {
+    viewport?: { width: number; height: number }
+  }): Promise<ContextLike>
   close(): Promise<void>
 }
 export interface ContextLike {

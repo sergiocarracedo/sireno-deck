@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  type RuntimeDeck,
   computeSystemButtonForSlotN1,
   injectSystemButtons,
 } from "../system-back-injection"
@@ -77,10 +78,7 @@ describe("computeSystemButtonForSlotN1", () => {
 
   it("returns null when lockActive is true (overlay deck)", () => {
     expect(
-      computeSystemButtonForSlotN1(
-        deck({ isOverlay: true }),
-        state({ lockActive: true }),
-      ),
+      computeSystemButtonForSlotN1(deck(), state({ lockActive: true })),
     ).toBe(null)
   })
 
@@ -93,7 +91,7 @@ describe("computeSystemButtonForSlotN1", () => {
   it("lockActive overrides overlay-available flag", () => {
     expect(
       computeSystemButtonForSlotN1(
-        deck({ isOverlay: true }),
+        deck(),
         state({ lockActive: true, hasOverlayDeckAvailable: true }),
       ),
     ).toBe(null)
@@ -112,7 +110,7 @@ describe("injectSystemButtons", () => {
       ...deck({ isMain: true }),
       buttons: [{ id: "0-d1-0", position: 0, type: "x" }],
     }
-    const [result] = injectSystemButtons([main], 15)
+    const result = injectSystemButtons([main], 15)[0]!
     const n1 = result.buttons.find((b) => b.id === "14-d1-0")
     expect(n1?.type).toBe("core:settings-entry")
     expect(n1?.position).toBe(14)
@@ -123,7 +121,7 @@ describe("injectSystemButtons", () => {
       ...deck({ id: "sub", name: "Sub" }),
       buttons: [{ id: "0-sub-0", position: 0, type: "x" }],
     }
-    const [result] = injectSystemButtons([sub], 15)
+    const result = injectSystemButtons([sub], 15)[0]!
     const n1 = result.buttons.find((b) => b.id === "14-sub-0")
     expect(n1?.type).toBe("core:back")
     expect(n1?.position).toBe(14)
@@ -134,7 +132,7 @@ describe("injectSystemButtons", () => {
       ...deck({ id: "overlay", name: "Overlay" }),
       buttons: [{ id: "0-overlay-0", position: 0, type: "x" }],
     }
-    const [result] = injectSystemButtons([overlay], 15)
+    const result = injectSystemButtons([overlay], 15)[0]!
     const n1 = result.buttons.find((b) => b.id === "14-overlay-0")
     expect(n1?.type).toBe("core:back")
     expect(n1?.position).toBe(14)
@@ -145,21 +143,21 @@ describe("injectSystemButtons", () => {
       ...deck({ id: "sub" }),
       buttons: [{ id: "14-sub-0", position: 14, type: "user:custom" }],
     }
-    const [result] = injectSystemButtons([withN1], 15)
+    const result = injectSystemButtons([withN1], 15)[0]!
     expect(result.buttons).toHaveLength(1)
     expect(result.buttons[0]?.type).toBe("core:back")
   })
 
   it("uses keyCount to determine n-1 position", () => {
     const main = { ...deck({ isMain: true }), buttons: [] }
-    const [result] = injectSystemButtons([main], 6)
+    const result = injectSystemButtons<RuntimeDeck>([main], 6)[0]!
     const n1 = result.buttons.find((b) => b.id === "5-d1-0")
     expect(n1?.type).toBe("core:settings-entry")
   })
 
   it("injects core:back at id '31' on XL (keyCount=32)", () => {
     const sub = { ...deck({ id: "sub" }), buttons: [] }
-    const [result] = injectSystemButtons([sub], 32)
+    const result = injectSystemButtons<RuntimeDeck>([sub], 32)[0]!
     const n1 = result.buttons.find((b) => b.id === "31-sub-0")
     expect(n1?.type).toBe("core:back")
     expect(result.buttons).toHaveLength(1)
@@ -170,17 +168,17 @@ describe("injectSystemButtons", () => {
       ...deck({ isMain: true }),
       buttons: [{ id: "14-d1-0", position: 14, type: "core:settings-entry" }],
     }
-    const [result] = injectSystemButtons([alreadyInjected], 15)
+    const result = injectSystemButtons([alreadyInjected], 15)[0]!
     const n1Count = result.buttons.filter((b) => b.id === "14-d1-0").length
     expect(n1Count).toBe(1)
   })
 
   it("preserves other deck properties", () => {
     const sub = {
-      ...deck({ id: "media", name: "Media", isOverlay: false }),
+      ...deck({ id: "media", name: "Media" }),
       buttons: [{ id: "0-media-0", position: 0, type: "media:player" }],
     }
-    const [result] = injectSystemButtons([sub], 15)
+    const result = injectSystemButtons([sub], 15)[0]!
     expect(result.id).toBe("media")
     expect(result.name).toBe("Media")
     expect(result.buttons).toHaveLength(2)
@@ -188,8 +186,8 @@ describe("injectSystemButtons", () => {
 
   it("re-injection with new keyCount moves core:back to the new n-1 slot", () => {
     const sub = { ...deck({ id: "sub" }), buttons: [] }
-    const [withMk2] = injectSystemButtons([sub], 15)
-    const [withXl] = injectSystemButtons([sub], 32)
+    const withMk2 = injectSystemButtons<RuntimeDeck>([sub], 15)[0]!
+    const withXl = injectSystemButtons<RuntimeDeck>([sub], 32)[0]!
     expect(withMk2.buttons.find((b) => b.id === "14-sub-0")?.type).toBe(
       "core:back",
     )
@@ -204,7 +202,7 @@ describe("injectSystemButtons", () => {
       ...deck({ isMain: true }),
       buttons: [{ id: "0-d1-0", position: 0, type: "x" }],
     }
-    const [result] = injectSystemButtons([main], 15, { lockActive: true })
+    const result = injectSystemButtons([main], 15, { lockActive: true })[0]!
     const n1 = result.buttons.find((b) => b.id === "14-d1-0")
     expect(n1).toBeUndefined()
     expect(result.buttons).toHaveLength(1)
@@ -215,7 +213,7 @@ describe("injectSystemButtons", () => {
       ...deck({ id: "sub", name: "Sub" }),
       buttons: [{ id: "0-sub-0", position: 0, type: "x" }],
     }
-    const [result] = injectSystemButtons([sub], 15, { lockActive: true })
+    const result = injectSystemButtons([sub], 15, { lockActive: true })[0]!
     const n1 = result.buttons.find((b) => b.id === "14-sub-0")
     expect(n1).toBeUndefined()
     expect(result.buttons).toHaveLength(1)
@@ -223,10 +221,10 @@ describe("injectSystemButtons", () => {
 
   it("does not inject n-1 on overlay deck when lockActive is true", () => {
     const overlay = {
-      ...deck({ id: "overlay", name: "Overlay", isOverlay: true }),
+      ...deck({ id: "overlay", name: "Overlay" }),
       buttons: [{ id: "0-overlay-0", position: 0, type: "x" }],
     }
-    const [result] = injectSystemButtons([overlay], 15, { lockActive: true })
+    const result = injectSystemButtons([overlay], 15, { lockActive: true })[0]!
     const n1 = result.buttons.find((b) => b.id === "14-overlay-0")
     expect(n1).toBeUndefined()
     expect(result.buttons).toHaveLength(1)
@@ -240,9 +238,9 @@ describe("injectSystemButtons", () => {
         ...deck({ isMain: true }),
         buttons: [{ id: "14-d1-0", position: 14, type: "core:settings-entry" }],
       }
-      const [result] = injectSystemButtons([alreadyInjected], 15, {
+      const result = injectSystemButtons([alreadyInjected], 15, {
         lockActive: true,
-      })
+      })[0]!
       expect(result.buttons).toHaveLength(1)
     },
   )
@@ -252,7 +250,7 @@ describe("injectSystemButtons", () => {
       ...deck({ isMain: true }),
       buttons: [{ id: "0-d1-0", position: 0, type: "x" }],
     }
-    const [result] = injectSystemButtons([main], 15)
+    const result = injectSystemButtons([main], 15)[0]!
     const n1 = result.buttons.find((b) => b.id === "14-d1-0")
     expect(n1?.type).toBe("core:settings-entry")
     expect(n1?.position).toBe(14)
@@ -263,7 +261,7 @@ describe("injectSystemButtons", () => {
       ...deck({ id: "sub" }),
       buttons: [{ id: "0-sub-0", position: 0, type: "x" }],
     }
-    const [result] = injectSystemButtons([sub], 15, { lockActive: false })
+    const result = injectSystemButtons([sub], 15, { lockActive: false })[0]!
     const n1 = result.buttons.find((b) => b.id === "14-sub-0")
     expect(n1?.type).toBe("core:back")
     expect(n1?.position).toBe(14)

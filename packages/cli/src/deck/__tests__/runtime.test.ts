@@ -59,7 +59,7 @@ describe("createRuntime", () => {
   it("setOverlay + getOverlay roundtrip", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
     ])
     runtime.setOverlay("spotify")
     expect(runtime.getOverlay()?.id).toBe("spotify")
@@ -266,7 +266,7 @@ describe("createRuntime", () => {
         reason: "",
         preferred: "wtype",
       },
-    })
+    } as unknown as Parameters<typeof methods.setRequirements>[0])
     const dispatch = vi.spyOn(methods, "dispatch").mockResolvedValue(undefined)
     const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
     await runtime.invokeAction("main:b0", "tap")
@@ -297,7 +297,7 @@ describe("createRuntime", () => {
         reason: "missing",
         preferred: "wtype",
       },
-    })
+    } as unknown as Parameters<typeof methods.setRequirements>[0])
     const dispatch = vi.spyOn(methods, "dispatch").mockResolvedValue(undefined)
     const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
     await runtime.invokeAction("main:b0", "tap")
@@ -334,7 +334,7 @@ describe("createRuntime", () => {
         reason: "",
         preferred: "wtype",
       },
-    })
+    } as unknown as Parameters<typeof methods.setRequirements>[0])
     const dispatch = vi
       .spyOn(methods, "dispatch")
       .mockRejectedValue(new Error("boom"))
@@ -829,7 +829,7 @@ describe("createRuntime with active-app provider", () => {
   it("setOverlay (manual) publishes runtime:overlay without source field", () => {
     const { runtime, pubSub } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
     ])
     const events: unknown[] = []
     pubSub.subscribe("runtime:overlay", (p) => events.push(p))
@@ -842,8 +842,8 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   it("overlay is its own active deck on activation", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     expect(runtime.getActiveDeckId()).toBe("spotify")
@@ -852,8 +852,8 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   it("navigating within overlay pushes onto overlay stack", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
@@ -863,10 +863,10 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   it("per-overlay isolation: each overlay has its own stack", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
-      makeDeck({ id: "browser", isOverlay: true }),
-      makeDeck({ id: "browser-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
+      makeDeck({ id: "browser" }),
+      makeDeck({ id: "browser-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
@@ -882,8 +882,8 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   it("stack persists across dismiss/reactivate", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
@@ -896,7 +896,7 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   it("goBack at overlay root dismisses overlay (overlay mode is a routing branch)", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
     ])
     runtime.setOverlay("spotify")
     expect(runtime.getActiveDeckId()).toBe("spotify")
@@ -923,7 +923,7 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "media" }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
     ])
     runtime.navigateToDeck("media")
     expect(runtime.navStackDepth()).toBe(2)
@@ -967,7 +967,6 @@ describe("createRuntime — system-button gestures", () => {
       makeDeck({ id: "media" }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
     ])
@@ -984,7 +983,6 @@ describe("createRuntime — system-button gestures", () => {
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
     ])
@@ -1014,10 +1012,9 @@ describe("createRuntime — system-button gestures", () => {
       makeDeck({ id: "media" }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.navigateToDeck("media")
     runtime.setOverlay("spotify")
@@ -1043,7 +1040,6 @@ describe("createRuntime — system-button gestures", () => {
       }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         processNames: ["spotify"],
       }),
     ])
@@ -1066,7 +1062,6 @@ describe("createRuntime — system-button gestures", () => {
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
     ])
@@ -1096,7 +1091,6 @@ describe("createRuntime — system-button gestures", () => {
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:overlay-toggle" }],
       }),
     ])
@@ -1148,7 +1142,6 @@ describe("createRuntime — system-button gestures", () => {
       }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         processNames: ["spotify"],
       }),
     ])
@@ -1193,7 +1186,6 @@ describe("createRuntime — system-button gestures", () => {
       makeDeck({ id: "media" }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
     ])
@@ -1283,13 +1275,12 @@ describe("createRuntime — overlay smoke (full chain with gestures)", () => {
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
-        isOverlay: true,
         processNames: ["chrome"],
         autoShow: true,
         icon: "icon://chrome",
         buttons: [{ id: "14", type: "core:back" }],
       }),
-      makeDeck({ id: "chrome-page", isOverlay: true }),
+      makeDeck({ id: "chrome-page" }),
     ])
     const provider = makeFakeProvider({
       name: "Google Chrome",
@@ -1335,11 +1326,10 @@ describe("createRuntime — overlay smoke (full chain)", () => {
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
-        isOverlay: true,
         processNames: ["chrome"],
         autoShow: true,
       }),
-      makeDeck({ id: "chrome-page", isOverlay: true }),
+      makeDeck({ id: "chrome-page" }),
     ])
     const provider = makeFakeProvider({
       name: "Google Chrome",
@@ -1371,10 +1361,9 @@ describe("createRuntime — overlay smoke (full chain)", () => {
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-overlay",
-        isOverlay: true,
         autoShow: true,
       }),
-      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+      makeDeck({ id: "chrome-overlay-p2" }),
     ])
     runtime.setOverlay("chrome-overlay")
     expect(runtime.getActiveDeckId()).toBe("chrome-overlay")
@@ -1392,10 +1381,9 @@ describe("createRuntime — overlay smoke (full chain)", () => {
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-overlay",
-        isOverlay: true,
         autoShow: true,
       }),
-      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+      makeDeck({ id: "chrome-overlay-p2" }),
     ])
     runtime.setOverlay("chrome-overlay")
     runtime.navigateToDeck("chrome-overlay-p2", { addToHistory: false })
@@ -1413,10 +1401,9 @@ describe("createRuntime — overlay smoke (full chain)", () => {
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-overlay",
-        isOverlay: true,
         autoShow: true,
       }),
-      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+      makeDeck({ id: "chrome-overlay-p2" }),
     ])
     runtime.setOverlay("chrome-overlay")
     runtime.navigateToDeck("chrome-overlay-p2", { addToHistory: false })

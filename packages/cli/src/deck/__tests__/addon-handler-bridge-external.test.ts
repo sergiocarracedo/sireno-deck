@@ -50,20 +50,25 @@ const setup = () => {
       ],
     },
   ]
-  const runtime = createRuntime({
-    decks,
-    pubSub,
-    store,
-    logger: silentLogger(),
-  })
   const executor = createActionExecutor({ host: getHostContext() })
   const methods = createMethods({
-    runtime,
+    runtime: undefined as never,
     pubSub,
     store,
     executor,
     logger: silentLogger(),
   })
+  const runtime = createRuntime({
+    decks,
+    pubSub,
+    store,
+    logger: silentLogger(),
+    getMethods: () => methods,
+  })
+  // ponytail: createMethods needs a Runtime, but we built a placeholder above
+  // (Methods don't actually call runtime methods at construction). Replace
+  // the runtime reference on methods now that it exists.
+  ;(methods as unknown as { runtime: typeof runtime }).runtime = runtime
   return { runtime, pubSub, store, executor, decks, methods }
 }
 

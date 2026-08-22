@@ -8,6 +8,7 @@ onlyBuiltDependencies:
   - "@julusian/jpeg-turbo"
   - esbuild
   - get-windows
+  - lefthook
   - node-hid
   - sharp
   - usocket

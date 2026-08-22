@@ -1,0 +1,26 @@
+# ponytail: mirrors the CI quality job in .github/workflows/ci.yml so the
+# same checks run locally before code leaves the developer's machine.
+# Pre-commit keeps staged files honest (fast lint/format on what changed);
+# pre-push runs the full quality pipeline against the working tree so
+# broken pushes get blocked before CI has to spend cycles on them.
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,ts,tsx,jsx,mjs,cjs}"
+      run: pnpm lint
+    format:
+      glob: "*.{js,ts,tsx,jsx,mjs,cjs,json,md,yml,yaml}"
+      run: pnpm format:check
+    # ponytail: migrated from .git/hooks/pre-push so devs keep the
+    # reflog-burst warning when lefthook takes over hook management.
+    reset-warning:
+      run: bash scripts/git/reset-pattern-warning.sh
+
+pre-push:
+  commands:
+    quality:
+      run: |
+        pnpm lint \
+        && pnpm format:check \
+        && pnpm typecheck
