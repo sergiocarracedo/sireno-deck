@@ -1,0 +1,29 @@
+docs/plans/2026-08-21-fix-real-mode-runtime-state.md
+  s_52792832750e4c::t_5dc49cd3d819de 1-39
+docs/solutions/runtime-errors/_lefthook-test.md
+  s_52792832750e4c::t_c9e650df78541a 1
+docs/solutions/runtime-errors/real-output-client-missing-runtime-state-write.md
+  s_52792832750e4c::t_33ba078bf31ead 1-32
+packages/cli/src/cli/commands/status.ts
+  s_52792832750e4c::t_1da0988a396ebb 99-100
+packages/cli/src/cli/startup-display.ts
+  s_52792832750e4c::t_002804f4769b8c 290,295-320,323-331
+packages/cli/src/outputClient/real.ts
+  s_52792832750e4c::t_7c55f420624237 27,252-267
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "56200885fd5db28a25c2feb5bcd2091ea9e4dbad",
+  "prompts": {},
+  "sessions": {
+    "s_52792832750e4c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fda8b8721ffe5IP4gQ8IDYgsjQ",
+        "model": "x-preview-f-free"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
