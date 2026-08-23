@@ -11,13 +11,15 @@
     "format:check": "oxfmt --check .",
     "typecheck": "pnpm -r --parallel typecheck",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "lefthook": "^2.1.10",
     "oxfmt": "0.63.0",
     "oxlint": "latest",
     "typescript": "7.0.1-rc",

@@ -128,8 +128,8 @@ const spawnViteAndWaitForReady = (
       const formatted = `${label}:\n${stripped}`
       if (label === "stdout") stdoutChunks.push(formatted)
       else stderrChunks.push(formatted)
-      if (label === "stderr") logger.warn(formatted, childLabel)
-      else logger.info(formatted, childLabel)
+      if (label === "stderr") logger.warn(formatted)
+      else logger.info(formatted)
     }
 
     const timer = setTimeout(() => {

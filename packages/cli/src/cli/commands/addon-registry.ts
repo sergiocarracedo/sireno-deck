@@ -3,7 +3,7 @@ import { existsSync } from "node:fs"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import type { AddonPoller, AddonPollerChannel } from "@/addon/api"
+import type { AddonPoller, AddonPollerChannel } from "@/addon/api-types"
 
 export interface ScannedDeck {
   readonly id: string

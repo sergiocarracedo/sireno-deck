@@ -120,7 +120,7 @@ describe("restart (dev branch)", () => {
     savedArgv1 = process.argv[1]
   })
   afterEach(() => {
-    process.argv[1] = savedArgv1
+    process.argv[1] = savedArgv1 ?? "/usr/bin/node"
   })
 
   it("runs stop + start (not invokeManager) when invoked from a .ts entry point", async () => {

@@ -185,6 +185,7 @@ export const buildDeckConfigMessage = (
             id: `${n1Position}-${deck.id}-0`,
             type: systemBtn,
             position: n1Position,
+            config: {},
           },
         ]
       }
@@ -235,7 +236,7 @@ export type DeckTreeEntry = {
   readonly id: string
   readonly name: string
   readonly isOverlay: boolean
-  readonly links: ReadonlyArray<{
+  readonly links: Array<{
     readonly target: string
     readonly label?: string
   }>
@@ -263,7 +264,7 @@ export const buildDeckTree = (
       isOverlay:
         (deck.processNames?.length ?? 0) > 0 ||
         (deck.windowNames?.length ?? 0) > 0,
-      links: Object.freeze(links),
+      links,
     }
   })
   return { rootId: mainDeckId, decks: entries }

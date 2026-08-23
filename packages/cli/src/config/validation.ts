@@ -47,7 +47,6 @@ const reportDuplicatePositions = (
         level: "warning",
         path: `decks.${deckId}.buttons[${index}]`,
         message: `Duplicate position ${btn.position} (also at index ${prev})`,
-        reason: "duplicate-position",
       })
     } else {
       seen.set(btn.position, index)
@@ -64,7 +63,6 @@ export const validateBootstrap = (config: RawConfig): BootstrapResult => {
       path: "decks",
       message:
         "Missing required `main` deck — synthetic main deck will be created",
-      reason: "missing-main-deck",
     })
   }
   for (const [id, deck] of Object.entries(config.decks)) {

@@ -69,7 +69,9 @@ const defaultRuntimeDir = (): string => {
     case "win32":
       return join(process.env["LOCALAPPDATA"] ?? tmpdir(), DAEMON_NAME)
     default: {
-      const uid = getuid()
+      // ponytail: getuid is undefined-typed on win32 per @types/node, but this
+      // branch only runs on linux; the runtime check satisfies the type.
+      const uid = typeof getuid === "function" ? getuid() : null
       return uid !== null
         ? join(tmpdir(), `sireno-deck-${uid}`)
         : join(tmpdir(), DAEMON_NAME)
@@ -352,7 +354,7 @@ export interface RuntimeState {
   readonly emulatorMode: boolean
   readonly remote: boolean
   readonly startedAt: number
-  readonly theme: string
+  readonly theme?: string
 }
 
 export const RUNTIME_STATE_FILE = "runtime-state.json"

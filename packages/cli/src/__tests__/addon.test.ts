@@ -127,7 +127,7 @@ describe("loadAddons", () => {
         "  apiVersion: 1,",
         "  name: 'my-addon',",
         "  buttonTypes: {",
-        "    'my-addon:hello': { frontend, backend: { configSchema } },",
+        "    'my-addon:hello': { frontend, service: { configSchema } },",
         "  },",
         "} satisfies import('@/addon/api').AddonManifestV1;",
         "",
@@ -205,11 +205,11 @@ describe("AddonRegistry", () => {
   it("indexes addons, button types, and deck types", () => {
     const registry = new AddonRegistry()
     const frontend = () => null
-    const backend = { configSchema: {} }
+    const service = { configSchema: {} }
     const manifest: AddonManifestV1 = {
       apiVersion: 1,
       name: "test",
-      buttonTypes: { "test:a": { frontend, backend } },
+      buttonTypes: { "test:a": { frontend, service } },
       decks: [{ id: "test:test-deck", name: "Test Deck" }],
     }
     registry.load(manifest)
@@ -227,7 +227,7 @@ describe("AddonRegistry", () => {
     const manifest: AddonManifestV1 = {
       apiVersion: 1,
       name: "dup",
-      buttonTypes: { "dup:a": { frontend, backend: { configSchema: {} } } },
+      buttonTypes: { "dup:a": { frontend, service: { configSchema: {} } } },
     }
     registry.load(manifest)
     expect(() => registry.load(manifest)).toThrow(/Duplicate addon name: dup/)
@@ -236,17 +236,17 @@ describe("AddonRegistry", () => {
   it("allows button types with same suffix from different addons", () => {
     const registry = new AddonRegistry()
     const frontend = () => null
-    const backend = { configSchema: {} }
+    const service = { configSchema: {} }
     registry.load({
       apiVersion: 1,
       name: "first",
-      buttonTypes: { "first:shared": { frontend, backend } },
+      buttonTypes: { "first:shared": { frontend, service } },
     })
     expect(() =>
       registry.load({
         apiVersion: 1,
         name: "second",
-        buttonTypes: { "second:shared": { frontend, backend } },
+        buttonTypes: { "second:shared": { frontend, service } },
       }),
     ).not.toThrow()
   })
@@ -257,7 +257,7 @@ describe("AddonRegistry", () => {
     registry.load({
       apiVersion: 1,
       name: "x",
-      buttonTypes: { "x:a": { frontend, backend: { configSchema: {} } } },
+      buttonTypes: { "x:a": { frontend, service: { configSchema: {} } } },
     })
     expect(registry.listAddons()).toHaveLength(1)
     registry.reset()
@@ -267,13 +267,13 @@ describe("AddonRegistry", () => {
   it("registers a `<addon>:<addon>` button type under the bare addon name", () => {
     const registry = new AddonRegistry()
     const frontend = () => null
-    const backend = { configSchema: {} }
+    const service = { configSchema: {} }
     registry.load({
       apiVersion: 1,
       name: "date-time",
       buttonTypes: {
-        "date-time:date-time": { frontend, backend },
-        "date-time:time": { frontend, backend },
+        "date-time:date-time": { frontend, service },
+        "date-time:time": { frontend, service },
       },
     })
     expect(registry.hasButtonType("date-time:date-time")).toBe(true)

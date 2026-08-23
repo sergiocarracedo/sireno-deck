@@ -61,7 +61,7 @@ export const ensureInstalled = async (
     logger.debug({ userLevel }, "ensureInstalled: unit already present")
     return
   }
-  const { installService } = await import("./install")
+  const { installService } = await import("./service/install")
   await installService({ logger, system })
 }
 

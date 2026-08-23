@@ -68,7 +68,6 @@ const realExecutor = {
     try {
       const result = await execFileAsync(command, [...args], {
         timeout: 5_000,
-        stdio: ["ignore", "pipe", "pipe"],
       })
       return {
         exitCode: 0,
@@ -441,7 +440,8 @@ export const systemRequirements = async (
 ): Promise<void> => {
   const { logger } = options
   const tty = process.stdin.isTTY
-  const nonInteractive = options.nonInteractive || options.yes || !tty
+  const yes = options.yes === true
+  const nonInteractive = options.nonInteractive || yes || !tty
 
   const homeDir = resolveHome(options)
   const xdgConfigHome = resolveXdgConfigHome(options)
@@ -528,8 +528,8 @@ export const systemRequirements = async (
   for (const step of missingSteps) {
     const result =
       step.capability === "udev"
-        ? await runUdevStep(step, options.yes === true, logger)
-        : await runInstallStep(step, options.yes === true, logger, options)
+        ? await runUdevStep(step, yes, logger)
+        : await runInstallStep(step, yes, logger, options)
     results[step.id] = result
     if (result === "installed") anyInstalled = true
     // ponytail: the Capabilities panel already shows "Installed" once the

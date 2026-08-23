@@ -78,6 +78,9 @@ vi.mock("@/util/daemon", () => ({
   writeChildren: vi.fn(),
   removeChildrenFile: vi.fn(),
   SENTINEL_ENV_VAR: "SIRENO_DAEMON_SENTINEL",
+  writeRuntimeState: vi.fn(),
+  readRuntimeState: vi.fn(() => null),
+  removeRuntimeStateFile: vi.fn(),
 }))
 vi.mock("../spawn-daemon", async (importOriginal) => {
   const actual = (await importOriginal()) as Record<string, unknown>
@@ -396,7 +399,7 @@ const setSummary = (summary: FakeSummary): void => {
 
 describe("start first-run wizard hook", () => {
   let savedArgv1: string | undefined
-  let savedExitCode: number | undefined
+  let savedExitCode: string | number | null | undefined
   let savedIsTTY: boolean | undefined
 
   beforeAll(() => {
@@ -417,7 +420,7 @@ describe("start first-run wizard hook", () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
-    process.argv[1] = savedArgv1
+    process.argv[1] = savedArgv1 ?? "/usr/bin/node"
     process.exitCode = savedExitCode
     Object.defineProperty(process.stdin, "isTTY", {
       value: savedIsTTY,

@@ -35,7 +35,7 @@ describe("buildDeckConfigMessage — full flag", () => {
       false,
       () => undefined,
     )
-    const btn = msg.surfaces[deck.id].buttons[0]!
+    const btn = msg.surfaces[deck.id]!.buttons[0]!
     expect(btn.full).toBe(true)
   })
 
@@ -54,7 +54,7 @@ describe("buildDeckConfigMessage — full flag", () => {
       false,
       () => undefined,
     )
-    const btn = msg.surfaces[deck.id].buttons[0]!
+    const btn = msg.surfaces[deck.id]!.buttons[0]!
     expect("full" in btn).toBe(false)
   })
 })
@@ -169,7 +169,7 @@ describe("buildDeckConfigMessage — lockActive hides injected n-1 system button
       null,
       { lockActive: true },
     )
-    const ids = msg.surfaces[deck.id].buttons.map((b) => b.id)
+    const ids = msg.surfaces[deck.id]!.buttons.map((b) => b.id)
     expect(ids).toEqual(["5-core:lock-0", "13-core:lock-0"])
   })
 
@@ -186,7 +186,7 @@ describe("buildDeckConfigMessage — lockActive hides injected n-1 system button
       null,
       { lockActive: false },
     )
-    const ids = msg.surfaces[deck.id].buttons.map((b) => b.id)
+    const ids = msg.surfaces[deck.id]!.buttons.map((b) => b.id)
     expect(ids).toContain("14-core:lock-0")
   })
 
@@ -220,7 +220,7 @@ describe("buildDeckConfigMessage — lockActive hides injected n-1 system button
       null,
       { lockActive: true },
     )
-    const ids = msg.surfaces[userDeck.id].buttons.map((b) => b.id)
+    const ids = msg.surfaces[userDeck.id]!.buttons.map((b) => b.id)
     expect(ids).toEqual(["5-core:lock-0", "14-core:lock-0"])
   })
 })

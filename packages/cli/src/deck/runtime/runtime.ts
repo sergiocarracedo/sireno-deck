@@ -7,7 +7,7 @@ import type { ActiveAppProvider } from "@/system/providers/active-app"
 import type { SessionProvider, SessionState } from "@/system/providers/session"
 import { getRequiredCapability } from "@/system/requirements"
 import { compileDeckMatcher } from "@/system/glob-match"
-import type { Methods } from "./methods"
+import type { Methods } from "../methods"
 
 type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">
 
@@ -43,6 +43,14 @@ export interface RuntimeDeck {
   autoShow?: boolean
   isOverlayDeck?: boolean
   icon?: string
+  background?: string
+  paginated?: boolean
+  // ponytail: addon-generated decks inherit the parent's window/process trigger
+  // so the runtime can switch to them automatically when the watched window
+  // comes to the foreground. Preserved through materialization.
+  trigger?: unknown
+  isOverlay?: boolean
+  config?: Record<string, unknown>
   buttonColor?:
     | "blue"
     | "green"

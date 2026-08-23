@@ -129,7 +129,7 @@ describe("printDaemonEvents", () => {
 })
 
 describe("printDaemonUrl", () => {
-  const makeState = (overrides = {}) => ({
+  const makeState = (overrides = {}): Parameters<typeof printDaemonUrl>[0] => ({
     emulatorUrl: "http://127.0.0.1:52938",
     wsUrl: "ws://127.0.0.1:52937",
     frontendUrl: "http://127.0.0.1:5180",
@@ -138,13 +138,15 @@ describe("printDaemonUrl", () => {
     addresses: [] as string[],
     emulatorMode: true,
     remote: false,
+    startedAt: 1,
+    theme: undefined,
     ...overrides,
   })
 
   it("prints the local URL", async () => {
     const output = vi.fn()
     await printDaemonUrl(makeState(), output)
-    const text = output.mock.calls.map((c: [string]) => c[0]).join("")
+    const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).toContain("127.0.0.1")
     expect(text).toContain("token=tok123")
   })
@@ -165,7 +167,7 @@ describe("printDaemonUrl", () => {
       value: original,
       configurable: true,
     })
-    const text = output.mock.calls.map((c: [string]) => c[0]).join("")
+    const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).toContain("192.168.1.10")
   })
 
@@ -184,7 +186,7 @@ describe("printDaemonUrl", () => {
       value: original,
       configurable: true,
     })
-    const text = output.mock.calls.map((c: [string]) => c[0]).join("")
+    const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).not.toContain("192.168.1.10")
     expect(text).not.toContain("Emulator (LAN)")
   })
@@ -204,7 +206,7 @@ describe("printDaemonUrl", () => {
       value: original,
       configurable: true,
     })
-    const text = output.mock.calls.map((c: [string]) => c[0]).join("")
+    const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).toContain("192.168.1.10")
   })
 })

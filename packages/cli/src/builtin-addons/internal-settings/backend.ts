@@ -36,8 +36,18 @@ export const globalService: AddonGlobalService = {
     },
   },
   onLoad: (ctx: AddonServiceContext) => {
+    // ponytail: brightness providers speak the system-provider CommandExecutor
+    // dialect (command + args array); the addon executor runs a single shell
+    // string. Quote args and bridge the two — per-command timeouts are not
+    // needed for these one-shot probes.
+    const shellQuote = (value: string): string =>
+      `'${value.replaceAll("'", `'\\''`)}'`
+    const executor = {
+      run: async (command: string, args: ReadonlyArray<string>) =>
+        ctx.executor.run([command, ...args].map(shellQuote).join(" ")),
+    }
     brightnessProvider = createBrightnessProvider({
-      executor: ctx.executor,
+      executor,
       platform: process.platform,
       logger: noOpLogger,
     })

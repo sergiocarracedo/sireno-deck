@@ -35,6 +35,9 @@ export class RealOutputClient implements OutputClient {
 
   private readonly xdgConfigHome: string
   private device: StreamDeckDevice | null = null
+  // ponytail: the Stream Deck SDK exposes setBrightness but no getter, so we
+  // track the last value we set to skip redundant hardware writes.
+  private deviceBrightness: number | null = null
   private descriptor: DeviceDescriptor | null = null
 
   constructor(options: RealOutputClientOptions) {
@@ -66,6 +69,7 @@ export class RealOutputClient implements OutputClient {
           ? {
               current: {
                 serial: savedId,
+                path: "",
                 model: "",
               },
             }
@@ -89,6 +93,7 @@ export class RealOutputClient implements OutputClient {
       xdgConfigHome: this.xdgConfigHome,
       config: {
         serial: descriptor.id,
+        path: descriptor.id,
         model: descriptor.model,
       },
     })
@@ -144,9 +149,10 @@ export class RealOutputClient implements OutputClient {
       value: number
     }>("methods:adjustBrightness", ({ value }) => {
       if (this.device === null) return
-      const current = this.device.brightness
+      const current = this.deviceBrightness
       if (value === current) return
-      this.device.setBrightness(value)
+      this.deviceBrightness = value
+      void this.device.setBrightness(value)
       logger.info(
         { from: current, to: value },
         "real mode: hardware brightness adjusted",

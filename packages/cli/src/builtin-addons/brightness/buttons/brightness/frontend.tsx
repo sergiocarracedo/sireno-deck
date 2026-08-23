@@ -2,13 +2,17 @@ import { Text } from "@/ui/index"
 import { useAddonChannel } from "@/api/react"
 import type { AddonFrontendButton } from "@/addon/api"
 
+import type { ConfigSchema } from "./config"
+
 interface BrightnessState {
   readonly value: number
   readonly max: number
 }
 
-const BrightnessButtonFrontend: AddonFrontendButton = ({ config }) => {
-  const { action } = (config as { action?: "up" | "down" | "set" }) ?? {}
+const BrightnessButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
+  config,
+}) => {
+  const { action } = config ?? {}
   const { data } = useAddonChannel<BrightnessState>("brightness:current")
   if (data === undefined) {
     return (

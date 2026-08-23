@@ -108,7 +108,9 @@ describe("detectPortPids", () => {
     const result = detectPortPids(52937, warnLogger)
     expect(result).toEqual([])
     expect(warnLogger.warn).toHaveBeenCalledTimes(1)
-    const call = warnLogger.warn.mock.calls[0]
+    const call = (
+      warnLogger.warn as unknown as { mock: { calls: unknown[][] } }
+    ).mock.calls[0]
     expect(call?.[1]).toContain("no port-detection backends available")
   })
 

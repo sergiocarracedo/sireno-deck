@@ -383,7 +383,7 @@ describe("start", () => {
   })
   afterEach(() => {
     vi.restoreAllMocks()
-    process.argv[1] = savedArgv1
+    process.argv[1] = savedArgv1 ?? "/usr/bin/node"
   })
 
   const awaitFork = async (): Promise<void> => {

@@ -1,4 +1,4 @@
-import type { BuiltinDisplayDateTimeButtonConfig } from "./schemas"
+import type { ConfigSchema as BuiltinDisplayDateTimeButtonConfig } from "../buttons/custom/config"
 
 interface FormatSegment {
   kind: "markup" | "token"

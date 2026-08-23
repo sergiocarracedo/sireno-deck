@@ -77,6 +77,7 @@ const fakeActiveAppProvider = (
 ): ActiveAppProvider => ({
   getActive: async () => snapshot,
   stop: async () => undefined,
+  subscribe: () => () => undefined,
 })
 
 const setup = (decks: ReadonlyArray<RuntimeDeck>) => {

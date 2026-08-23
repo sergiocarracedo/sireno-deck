@@ -195,7 +195,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     if (action.kind === "key") {
       if (!isValidKey(action.value)) {
         throw new NotImplementedError(
-          `methods.keyMacro: unknown key '${action.value}'. Valid keys: ${knownKeys.join(", ")}`,
+          `methods.keyMacro: unknown key '${action.value}'. Valid keys: ${[...knownKeys].join(", ")}`,
         )
       }
       await keyMacroProvider.sendKey(action.value)

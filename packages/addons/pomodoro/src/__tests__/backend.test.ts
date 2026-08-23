@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+import pomodoroBackend from "../buttons/pomodoro/backend"
+import type { ConfigSchema } from "../buttons/pomodoro/config"
 import { globalService } from "../global/backend"
 import { POMO_CHANNEL } from "../shared/state"
 
@@ -75,9 +77,6 @@ describe("pomodoro globalService", () => {
   })
 })
 
-import pomodoroBackend from "../buttons/pomodoro/backend"
-import type { ConfigSchema } from "../buttons/pomodoro/config"
-
 interface ButtonScopeMock {
   get: ReturnType<typeof vi.fn>
   set: ReturnType<typeof vi.fn>
@@ -102,7 +101,11 @@ const makeButtonCtx = (configDuration: number, persistedState: unknown) => {
     signal: new AbortController().signal,
     store,
   }
-  return { ctx: ctx as never, store, buttonScope }
+  return {
+    ctx: ctx as unknown as Parameters<typeof pomodoroBackend.onMount>[0],
+    store,
+    buttonScope,
+  }
 }
 
 describe("pomodoro button onMount config-change reset", () => {
@@ -117,7 +120,11 @@ describe("pomodoro button onMount config-change reset", () => {
     const startWith = vi.fn()
     const register = vi.fn()
     const start = vi.fn()
-    ctx.methods = {
+    ;(
+      ctx as unknown as {
+        methods: Record<string, (...args: unknown[]) => unknown>
+      }
+    ).methods = {
       "pomodoro:register": register,
       "pomodoro:stop": stop,
       "pomodoro:start": start,
@@ -147,7 +154,11 @@ describe("pomodoro button onMount config-change reset", () => {
     })
     const stop = vi.fn()
     const startWith = vi.fn()
-    ctx.methods = {
+    ;(
+      ctx as unknown as {
+        methods: Record<string, (...args: unknown[]) => unknown>
+      }
+    ).methods = {
       "pomodoro:register": vi.fn(),
       "pomodoro:stop": stop,
       "pomodoro:startWith": startWith,
@@ -197,7 +208,11 @@ describe("pomodoro button onTap dispatch", () => {
     const pause = vi.fn()
     const resume = vi.fn()
     const stop = vi.fn()
-    ctx.methods = {
+    ;(
+      ctx as unknown as {
+        methods: Record<string, (...args: unknown[]) => unknown>
+      }
+    ).methods = {
       "pomodoro:isFinished": vi.fn(() => state.isFinished),
       "pomodoro:isPaused": vi.fn(() => state.isPaused),
       "pomodoro:hasEntry": vi.fn(() => state.hasEntry),

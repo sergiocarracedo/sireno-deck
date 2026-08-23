@@ -73,7 +73,28 @@ export interface MetricConfig {
   label?: string
 }
 
-export const METRICS_CATALOG: Readonly<Record<string, MetricDef>> = {
+export type SystemMetricId =
+  | "battery"
+  | "cpu"
+  | "cpu-boost"
+  | "cpu-voltages"
+  | "disk"
+  | "disk-io"
+  | "fan-rpm"
+  | "frequency"
+  | "gpu-temp"
+  | "gpu-usage"
+  | "load"
+  | "network"
+  | "network-read"
+  | "network-write"
+  | "processes"
+  | "ram"
+  | "swap"
+  | "temperature"
+  | "uptime"
+
+export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   cpu: {
     id: "cpu",
     defaultLabel: "CPU",
@@ -288,10 +309,8 @@ export const METRICS_CATALOG: Readonly<Record<string, MetricDef>> = {
     formatter: "rate-bytes",
     views: ["kpis"],
   },
-} as const
+} as const satisfies Readonly<Record<string, MetricDef>>
 
 export const SYSTEM_METRIC_IDS = Object.keys(
   METRICS_CATALOG,
 ) as SystemMetricId[]
-
-export type SystemMetricId = keyof typeof METRICS_CATALOG

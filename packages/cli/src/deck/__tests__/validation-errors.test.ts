@@ -40,10 +40,10 @@ describe("validateButton issues include deckId/position", () => {
       3,
     )
     expect(result.issues).toHaveLength(1)
-    expect(result.issues[0].deckId).toBe("main")
-    expect(result.issues[0].position).toBe(3)
-    expect(result.issues[0].reason).toBe("unknown-type")
-    expect(result.issues[0].message).toContain("Unknown button type")
+    expect(result.issues[0]!.deckId).toBe("main")
+    expect(result.issues[0]!.position).toBe(3)
+    expect(result.issues[0]!.reason).toBe("unknown-type")
+    expect(result.issues[0]!.message).toContain("Unknown button type")
   })
 
   it("malformed config issues include reason='malformed-config'", () => {
@@ -74,9 +74,9 @@ describe("validateButton issues include deckId/position", () => {
       0,
     )
     expect(result.issues).toHaveLength(1)
-    expect(result.issues[0].reason).toBe("malformed-config")
-    expect(result.issues[0].deckId).toBe("main")
-    expect(result.issues[0].position).toBe(0)
+    expect(result.issues[0]!.reason).toBe("malformed-config")
+    expect(result.issues[0]!.deckId).toBe("main")
+    expect(result.issues[0]!.position).toBe(0)
   })
 
   it("valid button returns no issues", () => {
@@ -132,7 +132,7 @@ describe("error clears on rebuild", () => {
       invalidRegistry,
       silentLogger,
     )
-    expect(patched1[0].buttons[0].type).toBe("core:temporary-error")
+    expect(patched1[0]!.buttons[0]!.type).toBe("core:temporary-error")
 
     const { decks: patched2 } = applyConfigErrorReplacements(
       correctedDecks,
@@ -140,6 +140,6 @@ describe("error clears on rebuild", () => {
       validRegistry,
       silentLogger,
     )
-    expect(patched2[0].buttons[0].type).toBe("valid:button")
+    expect(patched2[0]!.buttons[0]!.type).toBe("valid:button")
   })
 })

@@ -1,17 +1,19 @@
 import { describe, expect, it, vi } from "vitest"
+import type { Logger } from "pino"
 
 import { createLinuxBrightnessProvider } from "../linux"
 
-const silentLogger = () => ({
-  info: () => undefined,
-  warn: () => undefined,
-  error: () => undefined,
-  debug: () => undefined,
-  trace: () => undefined,
-  fatal: () => undefined,
-  child: () => silentLogger(),
-  level: "silent" as const,
-})
+const silentLogger = () =>
+  ({
+    info: () => undefined,
+    warn: () => undefined,
+    error: () => undefined,
+    debug: () => undefined,
+    trace: () => undefined,
+    fatal: () => undefined,
+    child: () => silentLogger(),
+    level: "silent" as const,
+  }) as unknown as Logger
 
 const makeExecutor = (
   responses: Array<{ exitCode: number; stdout: string; stderr: string }>,

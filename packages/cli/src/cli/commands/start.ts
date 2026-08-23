@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { confirm, select } from "@/cli/prompt"
+import { confirm, isCancel, select } from "@/cli/prompt"
 import type pino from "pino"
 
 import {
@@ -373,21 +373,22 @@ const promptConflict = async (pid: number): Promise<"restart" | "cancel"> => {
       `Daemon already running with pid ${pid} (non-interactive: not stopping)`,
     )
   }
-  const answer = await select({
+  const answer = await select<"restart" | "cancel">({
     message: `Daemon already running with pid ${pid}.`,
-    choices: [
+    options: [
       {
-        name: "restart",
-        value: "restart" as const,
-        description: "Stop the existing daemon and start a new one",
+        value: "restart",
+        label: "restart",
+        hint: "Stop the existing daemon and start a new one",
       },
       {
-        name: "cancel",
-        value: "cancel" as const,
-        description: "Exit without changes",
+        value: "cancel",
+        label: "cancel",
+        hint: "Exit without changes",
       },
     ],
   })
+  if (isCancel(answer)) return "cancel"
   return answer
 }
 
@@ -554,14 +555,20 @@ const runInProcessSetup = async (
           allScanned.map((s) => ({
             name: s.name,
             path: s.path ?? join(builtinDir, s.name),
-            internal: s.internal,
+            internal: s.internal === true,
             source: s.source,
             buttonTypes: Object.entries(s.buttonTypes).map(([type, info]) => ({
               type,
               internal: info.internal,
             })),
             defaultButton: null,
-            decks: [...s.decks],
+            decks: s.decks.map((d) => ({
+              id: d.id,
+              isOverlay: false,
+              paginated: d.paginated,
+              buttons: d.buttons,
+              internal: d.internal,
+            })),
           })),
       })
     } catch (err) {
@@ -768,7 +775,7 @@ const runFirstRunCheckIfNeeded = async (
   const shouldRunWizard = await confirm({
     message:
       "It looks like this is your first run (missing config or system capabilities). Run the setup wizard now?",
-    default: true,
+    initialValue: true,
   })
   if (!shouldRunWizard) {
     logger.warn(

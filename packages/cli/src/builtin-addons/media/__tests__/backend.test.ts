@@ -62,6 +62,7 @@ const makeCtx = (): {
         stderr: "",
       })) as unknown as AddonServiceContext["executor"]["run"],
     },
+    notify: async () => undefined,
   }
   return { ctx, publishSpy, pollSpy }
 }

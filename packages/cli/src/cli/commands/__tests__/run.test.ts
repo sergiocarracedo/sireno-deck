@@ -67,6 +67,7 @@ vi.mock("@/render/ws-bridge", () => ({
       broadcast: vi.fn(),
       setAddonInventory: vi.fn(),
       setDeckTree: vi.fn(),
+      registerCacheablePoller: vi.fn(),
       onMessage: () => () => undefined,
       onConnection: () => () => undefined,
       close: async () => undefined,

@@ -1,8 +1,8 @@
 import type {
   WeatherButtonConfig,
   WeatherLocation,
-  WeatherSnapshot,
 } from "../buttons/weather/config"
+import type { WeatherSnapshot } from "../provider/types"
 
 import { describeWeatherCode } from "./codes"
 

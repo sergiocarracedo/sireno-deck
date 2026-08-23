@@ -177,7 +177,7 @@ describe("system-requirements yargs registration", () => {
 })
 
 describe("systemRequirements", () => {
-  let savedExitCode: number | undefined
+  let savedExitCode: string | number | null | undefined
   let savedIsTTY: boolean | undefined
   let savedHome: string | undefined
   let savedXdg: string | undefined

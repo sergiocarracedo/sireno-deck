@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
+import type { Logger } from "pino"
 
 import { AddonRegistry } from "@/addon/registry"
 import type { AddonManifestV1 } from "@/addon/api"
@@ -8,8 +9,8 @@ import { createLogger } from "@/util/logger"
 
 const silentLogger = () => createLogger({ level: "silent" })
 
-const makeFakeAddon = (manifest: Partial<AddonManifestV1>): AddonManifestV1 =>
-  manifest as AddonManifestV1
+const makeFakeAddon = (manifest: object): AddonManifestV1 =>
+  manifest as unknown as AddonManifestV1
 
 const fakeManifestWithDecks = (
   name: string,
@@ -68,8 +69,8 @@ describe("materializeAddonDecks", () => {
     expect(result.length).toBe(2)
     const genDeck = result.find((d) => d.id === "generated-deck-a")
     expect(genDeck?.name).toBe("Gen Deck A")
-    expect(result[0].id).toBe("main")
-    expect(result[1].id).toBe("generated-deck-a")
+    expect(result[0]!.id).toBe("main")
+    expect(result[1]!.id).toBe("generated-deck-a")
   })
 
   it("skips addon decks whose id collides with a user deck", () => {
@@ -83,13 +84,13 @@ describe("materializeAddonDecks", () => {
       { id: "main", name: "User Main", buttons: [] },
     ]
     const warn = vi.fn()
-    const logger = { warn } as ReturnType<typeof silentLogger>
+    const logger = { warn } as unknown as Logger
 
     const result = materializeAddonDecks(reg, userDecks, logger, 15)
 
     expect(result.length).toBe(1)
-    expect(result[0].id).toBe("main")
-    expect(result[0].name).toBe("User Main")
+    expect(result[0]!.id).toBe("main")
+    expect(result[0]!.name).toBe("User Main")
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({ addon: "test-addon", deckId: "main" }),
       expect.stringContaining("collides"),
@@ -402,7 +403,7 @@ describe("materializeAddonDecks", () => {
       },
     ]
     const warn = vi.fn()
-    const logger = { warn } as ReturnType<typeof silentLogger>
+    const logger = { warn } as unknown as Logger
 
     const result = materializeAddonDecks(reg, userDecks, logger, 15)
     const deck = result.find((d) => d.id === "emoji-selector")!
@@ -821,6 +822,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
         {
           addonWideConfig: {},
           perDeck: new Map([["gen-deck", { autoShow: false }]]),
+          defaults: undefined,
         },
       ],
     ])
@@ -849,6 +851,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
         {
           addonWideConfig: {},
           perDeck: new Map([["gen-deck", { autoShow: false }]]),
+          defaults: undefined,
         },
       ],
     ])
@@ -873,7 +876,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
       decks: [
         {
           id: "test-addon:deck-a",
-          createDecks: (ctx) => {
+          createDecks: (ctx: { config: unknown; deck: { id: string } }) => {
             receivedConfig = ctx.config
             return { "gen-deck": { name: "Gen", buttons: [] } }
           },
@@ -887,6 +890,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
         {
           addonWideConfig: { customFlag: true },
           perDeck: new Map(),
+          defaults: undefined,
         },
       ],
     ])
@@ -928,6 +932,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
               },
             ],
           ]),
+          defaults: undefined,
         },
       ],
     ])

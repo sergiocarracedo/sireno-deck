@@ -20,7 +20,7 @@ const makeCtx = (config: {
       executor: { run: vi.fn() } as never,
       signal: new AbortController().signal,
       store: { buttonScope: vi.fn() } as never,
-    },
+    } as never,
     publish,
   }
 }
@@ -59,7 +59,7 @@ describe("core:page-nav backend", () => {
   })
 
   it("onDblTap is not defined (we migrated to onHold)", () => {
-    expect(PageNavBackend.onDblTap).toBeUndefined()
+    expect((PageNavBackend as { onDblTap?: unknown }).onDblTap).toBeUndefined()
   })
 
   it("onHold on first page navigates back to the base deck", async () => {

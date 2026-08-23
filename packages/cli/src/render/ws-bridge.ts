@@ -1,8 +1,10 @@
 import type { Server as HttpServer } from "node:http"
 import { WebSocketServer, type WebSocket } from "ws"
+import type pino from "pino"
 
 import type { DeviceDescriptor } from "@/device/registry"
-import { createLogger, type Logger } from "@/util/logger"
+import { createLogger } from "@/util/logger"
+import type { DeckTreeMessage } from "@/api/protocol-internal"
 import {
   PROTOCOL_VERSION,
   helloAckMessageSchema,
@@ -28,7 +30,7 @@ export interface WsBridgeOptions {
   expectedToken: string
   handshakeTimeoutMs?: number
   activeTheme?: { name: string; version?: number }
-  logger?: Logger
+  logger?: pino.Logger
   // ponytail: when provided, sent as a follow-up to hello-ack so the
   // emulator's Addons tab can render without needing a separate HTTP
   // fetch (which doesn't exist in --emulator mode).
@@ -45,7 +47,7 @@ export interface WsBridge {
   // the new value; already-connected clients aren't resent (would be
   // redundant — the page is mounting fresh anyway).
   setAddonInventory(inventory: AddonsInventoryMessage["addons"]): void
-  setDeckTree(tree: { rootId: string; decks: unknown[] }): void
+  setDeckTree(tree: Omit<DeckTreeMessage, "type">): void
   broadcast(message: WsMessage): void
   registerCacheablePoller(
     channel: string,
@@ -67,7 +69,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
     logger = createLogger({ level: "warn", component: "ws-bridge" }),
   } = options
   let { addonInventory } = options
-  let deckTree: { rootId: string; decks: unknown[] } | undefined
+  let deckTree: Omit<DeckTreeMessage, "type"> | undefined
 
   return new Promise((resolve, reject) => {
     const wss = new WebSocketServer({ port, host })
@@ -93,7 +95,14 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
       const handshakeTimer = setTimeout(() => {
         if (!handshakeDone) {
           logger.warn(
-            { peer: socket.remoteAddress ?? "unknown" },
+            {
+              peer:
+                (
+                  socket as unknown as {
+                    _socket: { remoteAddress?: string }
+                  }
+                )._socket.remoteAddress ?? "unknown",
+            },
             "ws handshake timed out",
           )
           socket.close(4000, "handshake timeout")
