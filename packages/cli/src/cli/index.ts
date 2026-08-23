@@ -44,7 +44,9 @@ interface StartArgs extends GlobalOptions {
   system?: boolean
 }
 
-interface StatusArgs extends GlobalOptions {}
+interface StatusArgs extends GlobalOptions {
+  showToken?: boolean
+}
 interface StopArgs extends GlobalOptions {}
 interface LogsArgs extends GlobalOptions {
   follow?: boolean
@@ -221,9 +223,18 @@ const stopCommand: CommandModule<object, StopArgs> = {
 const statusCommand: CommandModule<object, StatusArgs> = {
   command: "status",
   describe: "Check sireno-deck daemon status",
+  builder: (yargs) =>
+    yargs.option("show-token", {
+      type: "boolean",
+      default: false,
+      description: "Include the auth token in the Frontend URL line",
+    }),
   handler: async (argv) => {
     const logger = buildLogger(argv)
-    const options: StatusOptions = { logger }
+    const options: StatusOptions = {
+      logger,
+      showToken: argv.showToken === true,
+    }
     await status(options)
   },
 }
