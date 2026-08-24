@@ -6,6 +6,7 @@ addons:
       defaults:
         autoShow: false
   - src: ./packages/addons/pomodoro
+  - src: ./packages/addons/coding-agents
 
 logging:
   level: info
@@ -108,3 +109,4 @@ decks:
   demo-value-display: !include demos/demo-value-display.yml
   demo-core: !include demos/demo-core.yml
   demo-pomodoro: !include demos/demo-pomodoro.yml
+  demo-coding-agents: !include packages/addons/coding-agents/demos/demo-coding-agents.yml
