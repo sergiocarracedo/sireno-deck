@@ -1,0 +1,23 @@
+scripts/claim-npm-names.mjs
+  s_6431f34a133923::t_6aa520cda381d4 81
+  s_6431f34a133923::t_dd00f75065f0c2 16
+  s_6431f34a133923::t_e5b790d3baaf19 1-15,17-47,52-80,82-96,100-129,131-139,143-169,173-183
+  s_6431f34a133923::t_a1ab1cf7594d7b 48-51,97-99,140-142,170-172
+  s_6431f34a133923::t_ef2455ebcef97e 130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "dd986a0e0cd2f7ed1b1605cc8ed7a6aaac77f273",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
