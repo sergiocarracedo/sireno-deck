@@ -3,14 +3,14 @@ import { existsSync } from "node:fs"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import type { AddonPoller, AddonPollerChannel } from "@/addon/api"
+import type { AddonPoller, AddonPollerChannel } from "@/addon/api-types"
 
 export interface ScannedDeck {
   readonly id: string
-  readonly isOverlay: boolean
   readonly paginated: boolean
   readonly buttons: number
   readonly internal: boolean
+  readonly hasTrigger: boolean
 }
 
 export interface ScannedAddon {
@@ -181,7 +181,7 @@ const scanAddonJsonManifest = async (
   let hasGlobalService = false
   const decks: Array<{
     id: string
-    isOverlay: boolean
+    hasTrigger: boolean
     paginated: boolean
     buttons: number
     internal: boolean
@@ -236,15 +236,22 @@ const scanAddonJsonManifest = async (
             Record<string, unknown>
           >) {
             if (entry === null || typeof entry !== "object") continue
-            // Static entry: { id: string, buttons?: [], isOverlay?: bool, ... }
+            // Static entry: { id: string, buttons?: [], trigger?: {...}, ... }
             if (
               typeof entry["id"] === "string" &&
               entry["createDeck"] === undefined &&
               entry["createDecks"] === undefined
             ) {
+              const trigger = entry["trigger"] as
+                | Record<string, unknown>
+                | undefined
+              const hasTrigger =
+                trigger !== undefined &&
+                (trigger["process_name"] !== undefined ||
+                  trigger["window_name"] !== undefined)
               decks.push({
                 id: entry["id"] as string,
-                isOverlay: entry["isOverlay"] === true,
+                hasTrigger,
                 paginated: entry["paginated"] === true,
                 buttons: Array.isArray(entry["buttons"])
                   ? (entry["buttons"] as unknown[]).length
@@ -258,9 +265,16 @@ const scanAddonJsonManifest = async (
               typeof entry["createDeck"] === "function" &&
               typeof entry["id"] === "string"
             ) {
+              const trigger = entry["trigger"] as
+                | Record<string, unknown>
+                | undefined
+              const hasTrigger =
+                trigger !== undefined &&
+                (trigger["process_name"] !== undefined ||
+                  trigger["window_name"] !== undefined)
               decks.push({
                 id: entry["id"] as string,
-                isOverlay: entry["isOverlay"] === true,
+                hasTrigger,
                 paginated: entry["paginated"] === true,
                 buttons: 0,
                 internal: entry["internal"] === true,
@@ -276,7 +290,11 @@ const scanAddonJsonManifest = async (
           )) {
             if (deckDef === null || typeof deckDef !== "object") continue
             const d = deckDef as Record<string, unknown>
-            const isOverlay = d["isOverlay"] === true
+            const trigger = d["trigger"] as Record<string, unknown> | undefined
+            const hasTrigger =
+              trigger !== undefined &&
+              (trigger["process_name"] !== undefined ||
+                trigger["window_name"] !== undefined)
             const paginated = d["paginated"] === true
             const buttonCount = Array.isArray(d["buttons"])
               ? d["buttons"].length
@@ -284,7 +302,7 @@ const scanAddonJsonManifest = async (
             const deckInternal = d["internal"] === true
             decks.push({
               id: deckId,
-              isOverlay,
+              hasTrigger,
               paginated,
               buttons: buttonCount,
               internal: deckInternal,

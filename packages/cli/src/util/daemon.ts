@@ -51,6 +51,7 @@ const writeAtomic = (path: string, content: string, mode: number): void => {
 
 export interface RuntimeFlags {
   emulator: boolean
+  remote?: boolean
   deviceModel?: string
   port?: number
   httpPort: number
@@ -68,7 +69,9 @@ const defaultRuntimeDir = (): string => {
     case "win32":
       return join(process.env["LOCALAPPDATA"] ?? tmpdir(), DAEMON_NAME)
     default: {
-      const uid = getuid()
+      // ponytail: getuid is undefined-typed on win32 per @types/node, but this
+      // branch only runs on linux; the runtime check satisfies the type.
+      const uid = typeof getuid === "function" ? getuid() : null
       return uid !== null
         ? join(tmpdir(), `sireno-deck-${uid}`)
         : join(tmpdir(), DAEMON_NAME)
@@ -319,6 +322,7 @@ export const readFlags = (
     return {
       emulator: parsed.emulator,
       httpPort: parsed.httpPort,
+      ...(typeof parsed.remote === "boolean" ? { remote: parsed.remote } : {}),
       ...(typeof parsed.deviceModel === "string"
         ? { deviceModel: parsed.deviceModel }
         : {}),
@@ -338,6 +342,78 @@ export const writeFlags = (
 
 export const removeFlagsFile = (paths = resolveDaemonPaths()): void => {
   if (existsSync(paths.flagsFile)) unlinkSync(paths.flagsFile)
+}
+
+export interface RuntimeState {
+  readonly emulatorUrl: string
+  readonly wsUrl: string
+  readonly frontendUrl: string
+  readonly token: string
+  readonly lanHost: string
+  readonly addresses: ReadonlyArray<string>
+  readonly emulatorMode: boolean
+  readonly remote: boolean
+  readonly startedAt: number
+  readonly theme?: string
+}
+
+export const RUNTIME_STATE_FILE = "runtime-state.json"
+
+export const writeRuntimeState = (
+  state: RuntimeState,
+  paths = resolveDaemonPaths(),
+): void => {
+  writeAtomic(
+    join(paths.runtimeDir, RUNTIME_STATE_FILE),
+    JSON.stringify(state, null, 2),
+    0o600,
+  )
+}
+
+export const readRuntimeState = (
+  paths = resolveDaemonPaths(),
+): RuntimeState | null => {
+  const filePath = join(paths.runtimeDir, RUNTIME_STATE_FILE)
+  if (!existsSync(filePath)) return null
+  try {
+    const raw = readFileSync(filePath, "utf8")
+    const parsed = JSON.parse(raw) as unknown
+    if (
+      parsed !== null &&
+      typeof parsed === "object" &&
+      typeof (parsed as RuntimeState).emulatorUrl === "string" &&
+      typeof (parsed as RuntimeState).wsUrl === "string" &&
+      typeof (parsed as RuntimeState).frontendUrl === "string" &&
+      typeof (parsed as RuntimeState).token === "string" &&
+      typeof (parsed as RuntimeState).lanHost === "string" &&
+      Array.isArray((parsed as RuntimeState).addresses) &&
+      typeof (parsed as RuntimeState).emulatorMode === "boolean" &&
+      typeof (parsed as RuntimeState).remote === "boolean"
+    ) {
+      const p = parsed as RuntimeState
+      return {
+        emulatorUrl: p.emulatorUrl,
+        wsUrl: p.wsUrl,
+        frontendUrl: p.frontendUrl,
+        token: p.token,
+        lanHost: p.lanHost,
+        addresses: p.addresses,
+        emulatorMode: p.emulatorMode,
+        remote: p.remote,
+        startedAt: typeof p.startedAt === "number" ? p.startedAt : Date.now(),
+        theme: typeof p.theme === "string" ? p.theme : "default",
+      }
+    }
+  } catch {
+    return null
+  }
+  return null
+}
+
+export const removeRuntimeStateFile = (paths = resolveDaemonPaths()): void => {
+  if (existsSync(join(paths.runtimeDir, RUNTIME_STATE_FILE))) {
+    unlinkSync(join(paths.runtimeDir, RUNTIME_STATE_FILE))
+  }
 }
 
 // ponytail: child tracking is best-effort — orphans from a hard kill are reaped

@@ -209,7 +209,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
   const addons = options.addons ?? []
   const theme = options.theme
   const themeDir = process.env["SIRENO_THEME_DIR"]
-  const themeCss = readThemeCss(themeDir)
+  let themeCss = readThemeCss(themeDir)
 
   return {
     name: "sireno-deck",
@@ -226,7 +226,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       if (id === ADDONS_RESOLVED_ID) return buildAddonsImports(addons)
       if (id === ADDONS_REGISTRY_RESOLVED_ID)
         return buildAddonsRegistryModule(addons)
-      if (id === THEME_RESOLVED_ID) return themeCss
+      if (id === THEME_RESOLVED_ID) return readThemeCss(themeDir)
       if (id === THEMES_MANIFEST_RESOLVED_ID)
         return buildThemesManifestModule(theme)
       return null
@@ -288,6 +288,55 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         const port = typeof addr === "object" && addr !== null ? addr.port : 0
         process.stdout.write(`READY ${port}\n`)
       }
+
+      // ponytail: --remote gates HTTP access with the daemon's token. The
+      // emulator/frontend vite is bound to 0.0.0.0 so any host on the LAN
+      // can reach it; without this gate, anyone with the URL could load
+      // the bundle and (via the bundle's baked token) replay commands on
+      // the WS bridge. Accept the token via `?token=` query OR a
+      // `sireno-token` cookie (the HTML page parses the URL token and sets
+      // the cookie on first load so subsequent module/HMR requests stay
+      // authenticated). Vite's HMR webSocket is exempt — it's a debug-only
+      // surface and tying it to token would break dev refresh.
+      const requiredToken = process.env["SIRENO_REQUIRE_TOKEN"]
+      if (requiredToken !== undefined && requiredToken.length > 0) {
+        const checkToken = (req: {
+          url?: string
+          headers?: Record<string, string | string[] | undefined>
+        }): boolean => {
+          const url = req.url ?? ""
+          if (url.startsWith("/@vite/") || url.startsWith("/__vite_ping")) {
+            return true
+          }
+          const queryIdx = url.indexOf("?")
+          if (queryIdx !== -1) {
+            const params = new URLSearchParams(url.slice(queryIdx + 1))
+            if (params.get("token") === requiredToken) return true
+          }
+          const cookieHeader = req.headers?.["cookie"]
+          if (typeof cookieHeader === "string") {
+            for (const part of cookieHeader.split(";")) {
+              const [rawName, ...rest] = part.trim().split("=")
+              if (
+                rawName === "sireno-token" &&
+                rest.join("=") === requiredToken
+              ) {
+                return true
+              }
+            }
+          }
+          return false
+        }
+        server.middlewares.use((req, res, next) => {
+          if (checkToken(req)) {
+            next()
+            return
+          }
+          res.statusCode = 403
+          res.end("token required")
+        })
+      }
+
       server.httpServer?.once("listening", () => {
         // Wait for vite's dep optimizer to finish so the first browser
         // request doesn't hit a 504 "Outdated Optimize Dep" while deps
@@ -307,6 +356,41 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         }
         void warmup()
       })
+
+      // Theme.css lives on disk and the daemon re-stages it when the
+      // active theme changes. Watch the staged file and reload the
+      // THEME_VIRTUAL_ID module so the browser gets the new CSS via
+      // vite's HMR without a full reload.
+      if (themeDir) {
+        const stagedCss = join(themeDir, ".sireno-deck", "theme.css")
+        if (existsSync(stagedCss)) {
+          server.watcher.add(stagedCss)
+          server.watcher.on("change", (file) => {
+            if (file !== stagedCss) return
+            themeCss = readThemeCss(themeDir)
+            const mod = server.moduleGraph.getModuleById(THEME_RESOLVED_ID)
+            if (mod) server.reloadModule(mod)
+          })
+        }
+      }
+    },
+    // ponytail: --remote requires a way to authenticate subsequent module
+    // requests after the HTML loads. Inject a small script that parses
+    // `?token=X` from the URL and stores it in `document.cookie` so vite's
+    // middleware accepts the cascade of `/src/...` and asset requests.
+    transformIndexHtml: {
+      order: "pre",
+      handler: (html, ctx) => {
+        if (process.env["SIRENO_REQUIRE_TOKEN"] === undefined) return html
+        const script =
+          `<script>(function(){try{var p=new URLSearchParams(location.search);` +
+          `var t=p.get("token");if(t){document.cookie="sireno-token="+` +
+          `encodeURIComponent(t)+"; path=/; SameSite=Lax";` +
+          `p.delete("token");var q=p.toString();` +
+          `var u=location.pathname+(q?"?"+q:"")+location.hash;` +
+          `history.replaceState(null,"",u);}}catch(e){}})();</script>`
+        return html.replace("<head>", `<head>${script}`)
+      },
     },
     handleHotUpdate: ({ file, server }) => {
       // When an addon frontend file changes, run any registered cleanup

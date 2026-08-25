@@ -3,17 +3,19 @@ import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { select } from "@inquirer/prompts"
+import { confirm, isCancel, select } from "@/cli/prompt"
 import type pino from "pino"
 
 import {
   cmdlineMentionsCliRoot,
   isOrphan,
+  isOurDaemon,
   isOurViteChild,
   readProcCmdline,
 } from "./port-identity"
 
-import { findConfigPath } from "@/config/discovery"
+import { resolveConfigPath as resolveRunConfigPath } from "./pipeline/helpers"
+import type { ResolveConfigPathResult } from "./pipeline/helpers"
 import {
   acquireStartLock,
   generateSentinel,
@@ -26,6 +28,7 @@ import {
   readToken,
   removeChildrenFile,
   removePidFile,
+  removeRuntimeStateFile,
   removeStartLock,
   removeTokenFile,
   resolveDaemonPaths,
@@ -48,17 +51,21 @@ import {
 } from "./addon-registry"
 import { ensureInstalled, invokeManager } from "./service-manager"
 import { isUnderServiceManager, spawnDetached } from "./spawn-daemon"
+import { runPipeline, type RunOptions, type SignalProvider } from "./run"
+import { preflight } from "./pipeline/preflight"
 import {
-  preflight,
-  runPipeline,
-  type RunOptions,
-  type SignalProvider,
-} from "./run"
+  type SystemReport,
+  probeAllCached,
+  summarizeReport,
+} from "@/system/setup-wizard"
+import { systemRequirements } from "./system-requirements"
+import { buildStandardProbeDeps } from "@/cli/probe-deps"
 
 export interface StartOptions {
   readonly config?: string
   readonly port?: number
   readonly emulator?: boolean
+  readonly remote?: boolean
   readonly deviceModel?: string
   readonly frontendUrl?: string
   readonly intervalMs?: number
@@ -80,6 +87,7 @@ const toRunOptions = (
   config: options.config,
   port: options.port,
   emulator: options.emulator,
+  remote: options.remote,
   deviceModel: options.deviceModel,
   frontendUrl: options.frontendUrl,
   intervalMs: options.intervalMs,
@@ -95,10 +103,6 @@ const resolveFrontendDist = (): string => {
   return resolvePath(here, "../../../frontend/dist")
 }
 
-const resolveBinPath = (): string => {
-  return process.argv[1] ?? process.execPath
-}
-
 const isDevInvocation = (): boolean => {
   return (process.argv[1] ?? "").endsWith(".ts")
 }
@@ -107,7 +111,17 @@ const isDevInvocation = (): boolean => {
 // ports — but ONLY if the identity gate (cmdline + orphan check) says it's
 // ours. Otherwise the port collision stays and the new daemon's preflight
 // surfaces a clear EADDRINUSE, which is the correct signal to the user.
-const trySs = (port: number): ReadonlyArray<number> => {
+
+// ponytail: each backend distinguishes "tool ran, found nothing" (the common
+// preflight case when no daemon is up) from "tool unavailable / crashed"
+// (rare — binary missing on PATH, permission denied, etc.). Only the latter
+// surfaces as a WARN; empty results stay silent so a clean `p dev start`
+// doesn't flood with 4 false-positive "all backends failed" lines.
+export type PortScanResult =
+  | { readonly ok: true; readonly pids: ReadonlyArray<number> }
+  | { readonly ok: false; readonly reason: string }
+
+const trySs = (port: number): PortScanResult => {
   const ssLineRegex = (p: number): RegExp =>
     new RegExp(`:${p}\\b[\\s\\S]*?users:\\([^)]*?pid=(\\d+)[,\\)]`)
   try {
@@ -120,29 +134,32 @@ const trySs = (port: number): ReadonlyArray<number> => {
       const m = line.match(ssLineRegex(port))
       if (m && m[1]) pids.push(Number.parseInt(m[1], 10))
     }
-    return pids
-  } catch {
-    return []
+    return { ok: true, pids }
+  } catch (err) {
+    return { ok: false, reason: describeExecFailure(err, "ss") }
   }
 }
 
-const tryLsof = (port: number): ReadonlyArray<number> => {
+const tryLsof = (port: number): PortScanResult => {
   try {
     const out = execFileSync("lsof", [`-iTCP:${port}`, "-sTCP:LISTEN", "-t"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     })
-    return out
+    const pids = out
       .split("\n")
       .map((line) => Number.parseInt(line.trim(), 10))
       .filter((n) => Number.isFinite(n) && n > 0)
-  } catch {
-    return []
+    return { ok: true, pids }
+  } catch (err) {
+    return { ok: false, reason: describeExecFailure(err, "lsof") }
   }
 }
 
-const tryProcNet = (port: number): ReadonlyArray<number> => {
-  if (process.platform !== "linux") return []
+const tryProcNet = (port: number): PortScanResult => {
+  if (process.platform !== "linux") {
+    return { ok: false, reason: "/proc/net/tcp: not on linux" }
+  }
   try {
     const hex = port.toString(16).toUpperCase().padStart(4, "0")
     const out = readFileSync("/proc/net/tcp", "utf8")
@@ -178,10 +195,21 @@ const tryProcNet = (port: number): ReadonlyArray<number> => {
         // ignore
       }
     }
-    return Array.from(pids)
-  } catch {
-    return []
+    return { ok: true, pids: Array.from(pids) }
+  } catch (err) {
+    const e = err as NodeJS.ErrnoException
+    return {
+      ok: false,
+      reason: `/proc/net/tcp: ${e.code ?? e.message}`,
+    }
   }
+}
+
+const describeExecFailure = (err: unknown, tool: string): string => {
+  const e = err as NodeJS.ErrnoException
+  if (e.code === "ENOENT") return `${tool}: binary not found on PATH`
+  if (typeof e.code === "string") return `${tool}: ${e.code}`
+  return `${tool}: ${e.message}`
 }
 
 const readdirSyncSync = (dir: string): string[] => {
@@ -200,27 +228,99 @@ const readlinkSyncFn = (path: string): string | null => {
   }
 }
 
-const detectPortPids = (
+export const detectPortPids = (
   port: number,
   logger: pino.Logger,
 ): ReadonlyArray<number> => {
   const ss = trySs(port)
-  if (ss.length > 0) return ss
+  if (ss.ok && ss.pids.length > 0) return ss.pids
   const lsof = tryLsof(port)
-  if (lsof.length > 0) {
+  if (lsof.ok && lsof.pids.length > 0) {
     logger.debug({ port }, "port detection: ss failed, used lsof")
-    return lsof
+    return lsof.pids
   }
   const procNet = tryProcNet(port)
-  if (procNet.length > 0) {
+  if (procNet.ok && procNet.pids.length > 0) {
     logger.debug({ port }, "port detection: ss/lsof failed, used /proc/net/tcp")
-    return procNet
+    return procNet.pids
   }
+  // ponytail: only WARN when EVERY backend is unavailable. "nothing listening"
+  // (the common preflight case) is a clean empty result, not a failure.
+  // On macOS /proc/net/tcp is absent by design — ss+lsof are still consulted
+  // and a clean empty from both means "no listener", not "backend down".
+  if (ss.ok || lsof.ok || procNet.ok) return []
   logger.warn(
-    { port },
-    "port detection: all backends failed (ss, lsof, /proc/net/tcp) — orphan cleanup may miss stale vites",
+    {
+      port,
+      ss: ss.ok ? undefined : ss.reason,
+      lsof: lsof.ok ? undefined : lsof.reason,
+      procNet: procNet.ok ? undefined : procNet.reason,
+    },
+    "port detection: no port-detection backends available — orphan cleanup may miss stale vites",
   )
   return []
+}
+
+// ponytail: kill a previous-session daemon that's still bound to the WS port
+// (52937). The pid file is the primary source of truth for "is there a
+// daemon running" but it's stale-prone — a SIGKILL'd daemon leaves its
+// pid file behind, while a daemon that crashed during preflight never
+// wrote one. The Linux process title (`/proc/<pid>/comm`) is set by
+// main.ts:23 to `sirenodeck:dm` and survives across pid-file loss. Cross-
+// check the cmdline fingerprint (isOurDaemon) so an unrelated binary
+// named "sirenodeck:dm" by its supervisor doesn't get reaped.
+//
+// We only run this for the WS port — that's the one the new daemon
+// binds FIRST, and the one whose collision most reliably breaks startup.
+// HTTP and frontend ports are bound after; if the daemon reaps itself
+// cleanly the vites go with it (they're parented to the daemon, get
+// reparented to init on exit, and killPortListeners picks them up).
+export const reapStaleDaemon = async (
+  wsPort: number,
+  logger: pino.Logger,
+): Promise<void> => {
+  const pids = detectPortPids(wsPort, logger)
+  const daemonPids = pids.filter(isOurDaemon)
+  if (daemonPids.length === 0) return
+  for (const pid of daemonPids) {
+    try {
+      process.kill(pid, "SIGTERM")
+      logger.warn(
+        { pid, port: wsPort },
+        "start: SIGTERM to stale daemon holding WS port (self-heal)",
+      )
+    } catch (err) {
+      logger.warn(
+        { err, pid },
+        "start: SIGTERM to stale daemon failed (may already be dead)",
+      )
+    }
+  }
+  const deadline = Date.now() + 3_000
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 100))
+    if (detectPortPids(wsPort, logger).length === 0) return
+  }
+  // SIGKILL stragglers (only our own daemons — anything else is left
+  // alone with a warning so the user can intervene manually).
+  for (const pid of detectPortPids(wsPort, logger)) {
+    if (isOurDaemon(pid)) {
+      try {
+        process.kill(pid, "SIGKILL")
+        logger.warn(
+          { pid, port: wsPort },
+          "start: SIGKILL to stale daemon that ignored SIGTERM",
+        )
+      } catch {
+        // already dead
+      }
+    } else {
+      logger.warn(
+        { pid, port: wsPort },
+        "start: WS port held by a non-sireno-deck daemon — leaving it alone",
+      )
+    }
+  }
 }
 
 const killPortListeners = async (
@@ -273,21 +373,22 @@ const promptConflict = async (pid: number): Promise<"restart" | "cancel"> => {
       `Daemon already running with pid ${pid} (non-interactive: not stopping)`,
     )
   }
-  const answer = await select({
+  const answer = await select<"restart" | "cancel">({
     message: `Daemon already running with pid ${pid}.`,
-    choices: [
+    options: [
       {
-        name: "restart",
-        value: "restart" as const,
-        description: "Stop the existing daemon and start a new one",
+        value: "restart",
+        label: "restart",
+        hint: "Stop the existing daemon and start a new one",
       },
       {
-        name: "cancel",
-        value: "cancel" as const,
-        description: "Exit without changes",
+        value: "cancel",
+        label: "cancel",
+        hint: "Exit without changes",
       },
     ],
   })
+  if (isCancel(answer)) return "cancel"
   return answer
 }
 
@@ -324,36 +425,34 @@ const stopExisting = async (
   await terminateChildren({ logger, timeoutMs: 2_000 })
   removePidFile()
   removeTokenFile()
+  removeRuntimeStateFile()
   removeChildrenFile()
   removeStartLock()
 }
 
-const resolveConfigPath = (options: StartOptions): string => {
-  const home = options.homeDir ?? process.env["HOME"] ?? ""
-  const xdgConfigHome =
-    options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
-  // ponytail: when --config isn't passed we fall back to the cached
-  // path (readConfigPath) that the previous daemon session wrote. If
-  // the cached path no longer exists (e.g. worktree removed between
-  // sessions), drop it and re-search the filesystem instead of
-  // failing on a stale pointer.
+const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
+  // ponytail: the daemon honors the cached pointer first so the running
+  // session keeps editing the same config it was launched with. When the
+  // cached path is gone (e.g. worktree removed) we fall through to the
+  // shared precedence: cli arg → XDG → run folder.
   const cached = readConfigPath()
   const cachedUsable = cached !== null && existsSync(cached) ? cached : null
-  return (
-    options.config ??
-    cachedUsable ??
-    findConfigPath({
-      homeDir: home,
-      ...(options.xdgConfigHome !== undefined
-        ? { xdgConfigHome: options.xdgConfigHome }
-        : {}),
-    }) ??
-    join(xdgConfigHome, "sireno-deck", "config.yml")
-  )
+  if (cachedUsable !== null) {
+    return { path: cachedUsable, source: "cli" }
+  }
+  return resolveRunConfigPath({
+    ...(options.config !== undefined ? { config: options.config } : {}),
+    ...(options.xdgConfigHome !== undefined
+      ? { xdgConfigHome: options.xdgConfigHome }
+      : {}),
+    ...(options.homeDir !== undefined ? { homeDir: options.homeDir } : {}),
+    logger: options.logger,
+  })
 }
 
 const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
-  emulator: options.emulator === true,
+  emulator: options.emulator === true || options.remote === true,
+  remote: options.remote,
   httpPort: options.httpPort ?? 3939,
   ...(options.deviceModel !== undefined
     ? { deviceModel: options.deviceModel }
@@ -390,7 +489,12 @@ const runInProcessSetup = async (
   logger: pino.Logger,
   releaseLock: () => void,
 ): Promise<void> => {
-  const configPath = resolveConfigPath(options)
+  const resolved = resolveConfigPath(options)
+  const configPath = resolved.path
+  options.logger.info(
+    { configPath, source: resolved.source },
+    `start: using config ${configPath} (source: ${resolved.source})`,
+  )
   const runtimeFlags = readFlags() ?? buildRuntimeFlags(options)
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
@@ -404,6 +508,7 @@ const runInProcessSetup = async (
       config: configPath,
       port: runtimeFlags.port,
       emulator: runtimeFlags.emulator,
+      remote: runtimeFlags.remote,
       deviceModel: runtimeFlags.deviceModel,
       httpPort: runtimeFlags.httpPort,
     },
@@ -422,8 +527,10 @@ const runInProcessSetup = async (
   writePid(process.pid)
   const token = generateToken()
   writeToken(token)
+  runOptions.token = token
   const sentinel = generateSentinel(process.pid)
   process.env[SENTINEL_ENV_VAR] = sentinel
+  process.env["SIRENO_TOKEN"] = token
   logger.info({ tokenLen: token.length }, "daemon: pid + token written")
 
   let httpServer: RunningHttpServer | null = null
@@ -448,14 +555,20 @@ const runInProcessSetup = async (
           allScanned.map((s) => ({
             name: s.name,
             path: s.path ?? join(builtinDir, s.name),
-            internal: s.internal,
+            internal: s.internal === true,
             source: s.source,
             buttonTypes: Object.entries(s.buttonTypes).map(([type, info]) => ({
               type,
               internal: info.internal,
             })),
             defaultButton: null,
-            decks: [...s.decks],
+            decks: s.decks.map((d) => ({
+              id: d.id,
+              isOverlay: false,
+              paginated: d.paginated,
+              buttons: d.buttons,
+              internal: d.internal,
+            })),
           })),
       })
     } catch (err) {
@@ -496,6 +609,7 @@ const runInProcessSetup = async (
       await terminateChildren({ logger, timeoutMs: 3_000 })
       removePidFile()
       removeTokenFile()
+      removeRuntimeStateFile()
       removeChildrenFile()
       removeStartLock()
       logger.info("daemon: shutdown complete")
@@ -508,51 +622,77 @@ const runInProcessSetup = async (
     })
 }
 
-const forkOffDev = async (options: StartOptions): Promise<void> => {
+// ponytail: dev-mode `start`. Production goes through systemd/launchd — the
+// OS owns the daemon lifecycle and the wrapper exits as soon as `start` forks
+// the service manager. Dev's `pnpm dev start` mirrors that shape: spawn the
+// daemon via `spawnDetached`, write the pid file, return to the cli. The
+// wrapper exits cleanly so `pnpm dev status | stop | restart | reload | logs`
+// from any other shell work against the same pid-file contract production
+// uses. No auto-restart: the daemon stays dead on crash, the operator runs
+// `pnpm dev restart` to recover — same as production (systemd eventually
+// gives up too).
+const resolveCliRoot = (): string => {
+  const here = dirname(fileURLToPath(import.meta.url))
+  return resolvePath(here, "..", "..", "..")
+}
+
+const buildDetachedArgs = (flags: RuntimeFlags): string[] => {
+  const args: string[] = ["start"]
+  if (flags.emulator) args.push("--emulator")
+  if (flags.remote) args.push("--remote")
+  if (flags.port !== undefined) args.push("--port", String(flags.port))
+  if (flags.deviceModel !== undefined) {
+    args.push("--device-model", flags.deviceModel)
+  }
+  if (flags.httpPort !== undefined && flags.httpPort !== 3939) {
+    args.push("--http-port", String(flags.httpPort))
+  }
+  return args
+}
+
+const startInBackground = async (options: StartOptions): Promise<void> => {
   const { logger } = options
-  const configPath = resolveConfigPath(options)
+  const resolved = resolveConfigPath(options)
+  const configPath = resolved.path
+  logger.info(
+    { configPath, source: resolved.source },
+    `start: using config ${configPath} (source: ${resolved.source})`,
+  )
   const runtimeFlags = buildRuntimeFlags(options)
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
   pruneStaleChildren(undefined, logger)
   await terminateChildren({ logger, timeoutMs: 2_000 })
 
-  const binPath = resolveBinPath()
-  const args: string[] = ["start"]
-  // ponytail: devMode true makes spawnDetached pipe stdout/stderr through a
-  // tee — each ndjson line is appended to runtimeDir/service.log AND emitted
-  // formatted to the parent's terminal. Without this, `pnpm dev start
-  // --emulator` shows "daemon spawned" and then goes silent until the
-  // operator kills it.
-  const { pid, child } = spawnDetached({ binPath, args, devMode: true })
-  if (pid <= 0) {
-    throw new Error("start: failed to spawn daemon (no pid returned)")
-  }
-  writePid(pid)
-  logger.info({ childPid: pid, configPath }, "start: daemon spawned (dev)")
-  // ponytail: in dev mode the daemon IS the user's working surface — don't
-  // bail out on the grace window. Keep the parent hooked to the child's
-  // stdio until the child exits naturally (or the user hits Ctrl+C).
-  await new Promise<void>((resolve) => {
-    child.once("exit", () => resolve())
-    process.once("SIGINT", () => {
-      try {
-        process.kill(pid, "SIGTERM")
-      } catch {
-        // already gone
-      }
-      resolve()
-    })
+  const binPath = resolvePath(resolveCliRoot(), "bin", "sirenodeck.js")
+  const args = buildDetachedArgs(runtimeFlags)
+  const { pid } = spawnDetached({
+    binPath,
+    args,
+    remote: options.remote === true,
   })
+  writePid(pid)
+  logger.info(
+    { pid, configPath, args },
+    "start: daemon spawned, returning to cli",
+  )
 }
 
 const startProduction = async (options: StartOptions): Promise<void> => {
   const { logger } = options
-  const configPath = resolveConfigPath(options)
+  const resolved = resolveConfigPath(options)
+  const configPath = resolved.path
+  logger.info(
+    { configPath, source: resolved.source },
+    `start: using config ${configPath} (source: ${resolved.source})`,
+  )
   const runtimeFlags = buildRuntimeFlags(options)
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
 
+  // ponytail: startup banner (printed by the command handler) replaces what
+  // used to be a spinner here. The handler's waitForDaemonReady prints the
+  // outro when the daemon is actually serving.
   await ensureInstalled({
     logger,
     ...(options.system === true ? { system: true } : {}),
@@ -580,13 +720,122 @@ const startProduction = async (options: StartOptions): Promise<void> => {
   }
 }
 
+const probeSystemForFirstRun = async (
+  options: StartOptions,
+): Promise<{
+  report: SystemReport
+  summary: ReturnType<typeof summarizeReport>
+} | null> => {
+  const home = options.homeDir ?? process.env["HOME"] ?? ""
+  const xdgConfigHome =
+    options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
+  const baseDeps = buildStandardProbeDeps()
+  try {
+    const report = await probeAllCached({
+      ...baseDeps,
+      homeDir: home !== "" ? home : baseDeps.homeDir,
+      xdgConfigHome,
+    })
+    return { report, summary: summarizeReport(report) }
+  } catch {
+    return null
+  }
+}
+
+const runFirstRunCheckIfNeeded = async (
+  options: StartOptions,
+  logger: pino.Logger,
+): Promise<void> => {
+  const probed = await probeSystemForFirstRun(options)
+  if (probed === null) return
+  const { summary } = probed
+  const missing =
+    summary.missingCapabilities.length > 0 ||
+    summary.udevMissing ||
+    summary.configMissing
+  if (!missing) return
+
+  if (process.env["SIRENO_SKIP_WIZARD"]) {
+    logger.warn(
+      { lines: summary.lines },
+      "start: some requirements still missing — run `sirenodeck system-requirements` to fix",
+    )
+    return
+  }
+
+  if (!process.stdin.isTTY) {
+    logger.warn(
+      { lines: summary.lines },
+      "start: missing requirements and no TTY — run `sirenodeck system-requirements` interactively to fix",
+    )
+    process.exitCode = 1
+    return
+  }
+
+  const shouldRunWizard = await confirm({
+    message:
+      "It looks like this is your first run (missing config or system capabilities). Run the setup wizard now?",
+    initialValue: true,
+  })
+  if (!shouldRunWizard) {
+    logger.warn(
+      { lines: summary.lines },
+      "start: requirements missing — continuing anyway. Run `sirenodeck system-requirements` later to fix.",
+    )
+    return
+  }
+
+  await systemRequirements({
+    logger,
+    ...(options.homeDir !== undefined ? { homeDir: options.homeDir } : {}),
+    ...(options.xdgConfigHome !== undefined
+      ? { xdgConfigHome: options.xdgConfigHome }
+      : {}),
+  })
+
+  const reprobed = await probeSystemForFirstRun(options)
+  if (reprobed === null) return
+  const stillMissing =
+    reprobed.summary.missingCapabilities.length > 0 ||
+    reprobed.summary.udevMissing ||
+    reprobed.summary.configMissing
+  if (stillMissing) {
+    logger.warn(
+      { lines: reprobed.summary.lines },
+      "start: some requirements still missing — exiting",
+    )
+    process.exitCode = 1
+  }
+}
+
 const start = async (options: StartOptions): Promise<void> => {
   const { logger } = options
 
+  // ponytail: skip the first-run wizard in the daemon child. The forked
+  // daemon has `SIRENO_DAEMON_CHILD=1` and `stdio: ["ignore", "pipe", "pipe"]`
+  // — stdin is closed, so the wizard's `!process.stdin.isTTY` branch fires,
+  // sets `process.exitCode = 1`, and the daemon's `process.exit(exitCode)`
+  // then exits 1. The supervisor reads that as "unexpected exit" and respawns
+  // the child, which re-runs the wizard, exits 1, respawns — visible to the
+  // operator as the CLI restarting in a tight loop. The parent already ran
+  // the wizard before forking, so the child has no business re-running it.
   if (isUnderServiceManager()) {
     await runInProcess(options)
     return
   }
+
+  await runFirstRunCheckIfNeeded(options, logger)
+
+  // ponytail: if a previous-session `sirenodeck:dm` daemon is still bound to
+  // the WS port (52937), reap it before spawning. The pid file is stale-
+  // prone (SIGKILL'd daemons leave it behind; crashed preflight daemons
+  // never wrote one). Identity check uses /proc/<pid>/comm === "sirenodeck:dm"
+  // cross-checked with the sireno-deck cmdline fingerprint, so unrelated
+  // processes holding 52937 (a Discord voice call, an `nc -l`, the user's
+  // own server) get left alone. The WS port is the load-bearing one —
+  // EADDRINUSE there causes the daemon's runPipeline to fail before the
+  // HTTP / frontend ports are even reached.
+  await reapStaleDaemon(options.port ?? 52937, logger)
 
   // ponytail: clear the daemon's expected ports before spawning. This is
   // the load-bearing fix for "the frontend port is in use by children":
@@ -611,6 +860,7 @@ const start = async (options: StartOptions): Promise<void> => {
     await stopExisting(existing, logger)
     removePidFile()
     removeTokenFile()
+    removeRuntimeStateFile()
     removeChildrenFile()
     removeStartLock()
   } else {
@@ -631,13 +881,24 @@ const start = async (options: StartOptions): Promise<void> => {
     if (existing !== null) {
       removePidFile()
       removeTokenFile()
+      removeRuntimeStateFile()
       removeChildrenFile()
       removeStartLock()
     }
   }
 
+  // ponytail: a SIGKILL'd or crashed daemon leaves runtime-state.json behind
+  // (no cleanup ran) — and when there was no pid file at all, the branches
+  // above never removed it. The next start's waitForRuntimeState would read
+  // that stale state (old token, old remote flag, old URLs) before the new
+  // daemon writes its own — surfacing e.g. the LAN/QR banner from a previous
+  // `--remote` session during a plain `--emulator` start. Remove it
+  // unconditionally: the daemon writes a fresh file when its pipeline is
+  // ready, so the CLI only ever sees the state of the daemon it spawned.
+  removeRuntimeStateFile()
+
   if (isDevInvocation()) {
-    await forkOffDev(options)
+    await startInBackground(options)
   } else {
     await startProduction(options)
   }

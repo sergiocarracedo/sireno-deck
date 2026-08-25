@@ -13,8 +13,13 @@ const deck: RuntimeDeck = {
   name: "Main",
   isMain: true,
   buttons: [
-    { id: "2", type: "date-time:time", config: { variant: "big" } },
-    { id: "3", type: "date-time:date" },
+    {
+      id: "2-main-0",
+      type: "date-time:time",
+      config: { variant: "big" },
+      position: 2,
+    },
+    { id: "3-main-0", type: "date-time:date", position: 3 },
     { id: "unknown", type: "custom-addon:custom" },
   ],
 }
@@ -34,13 +39,13 @@ describe("buildDeckConfigMessage", () => {
     const msg = buildDeckConfigMessage(deck, addonByType)
     const buttons = msg.surfaces["main"]!.buttons
     expect(buttons[0]).toMatchObject({
-      id: "2",
+      id: "2-main-0",
       type: "date-time:time",
       addonName: "date-time",
       frontendEntry: "/abs/date-time/frontend",
     })
     expect(buttons[1]).toMatchObject({
-      id: "3",
+      id: "3-main-0",
       type: "date-time:date",
       addonName: "date-time",
       frontendEntry: "/abs/date-time/frontend",
@@ -83,7 +88,9 @@ describe("buildDeckConfigMessage", () => {
       15,
     )
     const buttons = msg.surfaces["main"]!.buttons
-    const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
+    const n1Button = buttons.find(
+      (b) => b.id === "14-main-0" || b.position === 14,
+    )
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:settings-entry")
     expect(msg.hasOverlayDeckAvailable).toBe(false)
@@ -93,7 +100,7 @@ describe("buildDeckConfigMessage", () => {
     const subDeck: RuntimeDeck = {
       id: "media",
       name: "Media",
-      buttons: [{ id: "0", type: "media:player" }],
+      buttons: [{ id: "0-media-0", position: 0, type: "media:player" }],
     }
     const injected = injectSystemButtons([subDeck], 15)[0]!
     const msg = buildDeckConfigMessage(
@@ -104,31 +111,33 @@ describe("buildDeckConfigMessage", () => {
       15,
     )
     const buttons = msg.surfaces["media"]!.buttons
-    const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
+    const n1Button = buttons.find(
+      (b) => b.id === "14-main-0" || b.position === 14,
+    )
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:back")
   })
 
-  it("preserves injected n-1 overlay-toggle button on overlay deck with overlayDeckIcon", () => {
+  it("computes n-1 as overlay-toggle when inOverlayMode=true", () => {
     const overlayDeck: RuntimeDeck = {
       id: "emoji-overlay",
       name: "Emoji",
-      isOverlay: true,
+      processNames: ["emoji"],
       buttons: [],
     }
-    const injected = injectSystemButtons([overlayDeck], 15)[0]!
     const msg = buildDeckConfigMessage(
-      injected,
+      overlayDeck,
       new Map(),
       {},
-      { navStackDepth: 3, hasOverlayDeckAvailable: true },
+      { navStackDepth: 3, hasOverlayDeckAvailable: true, inOverlayMode: true },
       15,
       false,
       () => undefined,
       "icon://emoji",
+      null,
     )
     const buttons = msg.surfaces["emoji-overlay"]!.buttons
-    const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
+    const n1Button = buttons.find((b) => b.position === 14)
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:overlay-toggle")
     expect(msg.hasOverlayDeckAvailable).toBe(true)
@@ -140,7 +149,7 @@ describe("injectSystemButtons", () => {
   it("injects core:settings-entry at n-1 on main deck", () => {
     const result = injectSystemButtons([deck], 15)
     const buttons = result[0]!.buttons
-    const n1 = buttons.find((b) => b.id === "14")
+    const n1 = buttons.find((b) => b.id === "14-main-0")
     expect(n1).toBeDefined()
     expect(n1?.type).toBe("core:settings-entry")
   })
@@ -149,11 +158,11 @@ describe("injectSystemButtons", () => {
     const subDeck: RuntimeDeck = {
       id: "media",
       name: "Media",
-      buttons: [{ id: "0", type: "media:player" }],
+      buttons: [{ id: "0-media-0", type: "media:player", position: 0 }],
     }
     const result = injectSystemButtons([subDeck], 15)
     const buttons = result[0]!.buttons
-    const n1 = buttons.find((b) => b.id === "14")
+    const n1 = buttons.find((b) => b.id === "14-media-0")
     expect(n1).toBeDefined()
     expect(n1?.type).toBe("core:back")
   })
@@ -163,18 +172,18 @@ describe("injectSystemButtons", () => {
       id: "main",
       name: "Main",
       isMain: true,
-      buttons: [{ id: "14", type: "user:custom" }],
+      buttons: [{ id: "14-main-0", position: 14, type: "user:custom" }],
     }
     const result = injectSystemButtons([deckWithN1], 15)
     const buttons = result[0]!.buttons
-    const n1 = buttons.find((b) => b.id === "14")
+    const n1 = buttons.find((b) => b.id === "14-main-0" && b.position === 14)
     expect(n1?.type).toBe("core:settings-entry")
   })
 
   it("uses keyCount to determine n-1 position", () => {
     const result = injectSystemButtons([deck], 6)
     const buttons = result[0]!.buttons
-    const n1 = buttons.find((b) => b.id === "5")
+    const n1 = buttons.find((b) => b.id === "5-main-0")
     expect(n1).toBeDefined()
     expect(n1?.type).toBe("core:settings-entry")
   })
@@ -185,13 +194,13 @@ describe("injectSystemButtons", () => {
       name: "Main",
       isMain: true,
       buttons: [
-        { id: "2", type: "date-time:time" },
-        { id: "14", type: "core:settings-entry" },
+        { id: "2-main-0", type: "date-time:time", position: 2 },
+        { id: "14-main-0", type: "core:settings-entry", position: 14 },
       ],
     }
     const result = injectSystemButtons([alreadyInjected], 15)
     const buttons = result[0]!.buttons
-    const n1Buttons = buttons.filter((b) => b.id === "14")
+    const n1Buttons = buttons.filter((b) => b.position === 14)
     expect(n1Buttons).toHaveLength(1)
   })
 })

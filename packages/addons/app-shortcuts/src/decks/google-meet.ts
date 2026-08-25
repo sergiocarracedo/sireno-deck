@@ -13,7 +13,6 @@ export const googleMeetDeck: AddonDeckEntry = {
   buttonColor: "blue",
   paginated: true,
   autoShow: false,
-  isOverlay: true,
   trigger: {
     process_name: [
       "chromium",
@@ -26,15 +25,13 @@ export const googleMeetDeck: AddonDeckEntry = {
     window_name: ["*Meet*", "*Google Meet*"],
   },
   buttons: [
-    action("mic-off", "Mute", "type://ctrl+d"),
-    action("video", "Camera", "type://ctrl+e"),
-    action("hand", "Raise Hand", "type://ctrl+shift+h"),
-    action("users", "Participants", "type://ctrl+shift+p"),
-    action("caption", "Captions", "type://ctrl+shift+c"),
-    action("monitor", "Present", "type://ctrl+shift+p"),
-    action("message-circle", "Chat", "type://ctrl+shift+i"),
-    action("phone-off", "Leave", "type://ctrl+w"),
-    action("layout", "Tile View", "type://ctrl+shift+e"),
-    action("settings", "Settings", "type://ctrl+shift+s"),
+    action("mic-off", "Mute", "macro://ctrl+d"),
+    action("video", "Camera", "macro://ctrl+e"),
+    action("hand", "Raise Hand", "macro://ctrl+shift+h"),
+    action("users", "Participants", "macro://ctrl+shift+p"),
+    action("caption", "Captions", "macro://ctrl+shift+c"),
+    action("monitor", "Present", "macro://ctrl+shift+E"),
+    action("message-circle", "Chat", "macro://ctrl+shift+i"),
+    action("phone-off", "Leave", "macro://ctrl+w"),
   ],
 }

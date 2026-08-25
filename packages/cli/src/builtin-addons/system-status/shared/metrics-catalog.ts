@@ -10,10 +10,11 @@ export type MetricFormatter =
 // ponytail: formatters emit value-only; the unit lives in `DisplayMetric.unit`
 // so the renderer can style the value and the unit independently (e.g. bigger
 // digits + smaller "%" suffix). When the unit is magnitude-dependent (bytes,
-// rate-bytes) the formatter picks the right scale and returns both halves.
+// rate-bytes, uptime) the formatter picks the right scale and returns both halves.
 export interface FormattedValue {
   value: string
   unit?: string
+  unitLong?: string
 }
 
 export type MetricView = "bars" | "chart" | "kpis"
@@ -33,11 +34,12 @@ export interface DisplayMetric {
   available: boolean
   // ponytail: numeric/digit portion only — units live in `unit` so the
   // renderer can style them independently. Magnitude-dependent formatters
-  // (bytes, rate-bytes) emit a scale-aware unit; static formatters (percent)
-  // emit "%"; magnitude-independent formatters (count, frequency-ghz,
-  // uptime, bool) emit no unit and let the probe/catalog supply it.
+  // (bytes, rate-bytes, uptime) emit a scale-aware unit; static formatters
+  // (percent) emit "%"; magnitude-independent formatters (count,
+  // frequency-ghz, bool) emit no unit and let the probe/catalog supply it.
   formattedValue: string
   unit?: string
+  unitLong?: string
   value?: number
   max?: number
   percentage?: number
@@ -71,7 +73,28 @@ export interface MetricConfig {
   label?: string
 }
 
-export const METRICS_CATALOG: Readonly<Record<string, MetricDef>> = {
+export type SystemMetricId =
+  | "battery"
+  | "cpu"
+  | "cpu-boost"
+  | "cpu-voltages"
+  | "disk"
+  | "disk-io"
+  | "fan-rpm"
+  | "frequency"
+  | "gpu-temp"
+  | "gpu-usage"
+  | "load"
+  | "network"
+  | "network-read"
+  | "network-write"
+  | "processes"
+  | "ram"
+  | "swap"
+  | "temperature"
+  | "uptime"
+
+export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   cpu: {
     id: "cpu",
     defaultLabel: "CPU",
@@ -208,6 +231,7 @@ export const METRICS_CATALOG: Readonly<Record<string, MetricDef>> = {
     defaultLabel: "Uptime",
     icon: "icon://clock",
     formatter: "uptime",
+    unit: "m",
     views: ["kpis"],
   },
   "cpu-boost": {
@@ -285,10 +309,8 @@ export const METRICS_CATALOG: Readonly<Record<string, MetricDef>> = {
     formatter: "rate-bytes",
     views: ["kpis"],
   },
-} as const
+} as const satisfies Readonly<Record<string, MetricDef>>
 
 export const SYSTEM_METRIC_IDS = Object.keys(
   METRICS_CATALOG,
 ) as SystemMetricId[]
-
-export type SystemMetricId = keyof typeof METRICS_CATALOG

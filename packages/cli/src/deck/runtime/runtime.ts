@@ -7,7 +7,7 @@ import type { ActiveAppProvider } from "@/system/providers/active-app"
 import type { SessionProvider, SessionState } from "@/system/providers/session"
 import { getRequiredCapability } from "@/system/requirements"
 import { compileDeckMatcher } from "@/system/glob-match"
-import type { Methods } from "./methods"
+import type { Methods } from "../methods"
 
 type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">
 
@@ -23,6 +23,14 @@ export interface RuntimeButton {
   }
   full?: boolean
   variant?: string
+  buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
 }
 
 export interface RuntimeDeck {
@@ -30,13 +38,27 @@ export interface RuntimeDeck {
   name: string
   buttons: ReadonlyArray<RuntimeButton>
   isMain?: boolean
-  isOverlay?: boolean
   processNames?: ReadonlyArray<string>
   windowNames?: ReadonlyArray<string>
   autoShow?: boolean
   isOverlayDeck?: boolean
   icon?: string
-  buttonColor?: "blue" | "green" | "purple"
+  background?: string
+  paginated?: boolean
+  // ponytail: addon-generated decks inherit the parent's window/process trigger
+  // so the runtime can switch to them automatically when the watched window
+  // comes to the foreground. Preserved through materialization.
+  trigger?: unknown
+  isOverlay?: boolean
+  config?: Record<string, unknown>
+  buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
   /**
    * Variant token name resolved from the active theme. Falls back to
    * "default" when the theme doesn't declare the requested variant.
@@ -61,11 +83,13 @@ export interface ButtonActionContext {
   deckId: string
   config: unknown
   gesture: GestureKind
+  position: number | undefined
 }
 
 export interface GestureEvent {
   readonly gesture: GestureKind
   readonly at: number
+  readonly position: number | undefined
 }
 
 export type GestureListener = (buttonId: string, event: GestureEvent) => void
@@ -120,7 +144,8 @@ export interface Runtime {
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
-  const { pubSub, store, logger, getMethods } = options
+  const { pubSub, store, getMethods } = options
+  const logger = options.logger.child({ component: "runtime" })
   let { decks } = options
   let gestureListener: GestureListener | null = null
   const mainDeck = decks.find((d) => d.isMain) ?? decks[0]
@@ -168,6 +193,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     // first-wins (not last-wins) to preserve the legacy scan behavior.
     buttonIndex.clear()
     for (const deck of decks) {
+      if (!Array.isArray(deck.buttons)) continue
       for (const button of deck.buttons) {
         if (!buttonIndex.has(button.id)) {
           buttonIndex.set(button.id, { deckId: deck.id, button })
@@ -261,7 +287,19 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     navOptions?: { addToHistory?: boolean },
   ): void => {
     if (id === getActiveDeckId()) return
-    const target = deckById(id)
+    let resolvedId = id
+    let target = deckById(id)
+    // ponytail: paginated decks drop the base id (e.g. `demo-media` becomes
+    // `demo-media-p1`/`demo-media-p2`). Fall back to the first paginated page
+    // when the base id no longer exists, so `core:change-deck` targets keep
+    // working without callers knowing about pagination.
+    if (target === undefined) {
+      const firstPage = deckById(`${id}-p1`)
+      if (firstPage !== undefined) {
+        target = firstPage
+        resolvedId = firstPage.id
+      }
+    }
     if (target === undefined) {
       logger.warn({ deckId: id }, "navigateToDeck: deck not found")
       return
@@ -278,26 +316,31 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         overlayNavStacks.set(overlayDeckId, [overlayDeckId])
       }
       const current = overlayNavStacks.get(overlayDeckId)!
-      if (current[current.length - 1] !== id) {
-        current.push(id)
+      if (current[current.length - 1] !== resolvedId) {
+        current.push(resolvedId)
       }
       transientDeckId = null
     } else if (navOptions?.addToHistory === false) {
-      transientDeckId = id
+      transientDeckId = resolvedId
     } else {
-      navStack.push(id)
+      navStack.push(resolvedId)
       transientDeckId = null
     }
     pubSub.publish("runtime:deck-inactive", { deckId: previousActiveId })
-    pubSub.publish("runtime:activeDeck", { deckId: id })
+    pubSub.publish("runtime:activeDeck", { deckId: resolvedId })
   }
 
   const goBack = (): void => {
     if (overlayDeckId !== null) {
-      // ponytail: overlay mode is a routing branch, not a deck stack. Back
-      // dismisses the overlay outright; re-activating later restores the
-      // overlay's root page (overlayNavStacks entry is kept).
-      setOverlay(null)
+      const stack = overlayNavStacks.get(overlayDeckId)
+      if (stack !== undefined && stack.length > 1) {
+        stack.pop()
+        const prev = stack[stack.length - 1]!
+        pubSub.publish("runtime:deck-inactive", { deckId: prev })
+        pubSub.publish("runtime:activeDeck", { deckId: prev })
+      } else {
+        setOverlay(null)
+      }
       return
     }
     if (transientDeckId !== null) {
@@ -460,10 +503,14 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       return false
     }
     if (type === "core:overlay-toggle") {
-      // ponytail: tap and dbl-tap both toggle the overlay. hold is left
-      // unhandled (returns false) so it can fall through if the user
-      // assigns a hold action elsewhere.
-      if (gesture === "tap" || gesture === "dbl-tap") {
+      // ponytail: tap = step back within overlay path; dbl-tap = toggle
+      // overlay on/off; hold is left unhandled so it can fall through if the
+      // user assigns a hold action elsewhere.
+      if (gesture === "tap") {
+        goBack()
+        return true
+      }
+      if (gesture === "dbl-tap") {
         if (overlayDeckId !== null) {
           setOverlay(null)
         } else if (availableOverlayDeckId !== null) {
@@ -480,136 +527,168 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     buttonId: string,
     gesture: GestureKind,
   ): Promise<void> => {
-    const found = findButton(buttonId)
+    let found: { deckId: string; button: RuntimeDeck["buttons"][number] } | null
+    try {
+      found = findButton(buttonId)
+    } catch (err) {
+      // ponytail: findButton indexes into a Map — should never throw, but
+      // a corrupted deck entry would otherwise crash the daemon on every
+      // gesture. Log + bail; let the next gesture try again.
+      logger.error({ err, buttonId }, "runtime: findButton threw")
+      return
+    }
     if (found === null) {
       logger.warn({ buttonId }, "invokeAction: button not found")
       return
     }
 
-    if (handleSystemButton(found.button.type, gesture)) {
-      return
-    }
+    try {
+      if (handleSystemButton(found.button.type, gesture)) {
+        return
+      }
 
-    if (lockActive && found.deckId === "core:lock") {
-      if (LOCK_FOLDER_NAV_TYPES.has(found.button.type)) {
-        lockActive = false
-        preLockActiveDeckId = null
-        preLockOverlayDeckId = null
-        if (overlayDeckId !== null) setOverlay(null)
-        pubSub.publish("runtime:lock-mode", {
-          active: false,
-          reason: "escape",
-        })
-        logger.info(
-          { buttonId, gesture, buttonType: found.button.type },
-          "runtime: lock escaped via folder-nav button",
-        )
-      } else {
+      if (lockActive && found.deckId === "core:lock") {
+        if (LOCK_FOLDER_NAV_TYPES.has(found.button.type)) {
+          lockActive = false
+          preLockActiveDeckId = null
+          preLockOverlayDeckId = null
+          if (overlayDeckId !== null) setOverlay(null)
+          pubSub.publish("runtime:lock-mode", {
+            active: false,
+            reason: "escape",
+          })
+          logger.info(
+            { buttonId, gesture, buttonType: found.button.type },
+            "runtime: lock escaped via folder-nav button",
+          )
+        } else {
+          logger.debug(
+            { buttonId, gesture, buttonType: found.button.type },
+            "runtime: lock-mode gesture suppressed",
+          )
+          return
+        }
+      }
+
+      if (found.deckId !== getActiveDeckId() && found.deckId !== "core:lock") {
         logger.debug(
-          { buttonId, gesture, buttonType: found.button.type },
-          "runtime: lock-mode gesture suppressed",
+          { buttonId, deckId: found.deckId, activeDeckId: getActiveDeckId() },
+          "invokeAction: gesture on inactive deck, dropping",
         )
         return
       }
-    }
 
-    if (found.deckId !== getActiveDeckId() && found.deckId !== "core:lock") {
-      logger.debug(
-        { buttonId, deckId: found.deckId, activeDeckId: getActiveDeckId() },
-        "invokeAction: gesture on inactive deck, dropping",
+      const userAction =
+        gesture === "tap"
+          ? found.button.actions?.tap
+          : gesture === "dbl-tap"
+            ? found.button.actions?.dbltap
+            : found.button.actions?.hold
+
+      const deck = deckById(found.deckId)
+      // ponytail: Array.isArray is tighter than  — rejects
+      // , , and non-array values uniformly. Defends
+      // against any RuntimeDeck that ends up with  missing
+      // (corrupted state, future refactor, runtime injection).
+      const position =
+        found.button.position ??
+        (Array.isArray(deck?.buttons)
+          ? deck.buttons.findIndex((b) => b.id === found.button.id)
+          : -1)
+
+      logger.info(
+        {
+          buttonId,
+          deckId: found.deckId,
+          position,
+          gesture,
+          buttonType: found.button.type,
+          buttonActions: found.button.actions,
+          userAction,
+        },
+        "[runtime] invokeAction resolved",
       )
-      return
-    }
 
-    const userAction =
-      gesture === "tap"
-        ? found.button.actions?.tap
-        : gesture === "dbl-tap"
-          ? found.button.actions?.dbltap
-          : found.button.actions?.hold
+      if (userAction !== undefined) {
+        logger.info(
+          { buttonId, gesture, action: userAction },
+          "[addon:sireno-deck] user action",
+        )
+        const capability = getRequiredCapability(userAction)
+        if (capability !== null && !getMethods().checkRequirement(capability)) {
+          logger.warn(
+            { buttonId, gesture, action: userAction, capability },
+            "[runtime] action skipped: missing system requirement",
+          )
+          if (position >= 0) {
+            getMethods().showTemporaryError(
+              found.deckId,
+              position,
+              undefined,
+              found.button.id,
+              `missing-requirement: ${capability}`,
+            )
+          }
+          return
+        }
+        try {
+          await getMethods().dispatch(userAction)
+        } catch (err) {
+          logger.error(
+            { buttonId, gesture, err },
+            "[addon:sireno-deck] user action failed",
+          )
+          if (position >= 0) {
+            getMethods().showTemporaryError(
+              found.deckId,
+              position,
+              undefined,
+              found.button.id,
+              `action-failed: ${userAction}`,
+            )
+          }
+        }
+        return
+      }
 
-    logger.info(
-      {
+      const handlerKey = `${found.deckId}:${found.button.id}`
+      const handler = handlers.get(handlerKey)
+      if (handler === undefined) {
+        return
+      }
+      const ctx: ButtonActionContext = {
         buttonId,
         deckId: found.deckId,
+        config: found.button.config,
         gesture,
-        buttonType: found.button.type,
-        buttonActions: found.button.actions,
-        userAction,
-      },
-      "[runtime] invokeAction resolved",
-    )
-
-    const deck = deckById(found.deckId)
-    const position =
-      found.button.position ??
-      (deck !== undefined
-        ? deck.buttons.findIndex((b) => b.id === found.button.id)
-        : -1)
-
-    if (userAction !== undefined) {
-      logger.info(
-        { buttonId, gesture, action: userAction },
-        "[addon:sireno-deck] user action",
-      )
-      const capability = getRequiredCapability(userAction)
-      if (capability !== null && !getMethods().checkRequirement(capability)) {
-        logger.warn(
-          { buttonId, gesture, action: userAction, capability },
-          "[runtime] action skipped: missing system requirement",
-        )
-        if (position >= 0) {
-          getMethods().showTemporaryError(
-            found.deckId,
-            position,
-            undefined,
-            found.button.id,
-            `missing-requirement: ${capability}`,
-          )
-        }
+        position: found.button.position,
+      }
+      const fn =
+        gesture === "tap"
+          ? handler.onTap
+          : gesture === "dbl-tap"
+            ? handler.onDblTap
+            : handler.onHold
+      if (fn === undefined) {
         return
       }
-      try {
-        await getMethods().dispatch(userAction)
-      } catch (err) {
-        logger.error(
-          { buttonId, gesture, err },
-          "[addon:sireno-deck] user action failed",
-        )
-        if (position >= 0) {
-          getMethods().showTemporaryError(
-            found.deckId,
-            position,
-            undefined,
-            found.button.id,
-            `action-failed: ${userAction}`,
-          )
-        }
-      }
-      return
+      await fn(ctx)
+    } catch (err) {
+      // ponytail: a single bad button-press must not crash the entire
+      // daemon. Log the failure with full context so operators see it in
+      // service.log and can file a bug — but keep serving subsequent
+      // gestures instead of exiting via killChildrenAndExit.
+      logger.error(
+        {
+          err,
+          buttonId,
+          gesture,
+          deckId: found.deckId,
+          buttonType: found.button.type,
+        },
+        "invokeAction: uncaught error in handler",
+      )
     }
-
-    const handlerKey = `${found.deckId}:${found.button.id}`
-    const handler = handlers.get(handlerKey)
-    if (handler === undefined) {
-      return
-    }
-    const ctx: ButtonActionContext = {
-      buttonId,
-      deckId: found.deckId,
-      config: found.button.config,
-      gesture,
-    }
-    const fn =
-      gesture === "tap"
-        ? handler.onTap
-        : gesture === "dbl-tap"
-          ? handler.onDblTap
-          : handler.onHold
-    if (fn === undefined) {
-      return
-    }
-    await fn(ctx)
   }
 
   const dispatchGesture = async (
@@ -621,7 +700,11 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ buttonId }, "dispatchGesture: button not found")
       return
     }
-    gestureListener?.(found.button.id, { gesture, at: Date.now() })
+    gestureListener?.(found.button.id, {
+      gesture,
+      at: Date.now(),
+      position: found.button.position,
+    })
     await invokeAction(buttonId, gesture)
   }
 
@@ -886,7 +969,8 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const runtime: Runtime = {
     getActiveDeck,
     getActiveDeckId,
-    deckExists: (id: string) => deckById(id) !== undefined,
+    deckExists: (id: string) =>
+      deckById(id) !== undefined || deckById(`${id}-p1`) !== undefined,
     setDecks,
     navigateToDeck,
     goBack,

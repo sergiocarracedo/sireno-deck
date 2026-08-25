@@ -24,8 +24,8 @@ export const MediaSurface = ({
   currentTime,
 }: MediaSurfaceProps): ReactElement => {
   return (
-    <div className="flex h-full w-full flex-col relative gap-1">
-      <div className="flex items-center justify-between gap-2 mb-1">
+    <div className="flex h-full w-full flex-col relative gap-0.5">
+      <div className="flex items-center justify-between gap-2">
         <MediaStatusIcon status={status} />
         <Text
           align="right"

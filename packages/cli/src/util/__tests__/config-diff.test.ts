@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import type { RawConfig } from "../schemas"
+import type { RawConfig } from "@/config/schemas"
 import { onlyDecksChanged } from "../config-diff"
 
 const base = (): RawConfig =>
@@ -13,7 +13,7 @@ const base = (): RawConfig =>
   }) as unknown as RawConfig
 
 const mutateDecks = (cfg: RawConfig): void => {
-  ;(cfg.decks.main.buttons[0] as { config?: unknown }).config = { deck: "y" }
+  ;(cfg.decks.main!.buttons[0] as { config?: unknown }).config = { deck: "y" }
 }
 
 describe("onlyDecksChanged", () => {

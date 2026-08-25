@@ -44,6 +44,7 @@ export interface CreateKeyMacroProviderOptions {
 export const createKeyMacroProvider = async (
   options: CreateKeyMacroProviderOptions,
 ): Promise<KeyMacroProvider> => {
+  const logger = options.logger.child({ component: "key-macro" })
   const platform = options.platform ?? process.platform
   if (platform === "linux") {
     const { createLinuxKeyMacroProvider } = await import("./key-macro/linux")

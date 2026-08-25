@@ -42,7 +42,9 @@ const killChildrenAndExit = (
 ): void => {
   if (processExitInProgress) return
   processExitInProgress = true
-  void terminateChildren({ logger, timeoutMs: 2_000 })
+  // ponytail: 5s grace matches the run-pipeline's pushBlackFrame + drain delay
+  // so the SIGINT handler doesn't cut off the in-flight device clear writes.
+  void terminateChildren({ logger, timeoutMs: 5_000 })
     .catch((err: unknown) => {
       logger.warn({ err }, "main: terminate children failed")
     })
@@ -117,7 +119,13 @@ const main = async (): Promise<void> => {
     .option("log-level", {
       type: "string",
       description:
-        "Override log level (trace, debug, info, warn, error, fatal)",
+        "Override log level (trace, debug, info, warn, error, fatal, silent, none)",
+    })
+    .option("quiet", {
+      alias: "q",
+      type: "boolean",
+      default: false,
+      description: "Suppress all logs and the startup banner (silent level)",
     })
     .demandCommand(1, "Run $0 --help to see available commands.")
     .strict()

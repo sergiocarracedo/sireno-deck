@@ -44,6 +44,10 @@ export const manifest: AddonManifestV1 = {
     },
   },
   globalService,
+  // ponytail: addon-level OS checks (playerctl/wpctl/osascript/powershell)
+  // are built at the Node edge by check-runner, not here. This manifest
+  // is bundled into the frontend vite graph; importing node:child_process
+  // here would externalize it for the browser and break the SPA on load.
 }
 
 export default manifest

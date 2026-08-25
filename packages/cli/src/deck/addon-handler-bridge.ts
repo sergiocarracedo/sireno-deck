@@ -6,6 +6,7 @@ import type {
   AddonServiceMethod,
   AddonButtonService,
   AddonButtonServiceContext,
+  AddonButtonTypeService,
   AddonGlobalService,
   AddonGlobalPoller,
 } from "@/addon/api"
@@ -63,6 +64,7 @@ export const bridgeAddonServices = async (
     bridge,
     methods,
   } = params
+  const logger = params.logger.child({ component: "addon-handler" })
 
   // ponytail: built-in and third-party addons wire through the same loop;
   // built-ins come from the static registry, third-parties from the loader.
@@ -155,6 +157,7 @@ export const bridgeAddonServices = async (
       },
       signal: abortController.signal,
       executor,
+      notify: methods.notify,
     }
 
     if (globalService.pollers !== undefined) {
@@ -206,7 +209,10 @@ export const bridgeAddonServices = async (
           resolvedButtonType = buttonType
           break
         }
-        if (addon.defaultButton !== null && addon.name === buttonType) {
+        if (
+          typeof addon.defaultButton === "string" &&
+          addon.name === buttonType
+        ) {
           addonName = addon.name
           resolvedButtonType = addon.defaultButton
           break
@@ -247,7 +253,9 @@ export const bridgeAddonServices = async (
         readonly name?: string
         readonly buttonTypes?: Record<
           string,
-          { readonly service?: AddonButtonService }
+          {
+            readonly service?: AddonButtonTypeService & AddonButtonService
+          }
         >
       }
 
@@ -258,6 +266,7 @@ export const bridgeAddonServices = async (
       const buttonCtx: AddonButtonServiceContext<unknown> = {
         config: button.config ?? {},
         buttonId: button.id,
+        ...(button.position !== undefined ? { position: button.position } : {}),
         addonName,
         methods: Object.freeze(buttonMethods),
         coreMethods: methods,
@@ -392,6 +401,7 @@ export const bridgeAddonServices = async (
           poll: async () => {},
           signal: abortController.signal,
           executor,
+          notify: methods.notify,
         }
         globalService.onUnload?.(ctx)
       } catch (err) {
@@ -427,6 +437,7 @@ export const bridgeAddonServices = async (
           poll: async () => {},
           signal: abortController.signal,
           executor,
+          notify: methods.notify,
         }
         globalService.onUnload?.(ctx)
       } catch (err) {

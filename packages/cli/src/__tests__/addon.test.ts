@@ -205,11 +205,11 @@ describe("AddonRegistry", () => {
   it("indexes addons, button types, and deck types", () => {
     const registry = new AddonRegistry()
     const frontend = () => null
-    const backend = { configSchema: {} }
+    const service = { configSchema: {} }
     const manifest: AddonManifestV1 = {
       apiVersion: 1,
       name: "test",
-      buttonTypes: { "test:a": { frontend, backend } },
+      buttonTypes: { "test:a": { frontend, service } },
       decks: [{ id: "test:test-deck", name: "Test Deck" }],
     }
     registry.load(manifest)
@@ -236,17 +236,17 @@ describe("AddonRegistry", () => {
   it("allows button types with same suffix from different addons", () => {
     const registry = new AddonRegistry()
     const frontend = () => null
-    const backend = { configSchema: {} }
+    const service = { configSchema: {} }
     registry.load({
       apiVersion: 1,
       name: "first",
-      buttonTypes: { "first:shared": { frontend, backend } },
+      buttonTypes: { "first:shared": { frontend, service } },
     })
     expect(() =>
       registry.load({
         apiVersion: 1,
         name: "second",
-        buttonTypes: { "second:shared": { frontend, backend } },
+        buttonTypes: { "second:shared": { frontend, service } },
       }),
     ).not.toThrow()
   })
@@ -267,13 +267,13 @@ describe("AddonRegistry", () => {
   it("registers a `<addon>:<addon>` button type under the bare addon name", () => {
     const registry = new AddonRegistry()
     const frontend = () => null
-    const backend = { configSchema: {} }
+    const service = { configSchema: {} }
     registry.load({
       apiVersion: 1,
       name: "date-time",
       buttonTypes: {
-        "date-time:date-time": { frontend, backend },
-        "date-time:time": { frontend, backend },
+        "date-time:date-time": { frontend, service },
+        "date-time:time": { frontend, service },
       },
     })
     expect(registry.hasButtonType("date-time:date-time")).toBe(true)

@@ -296,23 +296,23 @@ export const installNpmAddon = async (
   issues: AddonLoadIssue[],
 ): Promise<InstallNpmAddonResult> => {
   try {
-    // ponytail: --save-exact + --no-save together pin the resolved version
-    // into package-lock.json (written under cacheDir). Without --save-exact,
-    // npm rewrites the range on every install and the lockfile drifts. The
-    // second install resolves identically, which is the property we want.
+    const hasLockfile = existsSync(join(cacheDir, "package-lock.json"))
     await execa(
       "npm",
-      [
-        "install",
-        specifier,
-        "--prefix",
-        cacheDir,
-        "--save-exact",
-        "--no-save",
-        "--silent",
-        "--no-audit",
-        "--no-fund",
-      ],
+      hasLockfile
+        ? ["ci", "--prefix", cacheDir, "--silent", "--no-audit", "--no-fund"]
+        : [
+            "install",
+            specifier,
+            "--prefix",
+            cacheDir,
+            "--save-exact",
+            "--no-save",
+            "--silent",
+            "--no-audit",
+            "--no-fund",
+            "--no-package-lock",
+          ],
       { timeout: 60_000 },
     )
     return { ok: true }

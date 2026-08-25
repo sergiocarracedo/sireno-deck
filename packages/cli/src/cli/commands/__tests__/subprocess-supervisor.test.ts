@@ -239,4 +239,147 @@ describe("subprocess supervisor", () => {
     first.emit("exit", null, "SIGKILL")
     await stopPromise
   })
+
+  it("uses delayScheduleMs entries in order, giving up after the schedule is exhausted", async () => {
+    const children = [
+      new FakeChild(),
+      new FakeChild(),
+      new FakeChild(),
+      new FakeChild(),
+    ]
+    const spawn = vi
+      .fn()
+      .mockResolvedValueOnce(children[0])
+      .mockResolvedValueOnce(children[1])
+      .mockResolvedValueOnce(children[2])
+      .mockResolvedValueOnce(children[3])
+    const onGiveUp = vi.fn()
+    const schedule = [1_000, 5_000, 10_000]
+    await supervise({
+      label: "vite",
+      spawn,
+      onGiveUp,
+      isShuttingDown: () => false,
+      logger: silentLogger(),
+      delayScheduleMs: schedule,
+    })
+    // schedule.length = 3 → maxRetries defaults to 3 → 4 spawns total
+    // (initial + 3 respawns) before give-up.
+    // Crash 1 → wait schedule[0] = 1000ms → respawn
+    children[0]!.emit("exit", 1, null)
+    expect(spawn).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(999)
+    expect(spawn).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(spawn).toHaveBeenCalledTimes(2)
+    // Crash 2 → wait schedule[1] = 5000ms → respawn
+    children[1]!.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(4_999)
+    expect(spawn).toHaveBeenCalledTimes(2)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(spawn).toHaveBeenCalledTimes(3)
+    // Crash 3 → wait schedule[2] = 10s → respawn (3rd retry)
+    children[2]!.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(spawn).toHaveBeenCalledTimes(4)
+    // Crash 4 → no respawn (retries exhausted)
+    children[3]!.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(120_000)
+    expect(spawn).toHaveBeenCalledTimes(4)
+    expect(onGiveUp).toHaveBeenCalledTimes(1)
+  })
+
+  it("clamps to the last schedule entry when retries exceed the schedule length", async () => {
+    const children = [
+      new FakeChild(),
+      new FakeChild(),
+      new FakeChild(),
+      new FakeChild(),
+      new FakeChild(),
+    ]
+    const spawn = vi
+      .fn()
+      .mockResolvedValueOnce(children[0])
+      .mockResolvedValueOnce(children[1])
+      .mockResolvedValueOnce(children[2])
+      .mockResolvedValueOnce(children[3])
+      .mockResolvedValueOnce(children[4])
+    const onGiveUp = vi.fn()
+    // schedule = 2 entries, maxRetries = 4 → 3rd and 4th retry should use
+    // schedule[1] = 9_000ms (clamped). 5 spawns total before give-up.
+    await supervise({
+      label: "vite",
+      spawn,
+      onGiveUp,
+      isShuttingDown: () => false,
+      logger: silentLogger(),
+      delayScheduleMs: [3_000, 9_000],
+      maxRetries: 4,
+    })
+    children[0]!.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(3_000)
+    expect(spawn).toHaveBeenCalledTimes(2)
+    children[1]!.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(9_000)
+    expect(spawn).toHaveBeenCalledTimes(3)
+    children[2]!.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(8_999)
+    expect(spawn).toHaveBeenCalledTimes(3)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(spawn).toHaveBeenCalledTimes(4)
+    children[3]!.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(9_000)
+    expect(spawn).toHaveBeenCalledTimes(5)
+    // 5th spawn is the last retry — one more crash gives up
+    children[4]!.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(9_000)
+    expect(spawn).toHaveBeenCalledTimes(5)
+    expect(onGiveUp).toHaveBeenCalledTimes(1)
+  })
+
+  it("calls onChildExit before respawning and awaits the side effect", async () => {
+    const first = new FakeChild()
+    const second = new FakeChild()
+    const spawn = vi
+      .fn()
+      .mockResolvedValueOnce(first)
+      .mockResolvedValueOnce(second)
+    const onChildExit = vi.fn().mockResolvedValue(undefined)
+    await supervise({
+      label: "vite",
+      spawn,
+      onGiveUp: () => undefined,
+      isShuttingDown: () => false,
+      logger: silentLogger(),
+      delayScheduleMs: [500],
+      onChildExit,
+    })
+    first.emit("exit", 1, null)
+    // onChildExit fires synchronously after the exit event
+    expect(onChildExit).toHaveBeenCalledTimes(1)
+    expect(onChildExit).toHaveBeenCalledWith(1, null)
+    // The respawn waits for the delay AFTER any onChildExit work — even
+    // though our side effect is sync, the supervisor awaits it before
+    // scheduling the timer.
+    await vi.advanceTimersByTimeAsync(500)
+    expect(spawn).toHaveBeenCalledTimes(2)
+  })
+
+  it("skips onChildExit when isShuttingDown returns true", async () => {
+    const first = new FakeChild()
+    let shuttingDown = false
+    const onChildExit = vi.fn()
+    await supervise({
+      label: "vite",
+      spawn: vi.fn().mockResolvedValue(first),
+      onGiveUp: () => undefined,
+      isShuttingDown: () => shuttingDown,
+      logger: silentLogger(),
+      onChildExit,
+    })
+    shuttingDown = true
+    first.emit("exit", 1, null)
+    await vi.advanceTimersByTimeAsync(120_000)
+    expect(onChildExit).not.toHaveBeenCalled()
+  })
 })

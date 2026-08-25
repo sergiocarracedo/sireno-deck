@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest"
 
-vi.mock("@inquirer/prompts", () => ({
+vi.mock("@clack/prompts", () => ({
   select: vi.fn(),
 }))
 
-const { select } = await import("@inquirer/prompts")
+const { select } = await import("@clack/prompts")
 const selectMock = select as unknown as ReturnType<typeof vi.fn>
 
 const { selectDevice, NoStreamDeckFoundError } =
@@ -70,24 +70,24 @@ describe("selectDevice", () => {
     expect(result.descriptor.id).toBe("SN2")
     expect(selectMock).toHaveBeenCalled()
     const call = selectMock.mock.calls[0]![0] as {
-      choices: Array<{ name: string; value: string }>
+      options: Array<{ label: string; value: string }>
     }
-    expect(call.choices).toHaveLength(3)
-    expect(call.choices.map((c) => c.value).sort()).toEqual([
+    expect(call.options).toHaveLength(3)
+    expect(call.options.map((c) => c.value).sort()).toEqual([
       "SN0",
       "SN1",
       "SN2",
     ])
   })
 
-  it("prompt choices use descriptor.label", async () => {
+  it("prompt options use descriptor.label", async () => {
     selectMock.mockResolvedValueOnce("SN0")
     await selectDevice({ devices: devices(2), logger: silentLogger() })
     const call = selectMock.mock.calls[0]![0] as {
-      choices: Array<{ name: string; value: string }>
+      options: Array<{ label: string; value: string }>
     }
-    expect(call.choices[0]!.name).toContain("MK.2")
-    expect(call.choices[0]!.name).toContain("SN0")
-    expect(call.choices[0]!.value).toBe("SN0")
+    expect(call.options[0]!.label).toContain("MK.2")
+    expect(call.options[0]!.label).toContain("SN0")
+    expect(call.options[0]!.value).toBe("SN0")
   })
 })

@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { createLogger } from "@/util/logger"
 import { createPubSub } from "@/core/pub-sub"
 import { createStore } from "@/core/store"
-import { createLogger } from "@/util/logger"
 import type {
   ActiveAppProvider,
   ActiveAppSnapshot,
@@ -12,43 +12,15 @@ import { createRuntime, type RuntimeDeck } from "../runtime"
 import { createMethods } from "../methods"
 import { createActionExecutor } from "@/action/executor"
 import { getHostContext } from "../host-context"
-
-const silentLogger = () => createLogger({ level: "silent" })
-
-const makeDeck = (overrides: Partial<RuntimeDeck> = {}): RuntimeDeck => ({
-  id: "d1",
-  name: "Deck 1",
-  buttons: [],
-  ...overrides,
-})
-
-const setup = (decks: ReadonlyArray<RuntimeDeck>) => {
-  const pubSub = createPubSub()
-  const store = createStore()
-  const executor = createActionExecutor({ host: getHostContext() })
-  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } =
-    { current: undefined }
-  const runtime = createRuntime({
-    decks,
-    pubSub,
-    store,
-    logger: silentLogger(),
-    getMethods: () => methodsRef.current!,
-  })
-  const methods = createMethods({
-    runtime,
-    pubSub,
-    store,
-    executor,
-    logger: silentLogger(),
-  })
-  methodsRef.current = methods
-  return { runtime, pubSub, store, methods }
-}
+import {
+  makeDeck,
+  setupRuntimeWithMethods,
+  silentLogger,
+} from "./__fixtures__/runtime-test-helpers"
 
 describe("createRuntime", () => {
   it("initial active deck = main", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true, buttons: [] }),
       makeDeck({ id: "media" }),
     ])
@@ -56,7 +28,7 @@ describe("createRuntime", () => {
   })
 
   it("navigateToDeck pushes to nav stack", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "media" }),
     ])
@@ -66,7 +38,7 @@ describe("createRuntime", () => {
   })
 
   it("goBack pops nav stack", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "media" }),
     ])
@@ -77,15 +49,17 @@ describe("createRuntime", () => {
   })
 
   it("goBack at root is a no-op", () => {
-    const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
     runtime.goBack()
     expect(runtime.getActiveDeckId()).toBe("main")
   })
 
   it("setOverlay + getOverlay roundtrip", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
     ])
     runtime.setOverlay("spotify")
     expect(runtime.getOverlay()?.id).toBe("spotify")
@@ -94,7 +68,7 @@ describe("createRuntime", () => {
   })
 
   it("dispatchGesture tap calls registered onTap", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -114,7 +88,7 @@ describe("createRuntime", () => {
   })
 
   it("dispatchGesture dbl-tap calls onDblTap", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -128,7 +102,7 @@ describe("createRuntime", () => {
   })
 
   it("dispatchGesture hold calls onHold", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -142,7 +116,7 @@ describe("createRuntime", () => {
   })
 
   it("dispatchGesture missing handler is a no-op", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -153,18 +127,20 @@ describe("createRuntime", () => {
   })
 
   it("dispatchGesture missing button is a no-op", async () => {
-    const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
     await expect(
       runtime.dispatchGesture("missing", "tap"),
     ).resolves.toBeUndefined()
   })
 
   it("dispatchGesture fires gestureListener with the short button id and timestamp", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "x" }],
+        buttons: [{ id: "b1", type: "x", position: 7 }],
       }),
     ])
     runtime.registerButtonHandler("main:b1", { onTap: vi.fn() })
@@ -177,20 +153,57 @@ describe("createRuntime", () => {
     const [buttonId, event] = listener.mock.calls[0]!
     expect(buttonId).toBe("b1")
     expect(event.gesture).toBe("tap")
+    expect(event.position).toBe(7)
     expect(event.at).toBeGreaterThanOrEqual(before)
     expect(event.at).toBeLessThanOrEqual(after)
   })
 
   it("dispatchGesture does not fire gestureListener when button is missing", async () => {
-    const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
     const listener = vi.fn()
     runtime.setGestureListener(listener)
     await runtime.dispatchGesture("missing", "tap")
     expect(listener).not.toHaveBeenCalled()
   })
 
+  it("dispatchGesture on [position]-[deck]-0 routes to the matching button, not button 0", async () => {
+    // ponytail: regression for the bug where every tap triggered button 0's
+    // handler. Root cause: runtime buttons were indexed by undefined id, so
+    // `Map.set(undefined, …)` collapsed all buttons onto the same key. Fix:
+    // user-deck buttons now carry `id: ${position}-${deckId}-${page}`.
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [
+          { id: "0-main-0", type: "core:btn0", position: 0 },
+          { id: "1-main-0", type: "core:btn1", position: 1 },
+          { id: "2-main-0", type: "core:btn2", position: 2 },
+        ],
+      }),
+    ])
+    const handler0 = vi.fn()
+    const handler1 = vi.fn()
+    const handler2 = vi.fn()
+    runtime.registerButtonHandler("main:0-main-0", { onTap: handler0 })
+    runtime.registerButtonHandler("main:1-main-0", { onTap: handler1 })
+    runtime.registerButtonHandler("main:2-main-0", { onTap: handler2 })
+
+    await runtime.dispatchGesture("main:1-main-0", "tap")
+    expect(handler1).toHaveBeenCalledOnce()
+    expect(handler0).not.toHaveBeenCalled()
+    expect(handler2).not.toHaveBeenCalled()
+
+    await runtime.dispatchGesture("main:2-main-0", "tap")
+    expect(handler2).toHaveBeenCalledOnce()
+    expect(handler0).not.toHaveBeenCalled()
+    expect(handler1).toHaveBeenCalledOnce()
+  })
+
   it("invokeAction runs the handler but does not fire the gestureListener", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -206,8 +219,32 @@ describe("createRuntime", () => {
     expect(listener).not.toHaveBeenCalled()
   })
 
+  it("invokeAction does not crash when the deck has buttons: undefined", async () => {
+    // ponytail: defensive guard against RuntimeDeck shapes that lack a
+    // buttons array. Position falls back to -1, no findIndex on undefined.
+    const { runtime } = setupRuntimeWithMethods([
+      // Cast through unknown to bypass the buttons-required type — that's
+      // exactly the malformed shape we're defending against.
+      { id: "main", isMain: true, name: "Main", buttons: [] as never } as never,
+    ])
+    // Inject a deck with buttons: undefined directly via setDecks.
+    runtime.setDecks([
+      {
+        id: "main",
+        name: "Main",
+        isMain: true,
+        buttons: undefined as never,
+      },
+    ])
+    // Should not throw — position falls back to -1 and the handler
+    // dispatches normally (or is silently absent).
+    await expect(
+      runtime.invokeAction("main:b0", "tap"),
+    ).resolves.toBeUndefined()
+  })
+
   it("invokeAction dispatches user action when capability is available", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -229,7 +266,7 @@ describe("createRuntime", () => {
         reason: "",
         preferred: "wtype",
       },
-    })
+    } as unknown as Parameters<typeof methods.setRequirements>[0])
     const dispatch = vi.spyOn(methods, "dispatch").mockResolvedValue(undefined)
     const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
     await runtime.invokeAction("main:b0", "tap")
@@ -238,7 +275,7 @@ describe("createRuntime", () => {
   })
 
   it("invokeAction shows button error when capability is missing", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -260,7 +297,7 @@ describe("createRuntime", () => {
         reason: "missing",
         preferred: "wtype",
       },
-    })
+    } as unknown as Parameters<typeof methods.setRequirements>[0])
     const dispatch = vi.spyOn(methods, "dispatch").mockResolvedValue(undefined)
     const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
     await runtime.invokeAction("main:b0", "tap")
@@ -275,7 +312,7 @@ describe("createRuntime", () => {
   })
 
   it("invokeAction shows button error on dispatch failure", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -297,7 +334,7 @@ describe("createRuntime", () => {
         reason: "",
         preferred: "wtype",
       },
-    })
+    } as unknown as Parameters<typeof methods.setRequirements>[0])
     const dispatch = vi
       .spyOn(methods, "dispatch")
       .mockRejectedValue(new Error("boom"))
@@ -313,7 +350,7 @@ describe("createRuntime", () => {
   })
 
   it("setGestureListener(null) detaches the listener", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -329,7 +366,7 @@ describe("createRuntime", () => {
   })
 
   it("navigateToDeck with addToHistory=false doesn't push", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "media" }),
     ])
@@ -341,7 +378,7 @@ describe("createRuntime", () => {
   })
 
   it("goBack from transient -pN skips sibling -p1 and lands on parent", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "parent" }),
       makeDeck({ id: "deck-p1" }),
@@ -358,7 +395,7 @@ describe("createRuntime", () => {
   })
 
   it("goBack from transient non-paginated deck still restores navStack top", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "parent" }),
       makeDeck({ id: "transient" }),
@@ -371,7 +408,9 @@ describe("createRuntime", () => {
 
   describe("setDecks", () => {
     it("replaces the deck set so getActiveDeck reflects new decks", () => {
-      const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
+      const { runtime } = setupRuntimeWithMethods([
+        makeDeck({ id: "main", isMain: true }),
+      ])
       runtime.setDecks([
         makeDeck({
           id: "main",
@@ -424,7 +463,7 @@ describe("createRuntime", () => {
     })
 
     it("falls back to first available deck when active deck is removed", () => {
-      const { runtime } = setup([
+      const { runtime } = setupRuntimeWithMethods([
         makeDeck({ id: "main", isMain: true }),
         makeDeck({ id: "sub" }),
       ])
@@ -473,7 +512,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("setActiveAppProvider starts the poll loop", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "chrome", processNames: ["chrome"] }),
     ])
@@ -489,7 +528,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("overlay switches to deck whose processNames match (autoShow=true)", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -509,7 +548,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("overlay clears when active-app no longer matches (autoShow=true)", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -532,7 +571,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("first matching deck wins when multiple match (autoShow=true)", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "first-match",
@@ -557,7 +596,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("switches overlay to the new matched overlay when both are autoShow (overlay mode follows the match)", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -585,7 +624,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("dismisses current overlay when active-app switches to a non-autoShow overlay match", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -614,7 +653,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("dismisses current overlay when active-app switches to non-matching app", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -643,7 +682,9 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("stopActiveAppPolling stops the provider", async () => {
-    const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
     const provider = makeFakeProvider(null)
     runtime.setActiveAppProvider(provider)
     await flush(100)
@@ -652,7 +693,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("hasOverlayDeckAvailable is false before any active-app match", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "chrome", processNames: ["chrome"] }),
     ])
@@ -660,7 +701,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("hasOverlayDeckAvailable is true after overlay applies via poll", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
     ])
@@ -676,7 +717,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("hasOverlayDeckAvailable transitions back to false when active-app no longer matches", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
     ])
@@ -695,7 +736,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("autoShow=false does not flip the layer but marks the deck available", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -716,7 +757,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("autoShow=false: getActiveDeckId stays on main deck", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -736,7 +777,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("runtime:overlay event includes source=autoShow when autoShow=true flips the layer", async () => {
-    const { runtime, pubSub } = setup([
+    const { runtime, pubSub } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -761,7 +802,7 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("runtime:overlay-available event fires when active-app match changes", async () => {
-    const { runtime, pubSub } = setup([
+    const { runtime, pubSub } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -786,9 +827,9 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("setOverlay (manual) publishes runtime:overlay without source field", () => {
-    const { runtime, pubSub } = setup([
+    const { runtime, pubSub } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
     ])
     const events: unknown[] = []
     pubSub.subscribe("runtime:overlay", (p) => events.push(p))
@@ -799,20 +840,20 @@ describe("createRuntime with active-app provider", () => {
 
 describe("createRuntime — per-overlay-deck nav stack", () => {
   it("overlay is its own active deck on activation", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     expect(runtime.getActiveDeckId()).toBe("spotify")
   })
 
   it("navigating within overlay pushes onto overlay stack", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
@@ -820,12 +861,12 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   })
 
   it("per-overlay isolation: each overlay has its own stack", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
-      makeDeck({ id: "browser", isOverlay: true }),
-      makeDeck({ id: "browser-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
+      makeDeck({ id: "browser" }),
+      makeDeck({ id: "browser-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
@@ -839,10 +880,10 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   })
 
   it("stack persists across dismiss/reactivate", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
@@ -853,9 +894,9 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   })
 
   it("goBack at overlay root dismisses overlay (overlay mode is a routing branch)", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
     ])
     runtime.setOverlay("spotify")
     expect(runtime.getActiveDeckId()).toBe("spotify")
@@ -864,25 +905,25 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
     expect(runtime.getActiveDeckId()).toBe("main")
   })
 
-  it("goBack within overlay dismisses the overlay (overlay mode is a routing branch)", () => {
-    const { runtime } = setup([
+  it("goBack within overlay pops the overlay stack, stays in overlay mode at root", () => {
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
     expect(runtime.getActiveDeckId()).toBe("spotify-page")
     runtime.goBack()
-    expect(runtime.getOverlay()).toBeNull()
-    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.getOverlay()).not.toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("spotify")
   })
 
   it("regular navStack is unaffected by overlay navigation", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "media" }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
     ])
     runtime.navigateToDeck("media")
     expect(runtime.navStackDepth()).toBe(2)
@@ -904,30 +945,28 @@ describe("createRuntime — system-button gestures", () => {
     vi.useRealTimers()
   })
 
-  it("core:back tap on overlay deck dismisses overlay (overlay mode is a routing branch)", async () => {
-    const { runtime } = setup([
+  it("core:back tap on overlay deck pops overlay stack (stays in overlay mode)", async () => {
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
     await runtime.dispatchGesture("14", "tap")
-    expect(runtime.getOverlay()).toBeNull()
-    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.getOverlay()).not.toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("spotify")
   })
 
   it("core:back hold while overlay active jumps to main + dismisses overlay", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "media" }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
     ])
@@ -940,11 +979,10 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("core:back hold while overlay active when already on main is idempotent", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
     ])
@@ -955,7 +993,7 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("core:back hold in regular layer navigates back to main deck", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -969,15 +1007,14 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("setOverlay(null) publishes runtime:activeDeck with the regular layer top, not the overlay top", () => {
-    const { runtime, pubSub } = setup([
+    const { runtime, pubSub } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "media" }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.navigateToDeck("media")
     runtime.setOverlay("spotify")
@@ -995,7 +1032,7 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("core:back dbl-tap with overlay available flips to overlay", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1003,7 +1040,6 @@ describe("createRuntime — system-button gestures", () => {
       }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         processNames: ["spotify"],
       }),
     ])
@@ -1022,11 +1058,10 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("core:back dbl-tap while overlay active dismisses overlay", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
     ])
@@ -1038,7 +1073,7 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("core:back dbl-tap with no overlay available is a no-op", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1052,11 +1087,10 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("core:overlay-toggle dbl-tap flips layer (legacy type path)", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:overlay-toggle" }],
       }),
     ])
@@ -1067,7 +1101,7 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("core:settings-entry tap navigates to the internal-settings regular deck", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1082,7 +1116,7 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("core:back tap from settings returns to main deck", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1100,7 +1134,7 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("dispatchGesture on injected core:settings-entry at n-1 dbl-tap flips to available overlay", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1108,7 +1142,6 @@ describe("createRuntime — system-button gestures", () => {
       }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         processNames: ["spotify"],
       }),
     ])
@@ -1127,7 +1160,7 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("dispatchGesture on injected core:back at n-1 tap does goBack", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1144,7 +1177,7 @@ describe("createRuntime — system-button gestures", () => {
   })
 
   it("dispatchGesture on injected core:back at n-1 hold while overlay active jumps to main", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1153,7 +1186,6 @@ describe("createRuntime — system-button gestures", () => {
       makeDeck({ id: "media" }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
     ])
@@ -1177,7 +1209,7 @@ describe("createRuntime — getAvailableOverlayDeckIcon", () => {
   })
 
   it("returns null before any match", () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome",
@@ -1189,7 +1221,7 @@ describe("createRuntime — getAvailableOverlayDeckIcon", () => {
   })
 
   it("returns matched deck's icon after a match", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
@@ -1212,7 +1244,7 @@ describe("createRuntime — getAvailableOverlayDeckIcon", () => {
   })
 
   it("returns null when matched deck has no icon", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
     ])
@@ -1239,17 +1271,16 @@ describe("createRuntime — overlay smoke (full chain with gestures)", () => {
   })
 
   it("autoShow → navigate sub-deck → dbl-tap dismisses → hold back jumps to main → re-activate restores", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
-        isOverlay: true,
         processNames: ["chrome"],
         autoShow: true,
         icon: "icon://chrome",
         buttons: [{ id: "14", type: "core:back" }],
       }),
-      makeDeck({ id: "chrome-page", isOverlay: true }),
+      makeDeck({ id: "chrome-page" }),
     ])
     const provider = makeFakeProvider({
       name: "Google Chrome",
@@ -1291,15 +1322,14 @@ describe("createRuntime — overlay smoke (full chain)", () => {
   })
 
   it("autoShow flips layer → navigate sub-deck → toggle off → re-activate preserves stack", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-deck",
-        isOverlay: true,
         processNames: ["chrome"],
         autoShow: true,
       }),
-      makeDeck({ id: "chrome-page", isOverlay: true }),
+      makeDeck({ id: "chrome-page" }),
     ])
     const provider = makeFakeProvider({
       name: "Google Chrome",
@@ -1327,14 +1357,13 @@ describe("createRuntime — overlay smoke (full chain)", () => {
   })
 
   it("paginated overlay page (page-nav) is the active deck while overlay is on", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-overlay",
-        isOverlay: true,
         autoShow: true,
       }),
-      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+      makeDeck({ id: "chrome-overlay-p2" }),
     ])
     runtime.setOverlay("chrome-overlay")
     expect(runtime.getActiveDeckId()).toBe("chrome-overlay")
@@ -1348,14 +1377,13 @@ describe("createRuntime — overlay smoke (full chain)", () => {
   })
 
   it("dismissing overlay after a paginated page-nav restores the regular deck", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-overlay",
-        isOverlay: true,
         autoShow: true,
       }),
-      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+      makeDeck({ id: "chrome-overlay-p2" }),
     ])
     runtime.setOverlay("chrome-overlay")
     runtime.navigateToDeck("chrome-overlay-p2", { addToHistory: false })
@@ -1369,14 +1397,13 @@ describe("createRuntime — overlay smoke (full chain)", () => {
   })
 
   it("re-toggling an overlay after a paginated page-nav restores the page (overlay keeps its nav history)", async () => {
-    const { runtime } = setup([
+    const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "chrome-overlay",
-        isOverlay: true,
         autoShow: true,
       }),
-      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+      makeDeck({ id: "chrome-overlay-p2" }),
     ])
     runtime.setOverlay("chrome-overlay")
     runtime.navigateToDeck("chrome-overlay-p2", { addToHistory: false })
@@ -1396,7 +1423,7 @@ describe("createRuntime — overlay smoke (full chain)", () => {
 
 describe("invokeAction — user actions", () => {
   it("user action fires when button has actions.tap and no handler registered", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1414,7 +1441,7 @@ describe("invokeAction — user actions", () => {
   })
 
   it("user action fires with dbltap", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1432,7 +1459,7 @@ describe("invokeAction — user actions", () => {
   })
 
   it("user action fires with hold", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1450,7 +1477,7 @@ describe("invokeAction — user actions", () => {
   })
 
   it("user action wins over addon handler when both exist", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1471,7 +1498,7 @@ describe("invokeAction — user actions", () => {
   })
 
   it("addon handler fires when no user action defined", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1489,12 +1516,12 @@ describe("invokeAction — user actions", () => {
     expect(dispatch).not.toHaveBeenCalled()
   })
 
-  it("dispatch routes type:// to keyMacro", async () => {
-    const { runtime, methods } = setup([
+  it("dispatch routes macro:// to keyMacro", async () => {
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "x", actions: { tap: "type://ctrl+c" } }],
+        buttons: [{ id: "b1", type: "x", actions: { tap: "macro://ctrl+c" } }],
       }),
     ])
     const sendKey = vi.fn().mockResolvedValue(undefined)
@@ -1504,7 +1531,7 @@ describe("invokeAction — user actions", () => {
   })
 
   it("dispatch routes type:// plain text through keyMacro", async () => {
-    const { runtime, methods } = setup([
+    const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
@@ -1519,7 +1546,7 @@ describe("invokeAction — user actions", () => {
 
   describe("invokeAction guard — inactive deck", () => {
     it("drops gesture when button belongs to non-active (main) deck while overlay is active", async () => {
-      const { runtime } = setup([
+      const { runtime } = setupRuntimeWithMethods([
         makeDeck({
           id: "main",
           isMain: true,
@@ -1535,7 +1562,7 @@ describe("invokeAction — user actions", () => {
     })
 
     it("allows gesture when button belongs to active overlay deck", async () => {
-      const { runtime } = setup([
+      const { runtime } = setupRuntimeWithMethods([
         makeDeck({
           id: "main",
           isMain: true,
@@ -1553,7 +1580,7 @@ describe("invokeAction — user actions", () => {
 
   describe("setOverlay — pub/sub", () => {
     it("publishes runtime:deck-inactive for previous deck", () => {
-      const { runtime, pubSub } = setup([
+      const { runtime, pubSub } = setupRuntimeWithMethods([
         makeDeck({ id: "main", isMain: true, buttons: [] }),
         makeDeck({ id: "overlay", buttons: [] }),
       ])
@@ -1564,7 +1591,7 @@ describe("invokeAction — user actions", () => {
     })
 
     it("publishes runtime:activeDeck with overlay deckId", () => {
-      const { runtime, pubSub } = setup([
+      const { runtime, pubSub } = setupRuntimeWithMethods([
         makeDeck({ id: "main", isMain: true, buttons: [] }),
         makeDeck({ id: "overlay", buttons: [] }),
       ])
@@ -1575,7 +1602,7 @@ describe("invokeAction — user actions", () => {
     })
 
     it("setOverlay replaces overlay-a with overlay-b: deck-inactive fires for overlay-a", () => {
-      const { runtime, pubSub } = setup([
+      const { runtime, pubSub } = setupRuntimeWithMethods([
         makeDeck({ id: "main", isMain: true, buttons: [] }),
         makeDeck({ id: "overlay-a", buttons: [] }),
         makeDeck({ id: "overlay-b", buttons: [] }),
@@ -1590,12 +1617,14 @@ describe("invokeAction — user actions", () => {
 
   describe("brightness", () => {
     it("defaults to 50", () => {
-      const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
+      const { runtime } = setupRuntimeWithMethods([
+        makeDeck({ id: "main", isMain: true }),
+      ])
       expect(runtime.getBrightness()).toBe(50)
     })
 
     it("setBrightness publishes sireno:settings:brightness and returns new value", () => {
-      const { runtime, pubSub } = setup([
+      const { runtime, pubSub } = setupRuntimeWithMethods([
         makeDeck({ id: "main", isMain: true }),
       ])
       const events: unknown[] = []
@@ -1606,7 +1635,7 @@ describe("invokeAction — user actions", () => {
     })
 
     it("setBrightness clamps to 10-100 and does not publish on unchanged value", () => {
-      const { runtime, pubSub } = setup([
+      const { runtime, pubSub } = setupRuntimeWithMethods([
         makeDeck({ id: "main", isMain: true }),
       ])
       const events: unknown[] = []

@@ -11,6 +11,7 @@ const cliRoot = resolve(__dirname, "..")
 const cliEntry = resolve(cliRoot, "src/cli/main.ts")
 
 const tsxBin = resolve(cliRoot, "node_modules", ".bin", "tsx")
+const tsconfigPath = resolve(cliRoot, "tsconfig.json")
 
 /**
  * Tell tsx --watch to ignore the frontend workspace and theme assets. Those
@@ -39,31 +40,51 @@ const excludePatterns = [
   "**/vite.config.mts",
 ]
 
-const args = [
-  "watch",
-  ...excludePatterns.flatMap((p) => ["--exclude", p]),
-  cliEntry,
-  ...process.argv.slice(2),
-]
+// ponytail: tsx watch is designed to stay alive across script restarts —
+// wrapping it around a short-lived command (help, stop, status, restart,
+// reload) hangs the wrapper forever waiting for tsx to exit, even though
+// the script exits cleanly. Reserve `tsx watch` for `logs` (foreground
+// tail). Everything else runs under plain `tsx`, which exits with the
+// script.
+//
+// `start` is the load-bearing case: dev mode is detached (see
+// startInBackground in src/cli/commands/start.ts) — the wrapper spawns the
+// daemon via `spawnDetached`, writes the pid file, and exits. Plain tsx
+// gives us that exit; tsx watch would block the terminal forever.
+const LONG_LIVED_COMMANDS = new Set(["logs"])
+const firstArg = process.argv[2]
+const restArgs = process.argv.slice(2)
+
+const spawnTsx = (args, envExtra = {}) =>
+  spawn(tsxBin, args, {
+    stdio: "inherit",
+    cwd: cliRoot,
+    env: {
+      ...process.env,
+      SIRENO_CWD: process.cwd(),
+      TSX_TSCONFIG_PATH: tsconfigPath,
+      ...envExtra,
+    },
+  })
+
+const exitChild = (child) => new Promise((resolve) => child.on("exit", resolve))
 
 setWrapperTitle("sirenodeck:wrp")
 
-const child = spawn(tsxBin, args, {
-  stdio: "inherit",
-  cwd: cliRoot,
-  env: {
-    ...process.env,
-    SIRENO_CWD: process.cwd(),
-    SIRENO_WRAPPER_CHILD: "1",
-    TSX_TSCONFIG_PATH: resolve(cliRoot, "tsconfig.json"),
-  },
-})
+const useWatch = firstArg !== undefined && LONG_LIVED_COMMANDS.has(firstArg)
+
+const args = useWatch
+  ? [
+      "watch",
+      ...excludePatterns.flatMap((p) => ["--exclude", p]),
+      cliEntry,
+      ...restArgs,
+    ]
+  : [cliEntry, ...restArgs]
+
+const child = spawnTsx(args, { SIRENO_WRAPPER_CHILD: "1" })
 
 child.on("exit", (code) => {
-  // Bash `pnpm dev` killing the wrapper (Ctrl+C) leaves the daemon's vite
-  // descendants reparented to init. Try to reap the orphaned process group
-  // before propagating the exit code. The daemon is forked via spawnDetached
-  // (detached: true), so child.pid is the pgid.
   if (child.pid !== undefined) {
     reapOrphanProcessGroup(child.pid)
   }

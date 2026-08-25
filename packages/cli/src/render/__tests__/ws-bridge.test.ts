@@ -37,13 +37,13 @@ const openClient = (port: number, token?: string): Promise<WebSocket> =>
 
 describe("ws bridge", () => {
   it("starts on 127.0.0.1 with random port", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     expect(bridge.port).toBeGreaterThan(0)
     expect(bridge.url).toBe(`ws://127.0.0.1:${bridge.port}`)
   })
 
   it("completes handshake with hello + sends hello-ack with device", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     bridge.setDevice({
       id: "SN1",
       model: "mk2",
@@ -73,7 +73,7 @@ describe("ws bridge", () => {
   })
 
   it("setDevice broadcasts device-info to connected clients", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const socket = await openClient(bridge.port)
     await new Promise((r) => setTimeout(r, 30))
     const received: unknown[] = []
@@ -116,7 +116,7 @@ describe("ws bridge", () => {
   })
 
   it("broadcast sends to all connected clients", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const a = await openClient(bridge.port)
     const b = await openClient(bridge.port)
     const received: unknown[] = []
@@ -139,7 +139,7 @@ describe("ws bridge", () => {
   })
 
   it("onMessage receives button-action after handshake", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const handler = new Promise<unknown>((resolve) => {
       bridge!.onMessage((message) => resolve(message))
       openClient(bridge!.port).then((s) => {
@@ -162,7 +162,7 @@ describe("ws bridge", () => {
   })
 
   it("onConnection fires after hello", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const connPromise = new Promise<boolean>((resolve) => {
       bridge!.onConnection(() => resolve(true))
     })
@@ -175,7 +175,7 @@ describe("ws bridge", () => {
   })
 
   it("rejects invalid json with 4002", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const code = await new Promise<number>((resolve, reject) => {
       const socket = new WebSocket(`ws://127.0.0.1:${bridge!.port}`)
       socket.on("open", () => socket.send("not-json"))
@@ -186,7 +186,7 @@ describe("ws bridge", () => {
   })
 
   it("close stops the server", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const port = bridge.port
     await bridge.close()
     bridge = null
@@ -205,7 +205,7 @@ describe("ws bridge", () => {
 
 describe("ws bridge channel cache", () => {
   it("broadcast of state message caches channels for new clients", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     bridge.broadcast({ type: "state", channels: { cpu: { usage: 0.5 } } })
     const socket = await openClient(bridge.port)
     await new Promise((r) => setTimeout(r, 30))
@@ -224,7 +224,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("consecutive broadcasts merge channels without dropping others", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     bridge.broadcast({ type: "state", channels: { a: 1, b: 2 } })
     bridge.broadcast({ type: "state", channels: { a: 2 } })
     const socket = await openClient(bridge.port)
@@ -244,7 +244,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("non-state broadcasts do not touch channel cache", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     bridge.broadcast({ type: "state", channels: { cpu: 1 } })
     bridge.broadcast({
       type: "deck-config",
@@ -268,7 +268,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("subscribe-channels replies only to the requesting socket", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     bridge.broadcast({ type: "state", channels: { shared: 1 } })
     const a = await openClient(bridge.port)
     const b = await openClient(bridge.port)
@@ -286,7 +286,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("subscribe-channels queues pending until poller registers, then replies", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const socket = await openClient(bridge.port)
     await new Promise((r) => setTimeout(r, 30))
     socket.send(
@@ -316,7 +316,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("subscribe-channels invokes registered pollFn for uncached channels", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const pollFn = vi.fn(() => ({ temp: 22 }))
     bridge.registerCacheablePoller("weather:current", pollFn)
     const socket = await openClient(bridge.port)
@@ -343,7 +343,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("subscribe-channels serves cached values without invoking pollFn", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const pollFn = vi.fn(() => ({ temp: 22 }))
     bridge.registerCacheablePoller("weather:current", pollFn)
     bridge.broadcast({
@@ -374,7 +374,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("pending reply populates lastChannels for a later subscriber", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const pollFn = vi.fn(() => ({ temp: 22 }))
     const socketA = await openClient(bridge.port)
     const socketB = await openClient(bridge.port)
@@ -423,7 +423,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("two sockets waiting for the same channel each get the reply", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const socketA = await openClient(bridge.port)
     const socketB = await openClient(bridge.port)
     await new Promise((r) => setTimeout(r, 30))
@@ -464,7 +464,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("pending reply is targeted, not broadcast", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const socketA = await openClient(bridge.port)
     const socketB = await openClient(bridge.port)
     const socketC = await openClient(bridge.port)
@@ -513,7 +513,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("closing the socket removes it from pending-subs", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const socketA = await openClient(bridge.port)
     const socketB = await openClient(bridge.port)
     await new Promise((r) => setTimeout(r, 30))
@@ -533,7 +533,7 @@ describe("ws bridge channel cache", () => {
   })
 
   it("registerCacheablePoller with no pending subs is a no-op", async () => {
-    bridge = await startWsBridge()
+    bridge = await startWsBridge({ expectedToken: "" })
     const pollFn = vi.fn(() => ({ solo: true }))
     bridge.registerCacheablePoller("solo:chan", pollFn)
     await new Promise((r) => setTimeout(r, 100))

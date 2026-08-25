@@ -22,6 +22,8 @@ import {
 } from "@/deck/system-buttons/registry"
 import {
   ButtonFrame,
+  SPA_DOUBLE_TAP_DELAY_MS,
+  SPA_HOLD_DELAY_MS,
   SplitActionSurface,
   useAddonChannel,
   type AddonGestureEvent,
@@ -59,7 +61,14 @@ export interface Deck {
   id: string
   name: string
   buttons: DeckButton[]
-  buttonColor?: "blue" | "green" | "purple"
+  buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
   variant?: string
   hasOverlayDeckAvailable?: boolean
   overlayDeckIcon?: string | null
@@ -86,8 +95,7 @@ const resolvePosition = (button: DeckButton, fallback: number): number => {
   ) {
     return button.position
   }
-  const parsed = Number.parseInt(button.id, 10)
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback
+  return fallback
 }
 
 interface ButtonSurfaceProps {
@@ -104,7 +112,14 @@ interface DeckButtonCellProps {
   readonly row: number
   readonly splitAction?: boolean
   readonly isError?: boolean
-  readonly buttonColor?: "blue" | "green" | "purple"
+  readonly buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
   readonly variant?: string
   readonly overlayDeckIcon?: string | null
   readonly overlayDeckName?: string | null
@@ -149,7 +164,8 @@ const DeckButtonCell = ({
   // ponytail: per-button variant from user config beats deck-level
   // variant (which beats the legacy `buttonColor` enum). Unknown names
   // fall back to "default" at the ButtonFrame layer.
-  const effectiveVariant = button.variant ?? variant ?? buttonColor ?? "default"
+  const effectiveVariant =
+    button.variant ?? variant ?? button.buttonColor ?? buttonColor ?? "default"
 
   if (isError) {
     return (
@@ -180,7 +196,7 @@ const DeckButtonCell = ({
     const overlayIcon = deckOverlayIcon ?? undefined
     const handleClick = () => {
       const now = Date.now()
-      if (now - lastClickAtRef.current < 300) {
+      if (now - lastClickAtRef.current < SPA_DOUBLE_TAP_DELAY_MS) {
         lastClickAtRef.current = 0
         window.clearTimeout(pendingTapTimerRef.current)
         pendingTapTimerRef.current = null
@@ -192,14 +208,14 @@ const DeckButtonCell = ({
       pendingTapTimerRef.current = window.setTimeout(() => {
         pendingTapTimerRef.current = null
         fire("tap")
-      }, 300)
+      }, SPA_DOUBLE_TAP_DELAY_MS)
     }
     const handlePointerDown = () => {
       clearHoldTimer()
       holdTimerRef.current = window.setTimeout(() => {
         holdTimerRef.current = null
         fire("hold")
-      }, 500)
+      }, SPA_HOLD_DELAY_MS)
     }
     const handlePointerUp = () => clearHoldTimer()
     const handlePointerLeave = () => clearHoldTimer()
@@ -269,7 +285,7 @@ const DeckButtonCell = ({
     >
       <ButtonFrame
         buttonType={button.type}
-        variant={buttonColor}
+        variant={effectiveVariant}
         onClick={() => fire("tap")}
       >
         <ErrorBoundary resetKey={button.id}>

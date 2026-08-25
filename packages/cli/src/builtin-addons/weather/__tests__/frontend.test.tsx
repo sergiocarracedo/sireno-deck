@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { ChannelRegistry } from "@/api/react/registry"
 import WeatherButtonFrontend from "../buttons/weather/frontend"
-import type { WeatherSnapshot } from "../../provider/types"
+import type { WeatherSnapshot } from "../provider/types"
 
 beforeEach(() => ChannelRegistry.resetForTests())
 afterEach(() => ChannelRegistry.resetForTests())
@@ -22,13 +22,12 @@ const renderButton = (
 ) => {
   return render(
     <WeatherButtonFrontend
-      // @ts-expect-error test config is partial
-      config={config}
+      config={config as never}
       state={null}
       addonName="weather"
       buttonType="weather:weather"
       buttonId="0"
-      gesture={gesture}
+      gesture={gesture as never}
     />,
   )
 }

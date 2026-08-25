@@ -23,13 +23,13 @@ const up = (timestamp: number, keyIndex?: number): GestureEvent => ({
 const nullOr = (r: GestureResult | null): GestureResult | null => r
 
 describe("createGestureDetector", () => {
-  let cb: (r: GestureResult) => void
+  let cb: ReturnType<typeof vi.fn<(r: GestureResult) => void>>
   let detector: GestureDetector
   let fakeNow: number
 
   beforeEach(() => {
     vi.useFakeTimers()
-    cb = vi.fn()
+    cb = vi.fn<(r: GestureResult) => void>()
     detector = createGestureDetector({ onGesture: cb })
     fakeNow = 0
     vi.setSystemTime(fakeNow)

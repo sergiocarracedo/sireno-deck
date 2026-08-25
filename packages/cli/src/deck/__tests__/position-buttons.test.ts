@@ -3,6 +3,10 @@ import { describe, expect, it } from "vitest"
 import { positionButtons } from "../position-buttons"
 
 const btn = (position?: number) => ({ position, _tag: `p${position ?? "u"}` })
+const tagged = (label: string, position?: number) => ({
+  position,
+  _tag: `${label}|p${position ?? "u"}`,
+})
 
 describe("positionButtons", () => {
   it("fills gaps sequentially when no positions set", () => {
@@ -11,22 +15,22 @@ describe("positionButtons", () => {
     expect(result.map((b) => b.position)).toEqual([0, 1, 2])
   })
 
-  it("respects explicit positions", () => {
+  it("keeps explicit positions (array order preserved)", () => {
     const input = [btn(5), btn(2), btn(7)]
     const result = positionButtons(input, 10)
     expect(result.map((b) => b.position)).toEqual([5, 2, 7])
   })
 
-  it("bumps duplicate to next gap", () => {
+  it("first duplicate wins, later duplicate reflows into next gap", () => {
     const input = [btn(1), btn(1)]
     const result = positionButtons(input, 5)
     expect(result.map((b) => b.position)).toEqual([1, 0])
   })
 
-  it("drops overflow positions", () => {
+  it("preserves positions ≥ keyCount (pagination handles overflow)", () => {
     const input = [btn(0), btn(99)]
     const result = positionButtons(input, 5)
-    expect(result.map((b) => b.position)).toEqual([0])
+    expect(result.map((b) => b.position)).toEqual([0, 99])
   })
 
   it("fills gaps after fixed positions", () => {
@@ -35,10 +39,11 @@ describe("positionButtons", () => {
     expect(result.map((b) => b.position)).toEqual([2, 0, 1, 3])
   })
 
-  it("drops excess when keyCount exhausted", () => {
+  it("never drops — exceeds keyCount when callers need it", () => {
     const input = [btn(0), btn(1), btn(2), btn(3), btn()]
     const result = positionButtons(input, 4)
-    expect(result).toHaveLength(4)
+    expect(result).toHaveLength(5)
+    expect(result.map((b) => b.position)).toEqual([0, 1, 2, 3, 4])
   })
 
   it("handles empty input", () => {
@@ -54,36 +59,32 @@ describe("positionButtons", () => {
     expect(result[1]?.position).toBe(0)
   })
 
-  it("returns a sparse array (length equals assigned count, not keyCount)", () => {
-    // Three buttons on a keyCount of 5 — output should have exactly 3 entries
-    // even though there are empty slots at positions 3 and 4.
+  it("returns a sparse result of length = input length", () => {
     const result = positionButtons([btn(), btn(), btn()], 5)
     expect(result).toHaveLength(3)
     expect(result.every((b) => typeof b.position === "number")).toBe(true)
   })
 
-  it("drops overflow positions without emitting them", () => {
-    // explicit position 7 is out of range; the sparse result has only 1 button.
-    const result = positionButtons([btn(0), btn(7)], 5)
-    expect(result).toHaveLength(1)
-    expect(result[0]?.position).toBe(0)
-  })
-
-  it("first duplicate wins, later duplicate reflows into next gap", () => {
-    // duplicates of position 0 — first button wins slot 0, second reflows
-    // into slot 1 (next empty), and the trailing unfixed button fills slot 2.
-    const result = positionButtons([btn(0), btn(0), btn()], 3)
+  it("first duplicate wins, later duplicate reflows into next gap (3-button variant)", () => {
+    const result = positionButtons(
+      [tagged("a", 0), tagged("b", 0), tagged("c")],
+      3,
+    )
     expect(result.map((b) => b.position)).toEqual([0, 1, 2])
+    expect(result.map((b) => b._tag)).toEqual(["a|p0", "b|p0", "c|pu"])
   })
 
-  it("same config produces layouts of the right length for any keyCount", () => {
+  it("preserves overflow positions as ordering hints", () => {
+    // explicit 11 keeps its slot-11 semantics; positionButtons no longer
+    // strips positions ≥ keyCount because the internal pipeline assigns
+    // every emitted button a position (the user's stated contract).
+    // Array order is preserved: explicit positions stay, then unfixed
+    // fill the smallest free slots.
     const cfg = [btn(2), btn(), btn(0), btn(), btn(11)]
     const six = positionButtons(cfg, 6)
+    expect(six).toHaveLength(5)
+    expect(six.map((b) => b.position)).toEqual([2, 0, 11, 1, 3])
     const fifteen = positionButtons(cfg, 15)
-    // explicit 11 dropped (overflow on keyCount=6). The other 4 buttons fit.
-    expect(six).toHaveLength(4)
-    expect(six.map((b) => b.position)).toEqual([2, 0, 1, 3])
-    // on keyCount=15, all 5 fit (push order: explicit 2, 0, 11; unfixed fills 1, 3).
     expect(fifteen).toHaveLength(5)
     expect(fifteen.map((b) => b.position)).toEqual([2, 0, 11, 1, 3])
   })

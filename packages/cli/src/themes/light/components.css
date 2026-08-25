@@ -54,29 +54,6 @@
   pointer-events: none;
 }
 
-.sireno-rich-text-break {
-  display: block;
-  height: 0;
-}
-
-.sireno-rich-text-strong {
-  font-weight: 700;
-}
-
-.sireno-rich-text-blink {
-  animation: sireno-blink 1s step-end infinite;
-}
-
-@keyframes sireno-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-
 .sireno-text-fit-shrink {
   display: -webkit-box;
   -webkit-line-clamp: 1;

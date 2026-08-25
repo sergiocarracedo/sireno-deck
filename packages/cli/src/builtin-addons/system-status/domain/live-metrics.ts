@@ -143,9 +143,49 @@ async function probeBattery(): Promise<ProbeResult> {
   }
 }
 
+// ponytail: scan /sys/class/hwmon for CPU-package sensors and read
+// temp1_input. Skip acpitz — the thermal_zone0 fallback below covers it,
+// and acpitz often sorts first (hwmon0), shadowing k10temp/coretemp.
 async function probeTemperature(): Promise<ProbeResult> {
-  // Linux only: /sys/class/thermal/thermal_zone0/temp (millidegrees C)
   if (process.platform !== "linux") return { available: false, unit: "°C" }
+
+  try {
+    if (existsSync("/sys/class/hwmon")) {
+      const entries = await readdir("/sys/class/hwmon")
+      const hwmons: Array<{ dir: string; name: string }> = []
+      for (const e of entries) {
+        const namePath = `/sys/class/hwmon/${e}/name`
+        if (!existsSync(namePath)) continue
+        const name = (await readFile(namePath, "utf8")).trim()
+        hwmons.push({ dir: `/sys/class/hwmon/${e}`, name })
+      }
+      const matched = hwmons
+        .map((h, i) => ({ h, i }))
+        .filter(({ h }) =>
+          CPU_HWMON_NAME_PATTERNS.some((re) => re.test(h.name)),
+        )
+        .filter(({ h }) => !/^acpitz$/i.test(h.name))
+        .sort((a, b) => a.i - b.i)[0]
+      if (matched) {
+        const temp = `${matched.h.dir}/temp1_input`
+        if (existsSync(temp)) {
+          const raw = await readFile(temp, "utf8")
+          const milli = Number.parseInt(raw.trim(), 10)
+          if (Number.isFinite(milli) && milli > 0) {
+            return {
+              available: true,
+              unit: "°C",
+              value: Math.round(milli / 1000),
+            }
+          }
+        }
+      }
+    }
+  } catch {
+    // fall through to thermal_zone0
+  }
+
+  // Fallback: /sys/class/thermal/thermal_zone0/temp (millidegrees C)
   if (!existsSync("/sys/class/thermal/thermal_zone0/temp")) {
     return { available: false, unit: "°C" }
   }
@@ -153,15 +193,13 @@ async function probeTemperature(): Promise<ProbeResult> {
     const raw = await readFile("/sys/class/thermal/thermal_zone0/temp", "utf8")
     const milli = Number.parseInt(raw.trim(), 10)
     if (!Number.isFinite(milli)) return { available: false, unit: "°C" }
-    const celsius = Math.round(milli / 1000)
-    return { available: true, unit: "°C", value: celsius }
+    return { available: true, unit: "°C", value: Math.round(milli / 1000) }
   } catch {
     return { available: false, unit: "°C" }
   }
 }
 
 async function probeUptime(): Promise<ProbeResult> {
-  // ponytail: uptime formats as "2h" — single largest unit.
   const sec = Math.round(osUptime())
   return { available: true, value: sec }
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
+import type { Logger } from "pino"
 
 import { AddonRegistry } from "@/addon/registry"
 import type { AddonManifestV1 } from "@/addon/api"
@@ -8,8 +9,8 @@ import { createLogger } from "@/util/logger"
 
 const silentLogger = () => createLogger({ level: "silent" })
 
-const makeFakeAddon = (manifest: Partial<AddonManifestV1>): AddonManifestV1 =>
-  manifest as AddonManifestV1
+const makeFakeAddon = (manifest: object): AddonManifestV1 =>
+  manifest as unknown as AddonManifestV1
 
 const fakeManifestWithDecks = (
   name: string,
@@ -68,8 +69,8 @@ describe("materializeAddonDecks", () => {
     expect(result.length).toBe(2)
     const genDeck = result.find((d) => d.id === "generated-deck-a")
     expect(genDeck?.name).toBe("Gen Deck A")
-    expect(result[0].id).toBe("main")
-    expect(result[1].id).toBe("generated-deck-a")
+    expect(result[0]!.id).toBe("main")
+    expect(result[1]!.id).toBe("generated-deck-a")
   })
 
   it("skips addon decks whose id collides with a user deck", () => {
@@ -83,13 +84,13 @@ describe("materializeAddonDecks", () => {
       { id: "main", name: "User Main", buttons: [] },
     ]
     const warn = vi.fn()
-    const logger = { warn } as ReturnType<typeof silentLogger>
+    const logger = { warn } as unknown as Logger
 
     const result = materializeAddonDecks(reg, userDecks, logger, 15)
 
     expect(result.length).toBe(1)
-    expect(result[0].id).toBe("main")
-    expect(result[0].name).toBe("User Main")
+    expect(result[0]!.id).toBe("main")
+    expect(result[0]!.name).toBe("User Main")
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({ addon: "test-addon", deckId: "main" }),
       expect.stringContaining("collides"),
@@ -115,8 +116,13 @@ describe("materializeAddonDecks", () => {
     const genDeck = result.find((d) => d.id === "gen-deck")!
 
     expect(genDeck.buttons).toEqual([
-      { id: "3", type: "test-addon:btn", position: 3, config: { label: "hi" } },
-      { id: "0", position: 0, type: "test-addon:btn2" },
+      {
+        id: "3-gen-deck-0",
+        type: "test-addon:btn",
+        position: 3,
+        config: { label: "hi" },
+      },
+      { id: "0-gen-deck-0", type: "test-addon:btn2", position: 0 },
     ])
   })
 
@@ -151,13 +157,13 @@ describe("materializeAddonDecks", () => {
 
     expect(deck.buttons).toEqual([
       {
-        id: "0",
+        id: "0-emoji-selector-0",
         type: "emoji-selector:emoji",
         position: 0,
         config: { emoji: "😀", label: "😀" },
       },
       {
-        id: "1",
+        id: "1-emoji-selector-0",
         type: "emoji-selector:category",
         position: 1,
         config: {
@@ -228,14 +234,14 @@ describe("materializeAddonDecks", () => {
     expect(genDeck.background).toBe("#000")
   })
 
-  it("propagates autoShow and isOverlay when set", () => {
+  it("propagates autoShow and trigger when set", () => {
     const addon = fakeManifestWithDecks("test-addon", {
       "test-addon:deck-a": () => ({
         "gen-deck": {
           name: "Gen",
           buttons: [],
           autoShow: true,
-          isOverlay: true,
+          trigger: { process_name: "chrome" },
         },
       }),
     })
@@ -246,7 +252,7 @@ describe("materializeAddonDecks", () => {
     const genDeck = result.find((d) => d.id === "gen-deck")!
 
     expect(genDeck.autoShow).toBe(true)
-    expect(genDeck.isOverlay).toBe(true)
+    expect(genDeck.processNames).toEqual(["chrome"])
   })
 
   it("propagates overlay button color to every paginated page", () => {
@@ -397,7 +403,7 @@ describe("materializeAddonDecks", () => {
       },
     ]
     const warn = vi.fn()
-    const logger = { warn } as ReturnType<typeof silentLogger>
+    const logger = { warn } as unknown as Logger
 
     const result = materializeAddonDecks(reg, userDecks, logger, 15)
     const deck = result.find((d) => d.id === "emoji-selector")!
@@ -465,7 +471,7 @@ describe("materializeAddonDecks", () => {
     const userDecks: RuntimeDeck[] = []
 
     const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
-    expect(result.length).toBe(2)
+    expect(result.length).toBe(1)
   })
 
   it("paginated:true with <= 13 items returns 1 deck, no page-nav", () => {
@@ -816,6 +822,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
         {
           addonWideConfig: {},
           perDeck: new Map([["gen-deck", { autoShow: false }]]),
+          defaults: undefined,
         },
       ],
     ])
@@ -844,6 +851,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
         {
           addonWideConfig: {},
           perDeck: new Map([["gen-deck", { autoShow: false }]]),
+          defaults: undefined,
         },
       ],
     ])
@@ -868,7 +876,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
       decks: [
         {
           id: "test-addon:deck-a",
-          createDecks: (ctx) => {
+          createDecks: (ctx: { config: unknown; deck: { id: string } }) => {
             receivedConfig = ctx.config
             return { "gen-deck": { name: "Gen", buttons: [] } }
           },
@@ -882,6 +890,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
         {
           addonWideConfig: { customFlag: true },
           perDeck: new Map(),
+          defaults: undefined,
         },
       ],
     ])
@@ -923,6 +932,7 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
               },
             ],
           ]),
+          defaults: undefined,
         },
       ],
     ])
@@ -935,7 +945,56 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
       overrides,
     )
     const gen = result.find((d) => d.id === "gen-deck")!
-    expect(gen.isOverlay).toBe(true)
     expect(gen.processNames).toEqual(["chrome"])
+  })
+
+  it.each([
+    "blue",
+    "green",
+    "purple",
+    "cyan",
+    "magenta",
+    "amber",
+    "lime",
+  ] as const)(
+    "passes buttonColor %s through unchanged (no variant coercion)",
+    (color) => {
+      const addon = fakeManifestWithDecks("test-addon", {
+        "test-addon:deck-a": () => ({
+          "gen-deck": {
+            name: "Gen",
+            buttons: [],
+            buttonColor: color,
+          },
+        }),
+      })
+      const reg = mockRegistry([addon])
+      const userDecks: RuntimeDeck[] = [
+        { id: "main", name: "Main", buttons: [] },
+      ]
+      const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+      const genDeck = result.find((d) => d.id === "gen-deck")!
+      expect(genDeck.buttonColor).toBe(color)
+      expect(genDeck.variant).toBeUndefined()
+    },
+  )
+
+  it("does not coerce variant when buttonColor is set (orthogonal axes)", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          buttons: [],
+          buttonColor: "cyan",
+          variant: "highlighted",
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    const genDeck = result.find((d) => d.id === "gen-deck")!
+    expect(genDeck.buttonColor).toBe("cyan")
+    expect(genDeck.variant).toBe("highlighted")
   })
 })

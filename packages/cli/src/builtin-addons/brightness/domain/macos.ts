@@ -1,4 +1,4 @@
-import type { BrightnessButtonConfig } from "../schemas"
+import type { ConfigSchema as BrightnessButtonConfig } from "../buttons/brightness/config"
 
 const escape = (s: string): string => `'${s.replaceAll("'", "'\\''")}'`
 

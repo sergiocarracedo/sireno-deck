@@ -1,8 +1,10 @@
 import type { Server as HttpServer } from "node:http"
 import { WebSocketServer, type WebSocket } from "ws"
+import type pino from "pino"
 
 import type { DeviceDescriptor } from "@/device/registry"
-import { createLogger, type Logger } from "@/util/logger"
+import { createLogger } from "@/util/logger"
+import type { DeckTreeMessage } from "@/api/protocol-internal"
 import {
   PROTOCOL_VERSION,
   helloAckMessageSchema,
@@ -18,11 +20,17 @@ const TOKEN_MISMATCH_CLOSE_CODE = 4001
 
 export interface WsBridgeOptions {
   port?: number
+  /** Bind address for the WebSocket server. Defaults to "127.0.0.1". */
   host?: string
-  expectedToken?: string
+  /**
+   * Advertised host for the URL returned by the bridge. Use when the server
+   * binds to 0.0.0.0 but clients must connect via a specific LAN/VPN IP.
+   */
+  lanHost?: string
+  expectedToken: string
   handshakeTimeoutMs?: number
   activeTheme?: { name: string; version?: number }
-  logger?: Logger
+  logger?: pino.Logger
   // ponytail: when provided, sent as a follow-up to hello-ack so the
   // emulator's Addons tab can render without needing a separate HTTP
   // fetch (which doesn't exist in --emulator mode).
@@ -39,8 +47,8 @@ export interface WsBridge {
   // the new value; already-connected clients aren't resent (would be
   // redundant — the page is mounting fresh anyway).
   setAddonInventory(inventory: AddonsInventoryMessage["addons"]): void
+  setDeckTree(tree: Omit<DeckTreeMessage, "type">): void
   broadcast(message: WsMessage): void
-  sendToCaller(message: WsMessage): void
   registerCacheablePoller(
     channel: string,
     pollFn: () => unknown | Promise<unknown>,
@@ -50,18 +58,18 @@ export interface WsBridge {
   close(): Promise<void>
 }
 
-export const startWsBridge = (
-  options: WsBridgeOptions = {},
-): Promise<WsBridge> => {
+export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
   const {
     port = 0,
     host = "127.0.0.1",
+    lanHost,
     expectedToken,
     handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS,
     activeTheme,
-    logger = createLogger({ level: "warn", name: "ws-bridge" }),
+    logger = createLogger({ level: "warn", component: "ws-bridge" }),
   } = options
   let { addonInventory } = options
+  let deckTree: Omit<DeckTreeMessage, "type"> | undefined
 
   return new Promise((resolve, reject) => {
     const wss = new WebSocketServer({ port, host })
@@ -87,7 +95,14 @@ export const startWsBridge = (
       const handshakeTimer = setTimeout(() => {
         if (!handshakeDone) {
           logger.warn(
-            { peer: socket.remoteAddress ?? "unknown" },
+            {
+              peer:
+                (
+                  socket as unknown as {
+                    _socket: { remoteAddress?: string }
+                  }
+                )._socket.remoteAddress ?? "unknown",
+            },
             "ws handshake timed out",
           )
           socket.close(4000, "handshake timeout")
@@ -103,6 +118,7 @@ export const startWsBridge = (
             { reason: err instanceof Error ? err.message : String(err) },
             "ws message: invalid json",
           )
+          clearTimeout(handshakeTimer)
           socket.close(4002, "invalid json")
           return
         }
@@ -112,28 +128,28 @@ export const startWsBridge = (
             { issues: result.error.issues },
             "ws message: schema mismatch",
           )
+          clearTimeout(handshakeTimer)
           socket.close(4003, "invalid message")
           return
         }
         const message = result.data
         if (!handshakeDone) {
           if (message.type !== "hello") {
+            clearTimeout(handshakeTimer)
             socket.close(4004, "expected hello")
             return
           }
-          const helloSchema =
-            expectedToken !== undefined
-              ? helloMessageStrictSchema
-              : helloMessageSchema
+          const helloSchema = expectedToken
+            ? helloMessageStrictSchema
+            : helloMessageSchema
           const helloResult = helloSchema.safeParse(message)
           if (!helloResult.success) {
+            clearTimeout(handshakeTimer)
             socket.close(4001, "invalid hello")
             return
           }
-          if (
-            expectedToken !== undefined &&
-            helloResult.data.token !== expectedToken
-          ) {
+          if (expectedToken && helloResult.data.token !== expectedToken) {
+            clearTimeout(handshakeTimer)
             socket.close(TOKEN_MISMATCH_CLOSE_CODE, "token mismatch")
             return
           }
@@ -155,6 +171,9 @@ export const startWsBridge = (
               type: "addons-inventory",
               addons: addonInventory,
             })
+          }
+          if (deckTree !== undefined) {
+            sendToSocket(socket, { type: "deck-tree", ...deckTree })
           }
           for (const handler of connectionHandlers) handler(socket)
           return
@@ -222,7 +241,8 @@ export const startWsBridge = (
         return
       }
       const port = addr.port
-      const url = `ws://127.0.0.1:${port}`
+      const urlHost = lanHost ?? host
+      const url = `ws://${urlHost}:${port}`
       const bridge: WsBridge = {
         port,
         url,
@@ -237,6 +257,9 @@ export const startWsBridge = (
         setAddonInventory: (inventory) => {
           addonInventory = inventory
         },
+        setDeckTree: (tree) => {
+          deckTree = tree
+        },
         broadcast: (message) => {
           if (message.type === "state") {
             Object.assign(lastChannels, message.channels)
@@ -244,12 +267,6 @@ export const startWsBridge = (
           const payload = JSON.stringify(message)
           for (const client of wss.clients) {
             if (client.readyState === client.OPEN) client.send(payload)
-          }
-        },
-        sendToCaller: (message) => {
-          for (const client of wss.clients) {
-            if (client.readyState === client.OPEN)
-              client.send(JSON.stringify(message))
           }
         },
         registerCacheablePoller: (channel, pollFn) => {

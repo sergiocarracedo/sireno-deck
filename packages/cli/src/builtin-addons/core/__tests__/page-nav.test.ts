@@ -13,13 +13,14 @@ const makeCtx = (config: {
     ctx: {
       config,
       buttonId: "page-nav",
+      position: 13,
       addonName: "core",
       methods: Object.freeze({}),
       publish,
       executor: { run: vi.fn() } as never,
       signal: new AbortController().signal,
       store: { buttonScope: vi.fn() } as never,
-    },
+    } as never,
     publish,
   }
 }
@@ -36,6 +37,8 @@ describe("core:page-nav backend", () => {
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
       deckId: "deck-p2",
       addToHistory: false,
+      buttonId: "page-nav",
+      position: 13,
     })
   })
 
@@ -50,11 +53,13 @@ describe("core:page-nav backend", () => {
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
       deckId: "deck-p1",
       addToHistory: false,
+      buttonId: "page-nav",
+      position: 13,
     })
   })
 
   it("onDblTap is not defined (we migrated to onHold)", () => {
-    expect(PageNavBackend.onDblTap).toBeUndefined()
+    expect((PageNavBackend as { onDblTap?: unknown }).onDblTap).toBeUndefined()
   })
 
   it("onHold on first page navigates back to the base deck", async () => {
@@ -68,6 +73,8 @@ describe("core:page-nav backend", () => {
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
       deckId: "deck-base",
       addToHistory: false,
+      buttonId: "page-nav",
+      position: 13,
     })
   })
 
@@ -82,6 +89,8 @@ describe("core:page-nav backend", () => {
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
       deckId: "deck-base",
       addToHistory: false,
+      buttonId: "page-nav",
+      position: 13,
     })
   })
 

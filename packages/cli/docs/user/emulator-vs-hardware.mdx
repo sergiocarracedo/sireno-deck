@@ -41,6 +41,20 @@ When running with emulator:
 - Deck tree navigation
 - Real-time logs
 - Configuration viewer
+- Fullscreen toggle in deck-only mode
+- Iframe load and error diagnostics with retry
+
+### Emulator Connectivity
+
+The emulator derives both its own URLs and the frontend iframe URL from the page hostname. This means the same `sireno start --emulator` instance is reachable from:
+
+- `http://127.0.0.1:52938` on the same machine
+- `http://<lan-ip>:52938` from another device on the network
+- `http://<tailscale-hostname>:52938` over a Tailscale or VPN connection
+
+You do not need to configure the frontend URL manually for these cases; the emulator automatically points the iframe at the same host it was loaded from.
+
+If the embedded frontend fails to load, the emulator shows an error overlay with the attempted URL so you can check network reachability and retry.
 
 ## Hardware
 

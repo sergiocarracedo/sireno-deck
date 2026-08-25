@@ -21,6 +21,8 @@ export class ActionError extends Error {
 export interface ActionExecutorOptions {
   cwd?: string
   env?: Readonly<Record<string, string>>
+  /** Kill the command after this many milliseconds. */
+  timeoutMs?: number
 }
 
 export interface ActionExecutor {
@@ -88,6 +90,9 @@ export const createActionExecutor = (
       env,
       reject: false,
       all: false,
+      ...(runOptions.timeoutMs !== undefined
+        ? { timeoutMs: runOptions.timeoutMs }
+        : {}),
     })
     return {
       stdout: result.stdout ?? "",

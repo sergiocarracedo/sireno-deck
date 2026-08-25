@@ -2,23 +2,49 @@ import type { ChildProcess } from "node:child_process"
 
 import type pino from "pino"
 
+// ponytail: incremental retry schedule for vite children + service-level
+// supervision. 5 entries: 2s for transient blips, 60s tail for sticky failures.
+// Total worst-case wallclock ~2 min before giving up. Replace the previous
+// flat 60s × 2 retry which could take 3 min and never recovered from a brief
+// fail without a 60s blank-period.
+export const DEFAULT_VITE_RETRY_SCHEDULE_MS = [
+  2_000, 5_000, 15_000, 30_000, 60_000,
+] as const
+
+export const DEFAULT_SERVICE_RETRY_SCHEDULE_MS = [
+  2_000, 5_000, 15_000, 30_000, 60_000,
+] as const
+
 // ponytail: minimal retry helper. Watches a single child; on unexpected exit
-// schedules a respawn after `delayMs`. After `maxRetries` respawn attempts,
-// gives up via `onGiveUp`. Graceful shutdown (via stop() or isShuttingDown())
-// suppresses both respawn and give-up — the parent is in control.
+// schedules a respawn after `delayScheduleMs[retriesUsed - 1]` (or `delayMs`
+// for the flat schedule). After the schedule is exhausted, gives up via
+// `onGiveUp`. Graceful shutdown (via stop() or isShuttingDown()) suppresses
+// both respawn and give-up — the parent is in control.
 //
-// Upgrade path: if we ever need exponential backoff or per-child policy, swap
-// the linear `delayMs` for the WS_BACKOFF_DELAYS_MS table used by
-// packages/cli/emulator/src/bridge.ts. Today a flat 60s × 2 retries is enough.
+// Two schedule modes:
+//  - delayScheduleMs: incremental backoff. maxRetries defaults to the schedule's
+//    length. Use this for transient-restart-friendly children (vite).
+//  - delayMs + maxRetries: flat backoff. Kept for callers that don't need
+//    varying delays. If both are set, delayScheduleMs wins.
 export interface SuperviseOptions {
   readonly label: string
   readonly spawn: () => Promise<ChildProcess>
   readonly onGiveUp: () => void
   readonly isShuttingDown: () => boolean
   readonly logger: pino.Logger
+  readonly delayScheduleMs?: ReadonlyArray<number>
   readonly delayMs?: number
   readonly maxRetries?: number
   readonly kill?: (child: ChildProcess) => Promise<void>
+  /**
+   * Called when the child exits unexpectedly — BEFORE the respawn timer is
+   * scheduled. Awaited so the next respawn waits for the side effect (e.g.
+   * black-frame push) to finish. Skipped when isShuttingDown() returns true.
+   */
+  readonly onChildExit?: (
+    code: number | null,
+    signal: NodeJS.Signals | null,
+  ) => void | Promise<void>
 }
 
 export interface SuperviseHandle {
@@ -56,11 +82,30 @@ const defaultKill = (child: ChildProcess): Promise<void> =>
     }, 2_000)
   })
 
+const resolveDelay = (
+  options: SuperviseOptions,
+  retriesUsed: number,
+): number => {
+  if (options.delayScheduleMs !== undefined) {
+    const schedule = options.delayScheduleMs
+    if (schedule.length === 0) return options.delayMs ?? 60_000
+    const idx = Math.min(retriesUsed - 1, schedule.length - 1)
+    return schedule[idx] ?? schedule[schedule.length - 1] ?? 60_000
+  }
+  return options.delayMs ?? 60_000
+}
+
+const resolveMaxRetries = (options: SuperviseOptions): number => {
+  if (options.delayScheduleMs !== undefined) {
+    return options.maxRetries ?? options.delayScheduleMs.length
+  }
+  return options.maxRetries ?? 2
+}
+
 export const supervise = async (
   options: SuperviseOptions,
 ): Promise<SuperviseHandle> => {
-  const delayMs = options.delayMs ?? 60_000
-  const maxRetries = options.maxRetries ?? 2
+  const maxRetries = resolveMaxRetries(options)
   const killChild = options.kill ?? defaultKill
   let stopped = false
   let respawnTimer: ReturnType<typeof setTimeout> | null = null
@@ -90,6 +135,7 @@ export const supervise = async (
   }
 
   const scheduleRespawn = (): void => {
+    const delay = resolveDelay(options, retriesUsed)
     respawnTimer = setTimeout(() => {
       respawnTimer = null
       if (stopped || options.isShuttingDown()) return
@@ -100,15 +146,28 @@ export const supervise = async (
         )
         giveUp()
       })
-    }, delayMs)
+    }, delay)
   }
 
-  const onExit = (code: number | null, signal: NodeJS.Signals | null): void => {
+  const onExit = async (
+    code: number | null,
+    signal: NodeJS.Signals | null,
+  ): Promise<void> => {
     if (stopped || options.isShuttingDown()) return
     options.logger.warn(
       { label: options.label, code, signal, retriesUsed },
       "subprocess exited unexpectedly",
     )
+    if (options.onChildExit !== undefined) {
+      try {
+        await options.onChildExit(code, signal)
+      } catch (err) {
+        options.logger.error(
+          { err, label: options.label },
+          "subprocess onChildExit failed",
+        )
+      }
+    }
     if (retriesUsed >= maxRetries) {
       giveUp()
       return

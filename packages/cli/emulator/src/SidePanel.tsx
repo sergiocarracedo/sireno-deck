@@ -8,6 +8,7 @@ const SECTIONS = [
   { path: "bridge-logs", label: "Bridge logs" },
   { path: "service-logs", label: "Service logs" },
   { path: "addons", label: "Addons" },
+  { path: "decks", label: "Decks" },
   { path: "config", label: "Config" },
 ] as const
 

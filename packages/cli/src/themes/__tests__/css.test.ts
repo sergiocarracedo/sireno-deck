@@ -121,4 +121,62 @@ describe("themes/css", () => {
     expect(css).toContain("--sireno-pressed-glow")
     expect(css).toContain("--sireno-held-glow")
   })
+
+  it.each(["cyan", "magenta", "amber", "lime"] as const)(
+    "emits --sireno-variant-%s-* CSS vars for extra buttonColor variants",
+    (name) => {
+      const custom: ThemeJsonManifest = {
+        ...baseManifest,
+        variants: {
+          ...baseManifest.variants,
+          [name]: {
+            background: `#${name}026`,
+            border: `#${name}073`,
+            foreground: `#${name}`,
+          },
+        },
+      }
+      const css = buildThemeCss(custom, [])
+      expect(css).toContain(`--sireno-variant-${name}-bg:`)
+      expect(css).toContain(`--sireno-variant-${name}-border:`)
+      expect(css).toContain(`--sireno-variant-${name}-fg:`)
+    },
+  )
+
+  it("emits --sireno-variant-*-muted for every variant when tokens block declares muted", () => {
+    const custom: ThemeJsonManifest = {
+      ...baseManifest,
+      colorTokens: { ...baseManifest.colorTokens, muted: "#666" },
+      variants: {
+        ...baseManifest.variants,
+        blue: {
+          background: "#00f26",
+          border: "#00f8c",
+          foreground: "#abc",
+          tokens: { primary: "#0ff", accent: "#f0f", muted: "#666" },
+        },
+      },
+    }
+    const css = buildThemeCss(custom, [])
+    expect(css).toContain("--sireno-color-muted: #666;")
+    expect(css).toContain("--sireno-variant-blue-muted: #666;")
+  })
+
+  it("falls back to theme-level muted when a variant omits the tokens block", () => {
+    const custom: ThemeJsonManifest = {
+      ...baseManifest,
+      colorTokens: { ...baseManifest.colorTokens, muted: "#666" },
+      variants: {
+        ...baseManifest.variants,
+        green: {
+          background: "#0f026",
+          border: "#0f08c",
+          foreground: "#abc",
+        },
+      },
+    }
+    const css = buildThemeCss(custom, [])
+    expect(css).toContain("--sireno-color-muted: #666;")
+    expect(css).toContain("--sireno-variant-green-muted: #666;")
+  })
 })

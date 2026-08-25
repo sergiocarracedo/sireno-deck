@@ -1,18 +1,19 @@
 import type { ReactElement } from "react"
 
-import type { ButtonFrameProps } from "@sirenodeck/cli/ui/ButtonFrame"
-import type { IconLabelSurfaceProps } from "@sirenodeck/cli/ui/surfaces/IconLabelSurface"
-import type { IconLabelProgressSurfaceProps } from "@sirenodeck/cli/ui/surfaces/IconLabelProgressSurface"
-import type { TemporaryErrorSurfaceProps } from "@sirenodeck/cli/ui/surfaces/TemporaryErrorSurface"
-import type { IconProps } from "@sirenodeck/cli/ui/primitives/Icon"
-import type { LabelProps } from "@sirenodeck/cli/ui/primitives/Label"
-import type { TapIndicatorProps } from "@sirenodeck/cli/ui/primitives/TapIndicator"
+import type { ButtonFrameProps } from "@sireno-deck/cli/ui/ButtonFrame"
+import type { IconLabelSurfaceProps } from "@sireno-deck/cli/ui/surfaces/IconLabelSurface"
+import type { IconLabelProgressSurfaceProps } from "@sireno-deck/cli/ui/surfaces/IconLabelProgressSurface"
+import type { TemporaryErrorSurfaceProps } from "@sireno-deck/cli/ui/surfaces/TemporaryErrorSurface"
+import type { IconProps } from "@sireno-deck/cli/ui/primitives/Icon"
+import type { LabelProps } from "@sireno-deck/cli/ui/primitives/Label"
+import type { TapIndicatorProps } from "@sireno-deck/cli/ui/primitives/TapIndicator"
 
-import { IconLabelSurface as DefaultIconLabelSurface } from "@sirenodeck/cli/ui/surfaces/IconLabelSurface"
-import { IconLabelProgressSurface as DefaultIconLabelProgressSurface } from "@sirenodeck/cli/ui/surfaces/IconLabelProgressSurface"
-import { TemporaryErrorSurface as DefaultTemporaryErrorSurface } from "@sirenodeck/cli/ui/surfaces/TemporaryErrorSurface"
-import { Label as DefaultLabel } from "@sirenodeck/cli/ui/primitives/Label"
-import { Text } from "@sirenodeck/cli/ui/primitives/Text"
+import { IconLabelSurface as DefaultIconLabelSurface } from "@sireno-deck/cli/ui/surfaces/IconLabelSurface"
+import { IconLabelProgressSurface as DefaultIconLabelProgressSurface } from "@sireno-deck/cli/ui/surfaces/IconLabelProgressSurface"
+import { TemporaryErrorSurface as DefaultTemporaryErrorSurface } from "@sireno-deck/cli/ui/surfaces/TemporaryErrorSurface"
+import { Label as DefaultLabel } from "@sireno-deck/cli/ui/primitives/Label"
+import { Text } from "@sireno-deck/cli/ui/primitives/Text"
+import { buildVariantCascade } from "@sireno-deck/cli/ui/ButtonFrame"
 
 const TILE_BASE = "neon-grids-tile"
 const HEADING_TEXT = "neon-grids-text-heading"
@@ -47,6 +48,11 @@ function NeonGridsButtonFrame(
         (props.holdProgress ?? 0) > 0
           ? (props.holdProgress ?? 0).toFixed(2)
           : undefined
+      }
+      style={
+        {
+          ...buildVariantCascade(variant),
+        } as React.CSSProperties
       }
       onClick={props.onClick}
       onPointerDown={props.onPointerDown}

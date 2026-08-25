@@ -2,7 +2,7 @@
 import { act, fireEvent, render } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { ChannelRegistry } from "@sirenodeck/cli"
+import { ChannelRegistry } from "@sireno-deck/cli"
 import { getDeviceModel } from "@/device/models"
 
 import { WebSocketProvider, type WebSocketSend } from "../bridge/ws-context"
@@ -13,14 +13,16 @@ const DECK = {
   name: "Home",
   buttons: [
     {
-      id: "b0",
+      id: "0-main-0",
       type: "core:change-deck",
+      position: 0,
       label: "Media",
       config: { deck: "media" },
     },
     {
-      id: "b1",
+      id: "1-main-0",
       type: "core:action",
+      position: 1,
       label: "Run",
       config: { label: "Run" },
     },
@@ -32,9 +34,7 @@ const MODEL = getDeviceModel("mk2")
 describe("Deck", () => {
   it("renders a button per entry with the right data-button-type", () => {
     const { container } = render(<Deck deck={DECK} deviceModel={MODEL} />)
-    expect(
-      container.querySelectorAll("[data-sireno-button-frame]"),
-    ).toHaveLength(2)
+    expect(container.querySelectorAll("[data-button-type]")).toHaveLength(4)
   })
 
   it("publishes to the per-button runtime:gesture channel when a gesture arrives", () => {
@@ -44,16 +44,16 @@ describe("Deck", () => {
     const b0Received: Array<unknown> = []
     const b1Received: Array<unknown> = []
     const unsub0 = ChannelRegistry.instance().subscribe(
-      "runtime:gesture:b0",
+      "runtime:gesture:0-main-0",
       (p) => b0Received.push(p),
     )
     const unsub1 = ChannelRegistry.instance().subscribe(
-      "runtime:gesture:b1",
+      "runtime:gesture:1-main-0",
       (p) => b1Received.push(p),
     )
 
     act(() => {
-      ChannelRegistry.instance().publish("runtime:gesture:b1", {
+      ChannelRegistry.instance().publish("runtime:gesture:1-main-0", {
         gesture: "tap",
         at: 1,
       })
@@ -100,16 +100,26 @@ describe("Deck", () => {
       ...DECK,
       buttons: [
         ...DECK.buttons,
-        { id: "6", type: "core:action", label: "Off-grid", config: {} },
-        { id: "7", type: "core:action", label: "Off-grid-2", config: {} },
+        {
+          id: "6-main-0",
+          type: "core:action",
+          position: 6,
+          label: "Off-grid",
+          config: {},
+        },
+        {
+          id: "7-main-0",
+          type: "core:action",
+          position: 7,
+          label: "Off-grid-2",
+          config: {},
+        },
       ],
     }
     const { container } = render(
       <Deck deck={oversizedDeck} deviceModel={mini} />,
     )
-    expect(
-      container.querySelectorAll("[data-sireno-button-frame]"),
-    ).toHaveLength(2)
+    expect(container.querySelectorAll("[data-button-type]")).toHaveLength(4)
     expect(
       container.querySelectorAll('[data-button-type="core:action"]'),
     ).toHaveLength(2)

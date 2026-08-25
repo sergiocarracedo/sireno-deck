@@ -25,7 +25,7 @@ interface BackendGlobalBackend {
 
 const makeCtx = (): { ctx: AddonServiceContext; signal: AbortController } => {
   const signal = new AbortController()
-  const ctx: AddonServiceContext = {
+  const ctx = {
     publish: vi.fn(),
     poll: vi.fn(async () => undefined),
     signal: signal.signal,
@@ -37,7 +37,8 @@ const makeCtx = (): { ctx: AddonServiceContext; signal: AbortController } => {
       })),
     } as unknown as AddonServiceContext["executor"],
     setClipboardProvider: () => {},
-  }
+    notify: async () => undefined,
+  } as unknown as AddonServiceContext
   return { ctx, signal }
 }
 

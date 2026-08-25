@@ -18,6 +18,8 @@ export {
 export {
   DOUBLE_TAP_DELAY_MS,
   HOLD_ACTION_DELAY_MS,
+  SPA_DOUBLE_TAP_DELAY_MS,
+  SPA_HOLD_DELAY_MS,
   nextGesture,
   type GestureEvent,
   type GestureKind,

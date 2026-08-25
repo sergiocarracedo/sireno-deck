@@ -135,6 +135,8 @@ export interface AddonButtonTypeDef<Config = unknown> {
 export interface AddonButtonTypeDefAny {
   readonly frontend: AddonFrontendButton<any>
   readonly service: AddonButtonTypeService<any>
+  readonly name?: string
+  readonly internal?: boolean
 }
 
 export type AddonDeckFactory = (page: number) => AddonGeneratedDeck
@@ -158,15 +160,27 @@ export interface AddonGeneratedDeck {
    * Variant token name. Themes declare which variants they support in
    * their manifest; addon authors pick from the active theme's set.
    * Unknown names fall back to "default" with a console.warn at render.
+   *
+   * `variant` is the *semantic* axis: highlighted / warning / success / error.
+   * Use it when the colour carries meaning (recording, paused, errored).
    */
   variant?: string
   /**
-   * Deprecated alias for `variant`. Accepts the legacy closed enum
-   * (`blue|green|purple`) for backward compatibility — values get mapped
-   * to `highlighted|success|highlighted` and a console.warn is emitted.
-   * Addons should migrate to `variant`.
+   * Per-button hue customisation — closed enum, distinct from `variant`.
+   * Themes declare a variant entry for each enum value they want to
+   * expose (e.g. `blue`, `cyan`); unknown names fall back to `default`
+   * with a console.warn at render. Use it to distinguish buttons
+   * inside a deck by colour (e.g. six app-shortcuts, each a different
+   * hue) without claiming semantic meaning.
    */
-  buttonColor?: "blue" | "green" | "purple"
+  buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
   buttons?: unknown[]
   paginated?: boolean
   trigger?: unknown
@@ -197,11 +211,13 @@ export type AddonDeckEntry =
       id: string
       createDeck?: never
       createDecks?: never
+      internal?: boolean
     })
   | {
       id: string
       createDeck: (ctx: AddonDeckEntryCtx) => AddonGeneratedDeck
       createDecks?: never
+      internal?: boolean
     }
   | {
       id?: undefined
@@ -209,6 +225,7 @@ export type AddonDeckEntry =
       createDecks: (
         ctx: AddonDeckEntryCtx,
       ) => Record<string, AddonGeneratedDeck>
+      internal?: boolean
     }
 
 /**
@@ -223,6 +240,27 @@ export type AddonDeckEntry =
  * `<defaultButton>` (e.g. `type: emoji-selector` resolves to
  * `emoji-selector:launcher`). The value must be a key of `buttonTypes`.
  */
+/**
+ * Result of a single addon requirement check. Probes external dependencies
+ * (e.g. `playerctl` for media on Linux); failures are expected when the
+ * tool isn't installed and are surfaced as warnings, not exceptions.
+ */
+export interface AddonCheckResult {
+  readonly available: boolean
+  readonly reason?: string
+}
+
+/**
+ * A named requirement check contributed by an addon. The check function
+ * probes external state and returns a structured result; it should not
+ * throw — unexpected errors are caught by the runner and reported as
+ * failures.
+ */
+export interface AddonCheck {
+  readonly name: string
+  readonly check: () => Promise<AddonCheckResult>
+}
+
 export interface AddonManifestV1 {
   readonly apiVersion: 1
   readonly name: string
@@ -240,6 +278,13 @@ export interface AddonManifestV1 {
   }
   readonly publishIntervalMs?: number
   readonly globalService?: AddonGlobalService
+  /**
+   * Optional list of OS-specific requirement checks. Core runs these
+   * for enabled addons on start/restart and displays pass/fail in the
+   * startup banner. Checks never block startup — they only surface
+   * configuration gaps so the operator can act on them.
+   */
+  readonly checks?: ReadonlyArray<AddonCheck>
 }
 
 /**
@@ -294,6 +339,8 @@ export interface AddonServiceContext {
   signal: AbortSignal
   /** Run host commands (e.g. `brightness set 80`). */
   executor: ActionExecutor
+  /** Fire an OS notification. */
+  notify(args: { title: string; body: string; sound?: boolean }): Promise<void>
 }
 
 /**
@@ -328,6 +375,8 @@ export interface AddonButtonService<Config = unknown> {
 export interface AddonButtonServiceContext<Config = unknown> {
   readonly config: Config
   readonly buttonId: string
+  /** Declared button position within its deck, when the deck defines one. */
+  readonly position?: number
   readonly addonName: string
   /** Namespaced addon-global methods (`<addonName>:<methodName>` keys). */
   readonly methods: Readonly<Record<string, AddonServiceMethod>>

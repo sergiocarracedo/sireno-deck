@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url"
 import type pino from "pino"
 
 import { createGestureDetector } from "@/core/gesture-state"
+import { pushBlackFrame } from "@/device/black-frame"
 import type { DeviceDescriptor } from "@/device/registry"
 import { connectStreamDeck, type StreamDeckDevice } from "@/device/stream-deck"
 import { BrowserRenderer } from "@/render/browser-renderer"
@@ -17,11 +18,13 @@ import {
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
 import {
+  DEFAULT_VITE_RETRY_SCHEDULE_MS,
   supervise,
   type SuperviseHandle,
 } from "../cli/commands/subprocess-supervisor"
 
 import type { InitOptions, OutputClient, OutputHandle } from "./types"
+import { writeRuntimeState, type RuntimeState } from "@/util/daemon"
 
 export interface RealOutputClientOptions {
   readonly xdgConfigHome: string
@@ -32,6 +35,9 @@ export class RealOutputClient implements OutputClient {
 
   private readonly xdgConfigHome: string
   private device: StreamDeckDevice | null = null
+  // ponytail: the Stream Deck SDK exposes setBrightness but no getter, so we
+  // track the last value we set to skip redundant hardware writes.
+  private deviceBrightness: number | null = null
   private descriptor: DeviceDescriptor | null = null
 
   constructor(options: RealOutputClientOptions) {
@@ -63,6 +69,7 @@ export class RealOutputClient implements OutputClient {
           ? {
               current: {
                 serial: savedId,
+                path: "",
                 model: "",
               },
             }
@@ -86,6 +93,7 @@ export class RealOutputClient implements OutputClient {
       xdgConfigHome: this.xdgConfigHome,
       config: {
         serial: descriptor.id,
+        path: descriptor.id,
         model: descriptor.model,
       },
     })
@@ -96,7 +104,7 @@ export class RealOutputClient implements OutputClient {
       throw new Error("RealOutputClient.init: selectDevice() must run first")
     }
     const descriptor = this.descriptor
-    const logger = opts.logger
+    const logger = opts.logger.child({ component: "real" })
 
     let device: StreamDeckDevice
     try {
@@ -141,9 +149,10 @@ export class RealOutputClient implements OutputClient {
       value: number
     }>("methods:adjustBrightness", ({ value }) => {
       if (this.device === null) return
-      const current = this.device.brightness
+      const current = this.deviceBrightness
       if (value === current) return
-      this.device.setBrightness(value)
+      this.deviceBrightness = value
+      void this.device.setBrightness(value)
       logger.info(
         { from: current, to: value },
         "real mode: hardware brightness adjusted",
@@ -156,16 +165,23 @@ export class RealOutputClient implements OutputClient {
     const gestureDetector = createGestureDetector({
       onGesture: (result) => {
         const keyIndex = result.keyIndex ?? -1
-        logger.info(
-          { keyIndex, gesture: result.kind },
-          "real mode: gesture detected, resolving against active deck",
-        )
         const activeDeck = opts.runtime.getActiveDeck()
         const button = activeDeck.buttons.find((b) => {
           if (b.position === keyIndex) return true
           const parsed = Number.parseInt(b.id, 10)
           return Number.isFinite(parsed) && parsed === keyIndex
         })
+        const position = button?.position ?? -1
+        logger.debug(
+          {
+            keyIndex,
+            gesture: result.kind,
+            position,
+            activeDeckId: activeDeck.id,
+            buttonId: button?.id ?? null,
+          },
+          "real mode: gesture detected",
+        )
         if (button === undefined) {
           logger.warn(
             { keyIndex, activeDeckId: activeDeck.id },
@@ -181,7 +197,7 @@ export class RealOutputClient implements OutputClient {
     })
 
     const gestureUnsubscribe = device.onKeyEvent((event) => {
-      logger.info(
+      logger.debug(
         { keyIndex: event.keyIndex, type: event.type },
         "real mode: key event received",
       )
@@ -202,6 +218,7 @@ export class RealOutputClient implements OutputClient {
       frontendSupervisor = await supervise({
         label: "frontend vite",
         kill: killChild,
+        delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
         spawn: async () => {
           const r = await spawnFrontendVite({
             port: opts.port ?? DEFAULT_FRONTEND_PORT,
@@ -238,12 +255,21 @@ export class RealOutputClient implements OutputClient {
     const frontendVitePid = frontendSupervisor?.process.pid ?? 0
     const childPids = frontendVitePid > 0 ? [frontendVitePid] : []
 
-    const buildBlackBuffer = (): Buffer => {
-      const keyCount = device.getKeyCount()
-      const stride = 3 * 8
-      const total = keyCount * stride * 8
-      return Buffer.alloc(total)
+    const token = process.env["SIRENO_TOKEN"] ?? ""
+    const state: RuntimeState = {
+      emulatorUrl: frontendUrl,
+      wsUrl: opts.bridge.url,
+      frontendUrl,
+      token,
+      lanHost: opts.lanHost ?? "127.0.0.1",
+      addresses: opts.lanAddresses ?? [],
+      emulatorMode: false,
+      remote: false,
+      startedAt: Date.now(),
+      theme: opts.theme.name,
     }
+    writeRuntimeState(state)
+    logger.info({ frontendUrl }, "real mode: runtime state written")
 
     return {
       descriptor,
@@ -251,18 +277,7 @@ export class RealOutputClient implements OutputClient {
       wsUrl: opts.bridge.url,
       childPids,
       async pushBlackFrame(): Promise<void> {
-        try {
-          const buf = buildBlackBuffer()
-          for (let i = 0; i < device.getKeyCount(); i++) {
-            await device.fillKeyBuffer(i, buf.subarray(0, 3 * 8 * 8))
-          }
-          logger.info("real: pushed black frame")
-        } catch (err) {
-          logger.warn(
-            { err: (err as Error).message },
-            "real: pushBlackFrame failed (non-fatal)",
-          )
-        }
+        await pushBlackFrame(device, logger)
       },
       async pushRawImage(filePath: string): Promise<void> {
         try {

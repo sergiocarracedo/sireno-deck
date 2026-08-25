@@ -88,7 +88,7 @@ export default defineConfig({
   server: {
     port: Number(process.env.SIRENO_EMULATOR_PORT ?? 52938),
     strictPort: false,
-    host: "127.0.0.1",
+    host: process.env["SIRENO_VITE_HOST"] ?? "127.0.0.1",
   },
   assetsInclude: ["**/*.html"],
 })

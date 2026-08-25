@@ -1,6 +1,9 @@
 export const HOLD_ACTION_DELAY_MS = 200
 export const DOUBLE_TAP_DELAY_MS = 200
 
+export const SPA_HOLD_DELAY_MS = 500
+export const SPA_DOUBLE_TAP_DELAY_MS = 300
+
 export type GestureType = "down" | "up"
 
 export interface GestureEvent {
@@ -24,7 +27,7 @@ type KeyState =
   | {
       name: "holding"
       downAt: number
-      timer: ReturnType<typeof setTimeout>
+      timer?: ReturnType<typeof setTimeout>
       keyIndex?: number
       emittedHold?: boolean
     }
@@ -32,7 +35,7 @@ type KeyState =
       name: "waiting-second"
       firstUpAt: number
       firstDownAt: number
-      timer: ReturnType<typeof setTimeout>
+      timer?: ReturnType<typeof setTimeout>
       keyIndex?: number
     }
   | {

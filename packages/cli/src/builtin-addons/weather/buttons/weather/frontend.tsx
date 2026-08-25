@@ -2,7 +2,10 @@ import type { AddonFrontendButton } from "@/addon/api"
 import { useAddonChannel } from "@/api/react"
 import { IconLabelSurface, PaginatedSurface, type PaginatedPage } from "@/ui"
 import { cityKey } from "../../provider/city-key"
-import type { WeatherSnapshot } from "../../provider/types"
+import type {
+  WeatherSnapshot,
+  WeatherStateSnapshot,
+} from "../../provider/types"
 import type { ConfigSchema } from "./config"
 import { type WeatherPageProps, weatherPageRenderers } from "./pages"
 
@@ -19,7 +22,7 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
     typeof config?.location === "object"
       ? config.location.name
       : config?.location
-  const { data } = useAddonChannel<WeatherSnapshot>("weather:current")
+  const { data } = useAddonChannel<WeatherStateSnapshot>("weather:current")
 
   const loc = config?.location
   const snapshot: WeatherSnapshot | undefined =
@@ -28,9 +31,7 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
       : undefined
 
   if (!snapshot?.available) {
-    return (
-      <IconLabelSurface source="icon://cloud-off" label="---" tone="primary" />
-    )
+    return <IconLabelSurface source="icon://cloud-off" label="---" />
   }
 
   const unitTemp = snapshot.units === "imperial" ? "°F" : "°C"

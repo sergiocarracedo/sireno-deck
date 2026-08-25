@@ -34,7 +34,6 @@ const baseScanned: ReadonlyArray<ScannedAddon> = [
 const makeBridge = () => ({
   broadcast: vi.fn(),
   registerCacheablePoller: vi.fn(),
-  sendToCaller: vi.fn(),
   onMessage: () => () => undefined,
   onConnection: () => () => undefined,
   close: async () => undefined,
@@ -55,6 +54,7 @@ const setup = () => {
     pubSub,
     store,
     logger: silentLogger(),
+    getMethods: () => methods,
   })
   const executor = createActionExecutor({ host: getHostContext() })
   const methods = createMethods({
@@ -191,6 +191,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       methods,
+      logger: silentLogger(),
     })
 
     expect(subSpy).toHaveBeenCalledWith({ initial: true })
@@ -211,6 +212,7 @@ describe("bridgeAddonServices", () => {
       externalAddons: [],
       executor,
       pubSub,
+      logger: silentLogger(),
       store,
       signal,
       statePublisher,
@@ -308,6 +310,7 @@ describe("bridgeAddonServices", () => {
       pubSub,
       store,
       logger: silentLogger(),
+      getMethods: () => methods,
     })
     freshRuntime.registerButtonHandler("main:b1", { onTap: vi.fn() })
 
@@ -337,12 +340,12 @@ describe("bridgeAddonServices", () => {
     expect(bridge.broadcast).toHaveBeenCalledTimes(1)
     const payload = bridge.broadcast.mock.calls[0]![0] as {
       type: string
-      channels: Record<string, { kind: string; at: number }>
+      channels: Record<string, { kind: string; at: number; gesture?: string }>
     }
     expect(payload.type).toBe("state")
     expect(payload.channels["runtime:gesture:b1"]).toBeDefined()
-    expect(payload.channels["runtime:gesture:b1"].gesture).toBe("tap")
-    expect(typeof payload.channels["runtime:gesture:b1"].at).toBe("number")
+    expect(payload.channels["runtime:gesture:b1"]!.gesture).toBe("tap")
+    expect(typeof payload.channels["runtime:gesture:b1"]!.at).toBe("number")
   })
 
   it("does not forward gestures when invokeAction is called", async () => {
@@ -361,6 +364,7 @@ describe("bridgeAddonServices", () => {
       pubSub,
       store,
       logger: silentLogger(),
+      getMethods: () => methods,
     })
     freshRuntime.registerButtonHandler("main:b1", { onTap: vi.fn() })
 

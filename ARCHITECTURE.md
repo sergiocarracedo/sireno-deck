@@ -91,6 +91,10 @@ Internal state:
 - `navStack: string[]` — initialized with `[mainDeck.id]`.
 - `transientDeckId` — for ephemeral / modal decks.
 - `overlayDeckId` — current overlay, if any.
+- `overlayNavStacks: Map<deckId, string[]>` — each overlay deck owns an
+  independent navigation path, preserved across dismiss/reactivate. Push via
+  `navigateToDeck` while in overlay mode; pop via `goBack` (tap); dismissed
+  by `core:overlay-toggle` dbl-tap or when the user holds `core:back`.
 
 The active-app loop polls `ActiveAppProvider` every 1 s, debounces for 200 ms,
 matches `process_name` / `window_name` against per-addon overlay-deck globs
@@ -165,12 +169,14 @@ for addon frontends.
 
 ### 3.6 System slot injection — `deck/system-back-injection.ts`
 
-`computeSystemButtonForSlotN1(deck, state)` returns the button that fills
-the n-1 (last) slot on a deck:
+`computeSystemButtonForSlotN1(deck, state)` returns the button that fills the
+n-1 (last) slot on a deck. The button type is computed **dynamically at
+broadcast time** from the current runtime mode, not baked in at startup:
 
 - Main deck → `core:settings-entry` (opens `internal-settings:settings`).
-- Overlay deck → `core:overlay-toggle` (dismisses the overlay).
-- Any other deck, `navStackDepth > 1` → `core:back` (pops the nav stack).
+- In overlay mode → `core:overlay-toggle` (tap = step back within overlay path;
+  dbl-tap = dismiss overlay).
+- Non-main regular deck, `navStackDepth > 1` → `core:back` (pops nav stack).
 - Else → `null` (the slot is free for a user button).
 
 The slot is purely declarative; the visual treatment of the n-1 tile is the
@@ -250,6 +256,67 @@ SPAs.
 
 `findWorkspaceRoot()` and `resolveFrontendCwd()` are local helpers used to
 locate the Vite projects from the monorepo.
+
+### 3.11.1 Process supervisors (vite)
+
+Vite children (frontend / emulator dev servers) are supervised by
+`cli/commands/subprocess-supervisor.ts`. The retry state machine lives in
+one place.
+
+**Vite supervisor** — `outputClient/real.ts:202` and `outputClient/emulator.ts:117,140`.
+On unexpected exit, the supervisor respawns the vite child using the
+incremental schedule `DEFAULT_VITE_RETRY_SCHEDULE_MS = [2s, 5s, 15s, 30s, 60s]`
+(5 retries, total worst-case ~2 min). After the budget is exhausted, the
+supervisor calls `onChildCrash` on the runtime, which resolves the pipeline's
+`done` promise and triggers a clean shutdown.
+
+**Daemon lifecycle** — In dev mode `start.ts:startInBackground` spawns the
+daemon via `spawnDetached` (`packages/cli/src/cli/commands/spawn-daemon.ts`)
+and returns. The wrapper exits cleanly; subsequent `pnpm dev status | stop
+| restart | reload | logs` work from any shell via the pid file at
+`$XDG_RUNTIME_DIR/sireno-deck/`. The forked daemon's `argv[1]` is
+`bin/sirenodeck.js` — the same entry point the systemd-installed daemon
+uses. If the daemon crashes in dev, the daemon stays dead; the operator
+runs `pnpm dev restart` to recover. Production's auto-restart comes from
+systemd's `Restart=always`; dev matches that semantic exactly (no
+auto-restart at the wrapper layer).
+
+**In-place reload (SIGUSR1)** — The `reload` command sends `SIGUSR1` to
+the daemon; systemd's `reload-or-restart` does the same. The daemon
+registers a `SIGUSR1` handler via `SignalProvider.onReload`
+(`commands/run.ts`) that calls `runtime.invalidate()` — which re-broadcasts
+the deck-config to connected frontends and nudges the `BrowserRenderer`'s
+screenshot tick. Without this handler, Node's default action for
+`SIGUSR1` is to terminate the process, so previously every reload
+request was a latent daemon crash masked by `Restart=always`.
+
+**Dev operator affordance** — After a successful `pnpm dev start`, the
+cli handler in `cli/index.ts` calls `promptReloadAndTail`
+(`cli/startup-display.ts`). When stdout is a TTY, it prompts the
+operator with `Reload + tail logs now? [Y/n]` (default yes). On yes,
+it calls `reload()` (sends SIGUSR1, which now triggers
+`runtime.invalidate()` as documented above) and tails `service.log`
+for a bounded 2 s window. The bounded tail keeps control flowing without
+forcing the operator to type Ctrl+C. The prompt is suppressed on
+non-TTY environments (CI, ssh without pty, systemd) and on
+`--quiet` / `--log-level silent`.
+
+**Logger default level** — `buildLogger` (`cli/index.ts`) defaults the
+pino level to `info` (was `error` before this change). `info` is the
+minimum level that surfaces: `status.ts` reporting the running daemon,
+the runtime's per-tap `info` logs reaching `service.log`, and the
+`SIGUSR1 reload` confirmation line. `--verbose` switches to `debug`
+for the deepest signal; `--quiet` / `--log-level silent` suppress
+everything.
+
+There is no separate `service-supervisor.ts` in the current codebase —
+that file was the previous supervisor for dev mode and was removed when dev
+detached to match production's shape.
+
+`pushBlackFrameToDevice` reuses `connectStreamDeck` from
+`device/stream-deck.ts:51` so the parent process can push a frame without
+going through the full daemon init. Errors are non-fatal — the device may be
+unplugged at the moment of crash.
 
 ### 3.12 UI primitives & surfaces — `ui/`
 
@@ -422,19 +489,25 @@ on the host. The backend dispatches the gesture; the runtime broadcasts
 
 ### 7.4 Decoupling rule
 
-Each transport owns its own gesture detection. The wire format on the
-emulator path is the **final gesture** (`button-action` with
-`gesture: 'tap' | 'dbl-tap' | 'hold'`); raw `down` / `up` events never
-cross the bridge. The chrome SPA in `packages/cli/frontend/` is pure
-display: it subscribes to `runtime:gesture:*` (per button) and the generic
-`state` channels. **It never emits any button event.**
+Each transport owns its own gesture detection. The wire format on every
+path (real hardware, emulator SPA, chrome SPA) is the **final gesture**
+(`button-action` with `gesture: 'tap' | 'dbl-tap' | 'hold'`); raw
+`down` / `up` events never cross the bridge.
+
+The chrome SPA in `packages/cli/frontend/` is interactive display: it
+emits `button-action` for user clicks and subscribes to `runtime:gesture:*`
+(per button) and generic `state` channels to render button feedback. The
+emulator SPA in `packages/cli/emulator/` likewise emits `button-action` for
+virtual button presses and subscribes to state for rendering. The real
+hardware transport emits `button-action` via the hardware Stream Deck's
+native key events.
 
 Shared logic lives in `packages/cli/src/core/gesture-state.ts` — the
 constants `HOLD_ACTION_DELAY_MS = 200` and `DOUBLE_TAP_DELAY_MS = 200` are
 imported by both transports (RealOutputClient directly, the emulator SPA
 via `@sirenodeck/cli`) so any future change applies to both at once.
 
-Neither the backend nor the chrome knows how each transport derives
+Neither the backend nor any SPA knows how another transport derives
 gestures. A change in tap-detection semantics is local to the transport
 that owns it.
 
@@ -455,36 +528,48 @@ State messages are only sent for channels owned by the addons of the
 
 ### 7.6 Active-app overlay
 
+Overlay entry is **trigger-only** (auto-show or manual toggle). An overlay deck
+owns an independent navigation path (`overlayNavStacks[deckId]`), preserved
+across dismiss/reactivate.
+
 ```
 ActiveAppProvider tick (1 s, 200 ms debounce)
   → match against addon overlay-deck globs (system/glob-match.ts)
     → hit: runtime.setOverlay(deckId)
-      → bridge.broadcast("show-overlay", {deckId})
-        → frontend renders the overlay above the active deck
+      → pubSub.publish("runtime:overlay", {deckId, source: "autoShow"})
+        → pubSub.publish("runtime:activeDeck", {deckId}) [stack top]
+          → bridge.broadcast(deck-config) with inOverlayMode=true
+            → frontend renders the overlay above the active deck
     → miss after a previous hit: runtime.setOverlay(null)
-      → bridge.broadcast("dismiss-overlay", {})
+      → pubSub.publish("runtime:overlay", {deckId: null})
+        → pubSub.publish("runtime:activeDeck", {deckId}) [restores previous]
+          → bridge.broadcast(deck-config) with inOverlayMode=false
 ```
+
+**Manual toggle**: `core:overlay-toggle` dbl-tap on the available overlay deck
+activates it; `core:overlay-toggle` dbl-tap again dismisses. `core:back`
+hold also dismisses.
 
 ## 10. Glossary
 
-| Term                     | Definition                                                                                                                                |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Button**               | A single Stream Deck key with a display and behavior.                                                                                     |
-| **Button Type**          | A class of button (display-only, action, toggle) with a rendering model. Defined by an addon.                                             |
-| **Button Instance**      | A configured button of a type — the row in `config.yml`.                                                                                  |
-| **Deck**                 | A set of button instances displayed together.                                                                                             |
-| **Main Deck**            | The default / root deck. Has no back button.                                                                                              |
-| **Sub-deck**             | A nested deck navigable from another deck. Includes a back button.                                                                        |
-| **Overlay Deck**         | A deck shown _above_ the active deck when an active-app match fires. Dismissed by the overlay toggle.                                     |
-| **Addon**                | A TypeScript module providing button types, deck types, and (optionally) a global backend + theme.                                        |
-| **Theme**                | A YAML file defining global visual tokens.                                                                                                |
-| **Gesture**              | A key event: `tap`, `dbl-tap`, or `hold`.                                                                                                 |
-| **Poller**               | A periodic publish in an addon global backend.                                                                                            |
-| **Subscription**         | A push-based publish (file watcher, socket).                                                                                              |
-| **Channel**              | A named pub/sub topic. Frontends subscribe via `useAddonChannel`.                                                                         |
-| **System Slot**          | The n-1 (last) position on a deck, reserved for a back / settings / overlay-toggle button.                                                |
-| **Split Action Surface** | A two-tile surface for the system slot, divided by a diagonal line. Primary takes the action; secondary is decorative until further work. |
-| **Internal Addon**       | An addon (or a button / deck inside one) marked `internal: true` — hidden from user-facing config surfaces.                               |
+| Term                     | Definition                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Button**               | A single Stream Deck key with a display and behavior.                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Button Type**          | A class of button (display-only, action, toggle) with a rendering model. Defined by an addon.                                                                                                                                                                                                                                                                                                                                          |
+| **Button Instance**      | A configured button of a type — the row in `config.yml`.                                                                                                                                                                                                                                                                                                                                                                               |
+| **Deck**                 | A set of button instances displayed together.                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Main Deck**            | The default / root deck. Has no back button.                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Sub-deck**             | A nested deck navigable from another deck. Includes a back button.                                                                                                                                                                                                                                                                                                                                                                     |
+| **Overlay Deck**         | A deck that owns an independent navigation path (`overlayNavStacks[deckId]`). Entered only via trigger auto-show (`autoShow:true`) or `core:overlay-toggle` dbl-tap of the available overlay. `navigateToDeck` never changes mode; it pushes to the current path. Each overlay has its own back stack — tap `core:overlay-toggle` to step back, dbl-tap to dismiss. An overlay deck is a deck with a `trigger` (process/window names). |
+| **Addon**                | A TypeScript module providing button types, deck types, and (optionally) a global backend + theme.                                                                                                                                                                                                                                                                                                                                     |
+| **Theme**                | A YAML file defining global visual tokens.                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Gesture**              | A key event: `tap`, `dbl-tap`, or `hold`.                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Poller**               | A periodic publish in an addon global backend.                                                                                                                                                                                                                                                                                                                                                                                         |
+| **Subscription**         | A push-based publish (file watcher, socket).                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Channel**              | A named pub/sub topic. Frontends subscribe via `useAddonChannel`.                                                                                                                                                                                                                                                                                                                                                                      |
+| **System Slot**          | The n-1 (last) position on a deck, reserved for a back / settings / overlay-toggle button. In overlay mode this slot carries `core:overlay-toggle`; in regular mode it carries `core:back` (or `core:settings-entry` on the main deck). Dynamically computed at broadcast time from the current runtime mode.                                                                                                                          |
+| **Split Action Surface** | A two-tile surface for the system slot, divided by a diagonal line. Primary takes the action; secondary is decorative until further work.                                                                                                                                                                                                                                                                                              |
+| **Internal Addon**       | An addon (or a button / deck inside one) marked `internal: true` — hidden from user-facing config surfaces.                                                                                                                                                                                                                                                                                                                            |
 
 ### Config schemas and loader internals
 

@@ -2,20 +2,27 @@ import { describe, expect, it } from "vitest"
 
 import actionButtonsTestDeck from "../decks/action-buttons-test"
 
+const deck = actionButtonsTestDeck as {
+  id: string
+  name: string
+  icon: string
+  buttons: ReadonlyArray<{
+    type: string
+    position?: number
+    config?: Record<string, unknown>
+  }>
+}
+
 describe("test-buildin:action-buttons-test deck", () => {
   it("is defined as a static deck entry", () => {
     expect(actionButtonsTestDeck).toBeDefined()
-    expect(actionButtonsTestDeck.id).toBe("test-buildin:action-buttons-test")
-    expect(actionButtonsTestDeck.name).toBe("Action Buttons Test")
-    expect(actionButtonsTestDeck.icon).toBe("🧪")
+    expect(deck.id).toBe("test-buildin:action-buttons-test")
+    expect(deck.name).toBe("Action Buttons Test")
+    expect(deck.icon).toBe("🧪")
   })
 
   it("contains one button per icon-source shape", () => {
-    const buttons = actionButtonsTestDeck.buttons as ReadonlyArray<{
-      type: string
-      position?: number
-      config?: Record<string, unknown>
-    }>
+    const buttons = deck.buttons
     // 10 cases fill positions 0..9 on an mk2 (15 keys). The injected
     // core:back button can occupy any position 10..14.
     expect(buttons).toHaveLength(10)
@@ -26,19 +33,13 @@ describe("test-buildin:action-buttons-test deck", () => {
   })
 
   it("uses core:action for every button (no custom backend needed)", () => {
-    const buttons = (actionButtonsTestDeck.buttons ?? []) as ReadonlyArray<{
-      type: string
-    }>
-    for (const b of buttons) {
+    for (const b of deck.buttons) {
       expect(b.type).toBe("core:action")
     }
   })
 
   it("includes a representative sample of every accepted icon source shape", () => {
-    const buttons = (actionButtonsTestDeck.buttons ?? []) as ReadonlyArray<{
-      config?: { icon?: string }
-    }>
-    const icons = buttons.map((b) => b.config?.icon)
+    const icons = deck.buttons.map((b) => b.config?.icon)
 
     // Lucide / icon://
     expect(icons).toContain("icon://play")
@@ -53,10 +54,7 @@ describe("test-buildin:action-buttons-test deck", () => {
   })
 
   it("includes invalid shapes to exercise the runtime fallback", () => {
-    const buttons = (actionButtonsTestDeck.buttons ?? []) as ReadonlyArray<{
-      config?: { icon?: string }
-    }>
-    const icons = buttons.map((b) => b.config?.icon)
+    const icons = deck.buttons.map((b) => b.config?.icon as string | undefined)
     expect(icons).toContain("icon://")
     expect(icons.some((i) => i?.startsWith("data:"))).toBe(true)
   })

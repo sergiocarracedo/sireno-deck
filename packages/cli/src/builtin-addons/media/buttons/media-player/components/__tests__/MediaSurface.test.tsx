@@ -1,16 +1,15 @@
 /** @vitest-environment jsdom */
+import * as React from "react"
+import * as ReactDOM from "react-dom/client"
+import { act } from "react-dom/test-utils"
 import { describe, expect, it } from "vitest"
+import type { MediaButtonStatus } from "@/builtin-addons/media/state"
 
 import { MediaSurface } from "../MediaSurface"
-import type { MediaButtonStatus } from "@/builtin-addons/media/state"
 
 const renderInJsdom = (element: React.ReactElement): HTMLElement => {
   const container = document.createElement("div")
   document.body.appendChild(container)
-  const React = require("react")
-  const ReactDOM = require("react-dom/client")
-  const act = require("react-dom/test-utils").act
-
   act(() => {
     ReactDOM.createRoot(container).render(element)
   })
@@ -19,7 +18,7 @@ const renderInJsdom = (element: React.ReactElement): HTMLElement => {
 
 const renderSurface = (overrides: Record<string, unknown> = {}) =>
   renderInJsdom(
-    require("react").createElement(MediaSurface, {
+    React.createElement(MediaSurface, {
       title: "Track Title",
       artist: "Track Artist",
       source: "Album Name",

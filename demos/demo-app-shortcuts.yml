@@ -2,6 +2,7 @@ name: App Shortcuts Demo
 buttons:
   - position: 0
     type: "core:action"
+    buttonColor: blue
     actions:
       tap: "code"
     config:
@@ -9,6 +10,7 @@ buttons:
       label: VS Code
   - position: 1
     type: "core:action"
+    buttonColor: green
     actions:
       tap: "google-chrome"
     config:
@@ -16,6 +18,7 @@ buttons:
       label: Chrome
   - position: 2
     type: "core:action"
+    buttonColor: purple
     actions:
       tap: "slack"
     config:
@@ -23,6 +26,7 @@ buttons:
       label: Slack
   - position: 3
     type: "core:action"
+    buttonColor: cyan
     actions:
       tap: "discord"
     config:
@@ -30,15 +34,105 @@ buttons:
       label: Discord
   - position: 4
     type: "core:action"
+    buttonColor: magenta
     actions:
       tap: "teams"
     config:
-      icon: icon://users
+      icon: icon://video
       label: Teams
   - position: 5
     type: "core:action"
+    buttonColor: amber
     actions:
-      tap: "google-meet"
+      tap: "zoom"
     config:
       icon: icon://video
-      label: Google Meet
+      label: Zoom
+  - position: 6
+    type: "core:action"
+    buttonColor: lime
+    actions:
+      tap: "firefox"
+    config:
+      icon: icon://globe
+      label: Firefox
+  - position: 7
+    type: "core:action"
+    buttonColor: blue
+    actions:
+      tap: "spotify"
+    config:
+      icon: icon://music
+      label: Spotify
+  - position: 8
+    type: "core:action"
+    buttonColor: green
+    actions:
+      tap: "terminal"
+    config:
+      icon: icon://terminal
+      label: Terminal
+  - position: 9
+    type: "core:action"
+    buttonColor: purple
+    actions:
+      tap: "telegram"
+    config:
+      icon: icon://message-circle
+      label: Telegram
+  - position: 10
+    type: "core:action"
+    buttonColor: cyan
+    actions:
+      tap: "thunderbird"
+    config:
+      icon: icon://mail
+      label: Thunderbird
+  - position: 11
+    type: "core:action"
+    buttonColor: magenta
+    actions:
+      tap: "whatsapp"
+    config:
+      icon: icon://message-circle
+      label: WhatsApp
+  - position: 12
+    type: "core:action"
+    buttonColor: amber
+    actions:
+      tap: "signal"
+    config:
+      icon: icon://message-square
+      label: Signal
+  - position: 13
+    type: "core:action"
+    buttonColor: lime
+    actions:
+      tap: "gimp"
+    config:
+      icon: icon://image
+      label: GIMP
+  - position: 14
+    type: "core:action"
+    buttonColor: blue
+    actions:
+      tap: "obsidian"
+    config:
+      icon: icon://book
+      label: Obsidian
+  - position: 15
+    type: "core:action"
+    buttonColor: green
+    actions:
+      tap: "calculator"
+    config:
+      icon: icon://calculator
+      label: Calculator
+  - position: 16
+    type: "core:action"
+    buttonColor: purple
+    actions:
+      tap: "kitty"
+    config:
+      icon: icon://terminal
+      label: Kitty

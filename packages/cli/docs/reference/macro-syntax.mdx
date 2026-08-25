@@ -1,46 +1,51 @@
 ---
-title: Macro Syntax
-description: Keyboard shortcut expressions
+title: Action Syntax
+description: Keyboard macros and text input
 audience: developer
 order: 5
 tags: [macro, keyboard, shortcuts, reference]
 ---
 
-# Macro Syntax
+# Action Syntax
 
-Keyboard shortcut expressions for the `type://` protocol.
+Two protocols for sending input: `type://` for literal text and `macro://` for keystroke combos.
 
-## Basic Syntax
+## type:// Protocol
 
-### Text Input
-
-Send literal text:
+Sends literal text — characters are typed verbatim. No key-name parsing, no combo recognition.
 
 ```yaml
 actions:
   tap: "type://hello world"
+  tap: "type://🔥"
+  tap: "type://:smile:"
 ```
+
+## macro:// Protocol
+
+Sends keystroke combos and named keys with optional delays.
 
 ### Single Keys
 
-Send a single key:
-
 ```yaml
 actions:
-  tap: "type://enter"
-  tap: "type://tab"
-  tap: "type://space"
+  tap: "macro://Escape"
+  tap: "macro://Tab"
+  tap: "macro://Return"
+  tap: "macro://space"
+  tap: "macro://Up"
+  tap: "macro://Down"
+  tap: "macro://Left"
+  tap: "macro://Right"
 ```
 
 ### Key Combinations
 
-Send modifier + key:
-
 ```yaml
 actions:
-  tap: "type://ctrl+c"
-  tap: "type://ctrl+shift+p"
-  tap: "type://cmd+space"
+  tap: "macro://ctrl+c"
+  tap: "macro://ctrl+shift+p"
+  tap: "macro://cmd+space"
 ```
 
 ### Platform-Specific
@@ -49,7 +54,7 @@ Different shortcuts per OS:
 
 ```yaml
 actions:
-  tap: 'type://{"all":"ctrl+shift+p","osx":"cmd+shift+p","windows":"ctrl+shift+p"}'
+  tap: 'macro://{"all":"ctrl+shift+p","osx":"cmd+shift+p","windows":"ctrl+shift+p"}'
 ```
 
 ## Delay
@@ -58,26 +63,35 @@ Insert delays between actions:
 
 ```yaml
 actions:
-  tap: "type://ctrl+c; delay(100ms); ctrl+v"
+  tap: "macro://ctrl+a; delay(100ms); ctrl+c; delay(50ms); Down; ctrl+v"
 ```
 
 ## Modifier Keys
 
-### Linux/macOS
-
 - `ctrl` or `control`
 - `alt`
-- `cmd` (macOS only)
-- `super` or `win`
 - `shift`
-
-### All Platforms
-
 - `cmd` → `Command` (macOS), `Control` (Linux)
-- `ctrl` → `Control` (all)
-- `alt` → `Alt` (all)
-- `shift` → `Shift` (all)
-- `super` → `Super` (Linux), `Command` (macOS)
+- `super` or `win`
+
+## Key Names
+
+Named keys use XKB names (case-insensitive):
+
+| Label        | Valid names                                                                                                                          |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Escape       | `Escape`, `esc`, `escape`                                                                                                            |
+| Tab          | `Tab`, `tab`                                                                                                                         |
+| Return/Enter | `Return`, `enter`                                                                                                                    |
+| Backspace    | `BackSpace`, `backspace`, `bs`                                                                                                       |
+| Delete       | `Delete`, `del`, `delete`                                                                                                            |
+| Space        | `space`                                                                                                                              |
+| Home/End     | `Home`, `End`                                                                                                                        |
+| Arrow keys   | `Up`, `Down`, `Left`, `Right`                                                                                                        |
+| Page Up/Dn   | `Page_Up`, `Page_Down`                                                                                                               |
+| Insert       | `Insert`, `ins`                                                                                                                      |
+| Function     | `F1`–`F24`                                                                                                                           |
+| Symbols      | `comma`, `period`, `slash`, `minus`, `plus`, `equal`, `grave`, `semicolon`, `apostrophe`, `bracketleft`, `bracketright`, `backslash` |
 
 ## Common Shortcuts
 
@@ -91,46 +105,3 @@ actions:
 | Close           | `ctrl+w`       | `cmd+w`       | `ctrl+w`       |
 | Quit            | `ctrl+q`       | `cmd+q`       | `alt+f4`       |
 | Command Palette | `ctrl+shift+p` | `cmd+shift+p` | `ctrl+shift+p` |
-
-## Emoji Input
-
-Emoji are sent via clipboard:
-
-```yaml
-actions:
-  tap: "type://🔥"
-  tap: "type://😀"
-```
-
-## Action Reference
-
-### type:// Protocol
-
-```yaml
-# Literal text
-type://text here
-
-# Single key
-type://keyname
-
-# Key combination
-type://ctrl+key
-
-# Platform-specific
-type://{"linux":"...","osx":"...","windows":"..."}
-```
-
-### delay() Function
-
-```yaml
-# Delay in milliseconds
-delay(100ms)
-delay(1s)
-```
-
-### Combined Example
-
-```yaml
-actions:
-  tap: "type://ctrl+a; delay(50ms); ctrl+c; delay(50ms); down; ctrl+v"
-```

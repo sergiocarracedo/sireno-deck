@@ -132,3 +132,71 @@ describe("createLogger format selection", () => {
     }
   })
 })
+
+describe("createLogger component binding", () => {
+  beforeEach(() => {
+    delete process.env["INVOCATION_ID"]
+    delete process.env["LAUNCH_JOB_NAME"]
+    delete process.env["JOURNAL_STREAM"]
+    delete process.env["SIRENO_DAEMON_CHILD"]
+  })
+
+  it("binds component as a child logger field when option is set", () => {
+    Object.defineProperty(process.stdout, "isTTY", { value: true })
+    const captured: string[] = []
+    const origWrite = process.stdout.write.bind(process.stdout)
+    process.stdout.write = ((chunk: string | Buffer): boolean => {
+      captured.push(typeof chunk === "string" ? chunk : chunk.toString("utf8"))
+      return true
+    }) as typeof process.stdout.write
+    try {
+      const logger = createLogger({ json: false, component: "runtime" })
+      logger.info("hello")
+    } finally {
+      process.stdout.write = origWrite
+    }
+    const all = captured.join("")
+    expect(all).toContain("[runtime]")
+  })
+
+  it("forwards curated context fields through the sireno:log event in human mode", async () => {
+    Object.defineProperty(process.stdout, "isTTY", { value: true })
+    const captured: string[] = []
+    const origWrite = process.stdout.write.bind(process.stdout)
+    process.stdout.write = ((chunk: string | Buffer): boolean => {
+      captured.push(typeof chunk === "string" ? chunk : chunk.toString("utf8"))
+      return true
+    }) as typeof process.stdout.write
+    const listener = vi.fn()
+    process.on("sireno:log", listener)
+    try {
+      const logger = createLogger({ json: false, component: "runtime" })
+      logger.info(
+        {
+          deckId: "main",
+          position: 4,
+          gesture: "tap",
+          addonName: "system-status",
+        },
+        "[runtime] invokeAction resolved",
+      )
+    } finally {
+      process.stdout.write = origWrite
+      process.removeListener("sireno:log", listener)
+    }
+    const writes = captured.join("")
+    expect(writes).toContain("[runtime]")
+    expect(writes).toContain("invokeAction resolved")
+    expect(listener).toHaveBeenCalledTimes(1)
+    const payload = listener.mock.calls[0]?.[0] as
+      | Record<string, unknown>
+      | undefined
+    expect(payload).toBeDefined()
+    expect(payload?.["msg"]).toBe("[runtime] invokeAction resolved")
+    expect(payload?.["component"]).toBe("runtime")
+    expect(payload?.["deckId"]).toBe("main")
+    expect(payload?.["position"]).toBe(4)
+    expect(payload?.["gesture"]).toBe("tap")
+    expect(payload?.["addonName"]).toBe("system-status")
+  })
+})

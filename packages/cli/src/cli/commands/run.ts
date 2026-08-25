@@ -1,6 +1,6 @@
 import { exec } from "node:child_process"
 import { existsSync, mkdirSync, writeFileSync } from "node:fs"
-import { homedir } from "node:os"
+import { homedir, networkInterfaces } from "node:os"
 import {
   basename,
   dirname,
@@ -17,9 +17,8 @@ import { AddonRegistry } from "@/addon/registry"
 import { registerBuiltins } from "@/builtin-addons"
 import { registerSystemStatusAddon } from "@/builtin-addons/system-status"
 import { decksChanged } from "@/config/config-diff"
-import { findConfigPath } from "@/config/discovery"
-import { getOriginalCwd } from "@/cli/cwd"
 import { loadConfig } from "@/config/loader"
+import { resolveConfigPath, resolveXdgConfigHome } from "./pipeline/helpers"
 import {
   formatFullIssues,
   validateButton,
@@ -45,9 +44,11 @@ import {
 import { createKeyMacroProvider } from "@/system/providers/key-macro"
 import { createNotificationProvider } from "@/system/providers/notification"
 import { createSessionProvider } from "@/system/providers/session"
+import type { CommandExecutor } from "@/system/providers/shared"
 import {
   checkRequirements,
   formatCapabilityWarning,
+  type SystemCapability,
 } from "@/system/requirements"
 import { copyThemeAssets, resolveActiveTheme } from "@/themes/loader"
 import { resolveAddonCacheDir } from "@/util/cache-paths"
@@ -63,29 +64,43 @@ import { ConfigWatcher } from "@/core/watcher"
 import { bridgeAddonServices } from "@/deck/addon-handler-bridge"
 import {
   buildDeckConfigMessage,
+  buildDeckTree,
   buildResolverOptions,
   type AddonFrontendRef,
 } from "@/deck/deck-config"
 import { getHostContext } from "@/deck/host-context"
 import { StatePublisher } from "@/render/state-publisher"
-import { startWsBridge } from "@/render/ws-bridge"
+import { startWsBridge, type WsBridge } from "@/render/ws-bridge"
 
 import {
   selectOutputClient,
   type OutputClient,
   type OutputHandle,
 } from "@/outputClient"
+import type { AddonInventoryEntry } from "@/api/protocol-internal"
 import { loadDeviceConfig } from "@/util/device-config"
+import { readToken } from "@/util/daemon"
 import { materializeAddonDecks } from "./addon-decks"
 import {
   collectBuiltinAddonRegistry,
   type ScannedAddon,
   type ScannedButtonType,
+  type ScannedDeck,
 } from "./addon-registry"
-import { findWorkspaceRoot } from "./emulator-mode"
+import { resolveFrontendCwd } from "./emulator-mode"
+import { selectLanAddresses } from "./network-bind"
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void
+  // ponytail: SIGUSR1 is the in-place-reload primitive (production's
+  // systemctl reload-or-restart and the dev `pnpm dev reload` both send
+  // it). Without a registered handler, Node's default action for SIGUSR1
+  // is to terminate the process — meaning every `reload` call today is
+  // a latent daemon crash. Wire the handler so SIGUSR1 triggers a
+  // runtime.invalidate() (re-broadcast deck-config + nudge the
+  // BrowserRenderer's screenshot tick). Tests construct their own
+  // SignalProvider; update them to supply onReload too.
+  onReload(handler: () => void): () => void
 }
 
 export const defaultSignals: SignalProvider = {
@@ -97,13 +112,22 @@ export const defaultSignals: SignalProvider = {
       process.off("SIGTERM", handler)
     }
   },
+  onReload(handler: () => void): () => void {
+    // ponytail: use `process.on` (not `process.once`) so the handler stays
+    // registered across reloads. `process.once` would fire once and then the
+    // second SIGUSR1 would fall through to Node's default (terminate).
+    // The returned unregister calls `process.off`, which works the same
+    // for either form — we just need the listener to persist.
+    process.on("SIGUSR1", handler)
+    return () => process.off("SIGUSR1", handler)
+  },
 }
 
 export interface RunOptions {
   readonly config?: string
   readonly port?: number
   readonly emulator?: boolean
-  readonly dev?: boolean
+  readonly remote?: boolean
   readonly deviceModel?: string
   readonly frontendUrl?: string
   readonly intervalMs?: number
@@ -113,6 +137,7 @@ export interface RunOptions {
   readonly onChildren?: (pids: ReadonlyArray<number>) => void
   readonly onAddonsUpdate?: (addons: ReadonlyArray<ScannedAddon>) => void
   readonly logger: pino.Logger
+  token?: string
 }
 
 export interface SetupAddonServicesOptions {
@@ -128,10 +153,7 @@ export interface SetupAddonServicesOptions {
     StatePublisher,
     "registerChannel" | "setActiveDeck"
   >
-  readonly bridge: Pick<
-    ReturnType<typeof startWsBridge>,
-    "broadcast" | "registerCacheablePoller"
-  >
+  readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
   readonly isCompact: boolean
   readonly initialDeck?: RuntimeDeck
   readonly signal: AbortSignal
@@ -141,7 +163,6 @@ export interface SetupAddonServicesOptions {
   // type here would re-import a stale pre-existing module
   // (`@/render/icon-resolver`) that doesn't exist on disk.
   readonly resolverOptions: ReturnType<typeof buildResolverOptions>
-  readonly configPath?: string
 }
 
 export interface SetupAddonServicesResult {
@@ -153,7 +174,7 @@ const collectActiveDeckAddonNames = (
   addonByType: Map<string, AddonFrontendRef>,
 ): string[] => {
   const addonNames = new Set<string>()
-  for (const button of deck.buttons) {
+  for (const button of deck.buttons ?? []) {
     const entry = addonByType.get(button.type)
     if (entry !== undefined) addonNames.add(entry.name)
   }
@@ -180,7 +201,6 @@ export const setupAddonServices = (
     methods,
     logger,
     resolverOptions,
-    configPath,
   } = options
 
   void bridgeAddonServices({
@@ -196,7 +216,6 @@ export const setupAddonServices = (
     bridge,
     store,
     methods,
-    configPath,
   })
 
   const unsubscribeDeck = pubSub.subscribe(
@@ -244,6 +263,7 @@ export const setupAddonServices = (
         {
           navStackDepth: runtime.navStackDepth(),
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+          inOverlayMode: runtime.getOverlay() !== null,
         },
         undefined,
         isCompact,
@@ -268,6 +288,7 @@ export const setupAddonServices = (
         {
           navStackDepth: runtime.navStackDepth(),
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+          inOverlayMode: runtime.getOverlay() !== null,
         },
         undefined,
         isCompact,
@@ -306,6 +327,7 @@ export const setupAddonServices = (
       runtime.getAvailableOverlayDeckIcon(),
       runtime.getAvailableOverlayDeckName(),
       isCompact,
+      runtime.getOverlay() !== null,
     ].join("|")
     if (key === lastHeartbeatKey) return
     lastHeartbeatKey = key
@@ -316,6 +338,7 @@ export const setupAddonServices = (
       {
         navStackDepth: runtime.navStackDepth(),
         hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+        inOverlayMode: runtime.getOverlay() !== null,
       },
       undefined,
       isCompact,
@@ -412,6 +435,7 @@ interface LoadConfigAndThemeResult {
   }
   readonly themeDir: string
   readonly decks: ReadonlyArray<RuntimeDeck>
+  readonly sourceDecks: ReadonlyArray<RuntimeDeck>
   readonly pubSub: PubSub
   readonly runtime: Runtime
   readonly methods: Methods
@@ -483,7 +507,12 @@ const loadExternalAddonsIntoRegistry = async (
 export const validateAndLoadConfig = async (
   options: RunOptions,
 ): Promise<LoadConfigResult> => {
-  const configPath = resolveConfigPath(options)
+  const resolved = resolveConfigPath(options)
+  const configPath = resolved.path
+  options.logger.info(
+    { configPath, source: resolved.source },
+    `start: using config ${configPath} (source: ${resolved.source})`,
+  )
   const { config } = loadConfig({ configPath })
   const registry = new AddonRegistry()
   registerBuiltins(registry)
@@ -538,12 +567,7 @@ export const validateAndLoadConfig = async (
         ? resolvePath(dirname(configPath), config.theme)
         : config.theme,
   })
-  const themeDir: string = resolvePath(
-    findWorkspaceRoot(),
-    "packages",
-    "cli",
-    "frontend",
-  )
+  const themeDir: string = resolveFrontendCwd()
   const cssContent: string = getCss()
   if (cssContent.length > 0) {
     const cssDir = join(themeDir, ".sireno-deck")
@@ -578,7 +602,7 @@ export const buildAddonConfigOverrides = (
   {
     addonWideConfig: Record<string, unknown>
     perDeck: Map<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
-    defaults?: { autoShow?: boolean }
+    defaults: { autoShow?: boolean } | undefined
   }
 > => {
   const overrides = new Map<
@@ -589,6 +613,7 @@ export const buildAddonConfigOverrides = (
         string,
         import("@/cli/commands/addon-decks").AddonDeckOverride
       >
+      defaults: { autoShow?: boolean } | undefined
     }
   >()
   for (const entry of addonEntries) {
@@ -649,6 +674,7 @@ const buildRuntime = (
   options: RunOptions,
   loaded: LoadConfigResult,
   keyCount: number,
+  lockActive: boolean = false,
 ): LoadConfigAndThemeResult => {
   const { logger } = options
   const { config, registry, theme, themeDir } = loaded
@@ -666,9 +692,10 @@ const buildRuntime = (
         objectButtons,
         keyCount,
         logger,
-      ).map((b, idx) => ({
-        id: b.position?.toString() ?? `b${idx}`,
+      ).map((b) => ({
+        id: `${b.position}-${id}-0`,
         type: b.type,
+        ...(b.position !== undefined ? { position: b.position } : {}),
         ...(typeof b.config === "object" && b.config !== null
           ? { config: b.config }
           : {}),
@@ -676,6 +703,7 @@ const buildRuntime = (
         ...(b.variant !== undefined && b.variant.length > 0
           ? { variant: b.variant }
           : {}),
+        ...(b.buttonColor !== undefined ? { buttonColor: b.buttonColor } : {}),
       }))
       const processNames =
         d.trigger?.process_name !== undefined
@@ -691,15 +719,12 @@ const buildRuntime = (
           : undefined
       const sharedDeckFields = {
         isMain: id === "main",
-        isOverlay:
-          (processNames !== undefined && processNames.length > 0) ||
-          (windowNames !== undefined && windowNames.length > 0),
         ...(processNames !== undefined ? { processNames } : {}),
         ...(windowNames !== undefined ? { windowNames } : {}),
         ...(d.autoShow === true ? { autoShow: true } : {}),
         ...(d.icon !== undefined ? { icon: d.icon } : {}),
       }
-      if (d.paginated === true && runtimeButtons.length > 0) {
+      if (runtimeButtons.length > keyCount - 1) {
         const pages = paginateDeck({
           baseDeckId: id,
           buttons: runtimeButtons,
@@ -709,10 +734,26 @@ const buildRuntime = (
           const mappedButtons: RuntimeDeck["buttons"] = (
             p.deck.buttons ?? []
           ).map((b, i) => {
-            const { position, type, config, ...rest } = b as {
+            const {
+              position,
+              type,
+              config,
+              buttonColor,
+              id: _btnId,
+              ...rest
+            } = b as {
               position?: number
               type: string
               config?: unknown
+              buttonColor?:
+                | "blue"
+                | "green"
+                | "purple"
+                | "cyan"
+                | "magenta"
+                | "amber"
+                | "lime"
+              id?: string
             }
             const mergedConfig = {
               ...(typeof config === "object" && config !== null
@@ -721,9 +762,10 @@ const buildRuntime = (
               ...rest,
             }
             return {
-              id: position !== undefined ? String(position) : String(i),
+              id: `${position}-${id}-${p.pageIndex}`,
               type,
               ...(position !== undefined ? { position } : {}),
+              ...(buttonColor !== undefined ? { buttonColor } : {}),
               ...(Object.keys(mergedConfig).length > 0
                 ? { config: mergedConfig }
                 : {}),
@@ -762,17 +804,17 @@ const buildRuntime = (
     decks.length > 0
       ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
-  const allDecsWithSystemButtons = injectSystemButtons(
-    materializeAddonDecks(
-      registry,
-      effectiveDecks,
-      logger,
-      keyCount,
-      config.lock?.buttons,
-      addonConfigOverrides,
-    ),
+  const sourceDecks = materializeAddonDecks(
+    registry,
+    effectiveDecks,
+    logger,
     keyCount,
+    config.lock?.buttons,
+    addonConfigOverrides,
   )
+  const allDecsWithSystemButtons = injectSystemButtons(sourceDecks, keyCount, {
+    lockActive,
+  })
   const { decks: allDecks, errorsByDeck } = applyConfigErrorReplacements(
     allDecsWithSystemButtons,
     config,
@@ -794,6 +836,7 @@ const buildRuntime = (
     },
     themeDir,
     decks: allDecks,
+    sourceDecks,
     pubSub,
     runtime,
     methods,
@@ -836,20 +879,16 @@ export const applyConfigErrorReplacements = (
   >()
 
   for (const deck of decks) {
-    for (const btn of deck.buttons) {
+    for (const btn of deck.buttons ?? []) {
       // ponytail: skip addon-injected decks — their buttons have semantic ids
       // (e.g. brightness-down, app-info, back) and `internal:true` services;
       // re-validating them via the user-config schema always fails.
       const isAddonInjectedDeck = deck.id.startsWith("internal-settings:")
       if (isAddonInjectedDeck) continue
-      const parsed = Number.parseInt(btn.id, 10)
-      const position =
-        btn.position ?? (Number.isFinite(parsed) ? parsed : undefined)
+      const position = btn.position
       if (position === undefined) continue
       // ponytail: skip system buttons — they are injected, not user-configured
       if (btn.type.startsWith("core:")) continue
-      // ponytail: skip addon-injected buttons (semantic id like 'brightness-down')
-      if (!Number.isFinite(parsed)) continue
 
       const path = `decks.${deck.id}.buttons[@position:${position}]`
       const { issues, schemaIssues } = validateButton(
@@ -891,15 +930,13 @@ export const applyConfigErrorReplacements = (
     if (brokenMap === undefined || brokenMap.size === 0) return deck
     const errors: DeckButtonError[] = []
     const buttons = deck.buttons.map((btn) => {
-      const parsed = Number.parseInt(btn.id, 10)
-      const position =
-        btn.position ?? (Number.isFinite(parsed) ? parsed : undefined)
+      const position = btn.position
       if (position === undefined) return btn
       const broken = brokenMap.get(position)
       if (broken === undefined) return btn
       errors.push({ position, details: broken.details })
       return {
-        id: String(position),
+        id: `${position}-${deck.id}-0`,
         type: "core:temporary-error" as const,
         position,
         config: { details: broken.details },
@@ -933,7 +970,7 @@ const startSystemProviders = async (
 ): Promise<SystemProviders> => {
   const { logger } = options
   const { spawn } = await import("node:child_process")
-  const executor = {
+  const executor: CommandExecutor = {
     async run(
       command: string,
       args: ReadonlyArray<string>,
@@ -965,7 +1002,6 @@ const startSystemProviders = async (
             exitCode: timedOut ? -1 : (code ?? -1),
             stdout,
             stderr,
-            elapsedMs: Date.now() - start,
           })
         }
         proc.on("error", (err) => {
@@ -974,7 +1010,6 @@ const startSystemProviders = async (
             exitCode: -1,
             stdout,
             stderr: stderr ? `${stderr}\n${err.message}` : err.message,
-            elapsedMs: Date.now() - start,
           })
         })
         proc.on("exit", onExit)
@@ -1079,21 +1114,7 @@ export const addonSpecFromScanned = (s: ScannedAddon) => ({
 // message can flow straight into a prop without further mapping.
 export const addonInventoryFromScanned = (
   s: ScannedAddon,
-): {
-  name: string
-  path?: string
-  internal: boolean
-  source: string
-  buttonTypes: Array<{ type: string; internal: boolean }>
-  defaultButton: string | null
-  decks: Array<{
-    id: string
-    isOverlay: boolean
-    paginated: boolean
-    buttons: number
-    internal: boolean
-  }>
-} => ({
+): AddonInventoryEntry => ({
   name: s.name,
   ...(s.path !== undefined ? { path: s.path } : {}),
   internal: s.internal === true,
@@ -1105,8 +1126,8 @@ export const addonInventoryFromScanned = (
   defaultButton: s.defaultButton ?? null,
   decks: s.decks.map((d) => ({
     id: d.id,
-    isOverlay: d.isOverlay,
-    paginated: d.paginated,
+    isOverlay: false,
+    paginated: d.hasTrigger,
     buttons: d.buttons,
     internal: d.internal,
   })),
@@ -1159,35 +1180,43 @@ export const buildExternalScannedAddons = (
         internal: def.service?.internal === true || def.internal === true,
       }
     }
-    const decks: Array<{
-      id: string
-      isOverlay: boolean
-      paginated: boolean
-      buttons: number
-      internal: boolean
-    }> = []
+    const decks: ScannedDeck[] = []
     for (const entry of manifest.decks ?? []) {
       if (typeof entry.createDecks === "function") {
         decks.push({
           id: `${manifest.name}:__multi__`,
-          isOverlay: false,
-          paginated: true,
+          hasTrigger: false,
+          paginated: false,
           buttons: -1,
           internal: entry.internal ?? false,
         })
       } else if (typeof entry.createDeck === "function") {
+        const trigger = (entry as { trigger?: unknown }).trigger as
+          | Record<string, unknown>
+          | undefined
+        const hasTrigger =
+          trigger !== undefined &&
+          (trigger["process_name"] !== undefined ||
+            trigger["window_name"] !== undefined)
         decks.push({
           id: entry.id,
-          isOverlay: entry.isOverlay ?? false,
-          paginated: entry.paginated ?? false,
+          hasTrigger,
+          paginated: hasTrigger,
           buttons: -1,
           internal: entry.internal ?? false,
         })
       } else {
+        const trigger = (entry as { trigger?: unknown }).trigger as
+          | Record<string, unknown>
+          | undefined
+        const hasTrigger =
+          trigger !== undefined &&
+          (trigger["process_name"] !== undefined ||
+            trigger["window_name"] !== undefined)
         decks.push({
           id: entry.id,
-          isOverlay: entry.isOverlay ?? false,
-          paginated: entry.paginated ?? false,
+          hasTrigger,
+          paginated: hasTrigger,
           buttons: Array.isArray(entry.buttons) ? entry.buttons.length : 0,
           internal: entry.internal ?? false,
         })
@@ -1276,50 +1305,6 @@ export const buildExternalAddonDirs = (
   return result
 }
 
-export const preflight = async (options: RunOptions): Promise<void> => {
-  const { logger } = options
-  // Validate the config first so a broken YAML exits before we ever touch
-  // hardware or spawn an emulator.
-  await validateAndLoadConfig(options)
-  let outputClient = selectOutputClient({
-    emulator: options.emulator === true,
-    xdgConfigHome: resolveXdgConfigHome(options),
-  })
-  // ponytail: when running on real hardware with no device attached, prompt
-  // the user to fall back to --emulator instead of failing hard. TTY only —
-  // non-interactive callers (CI, scripts) keep the original "no device"
-  // error. The fallback mutates `options.emulator` so runPipeline re-uses
-  // the same RunOptions and re-selects the emulator client.
-  if (outputClient.kind === "real") {
-    const devices = await outputClient.listDevices()
-    if (devices.length === 0) {
-      if (!process.stdin.isTTY) {
-        throw new Error(
-          "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules for vendor 0fd9 may be required — see packages/cli/src/device/linux-udev.ts for the rule file template.",
-        )
-      }
-      const { confirm } = await import("@inquirer/prompts")
-      const fallback = await confirm({
-        message: "No Stream Deck found. Start in --emulator mode instead?",
-        default: true,
-      })
-      if (fallback) {
-        logger.info("no Stream Deck detected; falling back to --emulator mode")
-        ;(options as { emulator?: boolean }).emulator = true
-        outputClient = selectOutputClient({
-          emulator: true,
-          xdgConfigHome: resolveXdgConfigHome(options),
-        })
-      } else {
-        throw new Error(
-          "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules for vendor 0fd9 may be required — see packages/cli/src/device/linux-udev.ts for the rule file template.",
-        )
-      }
-    }
-  }
-  await outputClient.validateReady()
-}
-
 export const runPipeline = async (options: RunOptions): Promise<void> => {
   const { logger } = options
 
@@ -1353,6 +1338,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   let outputHandle: OutputHandle | null = null
   let currentOutputHandle: OutputHandle | null = null
   let unregisterSignal: (() => void) | null = null
+  let unregisterReload: (() => void) | null = null
+  let unsubscribeLockMode: (() => void) | null = null
   let removeServiceLogListener: (() => void) | null = null
 
   try {
@@ -1387,8 +1374,19 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     addonBundle = await buildAddonBundle()
 
-    bridge = await startWsBridge({ port: 52937 })
-    const wsPort = bridge.port
+    const remote = options.remote === true
+    const lanAddresses = remote
+      ? selectLanAddresses({ networkInterfaces: networkInterfaces })
+      : []
+    const lanHost = remote ? lanAddresses[0]?.address : undefined
+    const bridgeHost: "127.0.0.1" | "0.0.0.0" = remote ? "0.0.0.0" : "127.0.0.1"
+
+    bridge = await startWsBridge({
+      port: 52937,
+      host: bridgeHost,
+      ...(lanHost !== undefined ? { lanHost } : {}),
+      expectedToken: readToken() ?? "",
+    })
 
     // ponytail: register external addon dirs (from config's `addons:` list) so
     // `addon://<name>/assets/icon.png` resolves for overlay deck icons. The
@@ -1403,6 +1401,57 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       [dirname(loadedConfig.configPath)],
       externalAddonDirs,
     )
+
+    // ponytail: gate the n-1 system button on the session's lock state from
+    // the first frame. The startup injection in buildRuntime ran before the
+    // session provider existed; if the OS is locked at boot, re-inject
+    // without the n-1 so the deck structure is honest. Re-inject on every
+    // subsequent lock transition so the source stays correct.
+    const reInjectedDecks = (isLocked: boolean): ReadonlyArray<RuntimeDeck> =>
+      injectSystemButtons(loaded.sourceDecks, descriptor!.keyCount, {
+        lockActive: isLocked,
+      })
+    const broadcastActiveDeck = (): void => {
+      const activeDeck = runtime!.getActiveDeck()
+      if (activeDeck === undefined) return
+      const msg = buildDeckConfigMessage(
+        activeDeck,
+        addonBundle!.addonByType,
+        resolverOptions,
+        {
+          navStackDepth: runtime!.navStackDepth(),
+          hasOverlayDeckAvailable: runtime!.hasOverlayDeckAvailable(),
+          inOverlayMode: runtime!.getOverlay() !== null,
+        },
+        descriptor!.keyCount,
+        outputClient!.kind === "real",
+        (fullPath) => getAssetByPath(fullPath)?.id,
+        runtime!.getAvailableOverlayDeckIcon(),
+        runtime!.getAvailableOverlayDeckName(),
+        { lockActive: runtime!.isLockActive() },
+      )
+      bridge!.broadcast(msg)
+    }
+    if (providers.session.getState() === "locked") {
+      const reInjected = reInjectedDecks(true)
+      runtime.setDecks(reInjected)
+      decks = reInjected
+      broadcastActiveDeck()
+    }
+    unsubscribeLockMode = pubSub.subscribe("runtime:lock-mode", (payload) => {
+      const isLocked =
+        typeof payload === "object" &&
+        payload !== null &&
+        (payload as { active?: unknown }).active === true
+      const reInjected = reInjectedDecks(isLocked)
+      runtime!.setDecks(reInjected)
+      decks = reInjected
+      // ponytail: runtime:setDecks publishes runtime:activeDeck, but the
+      // deck-id-equality dedup in the bridge subscriber skips the
+      // re-broadcast when the active deck id is unchanged. Force a fresh
+      // broadcast so the wire filter sees the lock state on the new decks.
+      broadcastActiveDeck()
+    })
 
     bridgeSignal = new AbortController()
     statePublisher = new StatePublisher({ bridge, logger })
@@ -1429,6 +1478,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       ),
     )
 
+    const mainDeckId = mainDeck?.id ?? "main"
+    bridge.setDeckTree(buildDeckTree(decks, mainDeckId))
+
     addonServices = setupAddonServices({
       runtime,
       methods,
@@ -1449,13 +1501,12 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       signal: bridgeSignal.signal,
       store,
       logger,
-      configPath: loadedConfig.configPath,
     })
     addonServicesDispose = () => addonServices?.dispose()
 
     for (const deck of decks) {
       registerDeckIcon(deck, resolverOptions, logger)
-      registerIconForDeck(deck.buttons, resolverOptions, logger)
+      registerIconForDeck(deck.buttons ?? [], resolverOptions, logger)
     }
 
     bridge.onConnection((socket) => {
@@ -1480,27 +1531,30 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           }),
         )
       }
-      const activeDeck = runtime.getActiveDeck()
+      const activeDeck = runtime!.getActiveDeck()
       if (activeDeck !== undefined) {
         const msg = buildDeckConfigMessage(
           activeDeck,
-          addonBundle.addonByType,
+          addonBundle!.addonByType,
           resolverOptions,
           {
-            navStackDepth: runtime.navStackDepth(),
-            hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+            navStackDepth: runtime!.navStackDepth(),
+            hasOverlayDeckAvailable: runtime!.hasOverlayDeckAvailable(),
+            inOverlayMode: runtime!.getOverlay() !== null,
           },
-          descriptor.keyCount,
-          outputClient.kind === "real",
+          descriptor!.keyCount,
+          outputClient!.kind === "real",
           (fullPath) => getAssetByPath(fullPath)?.id,
-          runtime.getAvailableOverlayDeckIcon(),
-          runtime.getAvailableOverlayDeckName(),
-          { lockActive: runtime.isLockActive() },
+          runtime!.getAvailableOverlayDeckIcon(),
+          runtime!.getAvailableOverlayDeckName(),
+          { lockActive: runtime!.isLockActive() },
         )
         logger.info(
           {
             deckId: msg.deckId,
-            buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
+            buttonCount: (
+              msg.surfaces[msg.deckId] as { buttons?: unknown[] } | undefined
+            )?.buttons?.length,
           },
           "orchestrator: sending deck-config",
         )
@@ -1512,12 +1566,34 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       level: string
       msg: string
       ts: number
+      component?: string
+      deckId?: string
+      position?: number
+      addonName?: string
+      gesture?: "tap" | "dbl-tap" | "hold"
+      keyIndex?: number
     }) => {
-      bridge.broadcast({
+      bridge!.broadcast({
         type: "service-log",
-        level: entry.level,
+        level: entry.level as
+          | "debug"
+          | "error"
+          | "fatal"
+          | "info"
+          | "trace"
+          | "warn",
         msg: entry.msg,
         ts: entry.ts,
+        ...(entry.component !== undefined
+          ? { component: entry.component }
+          : {}),
+        ...(entry.deckId !== undefined ? { deckId: entry.deckId } : {}),
+        ...(entry.position !== undefined ? { position: entry.position } : {}),
+        ...(entry.addonName !== undefined
+          ? { addonName: entry.addonName }
+          : {}),
+        ...(entry.gesture !== undefined ? { gesture: entry.gesture } : {}),
+        ...(entry.keyIndex !== undefined ? { keyIndex: entry.keyIndex } : {}),
       })
     }
     process.on("sireno:log", onServiceLog)
@@ -1539,7 +1615,12 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       themeDir,
       logger,
       rebuildDecksForKeyCount: (keyCount: number) =>
-        buildRuntime(options, loadedConfig, keyCount).decks,
+        buildRuntime(
+          options,
+          loadedConfig!,
+          keyCount,
+          providers?.session.getState() === "locked",
+        ).decks,
       onChildPid: (pid) => {
         if (trackedPids.has(pid)) return
         trackedPids.add(pid)
@@ -1558,6 +1639,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       ...(options.intervalMs !== undefined
         ? { intervalMs: options.intervalMs }
         : {}),
+      remote: options.remote === true,
+      lanHost,
+      lanAddresses: lanAddresses.map((a) => a.address),
     })
 
     currentOutputHandle = outputHandle
@@ -1601,10 +1685,11 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           const rebuilt = buildRuntime(
             options,
             nextLoaded,
-            descriptor.keyCount,
+            descriptor!.keyCount,
+            providers?.session.getState() === "locked",
           ).decks
-          const activeId = runtime.getActiveDeckId()
-          runtime.setDecks(rebuilt)
+          const activeId = runtime!.getActiveDeckId()
+          runtime!.setDecks(rebuilt)
           if (
             !Object.prototype.hasOwnProperty.call(
               nextLoaded.config.decks,
@@ -1615,30 +1700,33 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
               nextLoaded.config.decks["main"] !== undefined
                 ? "main"
                 : (Object.keys(nextLoaded.config.decks)[0] ?? activeId)
-            runtime.navigateToDeck(fallback, { addToHistory: false })
+            runtime!.navigateToDeck(fallback, { addToHistory: false })
           }
-          const activeDeck = runtime.getActiveDeck()
+          const activeDeck = runtime!.getActiveDeck()
           const msg = buildDeckConfigMessage(
             activeDeck,
-            addonBundle.addonByType,
+            addonBundle!.addonByType,
             resolverOptions,
             {
-              navStackDepth: runtime.navStackDepth(),
-              hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+              navStackDepth: runtime!.navStackDepth(),
+              hasOverlayDeckAvailable: runtime!.hasOverlayDeckAvailable(),
+              inOverlayMode: runtime!.getOverlay() !== null,
             },
-            descriptor.keyCount,
-            outputClient.kind === "real",
+            descriptor!.keyCount,
+            outputClient!.kind === "real",
             (fullPath) => getAssetByPath(fullPath)?.id,
-            runtime.getAvailableOverlayDeckIcon(),
-            runtime.getAvailableOverlayDeckName(),
-            { lockActive: runtime.isLockActive() },
+            runtime!.getAvailableOverlayDeckIcon(),
+            runtime!.getAvailableOverlayDeckName(),
+            { lockActive: runtime!.isLockActive() },
           )
-          bridge.broadcast(msg)
+          bridge!.broadcast(msg)
           currentLoadedConfig = nextLoaded
           logger.info(
             {
               deckId: msg.deckId,
-              buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
+              buttonCount: (
+                msg.surfaces[msg.deckId] as { buttons?: unknown[] } | undefined
+              )?.buttons?.length,
             },
             "config hot-reloaded (decks only)",
           )
@@ -1654,7 +1742,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           "config change outside decks — broadcasting iframe-reload",
         )
         currentLoadedConfig = nextLoaded
-        bridge.broadcast({ type: "iframe-reload" })
+        bridge!.broadcast({ type: "iframe-reload" })
       } catch (err) {
         logger.warn(
           { err: (err as Error).message },
@@ -1676,12 +1764,26 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       logger.info("received signal, shutting down")
       resolveDone()
     })
+    // ponytail: SIGUSR1 is the in-place-reload signal. The reload command
+    // (CLI side) and `systemctl reload-or-restart` both send it. The
+    // handler triggers runtime.invalidate() which publishes
+    // `runtime:invalidate` on the pubsub — the BrowserRenderer subscribes
+    // to that and triggers a screenshot tick, so connected frontends
+    // re-render on demand without a full preflight re-run.
+    unregisterReload = signals.onReload(() => {
+      logger.info("runtime: reloaded via SIGUSR1")
+      // runtime is non-null here: buildRuntime assigned it at line ~1379,
+      // and the reload handler only fires after this point.
+      if (runtime !== null) runtime.invalidate()
+    })
 
     await done
   } finally {
     if (unregisterSignal !== null) unregisterSignal()
+    if (unregisterReload !== null) unregisterReload()
     if (bridgeSignal !== null) bridgeSignal.abort()
     if (addonServicesDispose !== null) addonServicesDispose()
+    if (unsubscribeLockMode !== null) unsubscribeLockMode()
     if (statePublisher !== null) statePublisher.stopAll()
     if (
       options.emulator !== true &&
@@ -1716,50 +1818,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   }
 }
 
-const resolveXdgConfigHome = (options: RunOptions): string =>
-  options.xdgConfigHome ??
-  process.env["XDG_CONFIG_HOME"] ??
-  `${options.homeDir ?? homedir()}/.config`
-
-const resolveConfigPath = (options: RunOptions): string => {
-  if (options.config !== undefined) {
-    // ponytail: validate the explicit path up-front. Without this the
-    // daemon would happily boot, then every config-touch (chokidar event,
-    // reload, addon revalidation) would surface a confusing
-    // `ConfigLoadError: Config file not found` against a path the
-    // operator no longer recognises. Surface it once, at startup, so
-    // the failure mode is obvious and the user can fix the --config
-    // flag instead of chasing a phantom error from a deleted worktree.
-    if (!existsSync(options.config)) {
-      throw new Error(
-        `Config file not found: ${options.config}\n` +
-          `  Fix: pass a valid --config path, or remove --config to let sireno-deck auto-discover config.yml.`,
-      )
-    }
-    return options.config
-  }
-  const cwd = getOriginalCwd()
-  const cwdConfig = resolvePath(cwd, "config.yml")
-  if (existsSync(cwdConfig)) {
-    return cwdConfig
-  }
-  const home = options.homeDir ?? homedir()
-  const found = findConfigPath({
-    homeDir: home,
-    ...(options.xdgConfigHome !== undefined
-      ? { xdgConfigHome: options.xdgConfigHome }
-      : {}),
-  })
-  if (found === null) {
-    throw new Error(
-      `Could not find config.yml.\n` +
-        `  Fix: pass --config <path> or create ./config.yml in the current directory.\n` +
-        `  Also looked in: ~/.config/sireno-deck/config.yml (and walked up from ${cwd}).`,
-    )
-  }
-  return found
-}
-
+void resolveXdgConfigHome
 void exec
 
 export const run = runPipeline

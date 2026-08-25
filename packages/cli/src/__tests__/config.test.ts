@@ -417,7 +417,7 @@ describe("findConfigPath", () => {
     ).toBeNull()
   })
 
-  it("walks up parent directories to find config.yml", () => {
+  it("does not walk up parent directories", () => {
     const root = makeTempDir()
     const child = join(root, "packages", "cli")
     mkdirSync(child, { recursive: true })
@@ -425,28 +425,27 @@ describe("findConfigPath", () => {
       join(root, DEFAULT_CONFIG_FILENAME),
       "decks:\n  main:\n    buttons: []\n",
     )
-    expect(findConfigPath({ cwd: child, homeDir: "/tmp" })).toBe(
-      join(root, DEFAULT_CONFIG_FILENAME),
-    )
+    expect(findConfigPath({ cwd: child, homeDir: "/tmp" })).toBeNull()
   })
 
-  it("respects maxDepth when walking up parents", () => {
-    const root = makeTempDir()
-    const deep = join(root, "a", "b", "c", "d", "e", "f", "g", "h", "i", "j")
-    mkdirSync(deep, { recursive: true })
+  it("prefers XDG over cwd when both exist", () => {
+    const xdg = makeTempDir()
+    const dir = makeTempDir()
+    mkdirSync(join(xdg, "sireno-deck"), { recursive: true })
     writeFileSync(
-      join(root, DEFAULT_CONFIG_FILENAME),
+      join(xdg, "sireno-deck", DEFAULT_CONFIG_FILENAME),
+      "decks:\n  main:\n    buttons: []\n",
+    )
+    writeFileSync(
+      join(dir, DEFAULT_CONFIG_FILENAME),
       "decks:\n  main:\n    buttons: []\n",
     )
     expect(
-      findConfigPath({ cwd: deep, homeDir: "/tmp", maxDepth: 3 }),
-    ).toBeNull()
-    expect(findConfigPath({ cwd: deep, homeDir: "/tmp", maxDepth: 20 })).toBe(
-      join(root, DEFAULT_CONFIG_FILENAME),
-    )
+      findConfigPath({ cwd: dir, homeDir: "/tmp", xdgConfigHome: xdg }),
+    ).toBe(join(xdg, "sireno-deck", DEFAULT_CONFIG_FILENAME))
   })
 
-  it("stops walking up at the filesystem root", () => {
+  it("returns null at the filesystem root when nothing matches", () => {
     expect(findConfigPath({ cwd: "/", homeDir: "/tmp" })).toBeNull()
   })
 })

@@ -123,19 +123,66 @@ const allKnownKeys: ReadonlySet<string> = seedAlphaKeys()
 
 export const isValidKey = (name: string): boolean => allKnownKeys.has(name)
 
+const SYMBOL_TO_NAME: Readonly<Record<string, string>> = {
+  ",": "comma",
+  ".": "period",
+  "/": "slash",
+  "\\": "backslash",
+  ";": "semicolon",
+  "'": "apostrophe",
+  "[": "bracketleft",
+  "]": "bracketright",
+  "-": "minus",
+  "=": "equal",
+  "`": "grave",
+  "@": "at",
+  "#": "numbersign",
+  $: "dollar",
+  "%": "percent",
+  "^": "asciicircum",
+  "&": "ampersand",
+  "*": "asterisk",
+  "(": "parenleft",
+  ")": "parenright",
+  "!": "exclam",
+  ":": "colon",
+  "<": "less",
+  ">": "greater",
+  "?": "question",
+  "~": "asciitilde",
+  _: "underscore",
+  "+": "plus",
+  "|": "bar",
+  "{": "braceleft",
+  "}": "braceright",
+  '"': "quotedbl",
+}
+
 const normalizeKey = (raw: string): string => {
-  if (raw.length === 1) return raw.toLowerCase()
+  if (raw.length === 1) {
+    const mapped = SYMBOL_TO_NAME[raw]
+    if (mapped !== undefined) return mapped
+    return raw.toLowerCase()
+  }
   if (/^[a-zA-Z]$/.test(raw)) return raw.toLowerCase()
   if (/^\d$/.test(raw)) return raw
-  if (/^F\d+$/.test(raw)) return raw.toUpperCase()
-  if (raw === "Esc" || raw === "ESC") return "Escape"
-  if (raw === "Esc") return "Escape"
-  if (raw === "Space" || raw === " ") return "space"
-  if (raw === "Enter" || raw === "CR" || raw === "Return") return "Return"
-  if (raw === "Backspace" || raw === "BS") return "BackSpace"
-  if (raw === "PgUp") return "Page_Up"
-  if (raw === "PgDn") return "Page_Down"
-  if (raw === "Ins") return "Insert"
+  if (/^[fF]\d+$/.test(raw)) return raw.toUpperCase()
+  const lower = raw.toLowerCase()
+  if (lower === "esc" || lower === "escape") return "Escape"
+  if (lower === "tab") return "Tab"
+  if (lower === "space") return "space"
+  if (lower === "enter" || lower === "cr" || lower === "return") return "Return"
+  if (lower === "backspace" || lower === "bs") return "BackSpace"
+  if (lower === "pgup") return "Page_Up"
+  if (lower === "pgdn") return "Page_Down"
+  if (lower === "ins") return "Insert"
+  if (lower === "del" || lower === "delete") return "Delete"
+  if (lower === "up") return "Up"
+  if (lower === "down") return "Down"
+  if (lower === "left") return "Left"
+  if (lower === "right") return "Right"
+  if (lower === "home") return "Home"
+  if (lower === "end") return "End"
   return raw
 }
 

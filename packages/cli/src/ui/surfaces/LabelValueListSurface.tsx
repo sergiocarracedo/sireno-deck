@@ -10,6 +10,7 @@ export interface LabelValueListLine {
   icon?: string
   label: string
   units?: string
+  unitLong?: string
   value: string
 }
 
@@ -34,46 +35,59 @@ function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
     NonNullable<RowTileProps["variant"]>,
     {
       value: TextSize
+      valueLineClass?: string
+      valueTone?: "foreground" | "primary"
+      valueWidthUnits?: TextSize
+      valueMultiline?: boolean
       unit: TextSize
       labelSize?: TextSize
       showLabel?: boolean
       multiline?: boolean
       iconSize?: number
       titleClass?: string
+      unitsClass?: string
+      unitsPosition?: "prev" | "next"
     }
   > = {
     big: {
       value: "5xl",
+      valueWidthUnits: "4xl",
+      valueMultiline: true,
+      unitsClass: "-mt-1 text-center",
       unit: "md",
       showLabel: true,
       multiline: true,
-      iconSize: 23,
+      iconSize: 18,
       titleClass: "items-center justify-center",
       labelSize: "md",
     },
     default: {
-      value: "3xl",
+      value: "xl",
       unit: "sm",
+      multiline: true,
+      unitsPosition: "prev",
       iconSize: 16,
       labelSize: "sm",
+      valueLineClass: "flex -mt-1",
     },
     small: {
       value: "lg",
       unit: "xs",
       iconSize: 14,
+      unitsClass: "max-w-[20%]",
+      valueLineClass: "flex",
     },
   }
 
   const colorStyle = item.color ? { color: item.color } : undefined
   const variantProps = variantsProps[variant]
+
   return (
     <div
       className={cn(!variantProps.multiline && "flex", "items-start")}
       style={{ ...colorStyle }}
     >
-      <div
-        className={cn("flex mt-1 gap-1 items-center", variantProps.titleClass)}
-      >
+      <div className={cn("flex gap-1 items-center", variantProps.titleClass)}>
         {item.icon ? (
           <Icon source={item.icon} size={variantProps.iconSize} />
         ) : null}
@@ -82,22 +96,49 @@ function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
             text={item.label}
             size={variantProps.labelSize ?? "xs"}
             weight="semibold"
-            tone="primary"
+            tone="foreground"
+            fit="autofit"
           />
         ) : null}
+        {variantProps.unitsPosition === "prev" && item.units ? (
+          <div className={cn(variantProps.unitsClass)}>
+            <Text
+              size={variantProps.unit}
+              text={item.units}
+              style={colorStyle}
+            />
+          </div>
+        ) : null}
       </div>
-      <div className="flex-1 flex min-h-0 gap-0.5 justify-end items-baseline">
+      <div
+        className={cn(
+          "flex-1 flex min-w-0 min-h-0 gap-0.5 justify-end items-baseline",
+          variantProps.valueMultiline ? "flex-col items-center" : "",
+          variantProps.valueLineClass,
+        )}
+      >
         <Text
-          size={variantProps.value}
-          weight="bold"
+          size={
+            item.units
+              ? (variantProps.valueWidthUnits ?? variantProps.value)
+              : variantProps.value
+          }
+          weight={variant === "big" ? "normal" : "bold"}
           text={item.value}
-          tone="primary"
+          tone={variantProps.valueTone ?? "primary"}
           style={colorStyle}
           fit="autofit"
         />
 
-        {item.units ? (
-          <Text size={variantProps.unit} text={item.units} />
+        {item.units && variantProps.unitsPosition !== "prev" ? (
+          <div className={cn("shrink-0", variantProps.unitsClass)}>
+            <Text
+              size={variantProps.unit}
+              text={
+                variant === "big" ? (item.unitLong ?? item.units) : item.units
+              }
+            />
+          </div>
         ) : null}
       </div>
     </div>
@@ -142,6 +183,7 @@ export function labelValueListSurfaceBase(
 
   const variant =
     variants[Math.min(props.lines.length, Object.values(variants).length)]
+
   return (
     <div
       className={cn("flex w-full gap-0.5 p-1", "flex-col", props.className)}

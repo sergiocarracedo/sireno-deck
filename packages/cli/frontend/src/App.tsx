@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
 import { token } from "virtual:sireno/token"
 import {
   activeTheme,
@@ -34,6 +34,7 @@ import { DisconnectedOverlay } from "./components/DisconnectedOverlay"
 interface DeckButton {
   id: string
   type: string
+  position?: number
   config: Record<string, unknown>
   full?: boolean
 }
@@ -74,9 +75,18 @@ const resolvePortFromWindow = (): number | undefined => {
 }
 
 const wsUrl = (): string => {
+  if (typeof window === "undefined") return ENV_WS_URL
+  // ponytail: use the page's current hostname so the WS bridge is reachable
+  // from whichever interface the browser used (LAN, Tailscale, VPN, etc.).
+  const hostname = window.location.hostname
   const port = resolvePortFromWindow()
-  if (port !== undefined) return `ws://127.0.0.1:${port}`
-  return ENV_WS_URL
+  if (port !== undefined) return `ws://${hostname}:${port}`
+  try {
+    const parsed = new URL(ENV_WS_URL)
+    return `${parsed.protocol}//${hostname}:${parsed.port}${parsed.pathname}${parsed.search}`
+  } catch {
+    return ENV_WS_URL
+  }
 }
 
 const buildThemeContext = (): ThemeContextValue => {
@@ -230,7 +240,14 @@ const AppContent = () => {
               {
                 name?: string
                 buttons?: DeckButton[]
-                buttonColor?: "blue" | "green" | "purple"
+                buttonColor?:
+                  | "blue"
+                  | "green"
+                  | "purple"
+                  | "cyan"
+                  | "magenta"
+                  | "amber"
+                  | "lime"
                 variant?: string
                 buttonErrors?: ButtonErrorState[]
               }
@@ -309,8 +326,9 @@ const AppContent = () => {
     )
 
     const timer = setInterval(() => {
-      const tickNow = Date.now()
       setDeck((previous) => {
+        if (previous.buttonErrors.length === 0) return previous
+        const tickNow = Date.now()
         const remaining = previous.buttonErrors.filter(
           (error) => error.expiresAt > tickNow,
         )
@@ -345,7 +363,13 @@ const AppContent = () => {
           now={now}
         />
         {assetsReady ? (
-          <Deck deck={deck} deviceModel={deviceModel} />
+          <Routes>
+            <Route
+              path="/decks/:deckId"
+              element={<Deck deck={deck} deviceModel={deviceModel} />}
+            />
+            <Route path="*" element={<Navigate to="/decks/main" replace />} />
+          </Routes>
         ) : (
           <div className="deck-loading" data-testid="deck-loading">
             Loading…

@@ -3,7 +3,7 @@ import { readFileSync, statSync } from "node:fs"
 import { makeAssetId } from "./asset-id"
 import { inferMimeFromPath } from "./mime"
 import { resolveIconSource } from "../render/icon-source-resolver"
-import type { ResolveIconPathOptions } from "../render/icon-resolver"
+import type { ResolveIconPathOptions } from "../render/icon-source-resolver"
 import type { RuntimeButton, RuntimeDeck } from "@/deck"
 import type pino from "pino"
 

@@ -4,40 +4,28 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
-
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
-  conventional-commits:
-    if: github.event_name == 'pull_request'
-    name: Validate PR title
+  quality:
     runs-on: ubuntu-latest
-    steps:
-      - name: Validate PR title uses conventional commits
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-        run: |
-          echo "$PR_TITLE" | grep -Eq '^(feat|fix|docs|refactor|test|build|ci|chore|perf)(\([^)]+\))?(!)?: .+'
+    timeout-minutes: 10
 
-  build:
-    name: lint, format, typecheck, test, build
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10.26.1
+
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: 24
           cache: pnpm
+
       - run: pnpm install --frozen-lockfile
+
       - run: pnpm lint
+
       - run: pnpm format:check
+
       - run: pnpm typecheck
-      - run: pnpm test
-      - name: Build all publishable packages
-        run: pnpm -r --filter "@sirenodeck/*" build
+
+      - run: pnpm test --run

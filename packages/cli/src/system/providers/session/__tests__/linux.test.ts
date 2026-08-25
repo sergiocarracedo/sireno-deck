@@ -30,7 +30,7 @@ const makeBus = (opts: {
 }): {
   bus: LinuxDbusBus
   handlers: Array<(...args: unknown[]) => void>
-  idleMsFn: () => number
+  idleMsFn: ReturnType<typeof vi.fn<() => number>>
 } => {
   const handlers: Array<(...args: unknown[]) => void> = []
   const screenSaver: LinuxDbusInterface = {
@@ -41,7 +41,7 @@ const makeBus = (opts: {
       if (event === "ActiveChanged") handlers.push(handler)
     },
   }
-  const idleMsFn = vi.fn(() => opts.idleMs ?? 0)
+  const idleMsFn = vi.fn<() => number>(() => opts.idleMs ?? 0)
   const idleIface: LinuxDbusInterface = {
     async GetIdletime() {
       return idleMsFn()

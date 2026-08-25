@@ -1,3 +1,5 @@
+import { join } from "node:path"
+
 import type { ArgumentsCamelCase, CommandModule } from "yargs"
 
 import { createLogger } from "@/util/logger"
@@ -6,40 +8,45 @@ import { PACKAGE_NAME } from "@/version"
 import { logsCommand } from "./commands/logs"
 import { reload, type ReloadOptions } from "./commands/reload"
 import { restart, type RestartOptions } from "./commands/restart"
-import { run, type RunOptions } from "./commands/run"
 import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
+import { systemRequirementsCommand } from "./commands/system-requirements"
+import { resolveDaemonPaths } from "@/util/daemon"
+import { snapshotDaemonLog } from "@/util/log-reader"
 import {
-  updateConfig,
-  type UpdateConfigOptions,
-} from "./commands/update-config"
+  buildStartupBanner,
+  printAddonCheckResults,
+  printDaemonEvents,
+  printDaemonUrl,
+  printStartupComplete,
+  printStartupFailed,
+  waitForFullStart,
+  type StartOutcome,
+} from "./startup-display"
+import { runBuiltinAddonChecks } from "@/addon/check-runner"
 
 export interface GlobalOptions {
   verbose?: boolean
   logLevel?: string
+  quiet?: boolean
   json?: boolean
-}
-
-interface RunArgs extends GlobalOptions {
-  config?: string
-  port?: number
-  emulator?: boolean
-  dev?: boolean
-  deviceModel?: string
 }
 
 interface StartArgs extends GlobalOptions {
   config?: string
   port?: number
   emulator?: boolean
+  remote?: boolean
   deviceModel?: string
   httpPort?: number
   logs?: boolean
   system?: boolean
 }
 
-interface StatusArgs extends GlobalOptions {}
+interface StatusArgs extends GlobalOptions {
+  showToken?: boolean
+}
 interface StopArgs extends GlobalOptions {}
 interface LogsArgs extends GlobalOptions {
   follow?: boolean
@@ -51,78 +58,25 @@ interface ReloadArgs extends GlobalOptions {
 interface RestartArgs extends GlobalOptions {
   logs?: boolean
 }
-interface UpdateConfigArgs extends GlobalOptions {
-  config: string
-  reload?: boolean
-  logs?: boolean
-}
 
-const buildLogger = (
+export const buildLogger = (
   argv: ArgumentsCamelCase<GlobalOptions>,
-): ReturnType<typeof createLogger> =>
-  createLogger({
+): ReturnType<typeof createLogger> => {
+  const normalized = argv.logLevel === "none" ? "silent" : argv.logLevel
+  const level =
+    argv.quiet || normalized === "silent"
+      ? "silent"
+      : (normalized ?? (argv.verbose ? "debug" : "info"))
+  return createLogger({
     verbose: argv.verbose,
     json: argv.json ?? false,
-    ...(argv.logLevel !== undefined ? { level: argv.logLevel } : {}),
+    level,
   })
-
-const runCommand: CommandModule<object, RunArgs> = {
-  command: "run",
-  describe: "Run sireno-deck in the foreground (development mode)",
-  builder: (yargs) =>
-    yargs
-      .option("config", { type: "string", description: "Path to config.yml" })
-      .option("port", {
-        type: "number",
-        description: "Port for the local server (0 = random free port)",
-      })
-      .option("emulator", {
-        type: "boolean",
-        default: false,
-        description: "Run in emulator mode",
-      })
-      .option("dev", {
-        type: "boolean",
-        default: false,
-        description: "Enable HMR (vite dev servers)",
-      })
-      .option("device-model", {
-        type: "string",
-        description:
-          "Emulator device model (mk2, plus, mini, xl) — affects keyCount",
-      }),
-  handler: async (argv) => {
-    const logger = buildLogger(argv)
-    const options: RunOptions = {
-      logger,
-      ...(argv.config !== undefined ? { config: argv.config } : {}),
-      ...(argv.port !== undefined ? { port: argv.port } : {}),
-      ...(argv.emulator !== undefined ? { emulator: argv.emulator } : {}),
-      ...(argv.dev !== undefined ? { dev: argv.dev } : {}),
-      ...(argv.deviceModel !== undefined
-        ? { deviceModel: argv.deviceModel }
-        : {}),
-    }
-    try {
-      await run(options)
-    } catch (err) {
-      const e = err as { issues?: unknown; message?: string }
-      const message =
-        e &&
-        typeof e === "object" &&
-        "message" in e &&
-        typeof e.message === "string"
-          ? e.message
-          : "command failed"
-      logger.error({ err }, message)
-      process.exitCode = 1
-    }
-  },
 }
 
 const startCommand: CommandModule<object, StartArgs> = {
   command: "start",
-  describe: "Install (if missing) + start the sireno-deck daemon",
+  describe: "Start the sireno-deck daemon",
   builder: (yargs) =>
     yargs
       .option("config", { type: "string", description: "Path to config.yml" })
@@ -133,7 +87,14 @@ const startCommand: CommandModule<object, StartArgs> = {
       .option("emulator", {
         type: "boolean",
         default: false,
-        description: "Run in emulator mode",
+        description:
+          "Run the emulator (full UI with sidebar, toolbar, device selector) at 127.0.0.1. Browser auto-opens.",
+      })
+      .option("remote", {
+        type: "boolean",
+        default: false,
+        description:
+          "Open the emulator server to LAN clients. Implies --emulator. Binds 0.0.0.0; prints a QR for the deck-only view with token-gated HTTP.",
       })
       .option("device-model", {
         type: "string",
@@ -163,6 +124,7 @@ const startCommand: CommandModule<object, StartArgs> = {
       ...(argv.config !== undefined ? { config: argv.config } : {}),
       ...(argv.port !== undefined ? { port: argv.port } : {}),
       ...(argv.emulator !== undefined ? { emulator: argv.emulator } : {}),
+      ...(argv.remote !== undefined ? { remote: argv.remote } : {}),
       ...(argv.deviceModel !== undefined
         ? { deviceModel: argv.deviceModel }
         : {}),
@@ -170,12 +132,71 @@ const startCommand: CommandModule<object, StartArgs> = {
         ? { httpPort: argv.httpPort as number }
         : {}),
       ...(argv.system === true ? { system: true } : {}),
-      ...(argv.logs === true ? { logs: true } : {}),
     }
     try {
-      await start(options)
+      await buildStartupBanner(
+        {
+          emulator: argv.emulator === true,
+          ...(argv.deviceModel !== undefined
+            ? { deviceModel: argv.deviceModel }
+            : {}),
+          ...(argv.port !== undefined ? { port: argv.port } : {}),
+        },
+        argv,
+      )
+      // ponytail: snapshot the daemon log size BEFORE the daemon's
+      // restart writes anything new. We use this to surface
+      // daemon-emitted warnings inline after the start completes,
+      // without reading the full log history.
+      const logSnapshot = snapshotDaemonLog()
+      const logPath = join(resolveDaemonPaths().runtimeDir, "service.log")
+      const startPromise = start(options)
+      const outcome: StartOutcome = await waitForFullStart({
+        port: options.port ?? 52937,
+        tcpTimeoutMs: 30_000,
+        runtimeTimeoutMs: 30_000,
+        logPath,
+        logSnapshot,
+      })
+      // ponytail: print events the daemon emitted between the snapshot
+      // and now, BEFORE the success/failure line — operator's eye
+      // lands on each one even when stdout is a pipe. Silent on 0
+      // events.
+      printDaemonEvents(outcome.events)
+
+      if (outcome.runtimeReady && outcome.state !== null) {
+        await printDaemonUrl(outcome.state)
+        // ponytail: per-addon requirement checks (playerctl for media, etc.).
+        // Never blocks the daemon — failing checks are surfaced as warnings so
+        // the operator can act on them without digging into the log.
+        printAddonCheckResults(await runBuiltinAddonChecks())
+        printStartupComplete()
+      } else if (outcome.tcpReady) {
+        // ponytail: TCP is bound but the daemon didn't write runtime
+        // state in 30s. The daemon is alive but the runtime pipeline
+        // is still booting (or stuck). Fail loudly with whatever
+        // warnings the daemon emitted so the operator doesn't have to
+        // dig into the log file.
+        const message =
+          "daemon: TCP bound on 52937 but runtime state did not appear in 30s"
+        logger.warn(message)
+        process.exitCode = 1
+        printStartupFailed(message)
+        return
+      } else {
+        // ponytail: TCP never bound. Either the daemon crashed during
+        // boot, or port 52937 is held by an unrelated process. Either
+        // way, the start failed — the operator needs to know.
+        const message = `daemon: port ${options.port ?? 52937} did not accept connections in 30s`
+        logger.warn(message)
+        process.exitCode = 1
+        printStartupFailed(message)
+        return
+      }
+      await startPromise
     } catch (err) {
-      const e = err as { issues?: unknown; message?: string }
+      printStartupFailed(err)
+      const e = err as { issues?: unknown; message?: unknown }
       const message =
         e &&
         typeof e === "object" &&
@@ -202,9 +223,18 @@ const stopCommand: CommandModule<object, StopArgs> = {
 const statusCommand: CommandModule<object, StatusArgs> = {
   command: "status",
   describe: "Check sireno-deck daemon status",
+  builder: (yargs) =>
+    yargs.option("show-token", {
+      type: "boolean",
+      default: false,
+      description: "Include the auth token in the Frontend URL line",
+    }),
   handler: async (argv) => {
     const logger = buildLogger(argv)
-    const options: StatusOptions = { logger }
+    const options: StatusOptions = {
+      logger,
+      showToken: argv.showToken === true,
+    }
     await status(options)
   },
 }
@@ -212,18 +242,9 @@ const statusCommand: CommandModule<object, StatusArgs> = {
 const reloadCommand: CommandModule<object, ReloadArgs> = {
   command: "reload",
   describe: "Send SIGUSR1 to the daemon (in-place reload)",
-  builder: (yargs) =>
-    yargs.option("logs", {
-      type: "boolean",
-      default: false,
-      description: "After reload, follow the service log",
-    }),
   handler: async (argv) => {
     const logger = buildLogger(argv)
-    const options: ReloadOptions = {
-      logger,
-      ...(argv.logs === true ? { logs: true } : {}),
-    }
+    const options: ReloadOptions = { logger }
     await reload(options)
   },
 }
@@ -231,52 +252,10 @@ const reloadCommand: CommandModule<object, ReloadArgs> = {
 const restartCommand: CommandModule<object, RestartArgs> = {
   command: "restart",
   describe: "Restart the sireno-deck daemon",
-  builder: (yargs) =>
-    yargs.option("logs", {
-      type: "boolean",
-      default: false,
-      description: "After restart, follow the service log",
-    }),
   handler: async (argv) => {
     const logger = buildLogger(argv)
-    const options: RestartOptions = {
-      logger,
-      ...(argv.logs === true ? { logs: true } : {}),
-    }
+    const options: RestartOptions = { logger }
     await restart(options)
-  },
-}
-
-const updateConfigCommand: CommandModule<object, UpdateConfigArgs> = {
-  command: "update-config",
-  describe: "Update the config path the daemon uses (restarts)",
-  builder: (yargs) =>
-    yargs
-      .option("config", {
-        type: "string",
-        demandOption: true,
-        description: "Path to config.yml",
-      })
-      .option("reload", {
-        type: "boolean",
-        default: false,
-        description:
-          "Send SIGUSR1 instead of restarting (in-place reload; runtime state preserved)",
-      })
-      .option("logs", {
-        type: "boolean",
-        default: false,
-        description: "After update, follow the service log",
-      }),
-  handler: async (argv) => {
-    const logger = buildLogger(argv)
-    const options: UpdateConfigOptions = {
-      config: argv.config,
-      logger,
-      ...(argv.reload === true ? { reload: true } : {}),
-      ...(argv.logs === true ? { logs: true } : {}),
-    }
-    await updateConfig(options)
   },
 }
 
@@ -285,18 +264,16 @@ export const buildCli = async (): Promise<{
   commands: CommandModule<object, GlobalOptions>[]
   packageName: string
 }> => {
-  void buildLogger
   return {
     scriptName: PACKAGE_NAME,
     commands: [
-      runCommand,
       startCommand,
       stopCommand,
       statusCommand,
       restartCommand,
       reloadCommand,
-      updateConfigCommand,
       logsCommand as CommandModule<object, GlobalOptions>,
+      systemRequirementsCommand as CommandModule<object, GlobalOptions>,
     ],
     packageName: PACKAGE_NAME,
   }

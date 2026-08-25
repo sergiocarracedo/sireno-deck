@@ -35,3 +35,8 @@ export type WeatherSnapshot = {
   readonly hourly?: ReadonlyArray<HourlyForecastEntry>
   readonly daily?: ReadonlyArray<DailyForecastEntry>
 }
+
+/** Aggregate poll result broadcast on `weather:current`, keyed by city. */
+export type WeatherStateSnapshot = {
+  readonly byCity: Readonly<Record<string, WeatherSnapshot>>
+}

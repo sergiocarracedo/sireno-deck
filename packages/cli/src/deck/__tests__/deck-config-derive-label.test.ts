@@ -21,7 +21,7 @@ describe("buildDeckConfigMessage — deriveLabel for core:action", () => {
       false,
       () => undefined,
     )
-    expect(msg.surfaces[deck.id].buttons[0]!.label).toBe("ls -la")
+    expect(msg.surfaces[deck.id]!.buttons[0]!.label).toBe("ls -la")
   })
 
   it("falls back to config.label when command is missing (addon-deck buttons)", () => {
@@ -35,7 +35,7 @@ describe("buildDeckConfigMessage — deriveLabel for core:action", () => {
       false,
       () => undefined,
     )
-    expect(msg.surfaces[deck.id].buttons[0]!.label).toBe("New Tab")
+    expect(msg.surfaces[deck.id]!.buttons[0]!.label).toBe("New Tab")
   })
 
   it("truncates long commands but uses full label", () => {
@@ -49,7 +49,9 @@ describe("buildDeckConfigMessage — deriveLabel for core:action", () => {
       false,
       () => undefined,
     )
-    expect(msgCmd.surfaces[deckCmd.id].buttons[0]!.label).toBe("abcdefghijklm…")
+    expect(msgCmd.surfaces[deckCmd.id]!.buttons[0]!.label).toBe(
+      "abcdefghijklm…",
+    )
 
     const deckLabel = makeDeck({ label: "abcdefghijklmnopqrstuvwxyz" })
     const msgLabel = buildDeckConfigMessage(
@@ -61,7 +63,7 @@ describe("buildDeckConfigMessage — deriveLabel for core:action", () => {
       false,
       () => undefined,
     )
-    expect(msgLabel.surfaces[deckLabel.id].buttons[0]!.label).toBe(
+    expect(msgLabel.surfaces[deckLabel.id]!.buttons[0]!.label).toBe(
       "abcdefghijklmnopqrstuvwxyz",
     )
   })
@@ -77,6 +79,6 @@ describe("buildDeckConfigMessage — deriveLabel for core:action", () => {
       false,
       () => undefined,
     )
-    expect(msg.surfaces[deck.id].buttons[0]!.label).toBeUndefined()
+    expect(msg.surfaces[deck.id]!.buttons[0]!.label).toBeUndefined()
   })
 })

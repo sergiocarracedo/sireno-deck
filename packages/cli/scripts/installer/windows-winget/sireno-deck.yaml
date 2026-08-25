@@ -1,0 +1,17 @@
+# Winget manifest skeleton for sireno-deck. Wired to the GitHub release .exe
+# once the first release exists (InstallerUrl below is tag-driven).
+# Validate with: winget validate --manifest . ; winget install --manifest .
+PackageIdentifier: sireno-deck.SirenoDeck
+PackageVersion: 0.1.0
+PackageLocale: en-US
+Publisher: sireno-deck
+PackageName: SirenoDeck
+License: Proprietary
+ShortDescription: Config-driven Stream Deck controller
+Installers:
+  - Architecture: x64
+    InstallerType: inno
+    InstallerUrl: https://github.com/sireno-deck/sireno-deck/releases/download/v0.1.0/sireno-deck-0.1.0-windows-x64.exe
+    InstallerSha256: REPLACE_WITH_SHA256_OF_RELEASE_EXE
+ManifestType: singleton
+ManifestVersion: 1.6.0

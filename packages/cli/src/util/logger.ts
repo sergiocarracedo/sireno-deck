@@ -1,5 +1,6 @@
 import { Writable } from "node:stream"
 
+import { log } from "@clack/prompts"
 import pino, {
   type Logger,
   type LoggerOptions,
@@ -10,12 +11,16 @@ export interface CreateLoggerOptions {
   level?: LoggerOptions["level"]
   verbose?: boolean
   json?: boolean
+  component?: string
 }
 
 const RESET = "\u001b[0m"
 const DIM = "\u001b[2m"
 const RED = "\u001b[31m"
+const GREEN = "\u001b[32m"
 const YELLOW = "\u001b[33m"
+const BLUE = "\u001b[34m"
+const MAGENTA = "\u001b[35m"
 const CYAN = "\u001b[36m"
 const GRAY = "\u001b[90m"
 
@@ -40,6 +45,31 @@ const LEVEL_LABEL: Record<number, string> = {
 const colorize = (color: string, text: string): string =>
   process.stdout.isTTY ? `${color}${text}${RESET}` : text
 
+const COMPONENT_COLOR: Record<string, string> = {
+  runtime: CYAN,
+  methods: CYAN,
+  executor: CYAN,
+  "state-publisher": CYAN,
+  real: GREEN,
+  emulator: GREEN,
+  "ws-bridge": MAGENTA,
+  "addon-handler": MAGENTA,
+  "active-app": YELLOW,
+  "key-macro": YELLOW,
+  clipboard: YELLOW,
+  notification: YELLOW,
+  session: YELLOW,
+  "browser-renderer": BLUE,
+  "emulator-server": BLUE,
+  daemon: BLUE,
+  requirements: BLUE,
+  orchestrator: CYAN,
+  cli: GRAY,
+}
+
+const colorForComponent = (component: string): string =>
+  COMPONENT_COLOR[component] ?? GRAY
+
 const CONTEXT_FIELDS = [
   "frontendUrl",
   "wsUrl",
@@ -62,6 +92,15 @@ const CONTEXT_FIELDS = [
   "fullPath",
 ] as const
 
+const FORWARDED_CONTEXT_FIELDS = [
+  "component",
+  "deckId",
+  "position",
+  "addonName",
+  "gesture",
+  "keyIndex",
+] as const
+
 export const formatHuman = (jsonLine: string): string | null => {
   let entry: Record<string, unknown>
   try {
@@ -73,12 +112,18 @@ export const formatHuman = (jsonLine: string): string | null => {
   const level = LEVEL_LABEL[levelNum] ?? "INFO"
   const levelColor = LEVEL_COLOR[levelNum] ?? CYAN
   const msg = typeof entry["msg"] === "string" ? entry["msg"] : ""
-  const time =
-    typeof entry["time"] === "number"
-      ? new Date(entry["time"]).toISOString().slice(11, 19)
-      : ""
-  const ts = colorize(DIM, time.length > 0 ? `${time} ` : "")
+  // ponytail: operator-facing logs drop the [HH:MM:SS] prefix and the
+  // continuation-line indent. Timestamps belong in service.log (where the
+  // structured `time` field stays intact for forensics); the terminal only
+  // needs enough info to read the line at a glance.
   const head = colorize(levelColor, level.padEnd(5))
+
+  const component =
+    typeof entry["component"] === "string" ? entry["component"] : ""
+  const componentTag =
+    component.length > 0
+      ? ` ${colorize(colorForComponent(component), `[${component}]`)}`
+      : ""
 
   const ctxParts: string[] = []
   for (const key of CONTEXT_FIELDS) {
@@ -100,9 +145,17 @@ export const formatHuman = (jsonLine: string): string | null => {
     }
   }
   const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
-  return `${ts}${head} ${msg}${ctxStr}`
+  return `${head}${componentTag} ${msg}${ctxStr}`
 }
 
+// ponytail: CLI startup logs (between intro/outro) should use the same
+// clack tool as the banner: log.info / log.warn / log.error. Those tools
+// render with a dim │ border + level-appropriate icon (● / ▲ / ■) and no
+// "INFO"/"WARN" text label — matching the banner's visual language.
+// HumanWritable maps pino levels to those tools so `logger.info(...)`
+// calls made between intro() and outro() automatically get the border and
+// icon. Outside a banner (or when stdout is not a TTY), fall back to the
+// plain formatHuman line so piped output stays greppable.
 class HumanWritable extends Writable {
   override _write(
     chunk: Buffer | string,
@@ -111,8 +164,53 @@ class HumanWritable extends Writable {
   ): void {
     const text = typeof chunk === "string" ? chunk : chunk.toString("utf8")
     const lines = text.split("\n")
+    const useClack = process.stdout.isTTY && !isServiceMode()
     for (const line of lines) {
       if (line.length === 0) continue
+      if (useClack) {
+        let entry: Record<string, unknown> | null = null
+        try {
+          entry = JSON.parse(line) as Record<string, unknown>
+        } catch {
+          // not JSON — fall back to plain
+        }
+        if (
+          entry !== null &&
+          typeof entry["level"] === "number" &&
+          typeof entry["msg"] === "string"
+        ) {
+          const levelNum = entry["level"] as number
+          const component =
+            typeof entry["component"] === "string"
+              ? ` [${entry["component"]}]`
+              : ""
+          // ponytail: keep CONTEXT_FIELDS + err inline so operators still see
+          // deckId / position / err details on the terminal, just without the
+          // "INFO"/"WARN" text label — the icon + color from log.* conveys level.
+          const ctxParts: string[] = []
+          for (const key of CONTEXT_FIELDS) {
+            const value = entry[key]
+            if (value === undefined || value === null) continue
+            const display =
+              typeof value === "string" ? value : JSON.stringify(value)
+            if (display.length === 0) continue
+            ctxParts.push(`${key}: ${display}`)
+          }
+          const err = entry["err"]
+          if (err !== null && typeof err === "object") {
+            const e = err as { type?: unknown; message?: unknown }
+            const errType = typeof e.type === "string" ? e.type : "Error"
+            const errMsg = typeof e.message === "string" ? e.message : ""
+            if (errMsg.length > 0) ctxParts.push(`err: ${errType}: ${errMsg}`)
+          }
+          const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
+          const msg = `${entry["msg"] as string}${component}${ctxStr}`
+          if (levelNum >= 50) log.error(msg)
+          else if (levelNum >= 40) log.warn(msg)
+          else log.info(msg)
+          continue
+        }
+      }
       const formatted = formatHuman(line)
       if (formatted !== null) {
         process.stdout.write(`${formatted}\n`)
@@ -180,7 +278,7 @@ export const isServiceMode = createIsServiceMode({
 })
 
 export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
-  const { level, verbose = false, json = false } = options
+  const { level, verbose = false, json = false, component } = options
 
   if (verbose) process.env["SIRENO_LOG_VERBOSE"] = "1"
   if (json) process.env["SIRENO_LOG_JSON"] = "1"
@@ -199,6 +297,13 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
     },
   }
 
+  if (component === undefined) {
+    return makeLogger(loggerOptions, wantRaw)
+  }
+  return makeLogger(loggerOptions, wantRaw).child({ component })
+}
+
+const makeLogger = (loggerOptions: LoggerOptions, wantRaw: boolean): Logger => {
   if (wantRaw) {
     return pino(loggerOptions)
   }
@@ -212,6 +317,12 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
           level?: number
           time?: number
           msg?: string
+          component?: unknown
+          deckId?: unknown
+          position?: unknown
+          addonName?: unknown
+          gesture?: unknown
+          keyIndex?: unknown
         }
         if (
           typeof parsed.level === "number" &&
@@ -220,13 +331,21 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
         ) {
           const levelName = levelNameFromNumber(parsed.level)
           if (levelName !== null) {
+            const payload: Record<string, unknown> = {
+              level: levelName,
+              msg: parsed.msg,
+              ts: parsed.time,
+            }
+            for (const key of FORWARDED_CONTEXT_FIELDS) {
+              const v = parsed[key]
+              if (v === undefined || v === null) continue
+              if (typeof v === "string" || typeof v === "number") {
+                payload[key] = v
+              }
+            }
             ;(process.emit as unknown as (e: string, p: unknown) => void)(
               "sireno:log",
-              {
-                level: levelName,
-                msg: parsed.msg,
-                ts: parsed.time,
-              },
+              payload,
             )
           }
         }

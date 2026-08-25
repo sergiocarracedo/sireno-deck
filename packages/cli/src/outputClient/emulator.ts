@@ -1,4 +1,4 @@
-import { exec } from "node:child_process"
+import { execFile } from "node:child_process"
 import { platform } from "node:os"
 
 import type pino from "pino"
@@ -10,6 +10,7 @@ import type {
 } from "@/api/protocol-internal"
 import { resolveKeyCount } from "@/device/models"
 import type { DeviceDescriptor } from "@/device/registry"
+import { writeRuntimeState, type RuntimeState } from "@/util/daemon"
 
 import {
   DEFAULT_EMULATOR_PORT,
@@ -21,6 +22,7 @@ import {
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
 import {
+  DEFAULT_VITE_RETRY_SCHEDULE_MS,
   supervise,
   type SuperviseHandle,
 } from "../cli/commands/subprocess-supervisor"
@@ -41,7 +43,7 @@ const openBrowser = (url: string, logger: pino.Logger): void => {
   const os = platform()
   const cmd = os === "win32" ? "cmd" : os === "darwin" ? "open" : "xdg-open"
   const args = os === "win32" ? ["/c", "start", "", url] : [url]
-  exec(cmd, args, (err) => {
+  execFile(cmd, args, (err) => {
     if (err !== null) {
       logger.debug(
         { err: err.message },
@@ -95,8 +97,13 @@ export class EmulatorOutputClient implements OutputClient {
       )
     }
     const descriptor = this.descriptor
-    const logger = opts.logger
+    const logger = opts.logger.child({ component: "emulator" })
     let shuttingDown = false
+
+    const remote = opts.remote === true
+    const host: "127.0.0.1" | "0.0.0.0" = remote ? "0.0.0.0" : "127.0.0.1"
+    const token = process.env["SIRENO_TOKEN"] ?? ""
+    const requireToken = remote ? token : undefined
 
     // ponytail: supervise each vite child independently — frontend crash
     // respawns only the frontend, emulator crash respawns only the emulator.
@@ -117,6 +124,7 @@ export class EmulatorOutputClient implements OutputClient {
         : await supervise({
             label: "frontend vite",
             kill: killChild,
+            delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
             spawn: async () => {
               const r = await spawnFrontendVite({
                 port: DEFAULT_FRONTEND_PORT,
@@ -125,6 +133,8 @@ export class EmulatorOutputClient implements OutputClient {
                 readyTimeoutMs: DEFAULT_TIMEOUT_MS,
                 logger,
                 wsUrl: opts.bridge.url,
+                host,
+                ...(requireToken !== undefined ? { requireToken } : {}),
                 ...(opts.onChildPid !== undefined
                   ? { onPid: opts.onChildPid }
                   : {}),
@@ -140,6 +150,7 @@ export class EmulatorOutputClient implements OutputClient {
     const emulatorSupervisor = await supervise({
       label: "emulator vite",
       kill: killChild,
+      delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
       spawn: async () => {
         const r = await spawnEmulatorVite({
           port: DEFAULT_EMULATOR_PORT,
@@ -148,8 +159,10 @@ export class EmulatorOutputClient implements OutputClient {
           readyTimeoutMs: DEFAULT_TIMEOUT_MS,
           logger,
           wsUrl: opts.bridge.url,
+          host,
           frontendUrl:
             opts.frontendUrl ?? `http://127.0.0.1:${DEFAULT_FRONTEND_PORT}`,
+          ...(requireToken !== undefined ? { requireToken } : {}),
           ...(opts.onChildPid !== undefined ? { onPid: opts.onChildPid } : {}),
         })
         emulatorUrl = r.url
@@ -197,7 +210,7 @@ export class EmulatorOutputClient implements OutputClient {
         return
       }
       if (!isButtonAction(message)) return
-      logger.info(
+      logger.debug(
         {
           deckId: message.deckId,
           position: message.position,
@@ -249,10 +262,42 @@ export class EmulatorOutputClient implements OutputClient {
       },
       "emulator mode ready",
     )
-    process.stdout.write(
-      `\n  Emulator:  ${emulatorUrl}\n  Frontend:  ${frontendUrl}\n\n`,
-    )
-    openBrowser(emulatorUrl, logger)
+    if (remote) {
+      process.stdout.write(`\n  Emulator:  ${emulatorUrl}\n\n`)
+      const lanHost = opts.lanHost ?? "127.0.0.1"
+      const state: RuntimeState = {
+        emulatorUrl,
+        wsUrl: opts.bridge.url,
+        frontendUrl,
+        token,
+        lanHost,
+        addresses: opts.lanAddresses ?? [],
+        emulatorMode: true,
+        remote: true,
+        startedAt: Date.now(),
+        theme: opts.theme.name,
+      }
+      writeRuntimeState(state)
+    } else {
+      process.stdout.write(
+        `\n  Emulator:  ${emulatorUrl}\n  Frontend:  ${frontendUrl}\n\n`,
+      )
+      openBrowser(emulatorUrl, logger)
+      const lanHost = opts.lanHost ?? "127.0.0.1"
+      const state: RuntimeState = {
+        emulatorUrl,
+        wsUrl: opts.bridge.url,
+        frontendUrl,
+        token,
+        lanHost,
+        addresses: opts.lanAddresses ?? [],
+        emulatorMode: true,
+        remote: false,
+        startedAt: Date.now(),
+        theme: opts.theme.name,
+      }
+      writeRuntimeState(state)
+    }
 
     opts.runtime.setBrightness(opts.runtime.getBrightness())
 

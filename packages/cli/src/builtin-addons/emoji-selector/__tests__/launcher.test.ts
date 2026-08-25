@@ -19,7 +19,8 @@ const makeCtx = (
       executor: { run: vi.fn() } as never,
       signal: new AbortController().signal,
       store: { buttonScope: vi.fn() } as never,
-    },
+      position: 9,
+    } as never,
     publish,
   }
 }

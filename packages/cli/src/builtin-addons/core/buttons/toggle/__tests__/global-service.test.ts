@@ -38,6 +38,7 @@ const makeCtx = (
     poll,
     signal: new AbortController().signal,
     executor: { run: runMock } as unknown as AddonServiceContext["executor"],
+    notify: async () => undefined,
   }
 }
 
@@ -48,6 +49,7 @@ const baseCtx = (): AddonServiceContext => ({
   executor: {
     run: vi.fn(async () => ({ exitCode: 0, stdout: "", stderr: "" })),
   } as unknown as AddonServiceContext["executor"],
+  notify: async () => undefined,
 })
 
 describe("core:toggle global service", () => {

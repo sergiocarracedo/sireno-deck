@@ -26,18 +26,19 @@ const makeExecutor = (
     tool: string,
     args: ReadonlyArray<string>,
   ) => { exitCode: number; stdout?: string; stderr?: string },
-): CommandExecutor => ({
-  async run(tool: string, args: ReadonlyArray<string>) {
-    if (tool === "which") {
-      return {
-        exitCode: 0,
-        stdout: `/usr/bin/${args[0]}`,
-        stderr: "",
+): CommandExecutor =>
+  ({
+    async run(tool: string, args: ReadonlyArray<string>) {
+      if (tool === "which") {
+        return {
+          exitCode: 0,
+          stdout: `/usr/bin/${args[0]}`,
+          stderr: "",
+        }
       }
-    }
-    return handler(tool, [...args])
-  },
-})
+      return handler(tool, [...args])
+    },
+  }) as unknown as CommandExecutor
 
 describe("createLinuxClipboardProvider", () => {
   it("writeText pipes to wl-copy via sh -c", async () => {

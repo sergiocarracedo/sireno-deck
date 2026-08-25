@@ -1,6 +1,9 @@
-import { METRICS_CATALOG } from "../shared/metrics-catalog"
-
-import { SYSTEM_METRIC_IDS } from "../shared/metrics-catalog"
+import {
+  METRICS_CATALOG,
+  SYSTEM_METRIC_IDS,
+  type MetricColor,
+  type MetricThreshold,
+} from "../shared/metrics-catalog"
 
 export { SYSTEM_METRIC_IDS }
 

@@ -6,6 +6,8 @@ import {
   type DeviceModelSpec,
 } from "@/device/models"
 
+import { token } from "virtual:sireno/token"
+
 import {
   createWsClient,
   serializeHello,
@@ -18,6 +20,7 @@ import { BridgeLogsPage } from "./pages/BridgeLogsPage"
 import { ServiceLogsPage } from "./pages/ServiceLogsPage"
 import { AddonsPage, type AddonInventory } from "./pages/AddonsPage"
 import { ConfigPage } from "./pages/ConfigPage"
+import { DecksPage } from "./pages/DecksPage"
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
   "ws://127.0.0.1:52937") as string
@@ -67,6 +70,7 @@ const SECTIONS = [
   "bridge-logs",
   "service-logs",
   "addons",
+  "decks",
   "config",
 ] as const
 
@@ -79,11 +83,17 @@ export const App = ({
   initialSection = "device",
 }: AppProps = {}): React.ReactElement => {
   const [activeSection, setActiveSection] = useState<string>(initialSection)
+  const [deckOnly] = useState<boolean>(
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("deckOnly") === "1",
+  )
   const [connectionStatus, setConnectionStatus] =
     useState<WsStatus>("connecting")
   const [disconnectedSince, setDisconnectedSince] = useState<number | null>(
     null,
   )
+  const [deckScale, setDeckScale] = useState(1)
   useEffect(() => {
     disconnectedSinceRef.current = disconnectedSince
   }, [disconnectedSince])
@@ -99,13 +109,19 @@ export const App = ({
   const [addonInventory, setAddonInventory] = useState<AddonInventory | null>(
     null,
   )
+  const [deckTree, setDeckTree] = useState<{
+    rootId: string
+    decks: unknown[]
+  } | null>(null)
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(() =>
     initialDeviceModel !== undefined && isKnownDeviceModel(initialDeviceModel)
       ? getDeviceModel(initialDeviceModel)
       : DEFAULT_DEVICE_MODEL,
   )
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const clientRef = useRef<WsClient | null>(null)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  const deckContainerRef = useRef<HTMLDivElement | null>(null)
   // ponytail: ignore the first `closed` after an `open` — happens during
   // WS-replacement that some React navigations trigger. Latch only after a
   // short delay so transient reconnects don't pop the banner.
@@ -116,6 +132,7 @@ export const App = ({
   useEffect(() => {
     clientRef.current = createWsClient({
       url: wsUrl,
+      ...(token !== "" ? { token } : {}),
       onStatus: (status) => {
         const previous = lastStatusRef.current
         lastStatusRef.current = status
@@ -154,7 +171,7 @@ export const App = ({
       wsFactory: (url: string) => {
         const ws = new WebSocket(url)
         ws.addEventListener("open", () => {
-          ws.send(serializeHello())
+          ws.send(serializeHello(token !== "" ? token : undefined))
         })
         return ws as unknown as { send: (d: string) => void; close: () => void }
       },
@@ -186,6 +203,11 @@ export const App = ({
             setAddonInventory({ addons } as AddonInventory)
           }
         }
+        if (m.type === "deck-tree") {
+          if (typeof m.rootId === "string" && Array.isArray(m.decks)) {
+            setDeckTree({ rootId: m.rootId, decks: m.decks })
+          }
+        }
         if (typeof m.type === "string" && m.type.endsWith("error")) {
           setLastError(String(m.type))
         }
@@ -198,14 +220,7 @@ export const App = ({
         }
       },
     })
-    const timer = setInterval(() => {
-      if (disconnectedSinceRef.current === null) {
-        return
-      }
-      setNow(Date.now())
-    }, 250)
     return () => {
-      clearInterval(timer)
       clientRef.current?.close()
       clientRef.current = null
       if (reconnectLatchTimerRef.current !== null) {
@@ -216,11 +231,64 @@ export const App = ({
   }, [wsUrl])
 
   useEffect(() => {
+    if (disconnectedSince === null) return
+    const timer = setInterval(() => setNow(Date.now()), 250)
+    return () => clearInterval(timer)
+  }, [disconnectedSince])
+
+  useEffect(() => {
+    const computeDeckScale = () => {
+      const el = deckContainerRef.current
+      if (el === null || typeof window === "undefined") return
+      // Use the container's actual size (not window.innerWidth/Height) so the
+      // deck scales to the visible viewport, excluding mobile browser chrome.
+      const padding = 32
+      const containerW = el.clientWidth - padding
+      const containerH = el.clientHeight - padding
+      if (containerW <= 0 || containerH <= 0) return
+      const BUTTON_SIZE_PX = 96
+      const BUTTON_GAP_PX = 8
+      const DECK_PADDING_PX = 16
+      const rows = Math.ceil(deviceModel.keyCount / deviceModel.columns)
+      const deckWidth =
+        deviceModel.columns * BUTTON_SIZE_PX +
+        (deviceModel.columns - 1) * BUTTON_GAP_PX +
+        DECK_PADDING_PX * 2
+      const deckHeight =
+        rows * BUTTON_SIZE_PX + (rows - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2
+      setDeckScale(Math.min(containerW / deckWidth, containerH / deckHeight, 1))
+    }
+    computeDeckScale()
+    const ro =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => computeDeckScale())
+        : null
+    if (ro !== null && deckContainerRef.current !== null) {
+      ro.observe(deckContainerRef.current)
+    }
+    window.addEventListener("resize", computeDeckScale)
+    return () => {
+      ro?.disconnect()
+      window.removeEventListener("resize", computeDeckScale)
+    }
+  }, [deviceModel])
+
+  useEffect(() => {
     if (typeof window === "undefined") return
     const hash = window.location.hash.replace(/^#\/?/, "")
     if (isValidSection(hash)) {
       setActiveSection(hash)
     }
+  }, [])
+
+  useEffect(() => {
+    if (typeof document === "undefined") return
+    const handleChange = (): void => {
+      setIsFullscreen(document.fullscreenElement !== null)
+    }
+    document.addEventListener("fullscreenchange", handleChange)
+    handleChange()
+    return () => document.removeEventListener("fullscreenchange", handleChange)
   }, [])
 
   const onSelect = (path: string): void => {
@@ -236,6 +304,7 @@ export const App = ({
     if (activeSection === "service-logs") return <ServiceLogsPage />
     if (activeSection === "addons")
       return <AddonsPage addonInventory={addonInventory} />
+    if (activeSection === "decks") return <DecksPage deckTree={deckTree} />
     if (activeSection === "config") return <ConfigPage />
     return null
   }
@@ -259,6 +328,15 @@ export const App = ({
     clientRef.current?.send(JSON.stringify({ type: "set-device", deviceId }))
   }
 
+  const toggleFullscreen = (): void => {
+    if (typeof document === "undefined") return
+    if (document.fullscreenElement !== null) {
+      void document.exitFullscreen()
+    } else {
+      void document.documentElement.requestFullscreen()
+    }
+  }
+
   const elapsed = disconnectedSince === null ? 0 : now - disconnectedSince
   const showBsod =
     connectionStatus !== "open" &&
@@ -271,48 +349,102 @@ export const App = ({
     <Shell
       activeSection={activeSection}
       onSelect={onSelect}
+      hideSidebar={deckOnly}
       content={
         <>
-          <div className="flex h-full flex-col">
-            <header className="flex shrink-0 items-center gap-4 border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-neutral-400">
-              <span className="truncate text-neutral-500">
-                {deckName || "Awaiting deck-config"}
-              </span>
-              <span className="text-neutral-500">·</span>
-              <span className="truncate" title={wsUrl}>
-                ws: {wsUrl}
-              </span>
-              <span className="text-neutral-500">·</span>
-              <span className="truncate" title={ENV_FRONTEND_URL}>
-                fe: {ENV_FRONTEND_URL}
-              </span>
-              <span className="flex-1" />
-              <DeviceSelector device={deviceModel.id} onChange={setDevice} />
-            </header>
-            <div className="flex flex-1 overflow-hidden">
-              <section className="flex-1 overflow-auto p-4">
-                {activeSection === "device" ? (
-                  deckId === "" ? (
-                    <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
-                      Awaiting deck-config…
-                    </p>
-                  ) : (
+          {deckOnly ? (
+            <div
+              ref={deckContainerRef}
+              className="flex h-full w-full items-center justify-center overflow-hidden p-4"
+            >
+              {activeSection === "device" ? (
+                deckId === "" ? (
+                  <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
+                    Awaiting deck-config…
+                  </p>
+                ) : (
+                  // ponytail: wrap the fixed-size deck so flexbox can't shrink
+                  // it before the scale transform is applied; without shrink-0
+                  // the deck is squeezed to the container width and then scaled
+                  // again, making it far smaller than the intended fit.
+                  <div
+                    className="shrink-0"
+                    style={{
+                      transform: `scale(${deckScale})`,
+                      transformOrigin: "center",
+                    }}
+                  >
                     <DeckFrame
                       frontendUrl={ENV_FRONTEND_URL}
                       device={deviceModel}
                       deckId={deckId}
+                      token={token}
                       onGesture={sendButtonAction}
                       onIframeRef={(el) => {
                         iframeRef.current = el
                       }}
                     />
-                  )
-                ) : (
-                  renderActive()
-                )}
-              </section>
+                  </div>
+                )
+              ) : (
+                renderActive()
+              )}
             </div>
-          </div>
+          ) : (
+            <div className="flex h-full flex-col">
+              <header
+                data-testid="deck-header"
+                className="flex shrink-0 items-center gap-4 border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-neutral-400"
+              >
+                <span className="truncate text-neutral-500">
+                  {deckName || "Awaiting deck-config"}
+                </span>
+                <span className="font-mono text-[10px] text-neutral-600">
+                  #{deckId}
+                </span>
+                <span className="text-neutral-500">·</span>
+                <span className="truncate" title={wsUrl}>
+                  ws: {wsUrl}
+                </span>
+                <span className="text-neutral-500">·</span>
+                <a
+                  href={ENV_FRONTEND_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="truncate text-sky-400 hover:underline"
+                  title={ENV_FRONTEND_URL}
+                >
+                  fe: {ENV_FRONTEND_URL}
+                </a>
+                <span className="flex-1" />
+                <DeviceSelector device={deviceModel.id} onChange={setDevice} />
+              </header>
+              <div className="flex flex-1 overflow-hidden">
+                <section className="flex-1 overflow-auto p-4">
+                  {activeSection === "device" ? (
+                    deckId === "" ? (
+                      <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
+                        Awaiting deck-config…
+                      </p>
+                    ) : (
+                      <DeckFrame
+                        frontendUrl={ENV_FRONTEND_URL}
+                        device={deviceModel}
+                        deckId={deckId}
+                        token={token}
+                        onGesture={sendButtonAction}
+                        onIframeRef={(el) => {
+                          iframeRef.current = el
+                        }}
+                      />
+                    )
+                  ) : (
+                    renderActive()
+                  )}
+                </section>
+              </div>
+            </div>
+          )}
           {showBanner && (
             <div
               data-testid="reconnecting-banner"
@@ -372,6 +504,17 @@ export const App = ({
                 </dl>
               </div>
             </div>
+          )}
+          {deckOnly && (
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+              data-testid="fullscreen-toggle"
+              className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-neutral-800/80 text-[10px] font-medium uppercase tracking-wide text-neutral-100 shadow-lg backdrop-blur hover:bg-neutral-700/80"
+            >
+              {isFullscreen ? "Exit" : "Full"}
+            </button>
           )}
         </>
       }

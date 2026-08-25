@@ -1,4 +1,4 @@
-theme: ./packages/themes/neon-grids
+theme: default
 
 addons:
   - src: ./packages/addons/app-shortcuts
@@ -88,7 +88,7 @@ decks:
       - position: 10
         type: "pomodoro:pomodoro"
         config:
-          durationSec: 1500
+          durationSec: 5
 
       - position: 12
         type: "media:player"
@@ -101,6 +101,7 @@ decks:
 
   demo-decks-index: !include demos/demo-decks-index.yml
   demo-app-shortcuts: !include demos/demo-app-shortcuts.yml
+  demo-app-overlays: !include demos/demo-app-overlays.yml
   demo-system-status: !include demos/demo-system-status.yml
   demo-media: !include demos/demo-media.yml
   demo-weather: !include demos/demo-weather.yml

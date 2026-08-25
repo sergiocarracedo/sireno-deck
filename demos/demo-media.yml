@@ -8,3 +8,87 @@ buttons:
     type: "media:volume:up"
   - position: 3
     type: "media:mute"
+  - position: 4
+    type: "media:player"
+    buttonColor: blue
+  - position: 5
+    type: "media:volume:down"
+    buttonColor: blue
+  - position: 6
+    type: "media:volume:up"
+    buttonColor: blue
+  - position: 7
+    type: "media:mute"
+    buttonColor: blue
+  - position: 8
+    type: "media:player"
+    buttonColor: green
+  - position: 9
+    type: "media:volume:down"
+    buttonColor: green
+  - position: 10
+    type: "media:volume:up"
+    buttonColor: green
+  - position: 11
+    type: "media:mute"
+    buttonColor: green
+  - position: 12
+    type: "media:player"
+    buttonColor: purple
+  - position: 13
+    type: "media:volume:down"
+    buttonColor: purple
+  - position: 14
+    type: "media:volume:up"
+    buttonColor: purple
+  - position: 15
+    type: "media:mute"
+    buttonColor: purple
+  - position: 16
+    type: "media:player"
+    buttonColor: cyan
+  - position: 17
+    type: "media:volume:down"
+    buttonColor: cyan
+  - position: 18
+    type: "media:volume:up"
+    buttonColor: cyan
+  - position: 19
+    type: "media:mute"
+    buttonColor: cyan
+  - position: 20
+    type: "media:player"
+    buttonColor: magenta
+  - position: 21
+    type: "media:volume:down"
+    buttonColor: magenta
+  - position: 22
+    type: "media:volume:up"
+    buttonColor: magenta
+  - position: 23
+    type: "media:mute"
+    buttonColor: magenta
+  - position: 24
+    type: "media:player"
+    buttonColor: amber
+  - position: 25
+    type: "media:volume:down"
+    buttonColor: amber
+  - position: 26
+    type: "media:volume:up"
+    buttonColor: amber
+  - position: 27
+    type: "media:mute"
+    buttonColor: amber
+  - position: 28
+    type: "media:player"
+    buttonColor: lime
+  - position: 29
+    type: "media:volume:down"
+    buttonColor: lime
+  - position: 30
+    type: "media:volume:up"
+    buttonColor: lime
+  - position: 31
+    type: "media:mute"
+    buttonColor: lime

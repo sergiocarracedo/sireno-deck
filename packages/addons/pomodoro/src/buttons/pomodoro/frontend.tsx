@@ -46,7 +46,7 @@ const formatMmSs = (sec: number): string => {
   return `${m}:${s}`
 }
 
-const BLINK_KEYFRAMES = `@keyframes pomodoro-blink { 0%,100% { color: #ef4444; opacity: 1 } 50% { color: #ef4444; opacity: 0.35 } } .pomodoro-blink { color: #ef4444; animation: pomodoro-blink 1s 10 }`
+const BLINK_KEYFRAMES = `@keyframes pomodoro-blink { 0%,100% { color: var(--sireno-color-danger); opacity: 1 } 50% { color: var(--sireno-color-danger); opacity: 0.35 } } .pomodoro-blink { color: var(--sireno-color-danger); animation: pomodoro-blink 1s 10 }`
 
 const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
   const { data } = useAddonChannel<PomodoroSnapshot>(POMO_CHANNEL)
@@ -120,7 +120,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
               </span>
               <Label
                 text={formatMmSs(remainingSec)}
-                variant={finished ? "secondary" : "primary"}
+                variant="primary"
                 lines={2}
                 className="text-2xl"
               />

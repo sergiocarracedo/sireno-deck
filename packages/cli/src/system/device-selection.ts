@@ -1,4 +1,4 @@
-import { select as inquirerSelect } from "@inquirer/prompts"
+import { select as clackSelect } from "@/cli/prompt"
 import type pino from "pino"
 
 import type { DeviceDescriptor } from "@/device/registry"
@@ -25,8 +25,8 @@ export interface SelectDeviceOptions {
 const formatChoice = (
   descriptor: DeviceDescriptor,
   hint: string | undefined,
-): { name: string; value: string; hint?: string } => ({
-  name: descriptor.label,
+): { label: string; value: string; hint?: string } => ({
+  label: descriptor.label,
   value: descriptor.id,
   ...(hint !== undefined ? { hint } : {}),
 })
@@ -69,9 +69,9 @@ export const selectDevice = async (
     return 0
   })
 
-  const selected = await inquirerSelect({
+  const selected = await clackSelect({
     message: "Select a Stream Deck:",
-    choices,
+    options: choices,
   })
 
   const descriptor = options.devices.find((d) => d.id === selected)

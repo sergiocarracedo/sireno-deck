@@ -27,7 +27,7 @@ export class StatePublisher {
 
   constructor(options: StatePublisherOptions) {
     this.bridge = options.bridge
-    this.logger = options.logger
+    this.logger = options.logger.child({ component: "state-publisher" })
   }
 
   registerChannel(channel: StatePublisherChannel): void {

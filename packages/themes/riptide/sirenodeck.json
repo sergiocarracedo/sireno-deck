@@ -11,6 +11,7 @@
     "foreground-contrast": "#0a0e1a",
     "primary": "#f5ff00",
     "accent": "#ff0099",
+    "muted": "#5c6470",
     "success": "#00ff9f",
     "danger": "#ff3355"
   },
@@ -18,48 +19,155 @@
     "default": {
       "background": "#0a0e1a",
       "border": "#1a2540",
-      "foreground": "#fff89e"
+      "foreground": "#fff89e",
+      "tokens": {
+        "primary": "#f5ff00",
+        "accent": "#ff0099",
+        "muted": "#5c6470"
+      }
     },
     "highlighted": {
       "background": "#00d4ff26",
       "border": "#00d4ff8c",
       "foreground": "#fff89e",
-      "glow": "#00d4ff80"
+      "glow": "#00d4ff80",
+      "tokens": {
+        "primary": "#00d4ff",
+        "accent": "#ff0099",
+        "muted": "#5c6470"
+      }
     },
     "warning": {
       "background": "#f5ff0026",
       "border": "#f5ff008c",
       "foreground": "#f5ff00",
-      "glow": "#f5ff0080"
+      "glow": "#f5ff0080",
+      "tokens": {
+        "primary": "#f5ff00",
+        "accent": "#ff0099",
+        "muted": "#5c6470"
+      }
     },
     "success": {
       "background": "#00ff9f26",
       "border": "#00ff9f8c",
       "foreground": "#00ff9f",
-      "glow": "#00ff9f80"
+      "glow": "#00ff9f80",
+      "tokens": {
+        "primary": "#00ff9f",
+        "accent": "#ff0099",
+        "muted": "#5c6470"
+      }
     },
     "error": {
       "background": "#ff335526",
       "border": "#ff33558c",
       "foreground": "#ff3355",
-      "glow": "#ff335580"
+      "glow": "#ff335580",
+      "tokens": {
+        "primary": "#ff3355",
+        "accent": "#ff3355",
+        "muted": "#ff3355"
+      }
     },
     "neon-pink": {
       "background": "#ff009926",
       "border": "#ff0099cc",
       "foreground": "#ff5cb3",
-      "glow": "#ff0099b3"
+      "glow": "#ff0099b3",
+      "tokens": {
+        "primary": "#ff0099",
+        "accent": "#ff5cb3",
+        "muted": "#5c6470"
+      }
+    },
+    "blue": {
+      "background": "#00d4ff26",
+      "border": "#00d4ff8c",
+      "foreground": "#fff89e",
+      "glow": "#00d4ff80",
+      "tokens": {
+        "primary": "#00d4ff",
+        "accent": "#0099cc",
+        "muted": "#5c6470"
+      }
+    },
+    "green": {
+      "background": "#00ff9f26",
+      "border": "#00ff9f8c",
+      "foreground": "#00ff9f",
+      "glow": "#00ff9f80",
+      "tokens": {
+        "primary": "#00ff9f",
+        "accent": "#00cc7f",
+        "muted": "#5c6470"
+      }
+    },
+    "purple": {
+      "background": "#b026ff26",
+      "border": "#b026ff8c",
+      "foreground": "#d896ff",
+      "glow": "#b026ff80",
+      "tokens": {
+        "primary": "#b026ff",
+        "accent": "#8a1fcc",
+        "muted": "#5c6470"
+      }
+    },
+    "cyan": {
+      "background": "#00d4ff26",
+      "border": "#00d4ff8c",
+      "foreground": "#aef9ff",
+      "glow": "#00d4ff80",
+      "tokens": {
+        "primary": "#00d4ff",
+        "accent": "#0099cc",
+        "muted": "#5c6470"
+      }
+    },
+    "magenta": {
+      "background": "#ff00d426",
+      "border": "#ff00d48c",
+      "foreground": "#ff8de8",
+      "glow": "#ff00d480",
+      "tokens": {
+        "primary": "#ff00d4",
+        "accent": "#cc00aa",
+        "muted": "#5c6470"
+      }
+    },
+    "amber": {
+      "background": "#ffa50026",
+      "border": "#ffa5008c",
+      "foreground": "#ffd166",
+      "glow": "#ffa50080",
+      "tokens": {
+        "primary": "#ffa500",
+        "accent": "#cc8400",
+        "muted": "#5c6470"
+      }
+    },
+    "lime": {
+      "background": "#b9ff0026",
+      "border": "#b9ff008c",
+      "foreground": "#b9ff00",
+      "glow": "#b9ff0080",
+      "tokens": {
+        "primary": "#b9ff00",
+        "accent": "#95cc00",
+        "muted": "#5c6470"
+      }
     }
   },
   "typography": {
     "main_text": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "Bitcount Single",
       "fontSize": 12,
       "fontWeight": 700,
       "letterSpacing": 0.4
     },
     "auxiliary_text": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "Bitcount Single",
       "fontSize": 8,
       "fontWeight": 400,
       "letterSpacing": 1.4
@@ -73,22 +181,19 @@
   },
   "fonts": [
     {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "Bitcount Single",
       "fontWeight": 400,
       "fontStyle": "normal",
-      "src": "../../cli/src/themes/default/assets/IBMPlexSans-Regular.ttf"
-    },
-    {
-      "fontFamily": "IBM Plex Sans",
-      "fontWeight": 700,
-      "fontStyle": "normal",
-      "src": "../../cli/src/themes/default/assets/IBMPlexSans-Bold.ttf"
+      "src": "./assets/Bitcount_Single/BitcountSingle-VariableFont_wght.woff2",
+      "axes": {
+        "weight": [300, 800]
+      }
     },
     {
       "fontFamily": "IBM Plex Mono",
       "fontWeight": 500,
       "fontStyle": "normal",
-      "src": "../../cli/src/themes/default/assets/IBMPlexMono-Medium.ttf"
+      "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Medium.ttf"
     }
   ],
   "effects": {

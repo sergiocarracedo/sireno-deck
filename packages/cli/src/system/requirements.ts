@@ -23,7 +23,7 @@ export type RequirementsCheckResult = Readonly<
 export interface RequirementsCheckDeps {
   readonly platform: string
   readonly executor: CommandExecutor
-  readonly env?: Readonly<Record<string, string>>
+  readonly env?: NodeJS.ProcessEnv
   // ponytail: fallback probe for stripped-PATH environments
   // (systemd/launchd/IDE). `which` may return nothing even when the binary
   // exists on disk at a non-default bin dir. The caller wires this with a
@@ -87,14 +87,36 @@ const capabilityConfig: Readonly<
   },
 }
 
+const probeCommandV = async (
+  executor: CommandExecutor,
+  command: string,
+): Promise<boolean> => {
+  const result = await executor.run("command", ["-v", command])
+  return result.exitCode === 0 && result.stdout.trim().length > 0
+}
+
+const probeVersion = async (
+  executor: CommandExecutor,
+  command: string,
+): Promise<boolean> => {
+  try {
+    const result = await executor.run(command, ["--version"], {
+      timeoutMs: 1_000,
+    })
+    return result.exitCode === 0
+  } catch {
+    return false
+  }
+}
+
 const probeCommand = async (
   executor: CommandExecutor,
   command: string,
   extraFsProbe?: (command: string) => boolean,
 ): Promise<boolean> => {
-  const result = await executor.run("which", [command])
-  if (result.exitCode === 0 && result.stdout.trim().length > 0) return true
-  return extraFsProbe?.(command) === true
+  if (await probeCommandV(executor, command)) return true
+  if (extraFsProbe?.(command) === true) return true
+  return await probeVersion(executor, command)
 }
 
 export const checkRequirements = async ({
@@ -104,7 +126,6 @@ export const checkRequirements = async ({
   extraFsProbe,
 }: RequirementsCheckDeps): Promise<RequirementsCheckResult> => {
   const result: Partial<Record<SystemCapability, CapabilityStatus>> = {}
-  const processEnv = env as NodeJS.ProcessEnv
 
   for (const [name, config] of Object.entries(capabilityConfig)) {
     const availability = await Promise.all(
@@ -119,7 +140,7 @@ export const checkRequirements = async ({
       commands: found,
       missingCommands: missing,
       reason: config.reason,
-      preferred: config.preferred(platform, processEnv),
+      preferred: config.preferred(platform, env),
     }
   }
 
@@ -147,5 +168,6 @@ export const getRequiredCapability = (
   action: string,
 ): SystemCapability | null => {
   if (action.startsWith("type://")) return "keyMacro"
+  if (action.startsWith("macro://")) return "keyMacro"
   return null
 }

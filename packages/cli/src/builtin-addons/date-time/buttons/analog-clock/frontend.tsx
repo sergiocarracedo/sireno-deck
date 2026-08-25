@@ -37,7 +37,7 @@ const AnalogClockButtonFrontend: AddonFrontendButton<ConfigSchema> = () => {
         y1={outer.y}
         x2={inner.x}
         y2={inner.y}
-        stroke="var(--color-muted)"
+        stroke="var(--sireno-color-muted)"
         strokeWidth={i % 3 === 0 ? 1.5 : 0.75}
       />
     )
@@ -49,7 +49,7 @@ const AnalogClockButtonFrontend: AddonFrontendButton<ConfigSchema> = () => {
         cy="50"
         r="42"
         fill="none"
-        stroke="var(--color-primary)"
+        stroke="var(--sireno-color-primary)"
         strokeWidth={1}
       />
       {ticks}
@@ -58,7 +58,7 @@ const AnalogClockButtonFrontend: AddonFrontendButton<ConfigSchema> = () => {
         y1="50"
         x2={hourEnd.x}
         y2={hourEnd.y}
-        stroke="var(--color-fg)"
+        stroke="var(--sireno-color-fg)"
         strokeWidth={3}
         strokeLinecap="round"
       />
@@ -67,7 +67,7 @@ const AnalogClockButtonFrontend: AddonFrontendButton<ConfigSchema> = () => {
         y1="50"
         x2={minEnd.x}
         y2={minEnd.y}
-        stroke="var(--color-fg)"
+        stroke="var(--sireno-color-fg)"
         strokeWidth={2}
         strokeLinecap="round"
       />
@@ -76,11 +76,11 @@ const AnalogClockButtonFrontend: AddonFrontendButton<ConfigSchema> = () => {
         y1="50"
         x2={secEnd.x}
         y2={secEnd.y}
-        stroke="var(--color-accent)"
+        stroke="var(--sireno-color-accent)"
         strokeWidth={1}
         strokeLinecap="round"
       />
-      <circle cx="50" cy="50" r="2" fill="var(--color-fg)" />
+      <circle cx="50" cy="50" r="2" fill="var(--sireno-color-fg)" />
     </svg>
   )
 }

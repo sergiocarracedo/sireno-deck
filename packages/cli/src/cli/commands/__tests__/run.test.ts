@@ -41,11 +41,20 @@ vi.mock("@/system/providers/clipboard", () => ({
     stop: vi.fn(async () => undefined),
   })),
 }))
+const clackConfirmMock = vi.fn(async () => true)
+vi.mock("@/cli/prompt", async () => {
+  const actual =
+    await vi.importActual<typeof import("@/cli/prompt")>("@/cli/prompt")
+  return {
+    ...actual,
+    confirm: clackConfirmMock,
+  }
+})
 let capturedBridge: {
   port: number
   url: string
   broadcast: ReturnType<typeof vi.fn>
-  sendToCaller: ReturnType<typeof vi.fn>
+  registerCacheablePoller: ReturnType<typeof vi.fn>
   onMessage: () => () => undefined
   onConnection: () => () => undefined
   close: () => Promise<undefined>
@@ -56,8 +65,9 @@ vi.mock("@/render/ws-bridge", () => ({
       port: 52937,
       url: "ws://127.0.0.1:52937",
       broadcast: vi.fn(),
-      sendToCaller: vi.fn(),
       setAddonInventory: vi.fn(),
+      setDeckTree: vi.fn(),
+      registerCacheablePoller: vi.fn(),
       onMessage: () => () => undefined,
       onConnection: () => () => undefined,
       close: async () => undefined,
@@ -140,34 +150,52 @@ const loadDeviceConfigMock = cfgMod.loadDeviceConfig as unknown as ReturnType<
 >
 
 const { createLogger } = await import("@/util/logger")
-const { run, preflight } = await import("../run")
+const { run } = await import("../run")
+const { preflight } = await import("../pipeline/preflight")
 
 const silentLogger = () => createLogger({ level: "silent" })
 
 type FakeSignal = import("../run").SignalProvider & {
   onSignalSpy: ReturnType<typeof vi.fn>
+  onReloadSpy: ReturnType<typeof vi.fn>
   trigger: () => void
+  triggerReload: () => void
 }
 
 const makeFakeSignals = (): FakeSignal => {
-  const handlers: Array<() => void> = []
+  const signalHandlers: Array<() => void> = []
+  const reloadHandlers: Array<() => void> = []
   const onSignalSpy = vi.fn((handler: () => void): (() => void) => {
-    handlers.push(handler)
+    signalHandlers.push(handler)
     return () => {
-      const i = handlers.indexOf(handler)
-      if (i >= 0) handlers.splice(i, 1)
+      const i = signalHandlers.indexOf(handler)
+      if (i >= 0) signalHandlers.splice(i, 1)
+    }
+  })
+  const onReloadSpy = vi.fn((handler: () => void): (() => void) => {
+    reloadHandlers.push(handler)
+    return () => {
+      const i = reloadHandlers.indexOf(handler)
+      if (i >= 0) reloadHandlers.splice(i, 1)
     }
   })
   const signalProvider: import("../run").SignalProvider = {
     onSignal(handler: () => void): () => void {
       return onSignalSpy(handler)
     },
+    onReload(handler: () => void): () => void {
+      return onReloadSpy(handler)
+    },
   }
   return {
     ...signalProvider,
     onSignalSpy,
+    onReloadSpy,
     trigger: () => {
-      for (const h of handlers) h()
+      for (const h of signalHandlers) h()
+    },
+    triggerReload: () => {
+      for (const h of reloadHandlers) h()
     },
   }
 }
@@ -295,6 +323,7 @@ const setHappyPath = (
     setSessionProvider: vi.fn(),
     setGestureListener: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
+    invalidate: vi.fn(),
     getActiveDeck: vi.fn(() => undefined),
     navStackDepth: vi.fn(() => 1),
     dispatchGesture: vi.fn(),
@@ -316,7 +345,6 @@ const setHappyPath = (
       navigateToDeck: () => undefined,
       goBack: () => undefined,
       getActiveDeckId: () => undefined,
-      invalidate: () => undefined,
       publish: () => undefined,
       subscribe: () => () => undefined,
     },
@@ -430,6 +458,131 @@ describe("run", () => {
     await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     const handle = await outputClient.init.mock.results[0]!.value
     expect(signals.onSignalSpy).toHaveBeenCalledTimes(1)
+    signals.trigger()
+    await runPromise
+
+    expect(handle.stop).toHaveBeenCalledTimes(1)
+  })
+
+  it("SIGUSR1 (in-place reload) triggers runtime.invalidate() without shutdown", async () => {
+    // ponytail: previously the daemon had no SIGUSR1 handler — Node's
+    // default action for SIGUSR1 was to terminate, meaning every
+    // `pnpm dev reload` (and production's systemctl reload-or-restart)
+    // was a latent daemon crash. Wire it through runPipeline so SIGUSR1
+    // calls runtime.invalidate() (= re-broadcast deck-config, nudge the
+    // BrowserRenderer's tick) and the daemon keeps running.
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const createDeckRuntimeMock = deckMod as unknown as {
+      createDeckRuntime: ReturnType<typeof vi.fn>
+    }
+    const runtime = (
+      createDeckRuntimeMock.createDeckRuntime.mock.results[0]!.value as {
+        runtime: { invalidate: ReturnType<typeof vi.fn> }
+      }
+    ).runtime
+    expect(signals.onReloadSpy).toHaveBeenCalledTimes(1)
+    expect(runtime.invalidate).not.toHaveBeenCalled()
+
+    signals.triggerReload()
+
+    expect(runtime.invalidate).toHaveBeenCalledTimes(1)
+    // The daemon must keep running — reload is in-place, not shutdown.
+    expect(signals.onSignalSpy).toHaveBeenCalledTimes(1)
+
+    // Trigger a second reload to confirm the handler stays wired.
+    signals.triggerReload()
+    expect(runtime.invalidate).toHaveBeenCalledTimes(2)
+
+    // Clean shutdown at end so the test exits cleanly.
+    signals.trigger()
+    await runPromise
+  })
+
+  it("SIGINT triggers pushBlackFrame() on the real output handle before stop()", async () => {
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    // ponytail: the real output handle exposes pushBlackFrame(); the run
+    // pipeline's finally block calls it to clear the device before closing.
+    // Mock the handle to track call ordering against stop().
+    const pushBlackFrame = vi.fn(async () => undefined)
+    outputClient.init.mockImplementation(async () => ({
+      descriptor: {
+        id: "ABC",
+        model: "mk2",
+        keyCount: 15,
+        label: "MK.2 (ABC)",
+        transport: "real",
+      },
+      frontendUrl: "http://x",
+      wsUrl: "ws://x",
+      childPids: [],
+      pushBlackFrame,
+      stop: vi.fn(async () => undefined),
+    }))
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const handle = await outputClient.init.mock.results[0]!.value
+    signals.trigger()
+    await runPromise
+
+    expect(pushBlackFrame).toHaveBeenCalledTimes(1)
+    expect(handle.stop).toHaveBeenCalledTimes(1)
+    // ponytail: clear must happen before close — otherwise the queued USB
+    // writes are dropped at disconnect and the device keeps the last frame.
+    const pushOrder = pushBlackFrame.mock.invocationCallOrder[0]!
+    const stopOrder = handle.stop.mock.invocationCallOrder[0]!
+    expect(pushOrder).toBeLessThan(stopOrder)
+  })
+
+  it("SIGINT: pushBlackFrame() failures do not block stop()", async () => {
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    outputClient.init.mockImplementation(async () => ({
+      descriptor: {
+        id: "ABC",
+        model: "mk2",
+        keyCount: 15,
+        label: "MK.2 (ABC)",
+        transport: "real",
+      },
+      frontendUrl: "http://x",
+      wsUrl: "ws://x",
+      childPids: [],
+      pushBlackFrame: vi.fn(async () => {
+        throw new Error("device unplugged")
+      }),
+      stop: vi.fn(async () => undefined),
+    }))
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const handle = await outputClient.init.mock.results[0]!.value
     signals.trigger()
     await runPromise
 
@@ -653,7 +806,7 @@ describe("preflight", () => {
       .mockReturnValueOnce(realClient)
       .mockReturnValueOnce(emulatorClient)
     const confirmMock = vi.fn(async () => true)
-    vi.doMock("@inquirer/prompts", () => ({ confirm: confirmMock }))
+    clackConfirmMock.mockImplementation(confirmMock)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -674,7 +827,7 @@ describe("preflight", () => {
       }
       await preflight(opts)
       expect(confirmMock).toHaveBeenCalledWith(
-        expect.objectContaining({ default: true }),
+        expect.objectContaining({ initialValue: true }),
       )
       expect(opts.emulator).toBe(true)
       expect(selectOutputClientMock).toHaveBeenCalledTimes(2)
@@ -687,7 +840,7 @@ describe("preflight", () => {
         value: originalIsTTY,
         configurable: true,
       })
-      vi.doUnmock("@inquirer/prompts")
+      clackConfirmMock.mockReset()
     }
   })
 
@@ -695,7 +848,7 @@ describe("preflight", () => {
     const realClient = makeFakeOutputClient("real", [])
     setHappyPath({ outputClient: realClient })
     const confirmMock = vi.fn(async () => false)
-    vi.doMock("@inquirer/prompts", () => ({ confirm: confirmMock }))
+    clackConfirmMock.mockImplementation(confirmMock)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -716,7 +869,7 @@ describe("preflight", () => {
         value: originalIsTTY,
         configurable: true,
       })
-      vi.doUnmock("@inquirer/prompts")
+      clackConfirmMock.mockReset()
     }
   })
 })

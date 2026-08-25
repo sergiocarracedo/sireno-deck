@@ -31,16 +31,13 @@ function formatBool(value: number): FormattedValue {
 
 function formatUptime(totalSeconds: number): FormattedValue {
   const s = Math.max(0, Math.round(totalSeconds))
-  const years = Math.floor(s / (365 * 24 * 60 * 60))
   const days = Math.floor(s / (24 * 60 * 60))
   const hours = Math.floor(s / (60 * 60))
   const minutes = Math.floor((s % 3600) / 60)
 
-  if (years > 0) return { value: `${years}y` }
-  if (days > 0) return { value: `${days}d` }
-  if (hours > 0) return { value: `${hours}h` }
-  if (minutes > 0) return { value: `${minutes}m` }
-  return { value: "0m" }
+  if (days > 0) return { value: String(days), unit: "d", unitLong: "days" }
+  if (hours > 0) return { value: String(hours), unit: "h", unitLong: "hours" }
+  return { value: String(minutes), unit: "m", unitLong: "minutes" }
 }
 
 function formatValue(
@@ -116,6 +113,7 @@ export function toDisplayMetric(
     available: true,
     formattedValue: formatted.value,
     unit: formatted.unit ?? def.unit ?? snapshot.unit,
+    ...(formatted.unitLong ? { unitLong: formatted.unitLong } : {}),
     value: snapshot.value,
     ...(snapshot.max !== undefined ? { max: snapshot.max } : {}),
     ...(snapshot.percentage !== undefined
