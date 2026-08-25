@@ -1,0 +1,35 @@
+packages/addons/pomodoro/src/buttons/pomodoro/config.ts
+  s_6431f34a133923::t_439eccb2f6269e 10-14
+  s_6431f34a133923::t_6de73cd569c404 3-9,15
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_6431f34a133923::t_71c2335eccdc9b 54
+  s_6431f34a133923::t_5a196c82e91bec 106
+.github/workflows/release.yml
+  s_6431f34a133923::t_450b300c4bc429 25
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_6431f34a133923::t_405ae74431c025 5
+packages/cli/bin/sirenodeck.js
+  s_6431f34a133923::t_837f049a3a8c46 33
+packages/cli/package.json
+  s_6431f34a133923::t_a4a03f5797d06b 111
+pnpm-lock.yaml
+  s_6431f34a133923::t_b6eb040239996e 51-53,72-75
+release-please-manifest.json
+  s_6431f34a133923::t_3282a4b9285f4a 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "921ddedf3f8746798a3970a0e56571c3ba49a193",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
