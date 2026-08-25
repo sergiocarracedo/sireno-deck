@@ -18,6 +18,7 @@ import { join } from "node:path"
 import { tmpdir } from "node:os"
 
 const PACKAGES = [
+  "@sirenodeck/cli",
   "@sirenodeck/addon-app-shortcuts",
   "@sirenodeck/addon-coding-agents",
   "@sirenodeck/addon-pomodoro",

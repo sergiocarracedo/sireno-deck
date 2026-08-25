@@ -25,6 +25,10 @@ jobs:
           # e.g. @sirenodeck/addon-pomodoro-0.1.0
           PACKAGE="$TAG"
           case "$TAG" in
+            '@sirenodeck/cli-'*)
+              PATH='packages/cli'
+              NEEDS_BUILD='true'
+              ;;
             '@sirenodeck/addon-app-shortcuts-'*)
               PATH='packages/addons/app-shortcuts'
               NEEDS_BUILD='true'

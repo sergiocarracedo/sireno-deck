@@ -1,11 +1,30 @@
 {
-  "name": "sirenodeck",
+  "name": "@sirenodeck/cli",
   "version": "0.1.0",
-  "private": true,
   "description": "CLI for managing Elgato Stream Deck devices via a config-driven deck system.",
+  "bugs": {
+    "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergiocarracedo/sireno-deck.git",
+    "directory": "packages/cli"
+  },
   "bin": {
     "sirenodeck": "./bin/sirenodeck.js"
   },
+  "files": [
+    "bin",
+    "dist/main.mjs",
+    "src",
+    "LICENSE",
+    "README.md",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
+    "!src/**/__tests__/**",
+    "!**/*.snap"
+  ],
   "type": "module",
   "exports": {
     ".": {
@@ -57,10 +76,16 @@
       "default": "./src/ui/primitives/Text.tsx"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "node bin/dev.js",
     "start": "node --import tsx src/cli/main.ts",
-    "build": "echo 'no bundler in phase 0' && exit 0",
+    "build": "tsdown",
+    "build:frontend": "vite --config frontend/vite.build.config.ts build",
+    "build:emulator": "vite --config emulator/vite.build.config.ts build",
+    "prepublishOnly": "tsdown",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "oxlint src",
@@ -103,6 +128,7 @@
     "oxlint": "latest",
     "pino-pretty": "^13.0.0",
     "tailwindcss": "^4.0.0",
+    "tsdown": "^0.22.14",
     "tsx": "^4.22.4",
     "typescript": "7.0.1-rc",
     "vite": "^8.0.0",
