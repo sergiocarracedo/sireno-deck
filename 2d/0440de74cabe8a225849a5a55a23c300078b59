@@ -1,0 +1,19 @@
+scripts/claim-npm-names.mjs
+  s_6431f34a133923::t_de13b821bed085 66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "2d0440de74cabe8a225849a5a55a23c300078b59",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
