@@ -1,0 +1,77 @@
+.github/workflows/release.yml
+  s_6431f34a133923::t_aa18ebd8baf363 32-35
+__beta-review__/04-security.md
+  s_6431f34a133923::t_4dd807a2981775 72
+packages/addons/coding-agents/package.json
+  s_6431f34a133923::t_ca09ddce5108b1 37-38,45
+  s_6431f34a133923::t_1b09e60f565c9d 5-13,15
+  s_6431f34a133923::t_190a5562f0c11c 26-28
+packages/cli/docs/developer/theme-authoring.mdx
+  s_6431f34a133923::t_0f3ef78ed3690a 202
+packages/addons/pomodoro/package.json
+  s_6431f34a133923::t_8f04b220c58104 34-36,42
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_6431f34a133923::t_0f0bf8e0aee709 57
+  s_6431f34a133923::t_eb2762183b190e 109
+release-please-manifest.json
+  s_6431f34a133923::t_6d487392b49733 3
+  s_6431f34a133923::t_7cd08a85024066 7
+RELEASING.md
+  s_6431f34a133923::t_97dbcc5399712c 15
+  s_6431f34a133923::t_9d407cffc1f65b 41-42
+  s_6431f34a133923::t_ffa53715740646 20-21
+docs/solutions/runtime-errors/build-presentation-missing-export-blocks-frontend.md
+  s_6431f34a133923::t_01fd4061464c88 110
+  s_6431f34a133923::t_393dad12b0383b 50
+  s_6431f34a133923::t_36edf77d6e4f43 140
+  s_6431f34a133923::t_85036b30436f67 59
+__beta-review__/06-addon-ecosystem.md
+  s_6431f34a133923::t_06e40069c7eb1c 244
+packages/cli/emulator/vite.config.ts
+  s_6431f34a133923::t_cc143094c64650 78
+release-please-config.json
+  s_6431f34a133923::t_2605fd53b1d42c 16-17,21
+  s_6431f34a133923::t_4a3312813df22a 7-8,12
+packages/cli/bin/sirenodeck.js
+  s_6431f34a133923::t_c4234ec0555a0a 11-33
+packages/cli/docs/package.json
+  s_6431f34a133923::t_94fa228ac9592d 2
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_6431f34a133923::t_c241ff502e497e 204
+packages/cli/package.json
+  s_6431f34a133923::t_c413872ca9e88a 2,4,7,70,79,94,99,106,108,111
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_6431f34a133923::t_94bc766afe7a5f 198
+packages/cli/frontend/vite.config.ts
+  s_6431f34a133923::t_b6db1610e1a268 109
+docs/plans/2026-07-24-extend-system-status-addon-with-missing-metrics.md
+  s_6431f34a133923::t_482412ebb1b738 128
+docs/plans/2026-07-24-text-xxs-autofit.md
+  s_6431f34a133923::t_40cdd7999f12c5 190
+docs/plans/2026-07-28-pomodoro-addon.md
+  s_6431f34a133923::t_b8a88a83a7ea0c 210
+docs/plans/2026-08-24-coding-agents-addon.md
+  s_6431f34a133923::t_ed1074d3291819 233
+packages/cli/src/__tests__/addon.test.ts
+  s_6431f34a133923::t_5e4f794717c221 130,230,260
+packages/cli/src/ui/surfaces/paginated-schema.ts
+  s_6431f34a133923::t_9bf68976288b0c 13-21
+pnpm-lock.yaml
+  s_6431f34a133923::t_ad269ad825fe92 19-20,48-50,69-72,176,215,221,1000-1005,1531-1655,2169-2170,2175,2182-2183,4615-4619,5735,5741,5767,5770,5776-5777,6388,6391,6866,6877,6882-6958,7406,7715,7717,7721,7730,10583-10615
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "eb3d553dce111c20eb899b8d0d041a84d2c91cc8",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
