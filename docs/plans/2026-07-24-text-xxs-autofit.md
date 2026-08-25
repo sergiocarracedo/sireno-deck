@@ -187,7 +187,7 @@ Per AGENTS.md recipe:
 
 ```sh
 pnpm lint && pnpm format && pnpm typecheck && pnpm test
-pnpm --filter @sireno-deck/cli run dev -- --emulator
+pnpm --filter @sirenodeck/cli run dev -- --emulator
 # open http://127.0.0.1:52938/#/device and http://127.0.0.1:5180
 # confirm a button with <Text size="xxs" /> renders visibly smaller than xs
 # confirm a button with <Text fit={{ type: "autofit", minSize: 10 }} text="…" /> renders at a size that fits the button without truncation in the emulator

@@ -11,14 +11,14 @@ organization. Each one tracks its own version and ships independently.
 
 | Package                           | Path                            | Builds before publish? |
 | --------------------------------- | ------------------------------- | ---------------------- |
-| `@sirenodeck/cli`                 | `packages/cli`                  | No                     |
 | `@sirenodeck/addon-app-shortcuts` | `packages/addons/app-shortcuts` | Yes                    |
+| `@sirenodeck/addon-coding-agents` | `packages/addons/coding-agents` | Yes                    |
 | `@sirenodeck/addon-pomodoro`      | `packages/addons/pomodoro`      | Yes                    |
 | `@sirenodeck/theme-neon-grids`    | `packages/themes/neon-grids`    | No                     |
 | `@sirenodeck/theme-riptide`       | `packages/themes/riptide`       | No                     |
 
-Private (not published): `sirenodeck-workspace` (root), `sirenodeck-web`,
-`sirenodeck-videos`, `@sireno-deck/docs`.
+Private (not published): `sirenodeck-workspace` (root), `sirenodeck` (CLI),
+`sirenodeck-web`, `sirenodeck-videos`, `@sirenodeck/docs`.
 
 ## Flow
 
@@ -38,8 +38,8 @@ See [`.github/workflows/auto-merge-release-please.yml`](.github/workflows/auto-m
 
 ## One-time setup (npm Trusted Publishing)
 
-For each package listed above, the npm Trusted Publisher must be configured
-once at <https://www.npmjs.com/>:
+For each of the five packages listed above, the npm Trusted Publisher must be
+configured once at <https://www.npmjs.com/>:
 
 1. Open the package page (under the `@sirenodeck` org).
 2. **Settings → Publishing access → Trusted Publishers → Add a trusted publisher.**

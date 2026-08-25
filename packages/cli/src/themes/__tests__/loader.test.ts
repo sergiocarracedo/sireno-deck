@@ -195,7 +195,7 @@ describe("themes/loader", () => {
     // important assertion is that the second pass (path) didn't match.
     expect(() =>
       resolveActiveTheme(registry, {
-        theme: "@sireno-deck/theme-neon-grids",
+        theme: "@sirenodeck/theme-neon-grids",
       }),
     ).toThrow(
       /not a path, and not a known npm package|missing sirenodeck\.json/i,

@@ -241,7 +241,7 @@ Scope: builtin addon patterns, addon loader, registry, third-party addon contrac
 **Evidence:** `packages/addons/app-shortcuts/` is the only external example; it's a workspace package, not a publishable template.
 **Impact:** External authors don't have a clear starting point.
 **Effort:** M
-**Fix sketch:** Add a `examples/` addon published as `@sireno-deck/example-addon`.
+**Fix sketch:** Add a `examples/` addon published as `@sirenodeck/example-addon`.
 **OSS-impression:** Missing template.
 
 ### [06-addon-ecosystem #31] [P3] `addon-registry.ts` is 474 LoC with mixed responsibilities

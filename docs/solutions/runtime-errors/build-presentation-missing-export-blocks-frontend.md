@@ -47,7 +47,7 @@ does not provide an export named 'buildPresentation'
 ## Root cause
 
 `packages/cli/frontend/src/App.tsx:16` imports `buildPresentation` from
-the `@sireno-deck/cli` virtual entry, which resolves to
+the `@sirenodeck/cli` virtual entry, which resolves to
 `packages/cli/src/index.ts`:
 
 ```ts
@@ -56,7 +56,7 @@ import {
   ThemeUiPresentationProvider,
   buildPresentation, // ← not re-exported from index.ts
   useAssetCacheMutations,
-} from "@sireno-deck/cli"
+} from "@sirenodeck/cli"
 ```
 
 `buildPresentation` is defined in
@@ -107,7 +107,7 @@ Add `buildPresentation` to the `./ui` re-export block in
 error: the TypeScript compiler resolves the import through the
 `tsconfig.json` `paths` mapping (which points to `./src/ui` directly,
 not `./src`), so it finds `buildPresentation` in `ui/index.ts`. Vite at
-dev time resolves through the `@sireno-deck/cli` package entry
+dev time resolves through the `@sirenodeck/cli` package entry
 (`./src/index.ts`) which doesn't re-export it. The two resolution paths
 diverge, and only the runtime path catches the gap.
 
@@ -137,5 +137,5 @@ adding a new symbol to `ui/`, do **both**:
 A small CI guard could compare the two export lists and fail the build
 when `src/index.ts` is missing a name that `src/ui/index.ts` exports
 but the frontend doesn't import directly. Until then, treat any commit
-that adds a new frontend import from `@sireno-deck/cli` as also requiring
+that adds a new frontend import from `@sirenodeck/cli` as also requiring
 a re-export edit.

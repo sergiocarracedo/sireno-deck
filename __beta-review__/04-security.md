@@ -69,7 +69,7 @@ Local-process trust. WS bridge and HTTP server bind to `127.0.0.1` only (with on
 **Evidence:** Addon entry can be `"somepkg@latest"` or any spec.
 **Impact:** Pulls arbitrary code into the daemon's process tree.
 **Effort:** M
-**Fix sketch:** Require a known registry scope (`@sireno-deck/*` or config-pinned) for beta; or sandbox addon directory.
+**Fix sketch:** Require a known registry scope (`@sirenodeck/*` or config-pinned) for beta; or sandbox addon directory.
 **OSS-impression:** Unbounded npm install is a top concern.
 
 ### [04-security #9] [P1] S3 — Addon dynamic import runs with full Node access

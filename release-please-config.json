@@ -4,21 +4,21 @@
   "group-pull-request-title-pattern": "chore: release ${version}",
   "pull-request-title-pattern": "chore(${package}): release${version}",
   "packages": {
-    "packages/cli": {
-      "package-name": "@sirenodeck/cli",
-      "release-type": "node",
-      "include-component-in-tag": false,
-      "include-v-in-tag": false,
-      "changelog-path": "packages/cli/CHANGELOG.md",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
-    },
     "packages/addons/app-shortcuts": {
       "package-name": "@sirenodeck/addon-app-shortcuts",
       "release-type": "node",
       "include-component-in-tag": false,
       "include-v-in-tag": false,
       "changelog-path": "packages/addons/app-shortcuts/CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
+    },
+    "packages/addons/coding-agents": {
+      "package-name": "@sirenodeck/addon-coding-agents",
+      "release-type": "node",
+      "include-component-in-tag": false,
+      "include-v-in-tag": false,
+      "changelog-path": "packages/addons/coding-agents/CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true
     },

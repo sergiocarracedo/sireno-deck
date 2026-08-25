@@ -1,5 +1,5 @@
 {
-  "name": "@sireno-deck/docs",
+  "name": "@sirenodeck/docs",
   "version": "1.0.0",
   "private": true,
   "description": "Sireno Deck documentation - portable MDX content for Astro consumption"

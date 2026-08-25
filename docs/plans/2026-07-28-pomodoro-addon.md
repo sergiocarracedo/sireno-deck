@@ -207,7 +207,7 @@ Per `AGENTS.md` recipe:
 
 ```sh
 pnpm lint && pnpm format && pnpm typecheck && pnpm test
-pnpm --filter @sireno-deck/cli run dev -- --emulator
+pnpm --filter @sirenodeck/cli run dev -- --emulator
 # open http://127.0.0.1:52938/#/device and http://127.0.0.1:5180
 # 1. tap the pomodoro button — confirm arc starts emptying and countdown ticks down
 # 2. let it finish (or set durationSec:5 in config) — confirm red blink starts, OS toast appears, sound plays

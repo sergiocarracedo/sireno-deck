@@ -230,7 +230,7 @@ Per implementation unit:
 
 ```sh
 pnpm lint && pnpm format && pnpm typecheck && pnpm test
-pnpm --filter @sireno-deck/cli run dev -- --emulator
+pnpm --filter @sirenodeck/cli run dev -- --emulator
 ```
 
 Manual recipe (matches `AGENTS.md`):

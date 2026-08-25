@@ -1,34 +1,11 @@
 {
-  "name": "@sirenodeck/cli",
+  "name": "sirenodeck",
   "version": "0.1.0",
+  "private": true,
   "description": "CLI for managing Elgato Stream Deck devices via a config-driven deck system.",
-  "bugs": {
-    "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sergiocarracedo/sireno-deck.git",
-    "directory": "packages/cli"
-  },
   "bin": {
-    "sireno": "./bin/sireno.js"
+    "sirenodeck": "./bin/sirenodeck.js"
   },
-  "files": [
-    "bin",
-    "src",
-    "frontend",
-    "emulator",
-    "LICENSE",
-    "README.md",
-    "!docs",
-    "!src/**/*.test.ts",
-    "!src/**/*.test.tsx",
-    "!src/**/__tests__/**",
-    "!frontend/src/**/__tests__/**",
-    "!emulator/src/**/__tests__/**",
-    "!**/*.snap"
-  ],
   "type": "module",
   "exports": {
     ".": {
@@ -80,9 +57,6 @@
       "default": "./src/ui/primitives/Text.tsx"
     }
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "dev": "node bin/dev.js",
     "start": "node --import tsx src/cli/main.ts",
@@ -93,8 +67,8 @@
     "format": "oxfmt src"
   },
   "dependencies": {
+    "@clack/prompts": "^1.0.0",
     "@elgato-stream-deck/node": "^7.6.3",
-    "@inquirer/prompts": "^7.0.0",
     "@meteocons/svg-static": "^0.1.0",
     "chokidar": "^5.0.0",
     "dbus-next": "^0.10.2",
@@ -102,10 +76,10 @@
     "get-windows": "^9.0.0",
     "pino": "^10.3.1",
     "playwright": "^1.50.0",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sharp": "^0.34.0",
-    "tsx": "^4.22.4",
     "ws": "^8.18.0",
     "yaml": "^2.9.0",
     "yargs": "^18.0.0",
@@ -117,19 +91,21 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.10.0",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/ws": "^8.5.13",
     "@types/yargs": "^17.0.35",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "jsdom": "^25.0.1",
     "lucide-react": "^1.22.0",
     "oxfmt": "latest",
     "oxlint": "latest",
     "pino-pretty": "^13.0.0",
     "tailwindcss": "^4.0.0",
+    "tsx": "^4.22.4",
     "typescript": "7.0.1-rc",
-    "vite": "^6.0.0",
+    "vite": "^8.0.0",
     "vitest": "^4.1.9"
   }
 }

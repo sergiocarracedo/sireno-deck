@@ -54,7 +54,7 @@ function formatValue(
       return formatBool(value)
     case "count":
       return {
-        value: value.toFixed(0),
+        value: value >= 100 ? String(Math.round(value)) : value.toFixed(1),
       }
     case "frequency-ghz":
       return { value: value.toFixed(2) }
@@ -106,7 +106,7 @@ export function toDisplayMetric(
       label: def.defaultLabel,
       available: false,
       formattedValue: "—",
-      unit: def.unit ?? snapshot.unit,
+      unit: def.unit,
     }
   }
   const formatted = formatValue(snapshot.value, formatter)

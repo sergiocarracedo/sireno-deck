@@ -8,25 +8,21 @@ import { reapOrphanProcessGroup, setWrapperTitle } from "./_wrapper-shared.js"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const cliRoot = resolve(__dirname, "..")
-const cliEntry = resolve(cliRoot, "src/cli/main.ts")
+const cliEntry = resolve(__dirname, "../src/cli/main.ts")
+
+const tsxBin = resolve(cliRoot, "node_modules", ".bin", "tsx")
 
 setWrapperTitle("sirenodeck:bin")
 
-// ponytail: ship tsx as a runtime dep and use node --import tsx/esm so the
-// published CLI works without a local node_modules/.bin/tsx symlink.
-const child = spawn(
-  process.execPath,
-  ["--import", "tsx/esm", cliEntry, ...process.argv.slice(2)],
-  {
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      SIRENO_CWD: process.cwd(),
-      SIRENO_WRAPPER_CHILD: "1",
-      TSX_TSCONFIG_PATH: resolve(cliRoot, "tsconfig.json"),
-    },
+const child = spawn(tsxBin, [cliEntry, ...process.argv.slice(2)], {
+  stdio: "inherit",
+  env: {
+    ...process.env,
+    SIRENO_CWD: process.cwd(),
+    SIRENO_WRAPPER_CHILD: "1",
+    TSX_TSCONFIG_PATH: resolve(cliRoot, "tsconfig.json"),
   },
-)
+})
 
 child.on("exit", (code) => {
   // Same orphan-group reap as bin/dev.js — see the comment there.

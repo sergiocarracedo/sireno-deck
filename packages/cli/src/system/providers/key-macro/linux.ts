@@ -201,7 +201,7 @@ const namedKeyToScancode = (name: string): number | null => {
     case "comma":
       return SC_COMMA
     case "period":
-      return SC_PERIOD
+      return SC_DOT
     case "F1":
       return SC_F1
     case "F2":
