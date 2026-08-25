@@ -2,7 +2,7 @@
 import { act, fireEvent, render } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { ChannelRegistry } from "@sireno-deck/cli"
+import { ChannelRegistry } from "@sirenodeck/cli"
 import { getDeviceModel } from "@/device/models"
 
 import { WebSocketProvider, type WebSocketSend } from "../bridge/ws-context"

@@ -2,7 +2,6 @@
   "name": "@sirenodeck/addon-coding-agents",
   "version": "0.1.0",
   "description": "Stream Deck surface for live status of OpenCode + Claude Code sessions — summary button + per-agent deck + OS notifications on attention states",
-<<<<<<< HEAD
   "bugs": {
     "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
   },
@@ -14,11 +13,6 @@
   },
   "files": [
     "dist"
-=======
-  "files": [
-    "dist",
-    "assets"
->>>>>>> main
   ],
   "type": "module",
   "main": "./dist/index.js",
@@ -29,12 +23,9 @@
       "default": "./dist/index.js"
     }
   },
-<<<<<<< HEAD
   "publishConfig": {
     "access": "public"
   },
-=======
->>>>>>> main
   "scripts": {
     "build": "tsc --project tsconfig.build.json && node scripts/post-build.mjs",
     "typecheck": "tsc --noEmit",
@@ -43,23 +34,14 @@
   "dependencies": {
     "@opencode-ai/sdk": "^1.18.5",
     "chokidar": "^4.0.1",
-<<<<<<< HEAD
     "execa": "^9.5.1",
     "zod": "^4.4.3"
-=======
-    "execa": "^9.5.1"
->>>>>>> main
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "react": "^19.0.0",
     "typescript": "^5.7.0",
-<<<<<<< HEAD
     "vitest": "^4.1.0"
-=======
-    "vitest": "^4.1.0",
-    "zod": "^3.23.0"
->>>>>>> main
   }
 }

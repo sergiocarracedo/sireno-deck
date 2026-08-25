@@ -1,17 +1,18 @@
 import { z } from "zod"
 
-export const configSchema = z
-  .object({
-    durationSec: z.number().int().positive().default(1500),
-    notification: z
-      .object({
-        title: z.string().default("Pomodoro"),
-        body: z.string().default("Time's up!"),
-      })
-      .default({})
-      .optional(),
-  })
-  .strict()
+export const configSchema = z.object({
+  durationSec: z.number().int().positive().default(1500),
+  notification: z
+    .object({
+      title: z.string().default("Pomodoro"),
+      body: z.string().default("Time's up!"),
+    })
+    .default({
+      title: "Pomodoro",
+      body: "Time's up!",
+    })
+    .optional(),
+})
 
 export type ConfigSchema = z.infer<typeof configSchema>
 
