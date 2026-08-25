@@ -1,0 +1,19 @@
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_6431f34a133923::t_016489c63df2bb 177-182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "d9c3e0bf81b1361a9f7968439129590db52ea26e",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
