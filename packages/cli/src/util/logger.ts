@@ -99,6 +99,7 @@ const FORWARDED_CONTEXT_FIELDS = [
   "addonName",
   "gesture",
   "keyIndex",
+  "reason",
 ] as const
 
 export const formatHuman = (jsonLine: string): string | null => {
@@ -323,6 +324,7 @@ const makeLogger = (loggerOptions: LoggerOptions, wantRaw: boolean): Logger => {
           addonName?: unknown
           gesture?: unknown
           keyIndex?: unknown
+          reason?: unknown
         }
         if (
           typeof parsed.level === "number" &&

@@ -63,9 +63,26 @@ const installProcessGuards = (
     )
     killChildrenAndExit(logger, 1)
   })
-  process.on("unhandledRejection", (reason) => {
+  process.on("unhandledRejection", (reason, promise) => {
+    // ponytail: pino's `{ reason }` field serializes empty objects as `{}`,
+    // which hides the actual rejection value during operator triage. The
+    // `errSerializer` only fires on the literal key `err`, so dump the
+    // reason as a string fallback (so a thrown Error, a string, or a
+    // bare object all show up) and log the promise's stack when we can.
+    const reasonDump =
+      reason instanceof Error
+        ? { type: reason.name, message: reason.message, stack: reason.stack }
+        : { value: String(reason) }
+    const stackDump =
+      promise &&
+      typeof (promise as unknown as { stack?: unknown }).stack === "string"
+        ? (promise as unknown as { stack: string }).stack
+        : undefined
     logger.fatal(
-      { reason },
+      {
+        reason: reasonDump,
+        ...(stackDump !== undefined ? { stack: stackDump } : {}),
+      },
       "unhandledRejection — exiting to surface the failure",
     )
     killChildrenAndExit(logger, 1)

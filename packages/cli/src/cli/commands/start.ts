@@ -664,7 +664,20 @@ const startInBackground = async (options: StartOptions): Promise<void> => {
   pruneStaleChildren(undefined, logger)
   await terminateChildren({ logger, timeoutMs: 2_000 })
 
-  const binPath = resolvePath(resolveCliRoot(), "bin", "sirenodeck.js")
+  // ponytail: in dev mode (pnpm dev), the daemon should run from
+  // SOURCE via the dev wrapper (bin/dev.js + tsx), not the bundled
+  // dist/main.mjs. The bundle strips runtime assets like the `default`
+  // and `light` themes at packages/cli/src/themes/ — the loader's
+  // filesystem scan can't find them inside dist/, so any `theme:`
+  // reference in config.yml resolves to "not a registered theme, not
+  // a path, and not a known npm package" and crashes with
+  // unhandledRejection. The dev wrapper runs the source path and
+  // keeps the themes on disk for the loader to discover.
+  const binPath = resolvePath(
+    resolveCliRoot(),
+    "bin",
+    isDevInvocation() ? "dev.js" : "sirenodeck.js",
+  )
   const args = buildDetachedArgs(runtimeFlags)
   const { pid } = spawnDetached({
     binPath,
