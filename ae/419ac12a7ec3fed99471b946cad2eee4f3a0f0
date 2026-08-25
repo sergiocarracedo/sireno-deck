@@ -1,0 +1,639 @@
+.github/workflows/ci.yml
+  s_6431f34a133923::t_aeebc13a46982b 9,11-12,15,17,20,22,24,26,28,30-31
+.github/workflows/release.yml
+  s_6431f34a133923::t_1110248ab3838d 1,69-141
+.npmrc
+  s_6431f34a133923::t_58f320f036754e 4
+.oxlintrc.json
+  s_6431f34a133923::t_e10eb4f91b0c99 7-10,29-30
+AGENTS.md
+  s_6431f34a133923::t_dfcdb83d10908b 111-125
+ARCHITECTURE.md
+  s_6431f34a133923::t_6fa16307a06c67 94-97,172-174,177-179,260-320,492-503,510,531-534,539-542,544-546,549-552,555-572
+LICENSE
+  s_6431f34a133923::t_2528488b1f0ba7 3
+README.md
+  s_6431f34a133923::t_b0a58d21b9557c 1-6,8,10-32,36,38,40,42-50,53,55-70,74,122,124,126-130,134-145,147-167,170,174,178
+config.yml
+  s_6431f34a133923::t_5ae64f806ef326 1,91,104
+demos/capture-deck-video.sh
+  s_6431f34a133923::t_534c1a8ae8514e 1-96
+demos/demo-app-overlays.yml
+  s_6431f34a133923::t_d83fd93a4832c3 1-50
+demos/demo-app-shortcuts.yml
+  s_6431f34a133923::t_2aeeb8a4dcdf92 5,13,21,29,37,41,45,47,50-138
+demos/demo-core.yml
+  s_6431f34a133923::t_915cdad3b863e2 9,12,17-97
+demos/demo-date-time.yml
+  s_6431f34a133923::t_78dcfe7c9b69d1 21-49
+demos/demo-decks-index.yml
+  s_6431f34a133923::t_78590d3044039a 51-56
+demos/demo-media.yml
+  s_6431f34a133923::t_62589e7859d977 11-94
+demos/demo-system-status.yml
+  s_6431f34a133923::t_cff2056c5fb761 50-483
+demos/demo-weather.yml
+  s_6431f34a133923::t_4788e80b378a8b 59-170
+docs/beta/os-integration-checklist.es.md
+  s_6431f34a133923::t_98d88458876540 1-69
+docs/installation.mdx
+  s_6431f34a133923::t_613386a5c64475 1-71
+docs/plans/2026-08-05-first-time-setup-wizard.md
+  s_6431f34a133923::t_ff04c046680735 1-135
+docs/plans/2026-08-18-land-release-please-publish.md
+  s_6431f34a133923::t_968d5bae6322e1 1-22,24,26,28-57,59-70,72,74-76,78-81,83,85-86,88-94,96-97,99,101-104,106,108,110,112-113,115,117-118,120,122-123,125-127,129-136,138,140-142,144,146-152,154,156,158-161,163,165-169,171-172,174,176,178-179,181,183-187,189,191,193-197,199,201-204,206,208,210-290
+docs/plans/2026-08-20-cleanup-startup-banner.md
+  s_6431f34a133923::t_8a8cf6e17ab0ca 1-6,8,10,12,14-18,20,22-23,25,27-29,31,33,35-37,39,41-43,45,47,49,51-52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84-85,87,89,91,93,95,97,99-100,102,104,106,108-113,115,117-133
+docs/plans/2026-08-20-dev-detach-match-production.md
+  s_6431f34a133923::t_47c069e4cf88fd 1-379
+docs/plans/2026-08-20-per-addon-requirement-checks.md
+  s_6431f34a133923::t_d70b835209e4ed 1-6,8,10,12,14,16,18,20,22,24-29,31,33-35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85,87-91,93-97,99,101-106,108,110,112,114-120,122-125,127,129,131,133,135,137,139,141,143,145-147,149,151,153,155,157,159-173,175,177,179,181,183,185,187,189,191-193,195,197-202,204-249
+docs/plans/2026-08-20-self-healing-port-bind.md
+  s_6431f34a133923::t_78f032d20d9990 1-208
+docs/plans/2026-08-21-bump-runtime-state-wait.md
+  s_6431f34a133923::t_ad8bc0f20f8faa 1-29
+docs/plans/2026-08-21-fix-real-mode-runtime-state.md
+  s_6431f34a133923::t_41f86706ea02e1 1-9,11,13,15,17-19,21,23,25,27,29,31,33,35-39
+docs/plans/2026-08-24-coding-agents-addon.md
+  s_6431f34a133923::t_ee6a01b5ad515e 233,235-237
+docs/solutions/README.md
+  s_6431f34a133923::t_a04e675c5cc85a 15-17
+docs/solutions/build/installer-runtime-tree-pnpm-deploy.md
+  s_6431f34a133923::t_3afc031302c01b 1-77
+docs/solutions/build/playwright-runtime-first-run-install.md
+  s_6431f34a133923::t_7209f68ef0ec94 1-63
+docs/solutions/conventions/button-color-vs-variant-orthogonal-axes.md
+  s_6431f34a133923::t_981fa9118393b3 1-131
+docs/solutions/conventions/cli-as-daemon-interface.md
+  s_6431f34a133923::t_312343b8730af8 1-193
+docs/solutions/conventions/default-log-level-info-with-reload-and-prompt.md
+  s_6431f34a133923::t_97eff95a1d6e7c 1-224
+docs/solutions/conventions/dev-detach-match-production.md
+  s_6431f34a133923::t_b5fa33e8ee23c8 1-115
+docs/solutions/runtime-errors/n-1-injection-ignores-lock-state.md
+  s_6431f34a133923::t_56ed665bdc03d9 1-275
+docs/solutions/runtime-errors/real-output-client-missing-runtime-state-write.md
+  s_6431f34a133923::t_c133bedff968fa 1-32
+docs/solutions/runtime-errors/runtime-state-wait-window-too-short.md
+  s_6431f34a133923::t_01ae92b93894cb 1-29
+lefthook.yml
+  s_6431f34a133923::t_63c023b7b4336c 1-26
+package.json
+  s_6431f34a133923::t_2437d9d79fcfa5 14-15,22-23
+packages/addons/app-shortcuts/src/decks/chrome.ts
+  s_6431f34a133923::t_66a6ba1a197e97 53-74
+packages/addons/app-shortcuts/src/decks/claude-code.ts
+  s_6431f34a133923::t_97773b1d665590 22-36
+packages/addons/app-shortcuts/src/decks/discord.ts
+  s_6431f34a133923::t_c085499efcaf5e 20-31
+packages/addons/app-shortcuts/src/decks/google-meet.ts
+  s_6431f34a133923::t_66822123c10a3d 28-35
+packages/addons/app-shortcuts/src/decks/opencode.ts
+  s_6431f34a133923::t_fe5b7d9eaff177 20-35
+packages/addons/app-shortcuts/src/decks/slack.ts
+  s_6431f34a133923::t_54e087ce508302 20-31
+packages/addons/app-shortcuts/src/decks/teams.ts
+  s_6431f34a133923::t_6ac8e9bb191dd7 20-31
+packages/addons/app-shortcuts/src/decks/vscode.ts
+  s_6431f34a133923::t_830f1cc5355bd6 24,26,30,35,37-40,44,46,50,55,57-62
+packages/addons/app-shortcuts/src/types.ts
+  s_6431f34a133923::t_9cdb320fbb9bb6 5-12
+packages/addons/coding-agents/package.json
+  s_6431f34a133923::t_e590e1f976aaa2 5,17-21,32,36-37,46,49-51,58,60-63
+packages/addons/pomodoro/src/__tests__/backend.test.ts
+  s_6431f34a133923::t_4db90423c6090d 3-4,79-327
+packages/addons/pomodoro/src/buttons/pomodoro/backend.ts
+  s_6431f34a133923::t_a90140311f5e66 75-76,95,105,123-127,167-171
+packages/addons/pomodoro/src/buttons/pomodoro/config.ts
+  s_6431f34a133923::t_b20b324e586f0b 6-12
+packages/addons/pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_6431f34a133923::t_16ade422183aa9 49,123
+packages/addons/pomodoro/src/global/backend.ts
+  s_6431f34a133923::t_67c6ca3d406585 9-13,18-19,27,45-53,55,78,81-90,92,95-106,109,113-124,127,140,149,153,159
+packages/addons/pomodoro/src/types.ts
+  s_6431f34a133923::t_05f400a4c437f5 5-12
+packages/cli/bin/dev.js
+  s_6431f34a133923::t_818c6bebd3a4f5 14,43-70,74-85
+packages/cli/config/default-config.yml
+  s_6431f34a133923::t_e0a549ff97d8f9 1-117
+packages/cli/docs/reference/cli-commands.mdx
+  s_6431f34a133923::t_cb0cbf2ceb9bd8 15-23
+packages/cli/docs/reference/macro-syntax.mdx
+  s_6431f34a133923::t_a9ebb63ed23ae8 2-3,9,11,13,15,20-21,24,26-28,32-39,46-48,57,66,75-94
+packages/cli/docs/user/actions.mdx
+  s_6431f34a133923::t_88a218d02ace50 35,37,41,43-49,52,54-55,62-63
+packages/cli/docs/user/configuration-files.mdx
+  s_6431f34a133923::t_f5915ca2a2bad7 144
+packages/cli/docs/user/emulator-vs-hardware.mdx
+  s_6431f34a133923::t_80e4bceb8ba239 44-57
+packages/cli/docs/user/running-the-service.mdx
+  s_6431f34a133923::t_01dca68cb231f7 153-155,157-175
+packages/cli/emulator/src/App.tsx
+  s_6431f34a133923::t_17f443728f0530 9-10,23,73,86-90,96,112-115,121,124,135,174,206-210,233-275,284-293,307,331-339,352,355-376,381,387-391,393-447,508-518
+packages/cli/emulator/src/DeckFrame.tsx
+  s_6431f34a133923::t_29a3478981e2a1 16,32,41-45,77-115,135,137,151-185,214,216-218,220
+packages/cli/emulator/src/Shell.tsx
+  s_6431f34a133923::t_5116db7da1b282 8,16,18-27
+packages/cli/emulator/src/SidePanel.tsx
+  s_6431f34a133923::t_53e3fdc9441986 11
+packages/cli/emulator/src/__tests__/App.test.tsx
+  s_6431f34a133923::t_e146bd38b60bf3 1-31
+packages/cli/emulator/src/__tests__/DeckFrame.test.tsx
+  s_6431f34a133923::t_580b8a573d2325 60-97
+packages/cli/emulator/src/__tests__/bridge-log-store.test.ts
+  s_6431f34a133923::t_7283082cdb48bc 53-72
+packages/cli/emulator/src/__tests__/bridge.test.ts
+  s_6431f34a133923::t_a6424c8355ca16 11,115-164
+packages/cli/emulator/src/__tests__/service-logs-page.test.tsx
+  s_6431f34a133923::t_80e0a0985c0cba 1-57
+packages/cli/emulator/src/bridge-log-store.ts
+  s_6431f34a133923::t_4e4a0278e64d66 13-18
+packages/cli/emulator/src/bridge.ts
+  s_6431f34a133923::t_a35e3fafbfff68 103-108,127-146,218-223,234-251
+packages/cli/emulator/src/pages/DecksPage.tsx
+  s_6431f34a133923::t_288f9c96709569 1-104
+packages/cli/emulator/src/pages/ServiceLogsPage.tsx
+  s_6431f34a133923::t_58aedb641fd12e 18-39,95-104,107-123
+packages/cli/emulator/vite.config.ts
+  s_6431f34a133923::t_7fe9ed3f6aeb11 91
+packages/cli/frontend/src/App.tsx
+  s_6431f34a133923::t_ef29cbdd877cd5 2,37,78-81,83-89,243-250,330-331,366-372
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_6431f34a133923::t_847ce853c157f5 5,16,18,23,25,37,47,51,56,103-116,122
+packages/cli/frontend/src/bridge/__tests__/client.test.ts
+  s_6431f34a133923::t_c791fc4ff93726 27-28,46-47
+packages/cli/frontend/src/bridge/client.ts
+  s_6431f34a133923::t_ecada7a875d865 115,117-125
+packages/cli/frontend/src/components/Deck.tsx
+  s_6431f34a133923::t_964c73167a5b3f 25-26,64-71,98,115-122,167-168,199,211,218,288
+packages/cli/frontend/src/index.css
+  s_6431f34a133923::t_29db3b0a39a848 16-40
+packages/cli/frontend/src/main.tsx
+  s_6431f34a133923::t_94337995a61065 3,14
+packages/cli/frontend/vite.config.ts
+  s_6431f34a133923::t_c1c9db8d468229 104-108
+packages/cli/scripts/installer/_shared/fpm-pack.sh
+  s_6431f34a133923::t_454ec7c138f163 1-55
+packages/cli/scripts/installer/_shared/prepare-runtime-tree.mjs
+  s_6431f34a133923::t_2ad7580edad70a 1-94
+packages/cli/scripts/installer/cask/sireno-deck.rb
+  s_6431f34a133923::t_e4c526b85bb026 1-18
+packages/cli/scripts/installer/flatpak/io.sireno.SirenoDeck.json
+  s_6431f34a133923::t_f1e08753f0279c 1-37
+packages/cli/scripts/installer/linux-deb.sh
+  s_6431f34a133923::t_0023d129efe4ed 1-4
+packages/cli/scripts/installer/linux-flatpak.sh
+  s_6431f34a133923::t_de28382ff8d233 1-29
+packages/cli/scripts/installer/linux-rpm.sh
+  s_6431f34a133923::t_6854172f88ecfc 1-4
+packages/cli/scripts/installer/macos.sh
+  s_6431f34a133923::t_21a301dc9d9b9a 1-60
+packages/cli/scripts/installer/windows-inno.iss
+  s_6431f34a133923::t_5cf305b4bfce8a 1-46
+packages/cli/scripts/installer/windows-winget/sireno-deck.yaml
+  s_6431f34a133923::t_fa74ab41513247 1-17
+packages/cli/src/__tests__/addon.test.ts
+  s_6431f34a133923::t_7979e8b08d87fc 208,212,239,243,249,270,275-276
+packages/cli/src/__tests__/cli.test.ts
+  s_6431f34a133923::t_6ef2a29b1fbd2c 53-57
+packages/cli/src/__tests__/config.test.ts
+  s_6431f34a133923::t_2518b178e4b127 420,428,431-434,436,439-441,443-445,448
+packages/cli/src/__tests__/daemon-extensions.test.ts
+  s_6431f34a133923::t_74a79cd533749a 1,27,87,95
+packages/cli/src/__tests__/integration.test.ts
+  s_6431f34a133923::t_ea7bc25d9b4bc8 202-203,266-269
+packages/cli/src/__tests__/logger-format.test.ts
+  s_6431f34a133923::t_8940d43ff2522a 2,56-64,67-74,86-93,96-97,100-107,116-189
+packages/cli/src/action/executor.ts
+  s_6431f34a133923::t_2072ba59c55416 24-25,93-95
+packages/cli/src/addon/__tests__/check-runner.test.ts
+  s_6431f34a133923::t_57a8dfee397821 1-97
+packages/cli/src/addon/__tests__/loader.test.ts
+  s_6431f34a133923::t_160111b37456e7 131,134
+packages/cli/src/addon/api.ts
+  s_6431f34a133923::t_37d8a095816a7b 138-139,163-165,169-174,176-183,214,220,228,243-263,281-287,342-343,378-379
+packages/cli/src/addon/check-runner.ts
+  s_6431f34a133923::t_11f15b914af2b1 1-84
+packages/cli/src/addon/loader.ts
+  s_6431f34a133923::t_d8379784a5b6e5 299,302-315
+packages/cli/src/api/protocol-internal.ts
+  s_6431f34a133923::t_72c17be40eb006 11-17,19-25,35-42,44-49,51-78,80-95,98-109,111-117,119-130,132-137,139-148,150-163,165-172,174-181,183-190,192-197,199-204,206-213,215-219,221-246,252-297,320,350
+packages/cli/src/builtin-addons/brightness/buttons/brightness/backend.ts
+  s_6431f34a133923::t_48e23a6fa62a4b 4,9-11,13
+packages/cli/src/builtin-addons/brightness/buttons/brightness/frontend.tsx
+  s_6431f34a133923::t_68737eba746a70 5-6,12-15
+packages/cli/src/builtin-addons/brightness/domain/macos.ts
+  s_6431f34a133923::t_e5aff61b538cde 1
+packages/cli/src/builtin-addons/brightness/providers/__tests__/linux.test.ts
+  s_6431f34a133923::t_4bbb94d5292403 2,6-16
+packages/cli/src/builtin-addons/core/__tests__/index.test.ts
+  s_6431f34a133923::t_6123d4c08c4c54 35-36
+packages/cli/src/builtin-addons/core/__tests__/page-nav.test.ts
+  s_6431f34a133923::t_aa763e0c2e610d 16,23,40-41,56-57,62,76-77,92-93
+packages/cli/src/builtin-addons/core/buttons/change-deck/backend.ts
+  s_6431f34a133923::t_0494853f47c74d 10,15
+packages/cli/src/builtin-addons/core/buttons/page-nav/backend.ts
+  s_6431f34a133923::t_256a225e8a563d 10,15-16,19,24-25
+packages/cli/src/builtin-addons/core/buttons/toggle/__tests__/global-service.test.ts
+  s_6431f34a133923::t_8724232d9b6795 41,52
+packages/cli/src/builtin-addons/core/index.ts
+  s_6431f34a133923::t_d5ef7b7d7578c4 85
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/frontend.tsx
+  s_6431f34a133923::t_25283e39c95889 40,52,61,70,79,83
+packages/cli/src/builtin-addons/date-time/shared/format.ts
+  s_6431f34a133923::t_a2d86269e7c058 1
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_6431f34a133923::t_e54645fab81893 3
+packages/cli/src/builtin-addons/emoji-selector/__tests__/emoji.test.ts
+  s_6431f34a133923::t_c7fedb5eac0df0 4,7,9-17,22,26-30,76-81,83-84,96,108
+packages/cli/src/builtin-addons/emoji-selector/__tests__/launcher.test.ts
+  s_6431f34a133923::t_6f9c3e4e5551ed 22-23
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_6431f34a133923::t_a859c7db272f81 3,6
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  s_6431f34a133923::t_c07de9cf1662c1 6
+packages/cli/src/builtin-addons/emoji-selector/data/categories.ts
+  s_6431f34a133923::t_25f9c421300e6c 69-94,145-176,228-279,328-348,396-436,462-468,506-532,570-607,645-705,745-808,841-1081
+packages/cli/src/builtin-addons/internal-settings/backend.ts
+  s_6431f34a133923::t_1c28d6fd9a3811 39-48,50
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/common/frontend.tsx
+  s_6431f34a133923::t_589bb98d71e24c 1
+packages/cli/src/builtin-addons/media/__tests__/backend.test.ts
+  s_6431f34a133923::t_14f21fa2ca3903 65
+packages/cli/src/builtin-addons/media/__tests__/checks.test.ts
+  s_6431f34a133923::t_4ce43d62dbaa78 1-105
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaSurface.tsx
+  s_6431f34a133923::t_3333c1f491f95f 27-28
+packages/cli/src/builtin-addons/media/buttons/media-player/components/__tests__/MediaSurface.test.tsx
+  s_6431f34a133923::t_1ac9a50b8efe61 2-4,6,21
+packages/cli/src/builtin-addons/media/checks.ts
+  s_6431f34a133923::t_042475caa4b3f4 1-90
+packages/cli/src/builtin-addons/media/executor.ts
+  s_6431f34a133923::t_6c24ddea7ea06d 1-36
+packages/cli/src/builtin-addons/media/index.ts
+  s_6431f34a133923::t_e46b3b51a0474e 47-50
+packages/cli/src/builtin-addons/media/providers/__tests__/linux.test.ts
+  s_6431f34a133923::t_d019b3190db0e9 239
+packages/cli/src/builtin-addons/system-status/__tests__/display-count-formatter.test.ts
+  s_6431f34a133923::t_18ff8ae38be52c 29,52
+packages/cli/src/builtin-addons/system-status/__tests__/display-rate-bytes-formatter.test.ts
+  s_6431f34a133923::t_556f9b8e77587e 54
+packages/cli/src/builtin-addons/system-status/__tests__/display-uptime-formatter.test.ts
+  s_6431f34a133923::t_0c243c1cff5760 16,18-20,23,25-27,31-34,37-55
+packages/cli/src/builtin-addons/system-status/__tests__/temperature-probe.test.ts
+  s_6431f34a133923::t_5f008ed7cbc95b 1-21
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_6431f34a133923::t_a02bcb98705a9d 108
+packages/cli/src/builtin-addons/system-status/domain/catalog.ts
+  s_6431f34a133923::t_bfce35fa516ffb 1-6
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_6431f34a133923::t_75e779b8d1d452 38-40,116
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_6431f34a133923::t_173350ac3a0a3d 146-148,151-188,196
+packages/cli/src/builtin-addons/system-status/shared/metrics-catalog.ts
+  s_6431f34a133923::t_0726c7a93bbaa3 13,17,37-39,42,76-97,234,312
+packages/cli/src/builtin-addons/test-buildin/__tests__/action-buttons-test.test.ts
+  s_6431f34a133923::t_dff97654291d26 5-15,19-21,25,36,42,57
+packages/cli/src/builtin-addons/value-display/__tests__/backend.test.ts
+  s_6431f34a133923::t_195a73d3ca1b49 24,32,63,155-156
+packages/cli/src/builtin-addons/weather/__tests__/backend.test.ts
+  s_6431f34a133923::t_9a449085063a8f 28,40-41
+packages/cli/src/builtin-addons/weather/__tests__/frontend.test.tsx
+  s_6431f34a133923::t_4d1308776cea5b 7,25,30
+packages/cli/src/builtin-addons/weather/backend.ts
+  s_6431f34a133923::t_d1d03150e79908 3
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_6431f34a133923::t_a3d1a5b77d625f 5-8,25,34
+packages/cli/src/builtin-addons/weather/domain/fetch.ts
+  s_6431f34a133923::t_7d032ade26cda2 5
+packages/cli/src/builtin-addons/weather/provider/types.ts
+  s_6431f34a133923::t_748341d5629b6e 38-42
+packages/cli/src/cli/__tests__/index.test.ts
+  s_6431f34a133923::t_bada4e0d3d23e8 1-53
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_6431f34a133923::t_f76c25144e12f5 1-331
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_6431f34a133923::t_1ca6f392cf7ed5 2,12-13,72-73,87,92-93,119-125,160,166,237,244,255,406,474,825,854,879,893,935,950-999
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_6431f34a133923::t_c4123d57a0864a 16-22,42,48,91-93,103,114-116,121,125,129,132,137,140,152,161,165,175,179,186,197-198,203
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_6431f34a133923::t_ee68d171034c8e 1-530
+packages/cli/src/cli/commands/__tests__/port-detection.test.ts
+  s_6431f34a133923::t_535e78fcc22cc6 1-156
+packages/cli/src/cli/commands/__tests__/port-identity.test.ts
+  s_6431f34a133923::t_e48dd8f3657a2c 1-13,16-18,21,23-26,28,30-33,35-84
+packages/cli/src/cli/commands/__tests__/restart.test.ts
+  s_6431f34a133923::t_83cbe653e376dd 1-196
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_6431f34a133923::t_67ec298d6ba925 44-52,57,69-70,153-154,160,162,166-167,169-176,178-179,186-188,193,195-198,326,467-591,809,830,843,851,872
+packages/cli/src/cli/commands/__tests__/signal-provider.test.ts
+  s_6431f34a133923::t_e292bf1a118e99 1-79
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_6431f34a133923::t_b3940e9e08f509 84,133-134,158-171,386,390-393,418,443-503
+packages/cli/src/cli/commands/__tests__/status.test.ts
+  s_6431f34a133923::t_868e9e12555998 3-29,31-47,49-51,53-60,63-71,75,80-86,90-98,102,104-139,141-142,144-170,172-193,195,197-198,200-201,203-204,206,209,211-234,236,238-265,267-271,274-300,302-317,319,321-327,329-360
+packages/cli/src/cli/commands/__tests__/subprocess-supervisor.test.ts
+  s_6431f34a133923::t_bcce2515cc7b3b 242-384
+packages/cli/src/cli/commands/__tests__/system-requirements.test.ts
+  s_6431f34a133923::t_bbec3f29daee4d 1-268
+packages/cli/src/cli/commands/addon-decks.ts
+  s_6431f34a133923::t_2a9ec6fdadd30d 12-19,67-75,78,90,93,98,110,112,132-133,152,155,160,172,174,192-193,238
+packages/cli/src/cli/commands/addon-registry.ts
+  s_6431f34a133923::t_dd833990c72d15 6,13,184,239,245-251,254,268-274,277,293-297,305
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_6431f34a133923::t_6e4f32f0e8698a 20-25,56-57,74-75,96-101,103-116,126-132,150-152,154-155,203-204,222-223
+packages/cli/src/cli/commands/network-bind.ts
+  s_6431f34a133923::t_d092131c2cd322 1-111
+packages/cli/src/cli/commands/pipeline/helpers.ts
+  s_6431f34a133923::t_1e5b44ae45a42e 1-74
+packages/cli/src/cli/commands/pipeline/preflight.ts
+  s_6431f34a133923::t_0c3dd18294ec0e 1-40
+packages/cli/src/cli/commands/port-identity.ts
+  s_6431f34a133923::t_e6a6fcada311f4 13-44
+packages/cli/src/cli/commands/restart.ts
+  s_6431f34a133923::t_dd22f958eeb170 3-14,17-26,33-51,55-57,60-93,98-99,101-133,136-139
+packages/cli/src/cli/commands/run.ts
+  s_6431f34a133923::t_b0d0993ab9c0c3 3,21,47,51,67,73,80,82,88,90-91,95-103,115-123,130,140,156,177,266,291,330,341,438,510-515,570,605,616,677,695-696,698,706,727,737-744,748-756,765,768,807-810,812-813,815-817,839,882,888,933,939,973,1117,1129-1130,1183,1188-1189,1194-1200,1203-1204,1209-1215,1218-1219,1341-1342,1377-1389,1405-1455,1481-1483,1509,1534,1538,1541-1543,1545-1546,1548-1550,1555-1557,1569-1574,1576,1578-1584,1587-1596,1618-1623,1642-1644,1688-1689,1691-1692,1703,1705,1708,1711-1713,1715-1716,1718-1720,1722,1727-1729,1745,1767-1778,1783,1786,1821
+packages/cli/src/cli/commands/service-manager.ts
+  s_6431f34a133923::t_82c2b0293884a9 64
+packages/cli/src/cli/commands/spawn-daemon.ts
+  s_6431f34a133923::t_ce2e22eb6919bd 39,54-61,66,78,96,106,111
+packages/cli/src/cli/commands/start.ts
+  s_6431f34a133923::t_7a059ee2c49fd9 6,12,17-18,31,54-55,57-62,68,90,114-124,137-139,143,149,153-155,159-162,198-204,208-214,231,236,238,240,243,245,247-251,253-259,264-325,376,378,380-382,385-387,391,428,433-437,440-450,454-455,492-497,511,530,533,558,565-571,612,625-653,655-660,667-672,674-678,683-688,693-695,723-810,814-821,827-839,863,884,890-899,901
+packages/cli/src/cli/commands/status.ts
+  s_6431f34a133923::t_07e5f4ebe34571 6-7,9,13-15,19-36,39-43,49-51,56-63,66-69,71,74-79,81-92,95-102,104-124,126
+packages/cli/src/cli/commands/stop.ts
+  s_6431f34a133923::t_14986a372e4cc9 3-4,11,13,15-24,27,30-31,69-75,85-92,95,97-117
+packages/cli/src/cli/commands/subprocess-supervisor.ts
+  s_6431f34a133923::t_3f81b85db6e130 5-17,19-22,24-28,35,39-47,85-104,108,138,149,152-155,161-170
+packages/cli/src/cli/commands/system-requirements.ts
+  s_6431f34a133923::t_40b60492a3818d 1-649
+packages/cli/src/cli/first-run.ts
+  s_6431f34a133923::t_1388a7354cf7b9 1-3,8,10,12-18,21-28,31-40,42-58,62-63,65-84,86-126
+packages/cli/src/cli/index.ts
+  s_6431f34a133923::t_090aafebd3255a 1-2,14-16,18-27,32,40,47-49,62,64-70,73,75,77-79,91,93,96-97,127,137-196,198-199,226-231,234-237,247,257,276
+packages/cli/src/cli/install-root.ts
+  s_6431f34a133923::t_ef825875e0b173 1-26
+packages/cli/src/cli/main.ts
+  s_6431f34a133923::t_f5877c7c1dbf4d 45-47,122-128
+packages/cli/src/cli/probe-deps.ts
+  s_6431f34a133923::t_18c4cf83d56f0a 1-45
+packages/cli/src/cli/prompt.ts
+  s_6431f34a133923::t_bece250aa54505 1-22
+packages/cli/src/cli/startup-display.ts
+  s_6431f34a133923::t_9d03e8ebeab949 1-429
+packages/cli/src/config/__tests__/icon-source-schema.test.ts
+  s_6431f34a133923::t_6605030cc6b560 27-34,43
+packages/cli/src/config/__tests__/include-resolver.test.ts
+  s_6431f34a133923::t_83def29583ff2d 86-96
+packages/cli/src/config/__tests__/schemas.test.ts
+  s_6431f34a133923::t_fafd41c13eecfb 125-172
+packages/cli/src/config/discovery.ts
+  s_6431f34a133923::t_0e15bc60c44f89 15,20-24,32,35-41,43-62
+packages/cli/src/config/schemas.ts
+  s_6431f34a133923::t_0a36fb9d814884 43-60,77-85
+packages/cli/src/core/__tests__/gesture-state.test.ts
+  s_6431f34a133923::t_6a5db52488cd9b 26,32
+packages/cli/src/core/gesture-state.ts
+  s_6431f34a133923::t_32475860c34325 4-6,30,38
+packages/cli/src/core/icon-asset-registry.ts
+  s_6431f34a133923::t_09d470520e7c4a 6
+packages/cli/src/core/icon-source.ts
+  s_6431f34a133923::t_eb6292c67c8c5f 1-9,30-32
+packages/cli/src/deck/__tests__/__fixtures__/runtime-test-helpers.ts
+  s_6431f34a133923::t_8afb50a437d6f6 1-43
+packages/cli/src/deck/__tests__/addon-handler-bridge-external.test.ts
+  s_6431f34a133923::t_23d9a7af992e97 53-55,58,61-62,66,68-71
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_6431f34a133923::t_e9e21de8223991 57,194,215,313,343,347-348,367
+packages/cli/src/deck/__tests__/chrome-icon-resolution.test.ts
+  s_6431f34a133923::t_12491a7451013a 25,48
+packages/cli/src/deck/__tests__/deck-config-derive-label.test.ts
+  s_6431f34a133923::t_a1dcb1c6e6d967 24,38,52-54,66,82
+packages/cli/src/deck/__tests__/deck-config-full-flag.test.ts
+  s_6431f34a133923::t_004e9b14328e99 38,57,143-155,172-173,189-190,197-208,223-224
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_6431f34a133923::t_f576d6d511f375 122,128,229,245,249,255,290,308,312,318,322,327,331,335
+packages/cli/src/deck/__tests__/missing-nav.test.ts
+  s_6431f34a133923::t_2b5c3708c5fb5d 54-63,73-78,94,112-193,206
+packages/cli/src/deck/__tests__/overlay-lock-resume.test.ts
+  s_6431f34a133923::t_ffcda3df200b47 80
+packages/cli/src/deck/__tests__/paginate-deck.test.ts
+  s_6431f34a133923::t_999b45d52161f8 6-17,20,23,30,33,37,47,69,83,92-107
+packages/cli/src/deck/__tests__/position-buttons.test.ts
+  s_6431f34a133923::t_1ce565562726e5 6-9,18,24,30,33,42,45-46,62,68-72,74,77-82,85-86
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_6431f34a133923::t_d1350fff97a0f5 3,15-19,23,31,41,52-54,60,62,71,91,105,119,130-132,139,143,156,162-164,171-204,206,222-245,247,269,278,300,315,337,353,369,381,398,411-413,466,515,531,551,574,599,627,656,685-687,696,704,720,739,760,780,805,830,832,843,845-846,853,855-856,864,866-869,883,885-886,897,899,908-909,911-912,918-919,923,926,948-949,955,960-961,965,982,996,1010,1017,1035,1061,1076,1090,1104,1119,1137,1163,1180,1212,1224,1247,1274,1283,1325,1332,1360,1366,1380,1386,1400,1406,1426,1444,1462,1480,1501,1519-1520,1524,1534,1549,1565,1583,1594,1605,1620-1622,1627,1638
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_6431f34a133923::t_2ca849fdc89cc6 4,23,34,36,61,64-65,69-104,111,113-114,116,122,124-125,127,130,132-133,135-138,144,146,153-154,160-161,169,171-172,178-179,181,189-267
+packages/cli/src/deck/__tests__/validation-errors.test.ts
+  s_6431f34a133923::t_290a841e722f98 43-46,77-79,135,143
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_6431f34a133923::t_8a5bde6538a3f1 9,67,160,212-215,256-258,269,404,440
+packages/cli/src/deck/deck-config.ts
+  s_6431f34a133923::t_dda55e521aee3b 6,116-120,132,136,149,159,162-194,208,212-213,234-271
+packages/cli/src/deck/index.ts
+  s_6431f34a133923::t_15ca7fc9244bbf 27
+packages/cli/src/deck/methods.ts
+  s_6431f34a133923::t_d23cec56519b81 100,198,228-238,241,251,256,274
+packages/cli/src/deck/paginate-deck.ts
+  s_6431f34a133923::t_b47f4f11df2882 36-37,58,66,77-81,83-84
+packages/cli/src/deck/position-buttons.ts
+  s_6431f34a133923::t_740d2766c7086e 4,6-13,15,32-35,50
+packages/cli/src/deck/runtime-subscriptions.ts
+  s_6431f34a133923::t_2a97d2dc6c49cf 22-24,26-29,31
+packages/cli/src/deck/runtime/runtime.ts
+  s_6431f34a133923::t_2479483b64b832 10,26-33,46-61,86,92,147-148,196,290-302,319-320,324,326,330,335-343,506-513,530-539,545-548,550-573,575-576,581-597,600-609,611-615,617-621,623-632,634-639,641-649,651,654-690,703-707,972-973
+packages/cli/src/deck/system-back-injection.ts
+  s_6431f34a133923::t_4806d142652d02 23,32,49,55,57
+packages/cli/src/device/black-frame.ts
+  s_6431f34a133923::t_95723643ab8bcb 1-73
+packages/cli/src/index.ts
+  s_6431f34a133923::t_2ccc6ef11f4b16 21-22
+packages/cli/src/outputClient/__tests__/emulator.test.ts
+  s_6431f34a133923::t_0c041643226b3b 97-98,100,109,114
+packages/cli/src/outputClient/__tests__/open-browser.test.ts
+  s_6431f34a133923::t_07d3ea73ddd74b 1-49
+packages/cli/src/outputClient/emulator.ts
+  s_6431f34a133923::t_0264853d14a89a 1,13,25,46,100,103-107,127,136-137,153,162,165,213,265-300
+packages/cli/src/outputClient/open-browser.ts
+  s_6431f34a133923::t_68f86dc36d6460 1-26
+packages/cli/src/outputClient/real.ts
+  s_6431f34a133923::t_b1be39d3251b5a 6,21,27,38-40,72,96,107,152,154-155,174-184,200,221,258-269,271-272,280
+packages/cli/src/outputClient/types.ts
+  s_6431f34a133923::t_b698a8812f735e 34-48
+packages/cli/src/render/__tests__/state-publisher.test.ts
+  s_6431f34a133923::t_345ab46b5dd451 99-102
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_6431f34a133923::t_953e8c7816529a 40,46,76,119,142,165,178,189,208,227,247,271,289,319,346,377,426,467,516,536
+packages/cli/src/render/browser-renderer.ts
+  s_6431f34a133923::t_9df9be5b102523 17-19,80,83,90,95,182,188,190,200
+packages/cli/src/render/icon-source-resolver.ts
+  s_6431f34a133923::t_1513fa25c91e18 4-8,31-32
+packages/cli/src/render/state-publisher.ts
+  s_6431f34a133923::t_206f7286b66db9 30
+packages/cli/src/render/ws-bridge.ts
+  s_6431f34a133923::t_8520998fb6c2db 3,6-7,23,25-30,33,50,61,65,69,72,98-105,121,131,138,142-144,147,151-152,175-177,244-245,260-262
+packages/cli/src/system/__tests__/device-selection.test.ts
+  s_6431f34a133923::t_c008f4d21ff37e 3,7,73,75-76,83,87,89-91
+packages/cli/src/system/__tests__/requirements.test.ts
+  s_6431f34a133923::t_91b2c591083c77 8,14-19,21-22,24,235-238
+packages/cli/src/system/device-selection.ts
+  s_6431f34a133923::t_91960b28df1444 1,28-29,72,74
+packages/cli/src/system/providers/active-app.ts
+  s_6431f34a133923::t_24070839ec3501 50
+packages/cli/src/system/providers/active-app/wayland-gnome.ts
+  s_6431f34a133923::t_af21fe3dbcf244 25
+packages/cli/src/system/providers/clipboard.ts
+  s_6431f34a133923::t_3807a8b05e40b8 55
+packages/cli/src/system/providers/clipboard/__tests__/linux.test.ts
+  s_6431f34a133923::t_ceed5cb02a2a51 29-37,39-41
+packages/cli/src/system/providers/key-macro.ts
+  s_6431f34a133923::t_b5bb68e70e43dd 47
+packages/cli/src/system/providers/key-macro/__tests__/linux.test.ts
+  s_6431f34a133923::t_b31228c5617e7c 209
+packages/cli/src/system/providers/key-macro/parser.ts
+  s_6431f34a133923::t_aa1d0014cd76fc 126-160,162-166,169-185
+packages/cli/src/system/providers/notification.ts
+  s_6431f34a133923::t_45f42109cbea83 38
+packages/cli/src/system/providers/session.ts
+  s_6431f34a133923::t_1572ff864374a5 46
+packages/cli/src/system/providers/session/__tests__/linux.test.ts
+  s_6431f34a133923::t_da927d50cae792 33,44
+packages/cli/src/system/requirements.ts
+  s_6431f34a133923::t_29b3de3056ced8 26,90-111,117-119,143,171
+packages/cli/src/system/setup-wizard/__tests__/format.test.ts
+  s_6431f34a133923::t_e5795ce65d90b5 1-249
+packages/cli/src/system/setup-wizard/__tests__/plan.test.ts
+  s_6431f34a133923::t_6e4968ceeb482e 1-219
+packages/cli/src/system/setup-wizard/__tests__/probe-cache.test.ts
+  s_6431f34a133923::t_0d5ae83c66bd38 1-72
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_6431f34a133923::t_f70cfcfee8709d 1-291
+packages/cli/src/system/setup-wizard/__tests__/runtime-features.test.ts
+  s_6431f34a133923::t_c74ba1410286c1 1-64
+packages/cli/src/system/setup-wizard/__tests__/sudo.test.ts
+  s_6431f34a133923::t_c19aa2a876e257 1-177
+packages/cli/src/system/setup-wizard/config-seed.ts
+  s_6431f34a133923::t_949590249d8d48 1-24
+packages/cli/src/system/setup-wizard/format.ts
+  s_6431f34a133923::t_5bcbf749db96a7 1-127
+packages/cli/src/system/setup-wizard/index.ts
+  s_6431f34a133923::t_d64ed194f0c327 1-34
+packages/cli/src/system/setup-wizard/plan.ts
+  s_6431f34a133923::t_56cea719c1adab 1-200
+packages/cli/src/system/setup-wizard/probe-cache.ts
+  s_6431f34a133923::t_24099681130917 1-26
+packages/cli/src/system/setup-wizard/probe.ts
+  s_6431f34a133923::t_0717bd16607db2 1-407
+packages/cli/src/system/setup-wizard/runtime-features.ts
+  s_6431f34a133923::t_883a8c0b2f4892 1-66
+packages/cli/src/system/setup-wizard/sudo.ts
+  s_6431f34a133923::t_eb0d99f795b07c 1-178
+packages/cli/src/system/setup-wizard/types.ts
+  s_6431f34a133923::t_0f8e3792d760c7 1-96
+packages/cli/src/themes/__tests__/_riptide-css.smoke.test.ts
+  s_6431f34a133923::t_07631b7209791e 1-33
+packages/cli/src/themes/__tests__/css.test.ts
+  s_6431f34a133923::t_bcf302daa0549b 124-181
+packages/cli/src/themes/css.ts
+  s_6431f34a133923::t_a0630fd8171a08 130-143,157-169
+packages/cli/src/themes/default/sirenodeck.json
+  s_6431f34a133923::t_16637853a3e492 14,22-27,32-107
+packages/cli/src/themes/light/sirenodeck.json
+  s_6431f34a133923::t_7815f5462bb1c9 14,22-27,29-39,42-47,49,52-57,59-107
+packages/cli/src/themes/manifest.ts
+  s_6431f34a133923::t_0ba5aa34f62f07 11,25,29-40,47
+packages/cli/src/ui/ButtonFrame.tsx
+  s_6431f34a133923::t_cc2cdbeb09b3f0 29-43,45-46,60-108,193-194,207
+packages/cli/src/ui/__tests__/ButtonFrame.test.tsx
+  s_6431f34a133923::t_aab037b7bd574c 38-49,117-133
+packages/cli/src/ui/primitives/__tests__/Icon.test.tsx
+  s_6431f34a133923::t_7827194bb84e94 49-61,74,121-153
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_6431f34a133923::t_181855bf90996d 101,108,115,281-284
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_6431f34a133923::t_47623c938d612b 13,38-41,48-49,54-56,60,65,67-68,71,77-78,84,90,99-100,103-111,113-119,121-126,128,133-141,186
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_6431f34a133923::t_86b9510946721a 205-206
+packages/cli/src/ui/surfaces/__tests__/LabelValueListSurface.test.tsx
+  s_6431f34a133923::t_c9734215b74ed1 1-59
+packages/cli/src/ui/surfaces/__tests__/ValueChart.test.tsx
+  s_6431f34a133923::t_e4d078ac7d03a6 89-91
+packages/cli/src/util/__tests__/config-diff.test.ts
+  s_6431f34a133923::t_339b1a06ab17db 3,16
+packages/cli/src/util/__tests__/log-reader.test.ts
+  s_6431f34a133923::t_707c32564d7a12 1-146
+packages/cli/src/util/__tests__/logger.test.ts
+  s_6431f34a133923::t_19e96de78f9006 135-202
+packages/cli/src/util/config-diff.ts
+  s_6431f34a133923::t_46a616d8d67910 11-12
+packages/cli/src/util/daemon.ts
+  s_6431f34a133923::t_b430136f656d4d 54,72-74,325,347-418
+packages/cli/src/util/log-reader.ts
+  s_6431f34a133923::t_29e94d6c183d19 1-114
+packages/cli/src/util/logger.ts
+  s_6431f34a133923::t_50310d66aa19b9 3,14,20,22-23,48-72,95-103,115-118,121-127,148,151-158,167,170-213,281,300-306,320-325,334-345,348
+packages/cli/src/vite/virtual-modules.ts
+  s_6431f34a133923::t_b4dc9683c0edaa 212,229,291-339,359-393
+packages/cli/tsdown.config.ts
+  s_6431f34a133923::t_ad9eb1a23a7dc5 1-24
+packages/themes/neon-grids/components/index.tsx
+  s_6431f34a133923::t_df2f263c5ee744 3-9,11-16,52-56
+packages/themes/neon-grids/sirenodeck.json
+  s_6431f34a133923::t_b5200496b41e30 14,22-27,32-37,42-47,52-57,62-144
+packages/themes/riptide/assets/Bitcount_Single/OFL.txt
+  s_6431f34a133923::t_2fedba9040cc07 1-93
+packages/themes/riptide/assets/IBMPlexSans/OFL.txt
+  s_6431f34a133923::t_777cd9fd0be438 1-93
+packages/themes/riptide/assets/IBM_Plex_Mono/OFL.txt
+  s_6431f34a133923::t_2fdf57abeae106 1-93
+packages/themes/riptide/components.css
+  s_6431f34a133923::t_76d15f1136a68a 33-34,96-101
+packages/themes/riptide/components/index.tsx
+  s_6431f34a133923::t_f46f801e749abe 3-7,9-13,21-25,30,41-49,80-81,83-87,91-95,98,103-107,109-111,116-120
+packages/themes/riptide/sirenodeck.json
+  s_6431f34a133923::t_a114e0b86d3f0c 14,22-27,33-38,44-49,55-60,66-71,77-159,164,170,184,187-190,196
+plans/design/AI_PROMPT.md
+  s_6431f34a133923::t_ee8a8f2138c174 1-326
+plans/design/PLAN.md
+  s_6431f34a133923::t_8690106ccd9836 1-188
+plans/design/captures/_write_wrapper.py
+  s_6431f34a133923::t_1d5cea8ac65f2a 1-63
+plans/design/captures/capture-all.sh
+  s_6431f34a133923::t_8c929b091f4654 1-60
+plans/design/captures/capture-deck.sh
+  s_6431f34a133923::t_7ef0f760bcac0c 1-89
+plans/design/captures/capture-one.sh
+  s_6431f34a133923::t_c110e61678e014 1-148
+plans/design/captures/capture.sh
+  s_6431f34a133923::t_060416558e8a8a 1-109
+plans/design/captures/recapture.sh
+  s_6431f34a133923::t_ea57d85ecc2c0d 1-154
+plans/design/copy.md
+  s_6431f34a133923::t_5cd1b890aff884 1,3,5,7,9-13,15,17,19,21,23,25,27-29,31,33-35,37,39-41,43,45-47,49,51-53,55,57-59,61,63,65-70,72,74,76-79,81,83,85-95,97,99,101-106,108,110,112-117,119,121,123-126,128,130,132-136
+plans/design/sitemap.md
+  s_6431f34a133923::t_5d950af562be69 1-58
+pnpm-lock.yaml
+  s_6431f34a133923::t_2256412d746375 18-20,22-23,67-69,88-90,178,217,223,1005-1010,1039-1044,1051-1056,1063-1068,1075-1080,1087-1092,1099-1104,1111-1116,1123-1128,1135-1140,1147-1152,1159-1164,1171-1176,1183-1188,1195-1200,1207-1212,1219-1224,1231-1236,1243-1248,1255-1260,2160-2161,3550-3603,4157-4169,5634-5636,5788,5794,5820,5823,5829-5830,6441-6445,6448,6488-6490,6494-6496,6500-6502,6506-6508,6512-6514,6518-6520,6524-6526,6530-6532,6536-6538,6542-6544,6548-6550,6554-6556,6560-6562,6566-6568,6572-6574,6578-6580,6584-6586,6590-6592,6596-6598,6980,6991,7443,7752,7754,7758,7767,9138-9180,10024-10047,11659-11660
+pnpm-workspace.yaml
+  s_6431f34a133923::t_f877aa52447c44 11
+scripts/git/reset-pattern-warning.sh
+  s_6431f34a133923::t_bc7345af3e39f5 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "ae419ac12a7ec3fed99471b946cad2eee4f3a0f0",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
