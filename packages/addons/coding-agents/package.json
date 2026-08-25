@@ -27,7 +27,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json && node scripts/post-build.mjs",
+    "build": "tsdown && node scripts/post-build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -41,6 +41,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "react": "^19.0.0",
+    "tsdown": "^0.22.14",
     "typescript": "^5.7.0",
     "vitest": "^4.1.0"
   }

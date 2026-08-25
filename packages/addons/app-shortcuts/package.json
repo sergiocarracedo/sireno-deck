@@ -27,10 +27,11 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json && node scripts/post-build.mjs",
+    "build": "tsdown && node scripts/post-build.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "tsdown": "^0.22.14",
     "typescript": "^5.7.0"
   }
 }
