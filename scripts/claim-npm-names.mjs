@@ -60,11 +60,10 @@ function buildPlaceholder(name) {
     version: "0.0.0",
     description:
       "Reserved name for Sireno Deck. Real release happens via release-please.",
-    private: true,
     license: "MIT",
     repository: {
       type: "git",
-      url: "https://github.com/sergiocarracedo/sireno-deck.git",
+      url: "git+https://github.com/sergiocarracedo/sireno-deck.git",
     },
   }
   writeFileSync(join(dir, "package.json"), JSON.stringify(pkg, null, 2) + "\n")
