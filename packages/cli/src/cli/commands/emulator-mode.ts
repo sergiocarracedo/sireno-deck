@@ -174,7 +174,12 @@ const spawnViteAndWaitForReady = (
     child.on("exit", (code) => {
       clearTimeout(timer)
       if (settled) {
-        logger.fatal({ code, url: settledUrl }, exitFatalMessage)
+        // ponytail: this logs as a warn, not a fatal. The supervisor (which
+        // owns this child) already decides whether to respawn or give up
+        // and emits its own warn + fatal as appropriate. Logging fatal here
+        // is redundant and clutters `p dev restart`, which legitimately
+        // kills the previous vite as part of the stop→start cycle.
+        logger.warn({ code, url: settledUrl }, exitFatalMessage)
         return
       }
       const output = stdoutChunks.join("") + stderrChunks.join("")
