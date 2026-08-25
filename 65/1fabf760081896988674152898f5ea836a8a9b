@@ -1,0 +1,51 @@
+packages/addons/pomodoro/tsdown.config.ts
+  s_6431f34a133923::t_8082962cf68501 16-21
+  s_6431f34a133923::t_74e63b7de1f4ef 1-15,31
+  s_6431f34a133923::t_e4e89229fcaa20 22-30
+packages/addons/app-shortcuts/package.json
+  s_6431f34a133923::t_33ecfbaec79ff6 30
+packages/addons/app-shortcuts/src/__tests__/dist-esm.test.ts
+  s_6431f34a133923::t_2f453c5a3f1da5 1-13,16-21
+  s_6431f34a133923::t_ac5e9e7eb4aa92 14
+  s_6431f34a133923::t_1ee1a1d0187152 15
+packages/addons/pomodoro/package.json
+  s_6431f34a133923::t_f2a510be1f2898 30
+packages/addons/pomodoro/src/stubs/label.ts
+  s_6431f34a133923::t_4dcad50e44b910 1-21
+packages/addons/app-shortcuts/tsdown.config.ts
+  s_6431f34a133923::t_5bbb8e98f2534a 1-15,22
+  s_6431f34a133923::t_6568a62dae4cde 16-21
+packages/addons/pomodoro/src/__tests__/dist-esm.test.ts
+  s_6431f34a133923::t_5fc64b404de7fb 1-13,16-21
+  s_6431f34a133923::t_06fadf36b0a5f3 14
+  s_6431f34a133923::t_ba1723014e823e 15
+packages/addons/coding-agents/package.json
+  s_6431f34a133923::t_2d9daf90bb36e9 30
+packages/addons/coding-agents/tsdown.config.ts
+  s_6431f34a133923::t_c0da3a7242e4bc 15-31
+  s_6431f34a133923::t_07b5dcb9056801 1-14,32
+packages/addons/coding-agents/src/__tests__/dist-esm.test.ts
+  s_6431f34a133923::t_9fdc45104eefed 1-13,16-21
+  s_6431f34a133923::t_700fe46d889965 14
+  s_6431f34a133923::t_98346b80741098 15
+packages/addons/app-shortcuts/vitest.config.ts
+  s_6431f34a133923::t_dd1be82a7d87c5 1-8
+pnpm-lock.yaml
+  s_6431f34a133923::t_dcc2651710774c 36-38,67-69,92-94,11163-11177,11629-11654
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "651fabf760081896988674152898f5ea836a8a9b",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
