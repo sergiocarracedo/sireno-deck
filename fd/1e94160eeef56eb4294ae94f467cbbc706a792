@@ -1,0 +1,21 @@
+packages/themes/neon-grids/components/index.tsx
+  s_6431f34a133923::t_9ce946c10289f7 3-9,11-16
+packages/themes/riptide/components/index.tsx
+  s_6431f34a133923::t_663713ee92ba0d 3-7,9-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "fd1e94160eeef56eb4294ae94f467cbbc706a792",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
