@@ -1,0 +1,29 @@
+packages/addons/pomodoro/src/__tests__/backend.test.ts
+  s_6431f34a133923::t_3c47997147ea8d 52-72
+  s_6431f34a133923::t_ff96759d3af3a1 385,395-403,406-467
+packages/addons/pomodoro/src/__tests__/manifest.test.ts
+  s_6431f34a133923::t_29994942b314bc 30
+packages/addons/pomodoro/src/buttons/pomodoro/backend.ts
+  s_6431f34a133923::t_3c9a9a3b1d7da4 170-188,197-217
+  s_6431f34a133923::t_23fef9ce66af3b 189-196
+packages/addons/pomodoro/src/manifest.ts
+  s_6431f34a133923::t_68a9120a897086 19
+packages/addons/pomodoro/src/global/backend.ts
+  s_6431f34a133923::t_55740e30bbddd2 105-110,129-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "c1c0df360c7c80a2b4865ff1fd6d00b54f101a45",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
