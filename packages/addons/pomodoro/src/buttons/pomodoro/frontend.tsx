@@ -73,6 +73,12 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
   const accentDashOffset = CIRCUMFERENCE * (1 - progress)
   const finished = status === "finished"
   const paused = status === "paused"
+  // ponytail: only draw the explicit pause overlay when the user actually
+  // paused mid-countdown (remainingSec < durationSec). The fresh-mount
+  // "counter at max but not started" state uses status="paused" too
+  // (see register() / onMount), but full time means no overlay — the
+  // counter alone tells the user nothing is running yet.
+  const showPauseOverlay = paused && remainingSec < totalSec
 
   return (
     <>
@@ -134,7 +140,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
             </div>
           </foreignObject>
         </svg>
-        {paused && (
+        {showPauseOverlay && (
           <svg
             viewBox="0 0 24 24"
             className="pointer-events-none absolute left-1/2 top-[34%] -translate-x-1/2 -translate-y-1/2 h-4 w-4"

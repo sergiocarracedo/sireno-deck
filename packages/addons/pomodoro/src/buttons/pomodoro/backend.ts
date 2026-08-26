@@ -167,37 +167,9 @@ export default {
       ctx.methods["pomodoro:resume"]?.(ctx.buttonId)
       return
     }
-    // finished → reset to paused-at-full, await explicit tap to start
-    writePersisted(ctx, {
-      status: "idle",
-      startTsMs: null,
-      durationSec,
-      remainingSec: null,
-    })
-    ctx.methods["pomodoro:register"]?.(
-      ctx.buttonId,
-      durationSec,
-      ctx.config?.notification,
-    )
-  },
-  onDblTap: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
-    // ponytail: only meaningful when time is over. In every other state
-    // tap already covers pause/resume/start; dbl-tap is a deliberate
-    // "I'm here, give me a fresh countdown now" gesture.
-    const persisted = getPersisted(ctx)
-    if (persisted.status !== "finished") return
-    const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
-    writePersisted(ctx, {
-      status: "running",
-      startTsMs: Date.now(),
-      durationSec,
-      remainingSec: durationSec,
-    })
-    ctx.methods["pomodoro:start"]?.(
-      ctx.buttonId,
-      durationSec,
-      ctx.config?.notification,
-    )
+    // ponytail: finished is a deliberate dead-end. The user must hold to
+    // reset to idle, then tap to start a fresh countdown. Tap alone does
+    // nothing — keeps the "time is over" state visible until they decide.
   },
   onHold: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
