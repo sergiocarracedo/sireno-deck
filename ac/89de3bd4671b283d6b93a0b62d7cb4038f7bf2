@@ -1,0 +1,96 @@
+packages/addons/pomodoro/tsdown.config.ts
+  s_6431f34a133923::t_91a38903f26953 13-25
+packages/addons/pomodoro/src/shared/timer.ts
+  s_6431f34a133923::t_4f36bdb6145ae6 6
+packages/addons/pomodoro/src/buttons/pomodoro/backend.ts
+  s_6431f34a133923::t_b4660a8dd1c8d7 7
+  s_6431f34a133923::t_c08b3a8234fb4f 1
+packages/addons/coding-agents/src/shared/opencode-status.ts
+  s_6431f34a133923::t_35674f0d57f3c7 1
+packages/addons/coding-agents/src/buttons/summary/backend.ts
+  s_6431f34a133923::t_05fbdf1589f57a 1,5,7
+packages/addons/coding-agents/src/manifest.ts
+  s_6431f34a133923::t_21f7c516e0b6c3 4,6
+  s_6431f34a133923::t_fef4a1ecf3f4ef 1-3,5,7-8
+packages/addons/coding-agents/src/providers/claude-code.ts
+  s_6431f34a133923::t_7eb4483b7b574a 6-7,11
+packages/addons/coding-agents/src/shared/notifier.ts
+  s_6431f34a133923::t_a96519930afedf 1
+packages/addons/coding-agents/src/providers/opencode.ts
+  s_6431f34a133923::t_170da3e6e3530f 3-4,9
+packages/addons/coding-agents/src/global/backend.ts
+  s_6431f34a133923::t_46171595766c03 1,8,16-18,22
+  s_6431f34a133923::t_0882b01c982434 82
+  s_6431f34a133923::t_e7239c8ac26978 31
+  s_6431f34a133923::t_caf8bba1745ef5 27
+packages/addons/app-shortcuts/tsdown.config.ts
+  s_6431f34a133923::t_f4e8494b750cb6 13-16
+  s_6431f34a133923::t_d96de8add67576 17-22
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_6431f34a133923::t_0f4efcf169169d 445-450,462
+packages/addons/pomodoro/src/manifest.ts
+  s_6431f34a133923::t_686ca3dc90d5d4 6-9
+  s_6431f34a133923::t_575bc3318d7b75 1-2,4-5
+.oxlintrc.json
+  s_6431f34a133923::t_6cf969476e77b7 19
+packages/addons/coding-agents/src/shared/claude-status.ts
+  s_6431f34a133923::t_f968e5fe72df55 1
+packages/addons/app-shortcuts/src/index.ts
+  s_6431f34a133923::t_64701d68afceef 1-11,13
+packages/addons/coding-agents/src/buttons/agent/backend.ts
+  s_6431f34a133923::t_5925d64b197862 1,5,7
+packages/addons/coding-agents/src/index.ts
+  s_6431f34a133923::t_873c2e36c7296d 1-2
+packages/addons/coding-agents/src/providers/registry.ts
+  s_6431f34a133923::t_443f3e180c3101 1-4
+packages/addons/coding-agents/src/shared/snapshot.ts
+  s_6431f34a133923::t_da1cc46732fd3f 7
+packages/addons/app-shortcuts/src/manifest.ts
+  s_6431f34a133923::t_75293958ae9321 1-10
+packages/addons/pomodoro/src/index.ts
+  s_6431f34a133923::t_447fa4a2314e0b 1-2
+packages/addons/coding-agents/tsdown.config.ts
+  s_6431f34a133923::t_11ba6f41e52d21 18-22,26-27
+packages/addons/app-shortcuts/src/decks/chrome.ts
+  s_6431f34a133923::t_f2635552690f9d 1
+packages/addons/app-shortcuts/src/decks/claude-code.ts
+  s_6431f34a133923::t_69452353199b25 1
+packages/addons/app-shortcuts/src/decks/discord.ts
+  s_6431f34a133923::t_72c903c5fa5908 1
+packages/addons/app-shortcuts/src/decks/google-meet.ts
+  s_6431f34a133923::t_00a70c5804ab51 1
+packages/addons/app-shortcuts/src/decks/opencode.ts
+  s_6431f34a133923::t_e9ec8addc0f495 1
+packages/addons/app-shortcuts/src/decks/slack.ts
+  s_6431f34a133923::t_5deec5eecadc49 1
+packages/addons/app-shortcuts/src/decks/teams.ts
+  s_6431f34a133923::t_18f5e266714596 1
+packages/addons/app-shortcuts/src/decks/vscode.ts
+  s_6431f34a133923::t_b7c7f811d32904 1
+packages/addons/coding-agents/src/buttons/agent/frontend.tsx
+  s_6431f34a133923::t_733bd90c63bf5c 1,3
+packages/addons/coding-agents/src/buttons/summary/frontend.tsx
+  s_6431f34a133923::t_16cf558b2fe9b5 1,3
+packages/addons/coding-agents/src/decks/agents.ts
+  s_6431f34a133923::t_43af423a598b94 1
+packages/addons/pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_6431f34a133923::t_4acbf425e21f1c 3-8
+packages/addons/pomodoro/src/global/backend.ts
+  s_6431f34a133923::t_c627c59e3d4469 6-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "ac89de3bd4671b283d6b93a0b62d7cb4038f7bf2",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
