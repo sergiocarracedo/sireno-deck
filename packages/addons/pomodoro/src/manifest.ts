@@ -16,7 +16,7 @@ export const manifest: AddonManifestV1 = {
       frontend: pomodoroFrontend,
       service: {
         ...pomodoroBackend,
-        gestureHandlers: ["tap", "hold"],
+        gestureHandlers: ["tap", "dbl-tap", "hold"],
       },
     },
   },

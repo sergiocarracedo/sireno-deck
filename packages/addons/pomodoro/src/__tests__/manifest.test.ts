@@ -27,6 +27,6 @@ describe("pomodoro manifest", () => {
     // ponytail: default-deny in the runtime strips undeclared gestures
     // (with a warning). Add new gestures here and to backend.ts together.
     expect(gh).toContain("hold")
-    expect(gh).not.toContain("dbl-tap")
+    expect(gh).toContain("dbl-tap")
   })
 })

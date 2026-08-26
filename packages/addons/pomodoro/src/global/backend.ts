@@ -102,6 +102,12 @@ export const globalService = {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
       const existing = buttons.get(id)
+      // ponytail: clear pausedRemainingSec so rebuildSnapshot takes the
+      // running branch (not the paused branch). Without this, a tap after
+      // a pause would keep the entry marked paused and the frontend would
+      // keep rendering the paused-at-full counter — looking like the
+      // countdown never started.
+      delete existing?.pausedRemainingSec
       buttons.set(id, {
         startTsMs: Date.now(),
         durationSec,
@@ -120,6 +126,9 @@ export const globalService = {
       if (typeof durationSec !== "number" || durationSec <= 0) return
       if (typeof startTsMs !== "number") return
       const existing = buttons.get(id)
+      // same fix as start(): drop any leftover pausedRemainingSec so the
+      // entry is unambiguously in the running state.
+      delete existing?.pausedRemainingSec
       buttons.set(id, {
         startTsMs,
         durationSec,

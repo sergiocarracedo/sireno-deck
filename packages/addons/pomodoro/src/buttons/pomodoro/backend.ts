@@ -167,9 +167,54 @@ export default {
       ctx.methods["pomodoro:resume"]?.(ctx.buttonId)
       return
     }
-    // ponytail: finished is a deliberate dead-end. The user must hold to
-    // reset to idle, then tap to start a fresh countdown. Tap alone does
-    // nothing — keeps the "time is over" state visible until they decide.
+    // ponytail: when time is over, tap returns to the initial state —
+    // the counter at max, awaiting another tap. The user must tap a
+    // second time to actually start a fresh countdown. The blink
+    // animation stops as soon as the global runtime re-seeds to
+    // paused-at-full via pomodoro:register.
+    if (persisted.status === "finished") {
+      writePersisted(ctx, {
+        status: "idle",
+        startTsMs: null,
+        durationSec,
+        remainingSec: null,
+      })
+      ctx.methods["pomodoro:register"]?.(
+        ctx.buttonId,
+        durationSec,
+        ctx.config?.notification,
+      )
+      return
+    }
+    // truly fresh state (idle): present paused-at-full. register() seeds
+    // the global runtime; the frontend shows the configured time and
+    // waits for the user to tap again to begin a countdown.
+    ctx.methods["pomodoro:register"]?.(
+      ctx.buttonId,
+      durationSec,
+      ctx.config?.notification,
+    )
+  },
+  onDblTap: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
+    // ponytail: when time is over, dbl-tap returns to the initial state
+    // AND starts a fresh countdown immediately. Symmetric counterpart
+    // to onTap which only resets. The blink animation is interrupted
+    // when status flips back to running.
+    const persisted = getPersisted(ctx)
+    if (persisted.status !== "finished") return
+    const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
+    const startTsMs = Date.now()
+    writePersisted(ctx, {
+      status: "running",
+      startTsMs,
+      durationSec,
+      remainingSec: durationSec,
+    })
+    ctx.methods["pomodoro:start"]?.(
+      ctx.buttonId,
+      durationSec,
+      ctx.config?.notification,
+    )
   },
   onHold: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
