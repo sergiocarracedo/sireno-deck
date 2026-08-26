@@ -1,0 +1,29 @@
+packages/addons/pomodoro/src/__tests__/backend.test.ts
+  s_6431f34a133923::t_bec4fa8d540997 337
+  s_6431f34a133923::t_b20304b391bd40 479-482,484-487,489,494-495,497
+  s_6431f34a133923::t_71aa170273e77b 316-319,381-388
+  s_6431f34a133923::t_32fa64d45ca5d8 363,372-373,390,392-427,430,438,452-455,473
+packages/addons/pomodoro/src/global/backend.ts
+  s_6431f34a133923::t_8bb2dea9bb1d78 183-188,192-202,207
+  s_6431f34a133923::t_71aa170273e77b 189-191,203-206
+packages/addons/pomodoro/src/buttons/pomodoro/backend.ts
+  s_6431f34a133923::t_43fe79b4574d2c 150,152-168,184,200-202,204-211,213,219-221,223-224,247-254
+  s_6431f34a133923::t_71aa170273e77b 203
+  s_6431f34a133923::t_cb84959571b7f7 59-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "02863c22ebd73a70c82b7631663fd352008728e1",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
