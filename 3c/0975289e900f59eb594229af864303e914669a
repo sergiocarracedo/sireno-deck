@@ -1,0 +1,58 @@
+packages/addons/pomodoro/src/manifest.ts
+  s_6431f34a133923::t_e9508357766ad2 19
+packages/addons/pomodoro/src/global/backend.ts
+  s_6431f34a133923::t_35819cdd4140b3 171
+  s_6431f34a133923::t_1835fccd083115 15-16
+  s_6431f34a133923::t_92294b29104e7a 85-89,92
+  s_6431f34a133923::t_5b776578d338e8 45-47
+  s_6431f34a133923::t_7a928c32185dd0 139-144
+packages/addons/pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_6431f34a133923::t_b3c18890dc51ea 1-5
+packages/addons/pomodoro/src/__tests__/manifest.test.ts
+  s_6431f34a133923::t_c72f9d6ceb0ea3 25-32
+packages/cli/src/cli/commands/run.ts
+  s_6431f34a133923::t_e7806519e98a8a 1099-1107,1113-1115,1118-1121
+  s_6431f34a133923::t_01d35dc0fa7dba 1108-1112
+packages/addons/pomodoro/tsdown.config.ts
+  s_6431f34a133923::t_64adf47f002e18 32-37,39-42
+packages/cli/src/vite/virtual-modules.ts
+  s_6431f34a133923::t_32f40b60dd524c 207-265
+  s_6431f34a133923::t_b77bc6ef464c21 337-350
+  s_6431f34a133923::t_c3938a8ad56371 297-298,329,334-336,355
+packages/addons/pomodoro/vitest.config.ts
+  s_6431f34a133923::t_ebb4143a74bed0 9
+packages/addons/pomodoro/src/buttons/pomodoro/backend.ts
+  s_6431f34a133923::t_0b09d8782906d3 66-68,70,76-77,84,86-94,98-100,103,108-118
+  s_6431f34a133923::t_eb1ce24a97d5dc 170-189
+  s_6431f34a133923::t_711e8be09b4bde 192
+packages/addons/pomodoro/src/types/host-shims.d.ts
+  s_6431f34a133923::t_94c5460091b1f0 2-10
+packages/addons/pomodoro/src/__tests__/backend.test.ts
+  s_6431f34a133923::t_2f0ed1d741cec3 348,355-356,358,365
+  s_6431f34a133923::t_ff9a8118030231 248-271
+  s_6431f34a133923::t_1baf38dca6d40d 362,364,374-379,381-384,386-408,410-411,413-420,427-446
+  s_6431f34a133923::t_24c7dfd6603fce 15,30-44,91-95,104,121-147,149,151-152,154-171,175-184,187-195,198,201-202,204-216,222,224-239,241-244,286,292,295,317-319,321,330-331,338,340,347,349,354,359-361,366-370,372
+  s_6431f34a133923::t_bdb55db5d2dc9d 300-301,311-312,314
+  s_6431f34a133923::t_00e1d2a2f9a78a 185-186
+  s_6431f34a133923::t_70acdbb4dae218 240
+  s_6431f34a133923::t_64781805ef440f 357
+  s_6431f34a133923::t_608e9e5cd89a08 363
+packages/addons/pomodoro/src/stubs/label.ts
+  s_6431f34a133923::t_98ddadbc2f05ef 1,4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "3c0975289e900f59eb594229af864303e914669a",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
