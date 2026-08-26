@@ -1,0 +1,49 @@
+packages/cli/src/vite/virtual-modules.ts
+  s_6431f34a133923::t_541675fd0c6d71 472-491,493-513,518-526
+  s_6431f34a133923::t_f86eb32b71e761 8
+  s_6431f34a133923::t_1c1089d3d00cac 1-7,492,514-517
+  s_6431f34a133923::t_18d9b44db6e306 11-41
+  s_6431f34a133923::t_8df67adf61080e 42
+packages/cli/src/cli/commands/restart.ts
+  s_6431f34a133923::t_91081e5299381c 76
+  s_6431f34a133923::t_3265898715856c 120
+packages/addons/coding-agents/src/__tests__/opencode-provider.test.ts
+  s_6431f34a133923::t_b660ea8650e571 62-69,83-92
+  s_6431f34a133923::t_eac9e8b18133a2 8-13,25-32
+packages/addons/coding-agents/src/providers/opencode.ts
+  s_6431f34a133923::t_1c1089d3d00cac 68-72
+  s_6431f34a133923::t_3913e4184813ff 55,59-67,74-82
+packages/addons/coding-agents/src/buttons/agent/frontend.tsx
+  s_6431f34a133923::t_9b903534ee5a81 44-46,73-75,79,81-83,85,87,91-95
+  s_6431f34a133923::t_7e22c3900ed402 35-41,72
+packages/addons/coding-agents/src/decks/agents.ts
+  s_6431f34a133923::t_d5ff969b2c8a34 6-10,15-32
+packages/cli/src/cli/commands/start.ts
+  s_6431f34a133923::t_1378dbfb027550 496,659,700
+packages/cli/src/api/index.ts
+  s_6431f34a133923::t_7db2f350455b13 37
+packages/cli/src/cli/commands/run.ts
+  s_6431f34a133923::t_1378dbfb027550 514
+pnpm-workspace.yaml
+  s_6431f34a133923::t_338bd6dce5812c 13
+packages/addons/coding-agents/src/buttons/summary/frontend.tsx
+  s_6431f34a133923::t_96dcebd7db12e4 28-30,38-40,44-45,51-52,55-64,68
+packages/cli/src/api/asset-url.ts
+  s_6431f34a133923::t_dc791d6a3902a0 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "7370963fe0d93675e9a2e02f2b9a720ddf7e42f7",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
