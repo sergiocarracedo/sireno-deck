@@ -34,3 +34,4 @@ export type {
   WsMessage,
   SubscribeChannelsMessage,
 } from "./protocol-internal"
+export { resolveAddonAssetSrc, ADDON_ASSET_URL_PREFIX } from "./asset-url"

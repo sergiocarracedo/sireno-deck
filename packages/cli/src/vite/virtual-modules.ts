@@ -1,6 +1,44 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
-import { dirname, join } from "node:path"
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs"
+import { basename, dirname, join } from "node:path"
 import type { Plugin, ViteDevServer } from "vite"
+
+/**
+ * Asset base dir for browser-side `addon://` fetching, per configured
+ * addon. Mirrors buildExternalAddonDirs' dist-preferred logic on the CLI
+ * side: assets ship in <pkg>/dist/assets (post-build), source-only addons
+ * keep <pkg>/assets.
+ */
+const addonAssetBaseDir = (frontendMain: string): string | null => {
+  const dir = dirname(frontendMain)
+  const base =
+    dirname(dir) === "" || dir === "."
+      ? null
+      : basename(dir) === "src" || basename(dir) === "dist"
+        ? dirname(dir)
+        : dir
+  if (base === null) return null
+  if (existsSync(join(base, "dist", "assets"))) return join(base, "dist")
+  if (existsSync(join(base, "assets"))) return base
+  return null
+}
+
+const ASSET_MIME: Record<string, string> = {
+  svg: "image/svg+xml",
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  gif: "image/gif",
+  ogg: "audio/ogg",
+  mp3: "audio/mpeg",
+  wav: "audio/wav",
+}
 
 export interface SirenoVitePluginTheme {
   name: string
@@ -430,6 +468,61 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         }
         void warmup()
       })
+
+      // ponytail: SPA <img src> cannot fetch `addon://` schemes. Serve
+      // addon assets over HTTP at /@sireno/addon-asset/<name>/<subPath>
+      // (see resolveAddonAssetSrc in src/api/asset-url.ts). Scoped to
+      // configured addons, path-traversal safe.
+      const assetDirs = new Map<string, string>()
+      for (const addon of addons) {
+        if (addon.frontend?.main === undefined) continue
+        const base = addonAssetBaseDir(addon.frontend.main)
+        if (base !== null) assetDirs.set(addon.name, base)
+      }
+      if (assetDirs.size > 0) {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url ?? ""
+          const m = /^\/@sireno\/addon-asset\/([^/]+)\/(.+)$/.exec(
+            url.split("?")[0] ?? "",
+          )
+          if (m === null) {
+            next()
+            return
+          }
+          const [, name, subPathRaw] = m as unknown as [string, string, string]
+          const base = assetDirs.get(name)
+          if (base === undefined) {
+            res.statusCode = 404
+            res.end("unknown addon")
+            return
+          }
+          const safe = subPathRaw.replace(/^\/+/, "")
+          if (safe.includes("..") || safe.length === 0) {
+            res.statusCode = 400
+            res.end("bad path")
+            return
+          }
+          const filePath = join(base, safe)
+          if (!filePath.startsWith(base)) {
+            res.statusCode = 400
+            res.end("bad path")
+            return
+          }
+          try {
+            const body = readFileSync(filePath)
+            const ext = filePath.split(".").pop()?.toLowerCase() ?? ""
+            res.setHeader(
+              "Content-Type",
+              ASSET_MIME[ext] ?? "application/octet-stream",
+            )
+            res.setHeader("Cache-Control", "no-cache")
+            res.end(body)
+          } catch {
+            res.statusCode = 404
+            res.end("asset not found")
+          }
+        })
+      }
 
       // Theme.css lives on disk and the daemon re-stages it when the
       // active theme changes. Watch the staged file and reload the

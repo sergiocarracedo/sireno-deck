@@ -52,12 +52,34 @@ export class OpenCodeProvider implements AgentProvider {
   async fetchSnapshot(signal: AbortSignal): Promise<readonly Agent[]> {
     if (signal.aborted) return []
     try {
-      const [sessions, statusMap] = await Promise.all([
+      const [listRes, statusRes] = await Promise.all([
         this.#client.session.list(),
         this.#client.session.status(),
       ])
+      // ponytail: the SDK is a HeyApi client — with throwOnError:false
+      // (default) calls resolve to `{ data, error, response }`, NOT the
+      // payload. Treating the result as an array threw TypeError, the
+      // catch below swallowed it, and every snapshot came back as zero
+      // agents regardless of how many opencode instances were open.
+      const sessions =
+        (listRes as unknown as { data?: ReadonlyArray<OpencodeSessionLike> })
+          .data ?? []
+      const statusMap =
+        (
+          statusRes as unknown as {
+            data?: Record<string, OpencodeSessionStatus>
+          }
+        ).data ?? {}
       return sessions.map((s) => toAgent(s, statusMap[s.id]))
-    } catch {
+    } catch (err) {
+      if (signal.aborted) return []
+      // ponytail: surface unavailability instead of silently reporting
+      // zero — consumers can distinguish "no agents" from "broken probe"
+      // via the error field, and daemon logs get the reason.
+      console.warn(
+        "[coding-agents] opencode snapshot failed:",
+        err instanceof Error ? err.message : String(err),
+      )
       return []
     }
   }

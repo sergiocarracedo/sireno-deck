@@ -511,7 +511,7 @@ export const validateAndLoadConfig = async (
   const configPath = resolved.path
   options.logger.info(
     { configPath, source: resolved.source },
-    `start: using config ${configPath} (source: ${resolved.source})`,
+    `start: using config ${configPath}`,
   )
   const { config } = loadConfig({ configPath })
   const registry = new AddonRegistry()

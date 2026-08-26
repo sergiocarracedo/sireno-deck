@@ -32,20 +32,18 @@ interface SnapshotLike {
   attention?: string[]
 }
 
-const STATUS_COLOR: Record<string, string> = {
-  idle: "bg-slate-500",
-  running: "bg-emerald-500",
-  waiting: "bg-amber-500",
-  waiting_for_human: "bg-yellow-400",
-  error: "bg-red-500",
-  compacting: "bg-blue-500",
+const STATUS_COLOR_VAR: Record<string, string> = {
+  idle: "var(--sireno-color-muted)",
+  running: "var(--sireno-color-success)",
+  waiting: "var(--sireno-color-accent)",
+  waiting_for_human: "var(--sireno-color-danger)",
+  error: "var(--sireno-color-danger)",
+  compacting: "var(--sireno-color-primary)",
 }
 
-const LOGO_FOR: Record<string, string> = {
-  opencode: "addon://coding-agents/assets/opencode-dark-square.svg",
-  "claude-code": "addon://coding-agents/assets/claude-code.svg",
-}
-
+// ponytail: no logo <img> — a per-agent tile has three text lines and an
+// icon would push the title/preview out of the key. Status dot carries
+// provider identity via color; themed bg comes from the host ButtonFrame.
 const findAgent = (
   snapshot: SnapshotLike,
   buttonId: string,
@@ -69,41 +67,32 @@ const AgentFrontend = (props: AddonFrontendButtonProps<AgentConfig>) => {
   const agent = findAgent(snapshot, props.buttonId)
   const isAttention = (snapshot.attention ?? []).includes(props.buttonId)
 
-  const providerId = agent?.providerId ?? props.config?.providerId ?? "opencode"
-  const logo = LOGO_FOR[providerId] ?? LOGO_FOR["opencode"]!
   const title = agent?.title ?? props.config?.sessionId ?? props.buttonId
   const status = agent?.status ?? "idle"
-  const dotClass = STATUS_COLOR[status] ?? STATUS_COLOR["idle"]!
-  const ringClass = isAttention ? "ring-2 ring-yellow-400" : ""
+  const dotColorVar = STATUS_COLOR_VAR[status] ?? STATUS_COLOR_VAR["idle"]!
+  const ringClass = isAttention
+    ? "ring-2 ring-[color:var(--sireno-color-accent)]"
+    : ""
 
   return (
     <div
-      className={`flex h-full w-full flex-col justify-between bg-slate-900 p-2 ${ringClass}`}
+      className={`flex h-full w-full flex-col justify-between p-1.5 text-[color:var(--sireno-color-foreground)] ${ringClass}`}
     >
-      <div className="flex items-start gap-1.5">
-        <img src={logo} alt={providerId} className="h-3.5 w-3.5 shrink-0" />
-        <span
-          className="line-clamp-2 text-[11px] font-medium leading-tight text-slate-100"
-          style={{
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
-          {title}
-        </span>
-      </div>
+      <span className="line-clamp-2 text-[11px] font-medium leading-tight">
+        {title}
+      </span>
       <div className="flex items-center justify-between gap-1">
-        <span
-          className={`inline-block h-2 w-2 rounded-full ${dotClass}`}
-          aria-label={status}
-        />
+        <span className="text-[9px] uppercase opacity-70">{status}</span>
         {agent?.lastMessagePreview !== undefined && (
-          <span className="line-clamp-1 text-[9px] text-slate-400">
+          <span className="line-clamp-1 text-[9px] opacity-70">
             {agent.lastMessagePreview}
           </span>
         )}
+        <span
+          className="inline-block h-2 w-2 shrink-0 rounded-full"
+          style={{ backgroundColor: dotColorVar }}
+          aria-label={status}
+        />
       </div>
     </div>
   )

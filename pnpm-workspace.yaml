@@ -10,5 +10,6 @@ onlyBuiltDependencies:
   - get-windows
   - lefthook
   - node-hid
+  - opencode-ai
   - sharp
   - usocket

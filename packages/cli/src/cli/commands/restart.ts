@@ -73,7 +73,7 @@ export const restart = async (options: RestartOptions): Promise<void> => {
     const outcome: StartOutcome = await waitForFullStart({
       port: startOptions.port ?? 52937,
       tcpTimeoutMs: 30_000,
-      runtimeTimeoutMs: 5_000,
+      runtimeTimeoutMs: 30_000,
       logPath,
       logSnapshot: snapshot,
     })
@@ -117,7 +117,7 @@ export const restart = async (options: RestartOptions): Promise<void> => {
   const outcome = await waitForFullStart({
     port,
     tcpTimeoutMs: 30_000,
-    runtimeTimeoutMs: 5_000,
+    runtimeTimeoutMs: 30_000,
     logPath,
     logSnapshot: snapshot,
   })

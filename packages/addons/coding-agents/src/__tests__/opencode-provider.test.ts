@@ -5,6 +5,12 @@ import {
   type OpencodeClientLike,
 } from "../providers/opencode"
 
+// ponytail: the SDK is a HeyApi client whose calls resolve to
+// { data, error, response } with throwOnError:false (default). The
+// production bug was mocking these as raw arrays — fetchSnapshot then
+// unwrapped undefined and every snapshot read as zero agents.
+const heyApi = <T>(data: T) => ({ data, error: null, response: new Response() })
+
 const makeSession = (overrides: Record<string, unknown> = {}) => ({
   id: "abc",
   title: "demo",
@@ -16,8 +22,14 @@ const makeClient = (
   overrides: Partial<OpencodeClientLike> = {},
 ): OpencodeClientLike => ({
   session: {
-    list: async () => [makeSession()],
-    status: async () => ({ abc: { type: "busy" } }),
+    list: async () =>
+      heyApi([makeSession()]) as unknown as Awaited<
+        ReturnType<OpencodeClientLike["session"]["list"]>
+      >,
+    status: async () =>
+      heyApi({ abc: { type: "busy" } }) as unknown as Awaited<
+        ReturnType<OpencodeClientLike["session"]["status"]>
+      >,
     ...overrides.session,
   },
   event: {
@@ -47,8 +59,14 @@ describe("OpenCodeProvider", () => {
   it("fetchSnapshot marks idle when no status entry", async () => {
     const client = makeClient({
       session: {
-        list: async () => [makeSession()],
-        status: async () => ({}),
+        list: async () =>
+          heyApi([makeSession()]) as unknown as Awaited<
+            ReturnType<OpencodeClientLike["session"]["list"]>
+          >,
+        status: async () =>
+          heyApi({}) as unknown as Awaited<
+            ReturnType<OpencodeClientLike["session"]["status"]>
+          >,
       },
     })
     const p = new OpenCodeProvider({
@@ -62,10 +80,16 @@ describe("OpenCodeProvider", () => {
   it("fetchSnapshot maps retry status to waiting", async () => {
     const client = makeClient({
       session: {
-        list: async () => [makeSession()],
-        status: async () => ({
-          abc: { type: "retry", attempt: 1, message: "x", next: 100 },
-        }),
+        list: async () =>
+          heyApi([makeSession()]) as unknown as Awaited<
+            ReturnType<OpencodeClientLike["session"]["list"]>
+          >,
+        status: async () =>
+          heyApi({
+            abc: { type: "retry", attempt: 1, message: "x", next: 100 },
+          }) as unknown as Awaited<
+            ReturnType<OpencodeClientLike["session"]["status"]>
+          >,
       },
     })
     const p = new OpenCodeProvider({

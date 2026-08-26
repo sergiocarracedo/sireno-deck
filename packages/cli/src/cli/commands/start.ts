@@ -493,7 +493,7 @@ const runInProcessSetup = async (
   const configPath = resolved.path
   options.logger.info(
     { configPath, source: resolved.source },
-    `start: using config ${configPath} (source: ${resolved.source})`,
+    `start: using config ${configPath}`,
   )
   const runtimeFlags = readFlags() ?? buildRuntimeFlags(options)
   writeConfigPath(configPath)
@@ -656,7 +656,7 @@ const startInBackground = async (options: StartOptions): Promise<void> => {
   const configPath = resolved.path
   logger.info(
     { configPath, source: resolved.source },
-    `start: using config ${configPath} (source: ${resolved.source})`,
+    `start: using config ${configPath}`,
   )
   const runtimeFlags = buildRuntimeFlags(options)
   writeConfigPath(configPath)
@@ -697,7 +697,7 @@ const startProduction = async (options: StartOptions): Promise<void> => {
   const configPath = resolved.path
   logger.info(
     { configPath, source: resolved.source },
-    `start: using config ${configPath} (source: ${resolved.source})`,
+    `start: using config ${configPath}`,
   )
   const runtimeFlags = buildRuntimeFlags(options)
   writeConfigPath(configPath)

@@ -20,20 +20,14 @@ const useAddonChannel = <T,>(channel: string): { data: T | undefined } => {
   return hook ? hook<T>(channel) : { data: undefined }
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  idle: "bg-slate-500",
-  running: "bg-emerald-500",
-  waiting: "bg-amber-500",
-  waiting_for_human: "bg-yellow-400",
-  error: "bg-red-500",
-  compacting: "bg-blue-500",
-}
-
 interface SnapshotLike {
   byProvider?: Record<string, Array<{ status: string }>>
   attention?: string[]
 }
 
+// ponytail: no <img> here — the host's ButtonFrame supplies the themed
+// bg/border (adding our own frame or image broke layout and double-framed).
+// Colors come from theme CSS vars via the cascade.
 const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
   const { data } = useAddonChannel<SnapshotLike>(CHANNEL_NAME)
   const snapshot = data ?? { byProvider: {}, attention: [] }
@@ -41,45 +35,37 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
   const attention = snapshot.attention ?? []
   const showCount = props.config?.showCount ?? true
   const attentionOnly = props.config?.attentionOnly ?? false
+  // ponytail: tile counts LIVE open instances across providers (user spec:
+  // multiple opencode instances open must not read as 0).
+  const liveCount = attention.length > 0 ? attention.length : all.length
 
   if (attentionOnly && attention.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-slate-900">
-        <img
-          src="addon://coding-agents/assets/opencode-dark-square.svg"
-          alt="Coding agents"
-          className="h-2/3 w-2/3 opacity-30"
-        />
+      <div className="flex h-full w-full items-center justify-center">
+        <span className="text-xs opacity-40">no agents</span>
       </div>
     )
   }
 
-  const dotColor =
-    attention.length > 0
-      ? STATUS_COLORS["waiting_for_human"]
-      : all.some((a) => a.status === "error")
-        ? STATUS_COLORS["error"]
-        : all.some((a) => a.status === "running" || a.status === "waiting")
-          ? STATUS_COLORS["running"]
-          : all.length > 0
-            ? STATUS_COLORS["idle"]
-            : "bg-slate-700"
-
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-slate-900 p-2">
-      <img
-        src="addon://coding-agents/assets/opencode-dark-square.svg"
-        alt="Coding agents"
-        className="h-10 w-10"
-      />
-      <span className="text-xs font-semibold text-slate-100">Agents</span>
+    <div className="flex h-full w-full flex-col items-center justify-center gap-1 p-1 text-[color:var(--sireno-color-foreground)]">
+      <span className="text-sm font-bold leading-tight">Agents</span>
       {showCount && (
         <span
-          className={`rounded-full px-2 py-0.5 text-[10px] text-white ${dotColor}`}
+          className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+          style={{
+            backgroundColor:
+              attention.length > 0
+                ? "var(--sireno-color-danger)"
+                : liveCount > 0
+                  ? "var(--sireno-color-success)"
+                  : "var(--sireno-color-muted)",
+            color: "var(--sireno-color-foreground-contrast)",
+          }}
         >
           {attention.length > 0
             ? `${attention.length} attention`
-            : `${all.length} active`}
+            : `${liveCount} ${liveCount === 1 ? "instance" : "instances"}`}
         </span>
       )}
     </div>
