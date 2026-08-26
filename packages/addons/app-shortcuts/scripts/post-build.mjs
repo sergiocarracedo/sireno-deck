@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync } from "node:fs"
+import { copyFileSync, cpSync, mkdirSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -10,3 +10,10 @@ copyFileSync(
   join(root, "sirenodeck.json"),
   join(root, "dist", "sirenodeck.json"),
 )
+// ponytail: deck definitions reference addon://app-shortcuts/assets/*.svg
+// and addon:// resolution joins <addonDir>/assets/<name>. The CLI resolves
+// against <pkg>/dist when it exists (see buildExternalAddonDirs), so keep
+// the tarball self-contained by mirroring the assets tree into dist.
+cpSync(join(root, "assets"), join(root, "dist", "assets"), {
+  recursive: true,
+})

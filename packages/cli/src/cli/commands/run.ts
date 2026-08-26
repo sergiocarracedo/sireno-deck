@@ -1320,7 +1320,13 @@ export const buildExternalAddonDirs = (
     const abs = isAbsolute(expanded)
       ? expanded
       : resolvePath(dirname(configPath), expanded)
-    result.set(basename(abs), abs)
+    // ponytail: addon:// asset resolution joins this dir + the icon's
+    // subpath. Addons ship assets in <pkg>/dist/assets (post-build copy),
+    // so prefer dist when present — also prevents this map from
+    // clobbering the correct dirname(frontendEntry) registration in
+    // buildResolverOptions. Source-only addons keep their root.
+    const base = existsSync(join(abs, "dist")) ? join(abs, "dist") : abs
+    result.set(basename(abs), base)
   }
   return result
 }

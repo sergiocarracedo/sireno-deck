@@ -455,7 +455,14 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
     transformIndexHtml: {
       order: "pre",
       handler: (html, ctx) => {
-        if (process.env["SIRENO_REQUIRE_TOKEN"] === undefined) return html
+        // ponytail: third-party addon SOURCE served to the browser may
+        // reference Node globals (e.g. `process.env["HOME"]` in the
+        // coding-agents manifest probe). Vite doesn't polyfill `process`
+        // in dev; inject a minimal shim before any module executes so
+        // evaluation succeeds — values are irrelevant on the render path.
+        const processShim = `<script>window.process=window.process||{env:{}};</script>`
+        let injected = html.replace("<head>", `<head>${processShim}`)
+        if (process.env["SIRENO_REQUIRE_TOKEN"] === undefined) return injected
         const script =
           `<script>(function(){try{var p=new URLSearchParams(location.search);` +
           `var t=p.get("token");if(t){document.cookie="sireno-token="+` +
@@ -463,7 +470,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
           `p.delete("token");var q=p.toString();` +
           `var u=location.pathname+(q?"?"+q:"")+location.hash;` +
           `history.replaceState(null,"",u);}}catch(e){}})();</script>`
-        return html.replace("<head>", `<head>${script}`)
+        return injected.replace("<head>", `<head>${script}`)
       },
     },
     handleHotUpdate: ({ file, server }) => {

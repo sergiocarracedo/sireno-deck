@@ -46,6 +46,14 @@ export const ensureOpencodeServer = async (
         String(port),
       ]) as unknown as ExecaChild)
 
+  // ponytail: execa's returned promise rejects when the child exits
+  // non-zero (e.g. a broken opencode-ai postinstall exits 1 instantly).
+  // We never await `child` directly — reachability is polled via
+  // /global/health — so the floating rejection would surface as
+  // unhandledRejection and kill the daemon. Attach a sink; failures are
+  // reported by the probe loop below and the addon's checks entry.
+  void Promise.resolve(child).catch(() => undefined)
+
   const deadline = Date.now() + 5000
   while (Date.now() < deadline) {
     if (signal.aborted) {
