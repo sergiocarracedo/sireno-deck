@@ -1,0 +1,29 @@
+packages/cli/src/cli/commands/run.ts
+  s_6431f34a133923::t_e8b6122713262f 1328
+  s_6431f34a133923::t_d7e675ee63540f 1323-1327,1329
+packages/addons/app-shortcuts/scripts/post-build.mjs
+  s_6431f34a133923::t_4dfb5d2e3d094f 1,13-19
+packages/addons/coding-agents/src/providers/spawn.ts
+  s_6431f34a133923::t_8a23c0fd9cd805 49-56
+packages/addons/coding-agents/scripts/post-build.mjs
+  s_6431f34a133923::t_d45fffbdaa5078 1,13-18
+packages/cli/src/vite/virtual-modules.ts
+  s_6431f34a133923::t_a33f543a37a755 458-462,464-465,473
+  s_6431f34a133923::t_f367091e74bf68 463
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "825867131d630c98b0b7f2343c4294331a1de49c",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
