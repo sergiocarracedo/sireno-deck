@@ -1,12 +1,13 @@
-import type { AddonManifestV1 } from "./types"
-import { vscodeDeck } from "./decks/vscode"
-import { opencodeDeck } from "./decks/opencode"
-import { chromeDeck } from "./decks/chrome"
-import { claudeCodeDeck } from "./decks/claude-code"
-import { slackDeck } from "./decks/slack"
-import { teamsDeck } from "./decks/teams"
-import { discordDeck } from "./decks/discord"
-import { googleMeetDeck } from "./decks/google-meet"
+// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
+import type { AddonManifestV1 } from "./types.js"
+import { vscodeDeck } from "./decks/vscode.js"
+import { opencodeDeck } from "./decks/opencode.js"
+import { chromeDeck } from "./decks/chrome.js"
+import { claudeCodeDeck } from "./decks/claude-code.js"
+import { slackDeck } from "./decks/slack.js"
+import { teamsDeck } from "./decks/teams.js"
+import { discordDeck } from "./decks/discord.js"
+import { googleMeetDeck } from "./decks/google-meet.js"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,

@@ -1,9 +1,10 @@
+// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
 import type {
   AddonButtonServiceContext,
   AddonButtonTypeService,
-} from "../../types/types"
+} from "../../types/types.js"
 
-import { summaryConfigSchema, type SummaryConfig } from "./config"
+import { summaryConfigSchema, type SummaryConfig } from "./config.js"
 
 interface CoreMethodsShape {
   navigateToDeck: (args: { id: string; addToHistory?: boolean }) => void

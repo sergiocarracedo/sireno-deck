@@ -3,7 +3,7 @@ import {
   type PomodoroButtonState,
   type PomodoroSnapshot,
   type PomodoroStatus,
-} from "./state"
+} from "./state.js"
 
 export interface PomodoroTimerOptions {
   readonly now: () => number

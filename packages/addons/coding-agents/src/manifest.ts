@@ -1,10 +1,11 @@
-import { globalService } from "./global/backend"
-import agentBackend from "./buttons/agent/backend"
-import agentFrontend from "./buttons/agent/frontend"
-import summaryBackend from "./buttons/summary/backend"
-import summaryFrontend from "./buttons/summary/frontend"
-import { createAgentsDecks } from "./decks/agents"
-import type { AddonManifestV1 } from "./types/types"
+// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
+import { globalService } from "./global/backend.js"
+import agentBackend from "./buttons/agent/backend.js"
+import agentFrontend from "./buttons/agent/frontend.js"
+import summaryBackend from "./buttons/summary/backend.js"
+import summaryFrontend from "./buttons/summary/frontend.js"
+import { createAgentsDecks } from "./decks/agents.js"
+import type { AddonManifestV1 } from "./types/types.js"
 
 const probeOpencodeReachable = async (): Promise<{
   available: boolean

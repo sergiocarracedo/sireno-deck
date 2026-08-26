@@ -1,10 +1,10 @@
-import type { CoreMethods } from "../../types"
+import type { CoreMethods } from "../../types.js"
 import {
   configSchema,
   DEFAULT_DURATION_SEC,
   type ConfigSchema,
   type PersistedState,
-} from "./config"
+} from "./config.js"
 
 interface ButtonServiceContextLike<Config> {
   readonly config: Config

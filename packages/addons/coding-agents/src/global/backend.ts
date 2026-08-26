@@ -1,10 +1,11 @@
+// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
 import type {
   AddonGlobalPoller,
   AddonGlobalService,
   AddonGlobalSubscription,
   AddonServiceContext,
   AddonServiceMethod,
-} from "../types/types"
+} from "../types/types.js"
 import {
   agentKey,
   CHANNEL,
@@ -12,22 +13,22 @@ import {
   type Agent,
   type AgentsSnapshot,
   type ProviderId,
-} from "../shared/state"
-import { mergeSnapshot } from "../shared/snapshot"
-import { NotificationThrottle } from "../shared/notifier"
+} from "../shared/state.js"
+import { mergeSnapshot } from "../shared/snapshot.js"
+import { NotificationThrottle } from "../shared/notifier.js"
 import {
   loadProviders,
   type ProviderRegistryConfig,
-} from "../providers/registry"
+} from "../providers/registry.js"
 
 export const POLLER_INTERVAL_MS = 2000
 
 interface GlobalState {
-  providers: Map<ProviderId, import("../shared/state").AgentProvider>
+  providers: Map<ProviderId, import("../shared/state.js").AgentProvider>
   spawnedChild: { kill: () => Promise<void> } | null
   unsubscribers: Array<() => void>
   lastSnapshot: AgentsSnapshot
-  lastSeenStatus: Map<string, import("../shared/state").AgentStatus>
+  lastSeenStatus: Map<string, import("../shared/state.js").AgentStatus>
   throttle: NotificationThrottle
   context: AddonServiceContext | null
 }
@@ -78,7 +79,7 @@ const fireNotices = (snapshot: AgentsSnapshot): void => {
   }
 }
 
-const humanStatus = (s: import("../shared/state").AgentStatus): string => {
+const humanStatus = (s: import("../shared/state.js").AgentStatus): string => {
   switch (s) {
     case "idle":
       return "Idle"

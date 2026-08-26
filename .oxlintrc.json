@@ -16,7 +16,7 @@
       {
         "ts": "never",
         "tsx": "never",
-        "js": "never",
+        "js": "always",
         "jsx": "never"
       }
     ],

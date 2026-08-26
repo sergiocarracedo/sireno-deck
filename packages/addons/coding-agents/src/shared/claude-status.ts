@@ -1,4 +1,4 @@
-import type { AgentStatus } from "./state"
+import type { AgentStatus } from "./state.js"
 
 export interface ClaudeJsonlEntry {
   readonly type: string

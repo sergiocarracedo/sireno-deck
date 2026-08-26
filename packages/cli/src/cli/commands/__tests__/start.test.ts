@@ -442,7 +442,12 @@ describe("start", () => {
     ).resolves.toBeUndefined()
   })
 
-  it("spawns the production bin path in dev (bin/sirenodeck.js, not argv[1])", async () => {
+  it("spawns the dev bin path in dev (bin/dev.js, so the daemon runs from source)", async () => {
+    // ponytail: the bundled dist/main.mjs strips runtime assets (first-party
+    // themes at packages/cli/src/themes/) — the loader's filesystem scan
+    // can't see them from dist/, so `theme: default` in config.yml crashes
+    // with unhandledRejection. Dev mode must spawn via bin/dev.js (tsx +
+    // source); production (startProduction) keeps bin/sirenodeck.js.
     setHappyPath()
     const { spawnDetached } = await import("../spawn-daemon")
     vi.mocked(spawnDetached).mockClear()
@@ -454,7 +459,7 @@ describe("start", () => {
       logger: silentLogger(),
     })
     const lastCall = vi.mocked(spawnDetached).mock.calls.at(-1)?.[0]
-    expect(lastCall?.binPath).toMatch(/bin[\\/]sirenodeck\.js$/)
+    expect(lastCall?.binPath).toMatch(/bin[\\/]dev\.js$/)
   })
 
   it("forwards every CLI flag to the spawned daemon", async () => {

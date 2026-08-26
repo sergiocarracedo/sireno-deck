@@ -1,9 +1,10 @@
+// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
 import type {
   AddonButtonServiceContext,
   AddonButtonTypeService,
-} from "../../types/types"
+} from "../../types/types.js"
 
-import { agentConfigSchema, type AgentConfig } from "./config"
+import { agentConfigSchema, type AgentConfig } from "./config.js"
 
 const methodsFor = (ctx: AddonButtonServiceContext<AgentConfig>) =>
   ctx.methods as Readonly<Record<string, (...args: unknown[]) => unknown>>

@@ -1,4 +1,4 @@
-import type { AddonDeckEntryCtx, AddonGeneratedDeck } from "../types/types"
+import type { AddonDeckEntryCtx, AddonGeneratedDeck } from "../types/types.js"
 
 export const createAgentsDecks = (
   _ctx: AddonDeckEntryCtx,

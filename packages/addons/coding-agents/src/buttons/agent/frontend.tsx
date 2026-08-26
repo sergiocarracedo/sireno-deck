@@ -1,6 +1,6 @@
-import type { AddonFrontendButtonProps } from "../../types/types"
+import type { AddonFrontendButtonProps } from "../../types/types.js"
 
-import type { AgentConfig } from "./config"
+import type { AgentConfig } from "./config.js"
 
 const CHANNEL_NAME = "coding-agents:agents"
 

@@ -15,9 +15,16 @@ export default defineConfig({
   // chokidar, execa, and @opencode-ai/sdk are CLI-side tools the
   // addon's opencode-server spawner uses; the consumer's host project
   // has them as transitive deps of @sirenodeck/cli.
+  // NOTE: `react/jsx-runtime` must be listed explicitly — rolldown treats
+  // subpath specifiers as distinct modules, so `external: ["react"]`
+  // alone does NOT cover `react/jsx-runtime`. Without it, rolldown
+  // bundles react's CJS build and emits a createRequire shim from
+  // node:module, which vite externalizes in the browser.
   external: [
     "react",
     "react-dom",
+    "react/jsx-runtime",
+    "react/jsx-dev-runtime",
     "zod",
     "chokidar",
     "execa",

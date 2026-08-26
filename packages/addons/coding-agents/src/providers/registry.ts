@@ -1,6 +1,7 @@
-import type { AgentProvider } from "../shared/state"
-import { ClaudeCodeProvider } from "./claude-code"
-import { OpenCodeProvider } from "./opencode"
+// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
+import type { AgentProvider } from "../shared/state.js"
+import { ClaudeCodeProvider } from "./claude-code.js"
+import { OpenCodeProvider } from "./opencode.js"
 
 export interface ProviderRegistryConfig {
   readonly opencodeUrl: string

@@ -1,4 +1,4 @@
-import type { AgentStatus } from "./state"
+import type { AgentStatus } from "./state.js"
 
 interface NotifierHooks {
   readonly notify: (args: {

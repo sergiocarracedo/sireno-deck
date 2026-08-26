@@ -3,11 +3,12 @@ import { join } from "node:path"
 
 import chokidar, { type FSWatcher } from "chokidar"
 
-import type { Agent, AgentProvider } from "../shared/state"
+// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
+import type { Agent, AgentProvider } from "../shared/state.js"
 import {
   deriveClaudeStatus,
   type ClaudeJsonlEntry,
-} from "../shared/claude-status"
+} from "../shared/claude-status.js"
 
 export const CLAUDE_LOGO = "addon://coding-agents/assets/claude-code.svg"
 

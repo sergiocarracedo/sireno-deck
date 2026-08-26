@@ -1,11 +1,12 @@
 import { createOpencodeClient } from "@opencode-ai/sdk"
 
-import type { Agent, AgentProvider, AgentStatus } from "../shared/state"
+// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
+import type { Agent, AgentProvider, AgentStatus } from "../shared/state.js"
 import {
   opencodeEventToStatus,
   type OpencodeEvent,
   type OpencodeSessionStatus,
-} from "../shared/opencode-status"
+} from "../shared/opencode-status.js"
 
 interface OpencodeSessionLike {
   readonly id: string

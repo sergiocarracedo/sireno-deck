@@ -3,8 +3,8 @@ import {
   POMO_CHANNEL,
   type PomodoroButtonState,
   type PomodoroSnapshot,
-} from "../shared/state"
-import type { AddonGlobalServiceShape } from "../types"
+} from "../shared/state.js"
+import type { AddonGlobalServiceShape } from "../types.js"
 
 interface NotificationConfig {
   title: string

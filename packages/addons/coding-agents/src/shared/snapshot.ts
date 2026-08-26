@@ -4,7 +4,7 @@ import {
   type AgentStatus,
   type AgentsSnapshot,
   type ProviderId,
-} from "./state"
+} from "./state.js"
 
 export const mergeSnapshot = (
   prev: AgentsSnapshot,

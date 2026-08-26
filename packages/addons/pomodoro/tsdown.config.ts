@@ -10,9 +10,19 @@ export default defineConfig({
   clean: true,
   // ponytail: keep React + zod external — they ship as runtime deps of
   // the consumer's host project. Bundling them would duplicate them
-  // and risk version drift. The CLI loads the addon via dynamic
-  // import() so this list must match what the host already has installed.
-  external: ["react", "react-dom", "zod"],
+  // and risk version drift. NOTE: `react/jsx-runtime` must be listed
+  // explicitly — rolldown treats subpath specifiers as distinct modules,
+  // so `external: ["react"]` alone does NOT cover `react/jsx-runtime`.
+  // Without it, rolldown bundles react's CJS build and emits a
+  // createRequire shim from node:module, which vite then externalizes
+  // in the browser and the frontend crashes.
+  external: [
+    "react",
+    "react-dom",
+    "react/jsx-runtime",
+    "react/jsx-dev-runtime",
+    "zod",
+  ],
   // ponytail: tsdown defaults to .mjs for ESM output (because platform=node
   // sets `fixedExtension = true`). The previous tsc build produced .js
   // and the addon's sirenodeck.json + package.json exports both point
