@@ -12,7 +12,8 @@ interface NotificationConfig {
 }
 
 interface ButtonRuntime {
-  startTsMs: number
+  /** Present only while running; paused buttons use pausedRemainingSec. */
+  startTsMs?: number
   durationSec: number
   pausedRemainingSec?: number
   notified?: boolean
@@ -41,6 +42,9 @@ const rebuildSnapshot = (now: number): PomodoroSnapshot => {
       }
       continue
     }
+    // running path: paused entries were handled above; a well-formed
+    // entry always has startTsMs once running.
+    if (info.startTsMs === undefined) continue
     const remaining = computeRemaining(info.startTsMs, info.durationSec, now)
     const isFinished = remaining <= 0
     const wasFinished = info.notified === true
@@ -78,9 +82,14 @@ export const globalService = {
     register: (buttonId, durationSec, notification) => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
+      // ponytail: mount as PAUSED at full duration. The previous behavior
+      // seeded a RUNNING timer (startTsMs = Date.now()), so every page
+      // load auto-started a countdown nobody tapped — and any stale
+      // persisted state surfaced as blinking "finished". Paused-at-full
+      // means the tile shows the configured time and waits for a tap.
       buttons.set(id, {
-        startTsMs: Date.now(),
         durationSec,
+        pausedRemainingSec: durationSec,
         notification: notification
           ? {
               title: (notification as { title?: string }).title ?? "Pomodoro",
@@ -127,7 +136,12 @@ export const globalService = {
     pause: (buttonId) => {
       const id = String(buttonId)
       const info = buttons.get(id)
-      if (info === undefined || info.pausedRemainingSec !== undefined) return
+      if (
+        info === undefined ||
+        info.pausedRemainingSec !== undefined ||
+        info.startTsMs === undefined
+      )
+        return
       const remaining = computeRemaining(
         info.startTsMs,
         info.durationSec,
@@ -154,6 +168,7 @@ export const globalService = {
       const info = buttons.get(String(buttonId))
       if (info === undefined) return false
       if (info.pausedRemainingSec !== undefined) return false
+      if (info.startTsMs === undefined) return false
       return computeRemaining(info.startTsMs, info.durationSec, Date.now()) <= 0
     },
   } as Record<string, (...args: unknown[]) => unknown>,

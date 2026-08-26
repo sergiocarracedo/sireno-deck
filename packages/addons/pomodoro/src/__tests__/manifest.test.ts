@@ -22,8 +22,13 @@ describe("pomodoro manifest", () => {
     expect(def).toBeDefined()
     expect(def?.frontend).toBeDefined()
     expect(def?.service).toBeDefined()
-    expect(
-      (def?.service as { gestureHandlers?: string[] })?.gestureHandlers,
-    ).toContain("tap")
+    const gh = (def?.service as { gestureHandlers?: string[] })?.gestureHandlers
+    expect(gh).toContain("tap")
+    // ponytail: default-deny in the runtime strips undeclared gestures
+    // (with a warning). dbl-tap is wired to onDblTap in the backend; keep
+    // the explicit allowlist assertion so adding/removing gestures here
+    // fails loudly.
+    expect(gh).toContain("dbl-tap")
+    expect(gh).toContain("hold")
   })
 })

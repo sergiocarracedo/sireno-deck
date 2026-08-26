@@ -56,16 +56,6 @@ const writePersisted = (
   scope.set("state", next)
 }
 
-const fireCompletionNotification = (
-  ctx: ButtonServiceContextLike<ConfigSchema>,
-): void => {
-  void ctx.coreMethods.notify({
-    title: "Pomodoro",
-    body: "Time's up!",
-    sound: true,
-  })
-}
-
 export default {
   configSchema,
   defaultRenderIntervalMs: 1000,
@@ -73,38 +63,59 @@ export default {
     const persisted = getPersisted(ctx)
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
     const notification = ctx.config?.notification
+    // register() seeds the global runtime as PAUSED at full duration, so
+    // the tile shows the configured time awaiting a tap. The branches
+    // below only override that for states worth resuming.
     ctx.methods["pomodoro:register"]?.(ctx.buttonId, durationSec, notification)
+
     if (
       persisted.status === "running" &&
       typeof persisted.startTsMs === "number"
     ) {
       const elapsedSec = (Date.now() - persisted.startTsMs) / 1000
-      if (elapsedSec >= durationSec) {
-        writePersisted(ctx, {
-          status: "finished",
-          startTsMs: persisted.startTsMs,
-          durationSec,
-          remainingSec: 0,
-        })
-        fireCompletionNotification(ctx)
-      } else {
+      if (elapsedSec < durationSec) {
+        // still counting down from a previous session — resume it
         ctx.methods["pomodoro:startWith"]?.(
           ctx.buttonId,
           persisted.startTsMs,
           durationSec,
           notification,
         )
+        return
       }
+      // ponytail: expired while we were away — silent reset. The user
+      // chose no boot-time "Time's up!" notification; the global runtime
+      // is already paused-at-full from register(), just clear persisted.
+      writePersisted(ctx, {
+        status: "idle",
+        startTsMs: null,
+        durationSec,
+        remainingSec: null,
+      })
       return
     }
     if (persisted.status === "paused" && persisted.remainingSec !== null) {
+      // resume as paused with the remaining time (not the full duration)
+      const startTsMs =
+        Date.now() - (durationSec - persisted.remainingSec) * 1000
       ctx.methods["pomodoro:startWith"]?.(
         ctx.buttonId,
-        Date.now() - (durationSec - persisted.remainingSec) * 1000,
+        startTsMs,
         durationSec,
         notification,
       )
       ctx.methods["pomodoro:pause"]?.(ctx.buttonId)
+      return
+    }
+    // idle / finished / malformed → paused-at-full from register() is the
+    // correct presentation; normalize persisted so tap starts fresh.
+    if (persisted.status !== "idle") {
+      writePersisted(ctx, {
+        status: "idle",
+        startTsMs: null,
+        durationSec,
+        remainingSec: null,
+      })
     }
   },
   onTap: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
@@ -156,11 +167,29 @@ export default {
       ctx.methods["pomodoro:resume"]?.(ctx.buttonId)
       return
     }
-    // finished → reset + start
-    const startTsMs = Date.now()
+    // finished → reset to paused-at-full, await explicit tap to start
+    writePersisted(ctx, {
+      status: "idle",
+      startTsMs: null,
+      durationSec,
+      remainingSec: null,
+    })
+    ctx.methods["pomodoro:register"]?.(
+      ctx.buttonId,
+      durationSec,
+      ctx.config?.notification,
+    )
+  },
+  onDblTap: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
+    // ponytail: only meaningful when time is over. In every other state
+    // tap already covers pause/resume/start; dbl-tap is a deliberate
+    // "I'm here, give me a fresh countdown now" gesture.
+    const persisted = getPersisted(ctx)
+    if (persisted.status !== "finished") return
+    const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
     writePersisted(ctx, {
       status: "running",
-      startTsMs,
+      startTsMs: Date.now(),
       durationSec,
       remainingSec: durationSec,
     })

@@ -1096,9 +1096,29 @@ interface AddonRegistryBundle {
 // builtins and third-party addons share the same shape — only the source
 // of `frontendEntry` differs. Reused by the runPipeline pass that merges
 // externalScanned into SIRENO_ADDONS after both scanned arrays exist.
+// ponytail: vite serves the ADDON SOURCE, not the bundled dist. The dist
+// bundle aliases host-UI imports (e.g. '@/ui/primitives/Label') to an
+// inert stub so plain Node can import it for manifest/globalService —
+// serving that artifact to the browser amputates every core-UI label.
+// Source restores vite's real host-alias resolution, so addons get the
+// full core kit (any @sirenodeck/cli/ui component). Falls back to the
+// dist entry when src/index.ts doesn't exist (npm-cached third-party
+// addons ship compiled output only).
+const browserFrontendMain = (entry: string): string => {
+  const dir = dirname(entry)
+  // Entry lives in <pkg>/dist (JSON-manifest addons, compiled) or directly
+  // in <pkg> (regex-scanned builtins' index.ts). Normalize to pkg root.
+  const pkgRoot = basename(dir) === "dist" ? dirname(dir) : dir
+  const src = resolvePath(pkgRoot, "src", "index.ts")
+  return existsSync(src) ? src : entry
+}
+
 export const addonSpecFromScanned = (s: ScannedAddon) => ({
   name: s.name,
-  frontend: s.frontendEntry !== null ? { main: s.frontendEntry } : undefined,
+  frontend:
+    s.frontendEntry !== null
+      ? { main: browserFrontendMain(s.frontendEntry) }
+      : undefined,
   buttons: s.types.map((t) => ({ type: t })),
   buttonTypes: Object.fromEntries(
     Object.entries(s.buttonTypes).map(([type, info]) => [

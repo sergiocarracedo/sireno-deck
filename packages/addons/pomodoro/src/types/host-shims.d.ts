@@ -1,11 +1,13 @@
 // ponytail: ambient module shim for cross-package imports. The addon's
-// frontend imports the host's `Label` via `@/ui/primitives/Label`. The
-// host's vite resolves `@/` to `packages/cli/src/` at runtime. This
-// shim lets tsc typecheck the import without pulling in the host's
-// compiler graph (which would break `rootDir` and emit declarations in
-// the wrong place). The runtime contract is real — vite serves the
-// real Label — only the typecheck path is faked.
-declare module "@/ui/primitives/Label" {
+// frontend imports the host's `Label` via the public
+// `@sirenodeck/cli/ui/primitives/Label` specifier (same contract themes
+// use). At runtime every context resolves it to the real component:
+// browser vite (host alias), dev daemon tsx (workspace exports), and
+// the bundled dist (tsdown redirects to an inert stub — Node never
+// renders). This shim exists only so `tsc --noEmit` can typecheck the
+// import without pulling the host's compiler graph across packages
+// (which would break `rootDir` if we ever emit declarations).
+declare module "@sirenodeck/cli/ui/primitives/Label" {
   import { type ReactElement } from "react"
   export type LabelVariant = "primary" | "secondary" | "small" | "xxs"
   export interface LabelProps {

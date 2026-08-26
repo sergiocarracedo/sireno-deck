@@ -29,13 +29,16 @@ export default defineConfig({
   // at dist/index.js. Force .js so we don't have to update every
   // consumer (sirenodeck.json, package.json main, exports .).
   outExtensions: () => ({ js: ".js" }),
-  // ponytail: the addon's frontend.tsx imports `@/ui/primitives/Label`
-  // as a host-relative alias that only the CLI's vite resolves. The
-  // daemon loads the addon's bundle via plain Node `import()` and
-  // has no such alias. Redirect to a no-op stub for the daemon path;
-  // the CLI's vite overrides this when serving the frontend SPA.
+  // ponytail: the addon's frontend.tsx imports the host Label via the
+  // public `@sirenodeck/cli/ui/*` specifier. In the browser, vite's host
+  // alias resolves it to the real component. Plain Node (the daemon
+  // importing this bundle for manifest/globalService) has no such
+  // resolution, so redirect to an inert stub — nothing renders in Node,
+  // so the swap is invisible there.
   alias: {
-    "@/ui/primitives/Label": new URL("./src/stubs/label.ts", import.meta.url)
-      .pathname,
+    "@sirenodeck/cli/ui/primitives/Label": new URL(
+      "./src/stubs/label.ts",
+      import.meta.url,
+    ).pathname,
   },
 })
