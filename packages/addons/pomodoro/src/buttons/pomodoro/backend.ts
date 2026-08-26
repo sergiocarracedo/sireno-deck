@@ -56,6 +56,32 @@ const writePersisted = (
   scope.set("state", next)
 }
 
+// ponytail: LIVE phase from the global runtime wins; persisted is only a
+// fallback for buttons that have no live entry (never registered, or
+// freshly mounted). The global map flips to "finished" the instant
+// computeRemaining hits 0 — persisted lags behind until a handler writes
+// it back, so deciding on persisted alone made finished-taps no-op.
+type LiveState = { phase: string; remainingSec: number } | undefined
+
+const effectiveStatus = (
+  ctx: ButtonServiceContextLike<ConfigSchema>,
+  persisted: PersistedState,
+): string => {
+  const live = ctx.methods["pomodoro:getState"]?.(ctx.buttonId) as
+    | LiveState
+    | undefined
+  return live?.phase ?? persisted.status
+}
+
+const awaitLiveRemaining = (
+  ctx: ButtonServiceContextLike<ConfigSchema>,
+): number | undefined => {
+  const live = ctx.methods["pomodoro:getState"]?.(ctx.buttonId) as
+    | LiveState
+    | undefined
+  return live?.remainingSec
+}
+
 export default {
   configSchema,
   defaultRenderIntervalMs: 1000,
@@ -121,9 +147,25 @@ export default {
   onTap: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     const persisted = getPersisted(ctx)
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
+    const effective = effectiveStatus(ctx, persisted)
 
-    // idle → start
-    if (persisted.status === "idle") {
+    // finished (live) → initial state; blink stops via register
+    if (effective === "finished") {
+      writePersisted(ctx, {
+        status: "idle",
+        startTsMs: null,
+        durationSec,
+        remainingSec: null,
+      })
+      ctx.methods["pomodoro:register"]?.(
+        ctx.buttonId,
+        durationSec,
+        ctx.config?.notification,
+      )
+      return
+    }
+    // idle / never-registered → start
+    if (effective === "idle" || effective === "unknown") {
       const startTsMs = Date.now()
       writePersisted(ctx, {
         status: "running",
@@ -139,7 +181,7 @@ export default {
       return
     }
     // running → pause
-    if (persisted.status === "running") {
+    if (effective === "running") {
       const elapsedSec =
         typeof persisted.startTsMs === "number"
           ? (Date.now() - persisted.startTsMs) / 1000
@@ -155,53 +197,31 @@ export default {
       return
     }
     // paused → resume
-    if (persisted.status === "paused" && persisted.remainingSec !== null) {
-      const startTsMs =
-        Date.now() - (durationSec - persisted.remainingSec) * 1000
-      writePersisted(ctx, {
-        status: "running",
-        startTsMs,
-        durationSec,
-        remainingSec: null,
-      })
-      ctx.methods["pomodoro:resume"]?.(ctx.buttonId)
-      return
-    }
-    // ponytail: when time is over, tap returns to the initial state —
-    // the counter at max, awaiting another tap. The user must tap a
-    // second time to actually start a fresh countdown. The blink
-    // animation stops as soon as the global runtime re-seeds to
-    // paused-at-full via pomodoro:register.
-    if (persisted.status === "finished") {
-      writePersisted(ctx, {
-        status: "idle",
-        startTsMs: null,
-        durationSec,
-        remainingSec: null,
-      })
-      ctx.methods["pomodoro:register"]?.(
-        ctx.buttonId,
-        durationSec,
-        ctx.config?.notification,
-      )
-      return
-    }
-    // truly fresh state (idle): present paused-at-full. register() seeds
-    // the global runtime; the frontend shows the configured time and
-    // waits for the user to tap again to begin a countdown.
-    ctx.methods["pomodoro:register"]?.(
+    const resumeFrom =
+      typeof persisted.remainingSec === "number"
+        ? persisted.remainingSec
+        : (awaitLiveRemaining(ctx) ?? durationSec)
+    const startTsMs = Date.now() - (durationSec - resumeFrom) * 1000
+    writePersisted(ctx, {
+      status: "running",
+      startTsMs,
+      durationSec,
+      remainingSec: null,
+    })
+    ctx.methods["pomodoro:startWith"]?.(
       ctx.buttonId,
+      startTsMs,
       durationSec,
       ctx.config?.notification,
     )
   },
   onDblTap: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
-    // ponytail: when time is over, dbl-tap returns to the initial state
-    // AND starts a fresh countdown immediately. Symmetric counterpart
-    // to onTap which only resets. The blink animation is interrupted
-    // when status flips back to running.
+    // ponytail: only meaningful when time is over — "back to initial AND
+    // start counting now". Every other state's gestures are already on
+    // tap; dbl-tap elsewhere is noise.
     const persisted = getPersisted(ctx)
-    if (persisted.status !== "finished") return
+    const effective = effectiveStatus(ctx, persisted)
+    if (effective !== "finished") return
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
     const startTsMs = Date.now()
     writePersisted(ctx, {
@@ -224,7 +244,14 @@ export default {
       durationSec,
       remainingSec: null,
     })
-    ctx.methods["pomodoro:stop"]?.(ctx.buttonId)
+    // ponytail: register (not stop) so every exit lands on the identical
+    // "counter at max, not started" presentation instead of relying on
+    // the frontend's config-duration fallback after a map delete.
+    ctx.methods["pomodoro:register"]?.(
+      ctx.buttonId,
+      durationSec,
+      ctx.config?.notification,
+    )
   },
   dispose: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     ctx.methods["pomodoro:stop"]?.(ctx.buttonId)

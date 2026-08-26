@@ -313,7 +313,10 @@ describe("pomodoro button onTap dispatch", () => {
     return { ctx: ctx as never, store, buttonScope }
   }
 
-  const wireTapMethods = (ctx: unknown) => {
+  const wireTapMethods = (
+    ctx: unknown,
+    live?: { phase: string; remainingSec: number } | undefined,
+  ) => {
     const start = vi.fn()
     const pause = vi.fn()
     const resume = vi.fn()
@@ -331,6 +334,7 @@ describe("pomodoro button onTap dispatch", () => {
       "pomodoro:stop": stop,
       "pomodoro:startWith": startWith,
       "pomodoro:register": register,
+      "pomodoro:getState": vi.fn(() => live),
     }
     return { start, pause, resume, stop, startWith, register }
   }
@@ -356,7 +360,7 @@ describe("pomodoro button onTap dispatch", () => {
       durationSec: 5,
       remainingSec: null,
     }))
-    const m = wireTapMethods(ctx)
+    const m = wireTapMethods(ctx, { phase: "running", remainingSec: 4 })
     pomodoroBackend.onTap?.(ctx)
     expect(m.pause).toHaveBeenCalledWith("btn1")
     expect(buttonScope.set).toHaveBeenCalledWith(
@@ -365,8 +369,8 @@ describe("pomodoro button onTap dispatch", () => {
     )
   })
 
-  it("paused with remaining → resume", () => {
-    const { ctx, buttonScope } = makeTapCtx(5)
+  it("paused (live) with persisted remaining → resume via startWith from live remaining", () => {
+    const { ctx } = makeTapCtx(5)
     const persisted = {
       status: "paused",
       startTsMs: Date.now() - 2000,
@@ -374,15 +378,56 @@ describe("pomodoro button onTap dispatch", () => {
       remainingSec: 3,
     }
     // wire the persisted state into the store mock
-    ;(buttonScope.get as ReturnType<typeof vi.fn>).mockImplementation(
-      () => persisted,
+    ;(
+      ctx as unknown as { store: { buttonScope: ReturnType<typeof vi.fn> } }
+    ).store.buttonScope.mockImplementation(
+      () =>
+        ({
+          get: vi.fn(() => persisted),
+          set: vi.fn(),
+        }) as never,
     )
-    const m = wireTapMethods(ctx)
+    const m = wireTapMethods(ctx, { phase: "paused", remainingSec: 3 })
     pomodoroBackend.onTap?.(ctx)
-    expect(m.resume).toHaveBeenCalledWith("btn1")
+    // resume now routes through startWith (live remaining is source of
+    // truth) instead of the legacy pomodoro:resume method.
+    expect(m.startWith).toHaveBeenCalledWith(
+      "btn1",
+      expect.any(Number),
+      5,
+      undefined,
+    )
+    const ts = m.startWith.mock.calls[0]?.[1] as number
+    // reconstructed startTsMs ≈ now - (duration - liveRemaining)*1000
+    expect(Math.round((Date.now() - ts) / 1000)).toBe(5 - 3)
   })
 
-  it("finished persisted → tap returns to initial paused-at-full state", () => {
+  it("finished (live, persisted still says running — the divergence case) → tap resets to initial", () => {
+    // THE regression: global runtime flipped to finished while persisted
+    // still says running. Deciding on persisted made this tap a silent
+    // no-op forever. Live phase must win.
+    const { ctx, buttonScope } = makeTapCtx(1500)
+    buttonScope.get = vi.fn(() => ({
+      status: "running",
+      startTsMs: Date.now() - 2_000_000,
+      durationSec: 1500,
+      remainingSec: null,
+    }))
+    const m = wireTapMethods(ctx, { phase: "finished", remainingSec: 0 })
+    pomodoroBackend.onTap?.(ctx)
+    expect(buttonScope.set).toHaveBeenCalledWith("state", {
+      status: "idle",
+      startTsMs: null,
+      durationSec: 1500,
+      remainingSec: null,
+    })
+    // register re-seeds paused-at-full → blink stops immediately.
+    expect(m.register).toHaveBeenCalledWith("btn1", 1500, undefined)
+    expect(m.start).not.toHaveBeenCalled()
+    expect(m.startWith).not.toHaveBeenCalled()
+  })
+
+  it("finished persisted + no live entry → tap returns to initial paused-at-full state", () => {
     const { ctx, buttonScope } = makeTapCtx(5)
     buttonScope.get = vi.fn(() => ({
       status: "finished",
@@ -390,10 +435,8 @@ describe("pomodoro button onTap dispatch", () => {
       durationSec: 5,
       remainingSec: 0,
     }))
-    const m = wireTapMethods(ctx)
+    const m = wireTapMethods(ctx) // no live entry → falls back to persisted
     pomodoroBackend.onTap?.(ctx)
-    // reset path: persisted → idle; global re-seeds paused-at-full.
-    // User must tap AGAIN to actually start a fresh countdown.
     expect(buttonScope.set).toHaveBeenCalledWith("state", {
       status: "idle",
       startTsMs: null,
@@ -406,7 +449,10 @@ describe("pomodoro button onTap dispatch", () => {
   })
 })
 
-const wireDblTapMethods = (ctx: unknown) => {
+const wireDblTapMethods = (
+  ctx: unknown,
+  live?: { phase: string; remainingSec: number } | undefined,
+) => {
   const start = vi.fn()
   const pause = vi.fn()
   const resume = vi.fn()
@@ -424,28 +470,31 @@ const wireDblTapMethods = (ctx: unknown) => {
     "pomodoro:stop": stop,
     "pomodoro:startWith": startWith,
     "pomodoro:register": register,
+    "pomodoro:getState": vi.fn(() => live),
   }
   return { start, pause, resume, stop, startWith, register }
 }
 
 describe("pomodoro button onDblTap dispatch", () => {
-  it("finished → returns to initial state AND starts a fresh countdown", () => {
-    const { ctx, buttonScope } = makeTapCtx(5)
+  it("finished (live, persisted stale running) → reset to initial AND start fresh", () => {
+    // The divergence case: global says finished, persisted still says
+    // running. Dbl-tap must consult live phase and restart immediately.
+    const { ctx, buttonScope } = makeTapCtx(1500)
     buttonScope.get = vi.fn(() => ({
-      status: "finished",
-      startTsMs: Date.now() - 999_999,
-      durationSec: 5,
-      remainingSec: 0,
+      status: "running",
+      startTsMs: Date.now() - 2_000_000,
+      durationSec: 1500,
+      remainingSec: null,
     }))
-    const m = wireDblTapMethods(ctx)
+    const m = wireDblTapMethods(ctx, { phase: "finished", remainingSec: 0 })
     pomodoroBackend.onDblTap?.(ctx)
     expect(buttonScope.set).toHaveBeenCalledWith("state", {
       status: "running",
       startTsMs: expect.any(Number),
-      durationSec: 5,
-      remainingSec: 5,
+      durationSec: 1500,
+      remainingSec: 1500,
     })
-    expect(m.start.mock.calls[0]?.slice(0, 2)).toEqual(["btn1", 5])
+    expect(m.start.mock.calls[0]?.slice(0, 2)).toEqual(["btn1", 1500])
   })
 
   it("non-finished states are no-ops", () => {

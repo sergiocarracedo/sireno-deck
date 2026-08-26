@@ -180,6 +180,31 @@ export const globalService = {
       if (info.startTsMs === undefined) return false
       return computeRemaining(info.startTsMs, info.durationSec, Date.now()) <= 0
     },
+    // ponytail: single source of truth for gesture dispatch. The persisted
+    // store and the global runtime can disagree (the global map flips to
+    // "finished" the instant computeRemaining hits 0, but nothing writes
+    // that back to persisted). Button handlers must decide on LIVE phase —
+    // otherwise finished-taps read stale "running" from persisted and
+    // silently no-op forever. Mirrors rebuildSnapshot's per-entry logic.
+    getState: (
+      buttonId,
+    ): { phase: string; remainingSec: number } | undefined => {
+      const info = buttons.get(String(buttonId))
+      if (info === undefined) return undefined
+      if (info.pausedRemainingSec !== undefined) {
+        return { phase: "paused", remainingSec: info.pausedRemainingSec }
+      }
+      if (info.startTsMs === undefined) return undefined
+      const remaining = computeRemaining(
+        info.startTsMs,
+        info.durationSec,
+        Date.now(),
+      )
+      return {
+        phase: remaining <= 0 ? "finished" : "running",
+        remainingSec: remaining,
+      }
+    },
   } as Record<string, (...args: unknown[]) => unknown>,
   onLoad: (ctx: unknown) => {
     ctxRef = ctx as AddonServiceContextLike
