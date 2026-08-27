@@ -1,0 +1,37 @@
+packages/addons/coding-agents/src/__tests__/opencode-provider.test.ts
+  s_6431f34a133923::t_51a85f9732fcb0 3,12-14
+  s_6431f34a133923::t_99e16019e17407 1,15-23,27-30,34,45-47,51,58-62,66,72-86,89-96,100,112-116,120
+packages/addons/coding-agents/src/__tests__/manifest.test.ts
+  s_6431f34a133923::t_647cc10a9adac6 40,42-45
+packages/addons/coding-agents/src/providers/registry.ts
+  s_6431f34a133923::t_4c921a26a8ffd8 102-105
+  s_6431f34a133923::t_aceb73318c5329 43-47
+  s_6431f34a133923::t_5bfe3be02d80f4 97-101,106
+packages/addons/coding-agents/src/providers/opencode.ts
+  s_6431f34a133923::t_ac890d58a1e634 23-26,48-49,53
+  s_6431f34a133923::t_adaf696ac566c9 112-113
+  s_6431f34a133923::t_51a85f9732fcb0 27-29
+  s_6431f34a133923::t_d2e1f0bc30d33d 1-5,20-22,35-47,50-52,54-91,97-98,102,104-105,111,137,139,155,192,197-200
+packages/addons/coding-agents/src/manifest.ts
+  s_6431f34a133923::t_71a60f5cbd0704 87-92
+  s_6431f34a133923::t_759b9d3bd249d8 8
+  s_6431f34a133923::t_fea8c347984f66 85-86,93
+packages/addons/coding-agents/tsdown.config.ts
+  s_6431f34a133923::t_eff2203d812425 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "034f998a7a673bf23ef10cb86094bd90ff582ab1",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
