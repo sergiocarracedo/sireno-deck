@@ -1,0 +1,51 @@
+/*
+ * starlight-overrides.css
+ * Bridges the marketing-site identity into the docs surface:
+ * same palette (#0a0a0f dark) + same type stack (Instrument Serif display,
+ * Source Sans 3 body, Source Code Pro mono). Fonts themselves come from the
+ * Google-Fonts import inside global.css, which is also registered on
+ * Starlight's customCss.
+ */
+
+:root,
+[data-theme="dark"] {
+  /* Surfaces */
+  --sl-color-bg: #0a0a0f;
+  --sl-color-bg-nav: #14141a;
+  --sl-color-bg-sidebar: #0a0a0f;
+  --sl-color-bg-accent: #1c1c24;
+  --sl-color-border: #27272a;
+
+  /* Text */
+  --sl-color-text: #e4e4e7;
+  --sl-color-heading: #f4f4f5;
+  --sl-color-muted: #71717a;
+
+  /* Accent = site cyan */
+  --sl-color-accent-low: #0e2a33;
+  --sl-color-accent: #22d3ee;
+  --sl-color-accent-high: #a5f3fc;
+  --sl-color-text-accent: #22d3ee;
+
+  /* Violet anchors for selected states */
+  --sl-color-rose-low: #251a38;
+  --sl-color-rose: #a78bfa;
+  --sl-color-rose-high: #ddd6fe;
+
+  /* Typography — mirrors the marketing tokens from global.css */
+  --sl-font: var(--font-body, "Source Sans 3"), system-ui, sans-serif;
+  --sl-font-mono: var(--font-mono, "Source Code Pro"), ui-monospace, monospace;
+}
+
+/* Display face for page titles so docs headlines read like the landing. */
+.sl-markdown-content h1,
+.starlight-hero h1,
+[starlight-page-title] h1 {
+  font-family: var(--font-display, "Instrument Serif"), Georgia, serif;
+}
+
+/* Code blocks: match the site's terminal-chrome look. */
+.expressive-code pre {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+}

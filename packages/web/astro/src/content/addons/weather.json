@@ -5,6 +5,6 @@
   "tags": ["weather", "productivity"],
   "icon": "cloud-sun",
   "buttonTypes": ["weather:weather"],
-  "screenshot": "/captures/06-weather.png",
+  "screenshot": "/captures/demo-weather.png",
   "order": 9
 }

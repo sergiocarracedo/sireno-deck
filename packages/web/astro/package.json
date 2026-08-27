@@ -7,9 +7,11 @@
   "scripts": {
     "sync-tokens": "node ../scripts/sync-tokens.mjs",
     "sync-docs": "node ./scripts/sync-cli-docs.mjs",
-    "predev": "pnpm run sync-docs && pnpm run sync-tokens",
+    "sync-schemas": "cd ../../cli && pnpm exec tsx ../web/scripts/extract-addon-schemas.mjs",
+    "sync-captures": "node ../scripts/capture-decks.mjs",
+    "predev": "pnpm run sync-docs && pnpm run sync-tokens && pnpm run sync-schemas",
     "dev": "astro dev",
-    "prebuild": "pnpm run sync-docs && pnpm run sync-tokens",
+    "prebuild": "pnpm run sync-docs && pnpm run sync-tokens && pnpm run sync-schemas",
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "astro check && tsc --noEmit",

@@ -5,6 +5,6 @@
   "tags": ["productivity", "shell", "data"],
   "icon": "gauge",
   "buttonTypes": ["value-display:display"],
-  "screenshot": "/captures/08-value-display.png",
+  "screenshot": "/captures/demo-value-display.png",
   "order": 8
 }

@@ -20,7 +20,10 @@ export default defineConfig({
           href: "https://github.com/sireno-deck/sireno-deck",
         },
       ],
-      customCss: [resolve("./src/styles/global.css")],
+      customCss: [
+        resolve("./src/styles/global.css"),
+        resolve("./src/styles/starlight-overrides.css"),
+      ],
       sidebar: [
         {
           label: "User Guide",

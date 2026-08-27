@@ -21,14 +21,29 @@ const { variant = "hero" } = Astro.props
   {
     variant === "hero" ? (
       <>
-        {/* Drifting glows */}
+        {/* Primary drifting glow — larger and denser so it reads behind copy */}
         <div
           class="absolute left-1/2 -translate-x-1/2 rounded-full blur-3xl"
-          style={`top: -10%; width: 1100px; height: 1100px; background: radial-gradient(circle, var(--color-accent-glow) 0%, transparent 60%); animation: hero-drift 18s ease-in-out infinite;`}
+          style={`top: -14%; width: 1400px; height: 1200px; background: radial-gradient(circle, rgba(34,211,238,0.28) 0%, rgba(34,211,238,0.10) 40%, transparent 65%); animation: hero-drift 18s ease-in-out infinite;`}
+        />
+        {/* Violet counter-glow anchored lower-left of the headline */}
+        <div
+          class="absolute rounded-full blur-3xl"
+          style={`left: -12%; bottom: -18%; width: 900px; height: 900px; background: radial-gradient(circle, rgba(167,139,250,0.24) 0%, transparent 62%); animation: hero-drift 26s ease-in-out infinite reverse;`}
+        />
+        {/* Right-edge cyan rim */}
+        <div
+          class="absolute rounded-full blur-3xl"
+          style={`right: -16%; top: 18%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(34,211,238,0.16) 0%, transparent 60%); animation: hero-drift 22s ease-in-out infinite;`}
+        />
+        {/* Vertical light beams behind the headline (synthwave mesh hint) */}
+        <div
+          class="absolute inset-x-0 top-0 h-[70%] opacity-40"
+          style="background: repeating-linear-gradient(90deg, transparent 0px, transparent 88px, rgba(34,211,238,0.05) 89px, transparent 90px); mask-image: linear-gradient(180deg, black 0%, transparent 100%); -webkit-mask-image: linear-gradient(180deg, black 0%, transparent 100%);"
         />
         <div
-          class="absolute right-0 bottom-0 rounded-full blur-3xl"
-          style={`width: 700px; height: 700px; background: radial-gradient(circle, rgba(167, 139, 250, 0.18) 0%, transparent 60%); animation: hero-drift 24s ease-in-out infinite reverse;`}
+          class="absolute inset-x-0 top-0 h-[55%]"
+          style="background: conic-gradient(from 200deg at 50% -20%, transparent 40%, rgba(34,211,238,0.07) 50%, transparent 60%);"
         />
         {/* Grain */}
         <svg class="absolute inset-0 w-full h-full opacity-[0.06] mix-blend-screen">
@@ -41,7 +56,7 @@ const { variant = "hero" } = Astro.props
         {/* Bottom vignette to keep copy readable */}
         <div
           class="absolute inset-0"
-          style="background: linear-gradient(180deg, transparent 60%, var(--color-bg) 100%);"
+          style="background: linear-gradient(180deg, transparent 55%, var(--color-bg) 95%);"
         />
       </>
     ) : (

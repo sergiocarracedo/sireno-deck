@@ -2,9 +2,9 @@
 /**
  * /themes/[slug]/ — theme detail page.
  *
- * Shows the preview (or a CSS-rendered mini-deck if no preview), the
- * palette swatches, the source-of-truth file path, and a link to the
- * GitHub location.
+ * Built-in themes show palette + mini-deck + a one-line `theme:` usage
+ * snippet. No "Source" section (they ship inside the CLI).
+ * Third-party themes additionally get an Install block with repo link.
  */
 import Layout from "../../layouts/Base.astro"
 import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
@@ -25,18 +25,11 @@ const themeId = entry.id
 const isBuiltIn = t.category === "builtin"
 ---
 
-<Layout
-  title={`${t.displayName} Theme — Sireno Deck`}
-  description={t.description}
->
+<Layout title={`${t.displayName} Theme — Sireno Deck`} description={t.description}>
   <section class="relative px-6 pt-32 pb-16 overflow-hidden">
     <ShaderBackdrop variant="page" />
     <div class="relative max-w-5xl mx-auto">
-      <a
-        href="/themes/"
-        class="inline-flex items-center gap-1 text-xs mb-6"
-        style="color: var(--color-muted);"
-      >
+      <a href="/themes/" class="inline-flex items-center gap-1 text-xs mb-6" style="color: var(--color-muted);">
         <Icon name="arrow-left" class="w-3.5 h-3.5" />
         Back to registry
       </a>
@@ -47,11 +40,9 @@ const isBuiltIn = t.category === "builtin"
             <h1 class="font-display text-4xl font-bold text-fg">{t.displayName}</h1>
             <span
               class="text-xs font-mono px-2 py-0.5 rounded"
-              style={
-                isBuiltIn
-                  ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
-                  : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"
-              }
+              style={isBuiltIn
+                ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
+                : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"}
             >
               {t.category}
             </span>
@@ -61,13 +52,9 @@ const isBuiltIn = t.category === "builtin"
       </div>
 
       <div class="flex flex-wrap items-center gap-2 mb-10">
-        {
-          t.tags.map((tag) => (
-            <span class="text-xs font-mono px-2 py-1 rounded" style="background: var(--color-surface-raised); color: var(--color-muted);">
-              {tag}
-            </span>
-          ))
-        }
+        {t.tags.map((tag: string) => (
+          <span class="text-xs font-mono px-2 py-1 rounded" style="background: var(--color-surface-raised); color: var(--color-muted);">{tag}</span>
+        ))}
       </div>
 
       <div class="rounded-xl overflow-hidden mb-12" style="border: 1px solid var(--color-border); aspect-ratio: 16 / 9;">
@@ -75,10 +62,7 @@ const isBuiltIn = t.category === "builtin"
           <img src={t.preview} alt={`${t.displayName} preview`} class="w-full h-full object-cover" />
         ) : (
           <div class="w-full h-full flex items-center justify-center" style={`background: ${t.palette.background};`}>
-            <div
-              class="w-48 h-16 rounded-lg"
-              style={`background: ${t.palette.primary}; box-shadow: 0 0 40px ${t.palette.primary}99;`}
-            />
+            <div class="w-48 h-16 rounded-lg" style={`background: ${t.palette.primary}; box-shadow: 0 0 40px ${t.palette.primary}99;`}></div>
           </div>
         )}
       </div>
@@ -89,10 +73,7 @@ const isBuiltIn = t.category === "builtin"
           <PaletteSwatches palette={t.palette} />
 
           <h2 class="font-display text-lg font-semibold mt-8 mb-4">Mini deck preview</h2>
-          <div
-            class="rounded-xl p-3 inline-flex gap-2"
-            style={`background: ${t.palette.background}; border: 1px solid ${t.palette.frame};`}
-          >
+          <div class="rounded-xl p-3 inline-flex gap-2" style={`background: ${t.palette.background}; border: 1px solid ${t.palette.frame};`}>
             {[
               { bg: t.palette.frame, fg: t.palette.foreground, label: "Mute" },
               { bg: t.palette.primary, fg: t.palette.foreground, label: "♫" },
@@ -108,34 +89,38 @@ const isBuiltIn = t.category === "builtin"
           </div>
         </div>
 
-        <div class="rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
-          <h2 class="font-display text-lg font-semibold mb-4">Source</h2>
-          <ul class="space-y-3 text-sm">
-            {t.repo && (
-              <li>
-                <a
-                  href={t.repo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 transition-colors hover:text-fg"
-                  style="color: var(--color-muted);"
-                >
-                  <i data-lucide="github" class="w-4 h-4"></i>
-                  Source on GitHub
-                </a>
-              </li>
-            )}
-            {!t.repo && isBuiltIn && (
-              <li>
-                <code class="font-mono text-xs" style="color: var(--color-muted);">
-                  packages/cli/src/themes/{themeId}/sirenodeck.json
-                </code>
-              </li>
-            )}
-          </ul>
+        <div class="rounded-xl p-6 flex flex-col gap-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+          <h2 class="font-display text-lg font-semibold mb-0">Usage</h2>
 
-          <h2 class="font-display text-lg font-semibold mt-6 mb-4">Usage</h2>
-          <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>theme: {themeId}</code></pre>
+          {isBuiltIn ? (
+            <>
+              <p class="text-sm leading-relaxed -mt-3" style="color: var(--color-muted);">
+                Ships with Sireno Deck. Reference it from your
+                <code class="font-mono text-xs px-1 py-0.5 rounded" style="background: var(--color-bg);">config.yml</code>:
+              </p>
+              <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>theme: {themeId}</code></pre>
+            </>
+          ) : (
+            <>
+              {!isBuiltIn && t.repo && (
+                <p class="text-sm leading-relaxed -mt-3">
+                  <a href={t.repo} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 transition-colors hover:text-fg" style="color: var(--color-muted);">
+                    <i data-lucide="github" class="w-4 h-4"></i>
+                    Source on GitHub
+                  </a>
+                </p>
+              )}
+              <p class="text-sm leading-relaxed -mt-3" style="color: var(--color-muted);">
+                Third-party theme. Point your config at its path or npm name:
+              </p>
+              <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>{`# local path\ntheme: ./packages/themes/${themeId}\n\n# or npm package\ntheme: @sireno-deck/theme-${themeId}`}</code></pre>
+              <p class="text-xs" style="color: var(--color-muted);">
+                Any string that isn't a registered theme or filesystem path is
+                resolved as an npm package — see
+                <a href="/developer/theme-authoring/" class="underline">theme authoring</a>.
+              </p>
+            </>
+          )}
         </div>
       </div>
     </div>

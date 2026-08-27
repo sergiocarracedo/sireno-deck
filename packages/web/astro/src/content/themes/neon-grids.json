@@ -10,6 +10,7 @@
     "primary": "#00e5ff",
     "accent": "#8a2be2"
   },
+  "preview": "/captures/15-neon-grids.png",
   "repo": "https://github.com/sireno-deck/sireno-deck/tree/main/packages/themes/neon-grids",
   "order": 11
 }

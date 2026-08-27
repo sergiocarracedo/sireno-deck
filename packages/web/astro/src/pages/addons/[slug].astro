@@ -2,13 +2,17 @@
 /**
  * /addons/[slug]/ — addon detail page.
  *
- * Renders the meta entry as a header card, plus the button-types and
- * links out to source / npm.
+ * - Built-in addons: button types + live Zod-derived config schema example.
+ *   No "source" panel — they ship inside the CLI package.
+ * - Third-party (community) addons: same + Install block (npm + config.yml
+ *   addon entry).
  */
 import Layout from "../../layouts/Base.astro"
 import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
 import Icon from "../../components/Icon.astro"
 import { getCollection, getEntry } from "astro:content"
+import { buttonTypeBlocks } from "../../lib/addon-config-examples"
+import AddonConfigExample from "../../components/AddonConfigExample.astro"
 
 export async function getStaticPaths() {
   const addons = await getCollection("addons")
@@ -20,29 +24,27 @@ const entry = await getEntry("addons", id)
 if (!entry) throw new Error(`addon ${id} not found`)
 const a = entry.data
 const isBuiltIn = a.category === "builtin"
+
+const typeBlocks = buttonTypeBlocks(a.buttonTypes ?? [])
+const blockOf = (typeId: string) => typeBlocks.find((t) => t.typeId === typeId && t.body !== null)
+const hasTypes = a.buttonTypes.length > 0
+// ponytail: open the example <details> when a page only has a couple of
+// types. Computed here so the template never contains a bare `<` inside an
+// expression — the astro parser reads that as the start of a tag.
+const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || typeBlocks.filter((t) => t.body !== null).length === 2
 ---
 
-<Layout
-  title={`${a.displayName} — Sireno Deck Addon`}
-  description={a.description}
->
+<Layout title={`${a.displayName} — Sireno Deck Addon`} description={a.description}>
   <section class="relative px-6 pt-32 pb-16 overflow-hidden">
     <ShaderBackdrop variant="page" />
     <div class="relative max-w-5xl mx-auto">
-      <a
-        href="/addons/"
-        class="inline-flex items-center gap-1 text-xs mb-6"
-        style="color: var(--color-muted);"
-      >
+      <a href="/addons/" class="inline-flex items-center gap-1 text-xs mb-6" style="color: var(--color-muted);">
         <Icon name="arrow-left" class="w-3.5 h-3.5" />
         Back to registry
       </a>
 
       <div class="flex items-start gap-5 mb-6">
-        <div
-          class="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0"
-          style="background: var(--color-surface); border: 1px solid var(--color-border);"
-        >
+        <div class="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0" style="background: var(--color-surface); border: 1px solid var(--color-border);">
           <i data-lucide={a.icon} class="w-8 h-8" style="color: var(--color-accent);"></i>
         </div>
         <div>
@@ -50,11 +52,9 @@ const isBuiltIn = a.category === "builtin"
             <h1 class="font-display text-4xl font-bold text-fg">{a.displayName}</h1>
             <span
               class="text-xs font-mono px-2 py-0.5 rounded"
-              style={
-                isBuiltIn
-                  ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
-                  : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"
-              }
+              style={isBuiltIn
+                ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
+                : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"}
             >
               {isBuiltIn ? "built-in" : a.category}
             </span>
@@ -64,13 +64,9 @@ const isBuiltIn = a.category === "builtin"
       </div>
 
       <div class="flex flex-wrap items-center gap-2 mb-10">
-        {
-          a.tags.map((t) => (
-            <span class="text-xs font-mono px-2 py-1 rounded" style="background: var(--color-surface-raised); color: var(--color-muted);">
-              {t}
-            </span>
-          ))
-        }
+        {a.tags.map((t: string) => (
+          <span class="text-xs font-mono px-2 py-1 rounded" style="background: var(--color-surface-raised); color: var(--color-muted);">{t}</span>
+        ))}
       </div>
 
       {a.screenshot && (
@@ -79,16 +75,42 @@ const isBuiltIn = a.category === "builtin"
         </div>
       )}
 
+      {/* Install — third-party only */}
+      {!isBuiltIn && a.npm && (
+        <div class="mb-10 rounded-xl overflow-hidden" style="background: var(--color-surface); border: 1px solid var(--color-accent);">
+          <p class="text-xs font-semibold uppercase tracking-widest px-6 pt-5 pb-3" style="color: var(--color-accent-2);">
+            Install
+          </p>
+          <pre class="px-6 pb-2 text-sm font-mono overflow-x-auto" style="color: var(--color-fg);"><code># 1. add the npm package to your project
+pnpm add {a.npm}</code></pre>
+          <pre class="px-6 pb-2 text-sm font-mono overflow-x-auto" style="color: var(--color-fg);"><code># 2. reference it in config.yml
+addons:
+  - "{a.npm}"</code></pre>
+          <p class="px-6 pb-5 text-xs" style="color: var(--color-muted);">
+            Full path or npm name both work in the addons list — see
+            <a href="/user/configuration-files/" class="underline">configuration docs</a>.
+          </p>
+        </div>
+      )}
+
       <div class="grid lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+        <div class={`rounded-xl p-6 ${hasTypes ? "lg:col-span-2" : "lg:col-span-3"}`} style="background: var(--color-surface); border: 1px solid var(--color-border);">
           <h2 class="font-display text-lg font-semibold mb-4">Button types</h2>
-          {a.buttonTypes.length > 0 ? (
-            <ul class="space-y-2">
-              {a.buttonTypes.map((bt) => (
+          {hasTypes ? (
+            <ul class="space-y-4">
+              {a.buttonTypes.map((bt: string) => (
                 <li>
                   <code class="text-sm font-mono px-3 py-1.5 rounded inline-block" style="background: var(--color-bg); color: var(--color-accent); border: 1px solid var(--color-border);">
                     {bt}
                   </code>
+                  {(() => {
+                    const b = blockOf(bt)
+                    return b ? (
+                      <AddonConfigExample typeId={bt} body={b.body ?? ""} open={expandDetails} />
+                    ) : (
+                      <p class="text-xs mt-2" style="color: var(--color-muted);">No extra configuration required.</p>
+                    )
+                  })()}
                 </li>
               ))}
             </ul>
@@ -99,43 +121,49 @@ const isBuiltIn = a.category === "builtin"
           )}
         </div>
 
-        <div class="rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
-          <h2 class="font-display text-lg font-semibold mb-4">Links</h2>
-          <ul class="space-y-3 text-sm">
-            {a.npm && (
-              <li>
-                <a
-                  href={`https://www.npmjs.com/package/${a.npm}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 transition-colors hover:text-fg"
-                  style="color: var(--color-muted);"
-                >
-                  <i data-lucide="package" class="w-4 h-4"></i>
-                  <code class="font-mono">{a.npm}</code>
-                </a>
-              </li>
-            )}
-            {a.repo && (
-              <li>
-                <a
-                  href={a.repo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 transition-colors hover:text-fg"
-                  style="color: var(--color-muted);"
-                >
-                  <i data-lucide="github" class="w-4 h-4"></i>
-                  Source on GitHub
-                </a>
-              </li>
-            )}
-            {!a.npm && !a.repo && (
-              <li class="text-sm" style="color: var(--color-muted);">
-                Ships with the Sireno Deck CLI.
-              </li>
-            )}
-          </ul>
+        <div class="rounded-xl p-6 flex flex-col gap-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+          <h2 class="font-display text-lg font-semibold mb-0">Links</h2>
+          {isBuiltIn ? (
+            <p class="text-sm leading-relaxed" style="color: var(--color-muted);">
+              Ships with the Sireno Deck CLI — nothing to install. Enable it by
+              referencing its buttons straight from your
+              <code class="font-mono text-xs px-1 py-0.5 rounded" style="background: var(--color-bg);">config.yml</code>.
+            </p>
+          ) : (
+            <ul class="space-y-3 text-sm">
+              {a.npm && (
+                <li>
+                  <a
+                    href={`https://www.npmjs.com/package/${a.npm}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 transition-colors hover:text-fg"
+                    style="color: var(--color-muted);"
+                  >
+                    <i data-lucide="package" class="w-4 h-4"></i>
+                    <code class="font-mono">{a.npm}</code>
+                  </a>
+                </li>
+              )}
+              {a.repo && (
+                <li>
+                  <a
+                    href={a.repo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 transition-colors hover:text-fg"
+                    style="color: var(--color-muted);"
+                  >
+                    <i data-lucide="github" class="w-4 h-4"></i>
+                    Source on GitHub
+                  </a>
+                </li>
+              )}
+            </ul>
+          )}
+          {!isBuiltIn && !a.npm && !a.repo && (
+            <p class="text-sm" style="color: var(--color-muted);">Community package.</p>
+          )}
         </div>
       </div>
     </div>

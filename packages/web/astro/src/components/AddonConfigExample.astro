@@ -1,0 +1,24 @@
+---
+/**
+ * AddonConfigExample — collapsible config.yml example for one button type.
+ * Kept in its own component: the example <pre> embeds a generated template
+ * literal, which is safer to parse at a component boundary.
+ */
+interface Props {
+  typeId: string
+  body: string
+  open: boolean
+}
+
+const { typeId, body, open } = Astro.props
+const lines = body.split("\n").map((l) => `    ${l}`).join("\n")
+const snippet = `- position: 0\n  type: ${typeId}\n  config:\n${lines}`
+---
+
+<details class="mt-3 group" open={open}>
+  <summary class="text-xs cursor-pointer select-none inline-flex items-center gap-1.5" style="color: var(--color-muted);">
+    <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform group-open:rotate-180"></i>
+    config.yml example
+  </summary>
+  <pre class="mt-2 rounded-md p-4 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border);"><code>{snippet}</code></pre>
+</details>

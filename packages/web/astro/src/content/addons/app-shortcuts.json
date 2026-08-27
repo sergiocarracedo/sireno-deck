@@ -7,6 +7,6 @@
   "buttonTypes": [],
   "npm": "@sirenodeck/addon-app-shortcuts",
   "repo": "https://github.com/sireno-deck/sireno-deck/tree/main/packages/addons/app-shortcuts",
-  "screenshot": "/captures/09-app-shortcuts.png",
+  "screenshot": "/captures/demo-app-shortcuts.png",
   "order": 20
 }
