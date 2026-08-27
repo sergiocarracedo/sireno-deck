@@ -1,0 +1,86 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/backend.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-37
+packages/cli/src/builtin-addons/coding-agents/types/types.ts
+  s_6431f34a133923::t_2f647c3bfd0777 1-31,33
+  s_6431f34a133923::t_1aa365757a6a67 32
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/backend.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-34
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-provider.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-128
+packages/cli/src/builtin-addons/coding-agents/index.ts
+  s_6431f34a133923::t_074d2b52a900aa 1-10
+pnpm-workspace.yaml
+  s_6431f34a133923::t_b8412fd5724481 3-4
+packages/cli/src/builtin-addons/coding-agents/shared/claude-status.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-118
+packages/cli/src/builtin-addons/coding-agents/global/backend.ts
+  s_6431f34a133923::t_cb9032aabe7e69 1-197
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_6431f34a133923::t_ede8ee0e0839b0 5,30
+packages/cli/src/builtin-addons/coding-agents/providers/spawn.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-112
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/frontend.tsx
+  s_6431f34a133923::t_11b55429a3aa3d 1-75
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/config.ts
+  s_6431f34a133923::t_cb9032aabe7e69 1-10
+packages/cli/src/builtin-addons/coding-agents/__tests__/spawn.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-69
+packages/cli/src/builtin-addons/coding-agents/providers/registry.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-106
+packages/cli/src/builtin-addons/coding-agents/__tests__/claude-status.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-92
+packages/cli/src/builtin-addons/coding-agents/manifest.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-98
+packages/cli/src/builtin-addons/coding-agents/__tests__/notifier.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-124
+packages/cli/src/builtin-addons/coding-agents/__tests__/state.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-23
+packages/cli/src/builtin-addons/coding-agents/assets/opencode-dark-square.svg
+  s_6431f34a133923::t_cb9032aabe7e69 1
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/config.ts
+  s_6431f34a133923::t_cb9032aabe7e69 1-11
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-status.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-86
+packages/cli/src/builtin-addons/coding-agents/__tests__/manifest.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-53
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_6431f34a133923::t_11b55429a3aa3d 1-101
+packages/cli/src/builtin-addons/coding-agents/shared/state.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-62
+packages/cli/src/builtin-addons/coding-agents/assets/claude-code.svg
+  s_6431f34a133923::t_cb9032aabe7e69 1
+packages/cli/src/builtin-addons/coding-agents/shared/opencode-status.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-82
+packages/cli/src/builtin-addons/coding-agents/__tests__/snapshot.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-59
+packages/cli/src/builtin-addons/coding-agents/providers/claude-code.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-206
+packages/cli/src/builtin-addons/coding-agents/__tests__/backend.test.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-120
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-209
+packages/cli/src/builtin-addons/coding-agents/shared/snapshot.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-44
+packages/cli/src/builtin-addons/coding-agents/shared/notifier.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-58
+packages/cli/src/builtin-addons/coding-agents/decks/agents.ts
+  s_6431f34a133923::t_11b55429a3aa3d 1-35
+packages/cli/src/addon/api.ts
+  s_6431f34a133923::t_093a3a486c5a41 308-319
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "b3a720ca243671e6dccbbaed2040c9fc577f7817",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
