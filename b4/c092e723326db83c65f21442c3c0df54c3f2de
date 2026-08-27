@@ -1,0 +1,134 @@
+packages/web/astro/src/content/addons/coding-agents.json
+  s_56d884d1e62fa5::t_43994210487de5 1-9
+packages/web/astro/src/content/addons/brightness.json
+  s_56d884d1e62fa5::t_54af6039b7b7f9 1-9
+packages/web/astro/src/content/addons/value-display.json
+  s_56d884d1e62fa5::t_acfdd7bc9318a2 1-10
+packages/web/astro/src/content/addons/internal-settings.json
+  s_56d884d1e62fa5::t_3cbabf9666797f 1-9
+  s_56d884d1e62fa5::t_1923d9d4ae70bf 10-13
+packages/web/astro/src/content/themes/light.json
+  s_56d884d1e62fa5::t_d8e60cd8d202c9 1-15
+packages/web/astro/src/content/addons/weather.json
+  s_56d884d1e62fa5::t_e864dc7f9dd1c6 1-10
+packages/web/astro/src/content/addons/core.json
+  s_56d884d1e62fa5::t_6f3d57635fed97 1-9
+  s_56d884d1e62fa5::t_23be80f472a9c4 10-16
+packages/web/astro/src/components/sections/ConfigSection.astro
+  s_56d884d1e62fa5::t_9f1be50a8f9a94 1-67
+packages/web/astro/src/components/sections/ThemesSection.astro
+  s_56d884d1e62fa5::t_6c828e5a435720 1-38
+packages/web/astro/src/content/themes/default.json
+  s_56d884d1e62fa5::t_ec8836c0d33866 1-15
+packages/web/astro/src/pages/index.astro
+  s_56d884d1e62fa5::t_07c539a48f247d 2,4-9,12-23
+packages/web/astro/src/content.config.ts
+  s_56d884d1e62fa5::t_49dc0ddc44e000 2,16,32
+  s_56d884d1e62fa5::t_fbdb75671a65bd 1,6-8,14-15,17-31,33-52
+packages/web/astro/src/pages/themes/[slug].astro
+  s_56d884d1e62fa5::t_8965770e127548 131
+  s_56d884d1e62fa5::t_0410e96fd8f83b 138
+  s_56d884d1e62fa5::t_7e11749abd539d 1-23,25-96,98-130,132-137,139-143
+  s_56d884d1e62fa5::t_c5bfc41efee780 97
+  s_56d884d1e62fa5::t_db31714dafaaba 24
+packages/web/astro/scripts/sync-cli-docs.mjs
+  s_56d884d1e62fa5::t_28fbc9b2d3e0b2 22
+  s_56d884d1e62fa5::t_f6c36af1ece5a3 1-21,23-59
+  s_56d884d1e62fa5::t_7750f9c7b2c001 60-66
+packages/web/astro/package.json
+  s_56d884d1e62fa5::t_7395c5b4c89dd0 9-10,12,16-17,22-23,26-27,29-30
+packages/web/astro/src/components/AddonCard.astro
+  s_56d884d1e62fa5::t_8b9579c29199b8 1-17,19-69
+  s_56d884d1e62fa5::t_7780c5e338b1f6 18
+packages/web/astro/src/components/ThemeCard.astro
+  s_56d884d1e62fa5::t_8129547320c980 1-86
+packages/web/astro/src/components/sections/Hero.astro
+  s_56d884d1e62fa5::t_37962efbb993f0 3,5-7,12-13,15-17,20-24,27-29,32,34-36,38,41-45,47-48,52-59,62
+  s_56d884d1e62fa5::t_b670460c29c7e3 9
+packages/web/astro/src/components/Footer.astro
+  s_56d884d1e62fa5::t_97670e012952dd 1-13,15-75
+  s_56d884d1e62fa5::t_fd6659634b1841 14
+packages/web/astro/src/components/sections/AddonsSection.astro
+  s_56d884d1e62fa5::t_34412cb3abbe9d 1-42
+packages/web/astro/astro.config.mjs
+  s_56d884d1e62fa5::t_d91403a3f7b842 4,11,13,24-26,28-30,32-34,36-37,42-51
+  s_56d884d1e62fa5::t_eb55f28a6dd271 27,31,35
+packages/web/astro/src/content/addons/system-status.json
+  s_56d884d1e62fa5::t_d23a329d2118eb 1-9
+  s_56d884d1e62fa5::t_450cb629cbc58a 10-13
+packages/web/astro/src/content/addons/app-shortcuts.json
+  s_56d884d1e62fa5::t_6de2f6afc398aa 1-12
+packages/web/astro/src/components/CodeBlock.astro
+  s_56d884d1e62fa5::t_bae59e8ab55da9 1-28
+packages/web/astro/src/pages/addons/[slug].astro
+  s_56d884d1e62fa5::t_76e0ed299a5b79 1-143
+packages/web/astro/src/components/SectionHeader.astro
+  s_56d884d1e62fa5::t_fa7e04800d75cf 1-66
+packages/web/astro/src/components/PaletteSwatches.astro
+  s_56d884d1e62fa5::t_6c498e9f4d2771 1-44
+packages/web/astro/src/pages/themes/index.astro
+  s_56d884d1e62fa5::t_884d7ea35be05e 1-107,109-169
+  s_56d884d1e62fa5::t_72b39a3959742d 108
+packages/web/astro/src/content/addons/pomodoro.json
+  s_56d884d1e62fa5::t_7dc6b91056e93e 1-12
+packages/web/astro/src/components/Icon.astro
+  s_56d884d1e62fa5::t_70d326d9f9d173 1-22
+packages/web/astro/src/components/FeatureCard.astro
+  s_56d884d1e62fa5::t_a3c5e690ceacd1 1-52
+packages/web/astro/.gitignore
+  s_56d884d1e62fa5::t_d5e8adbedbe5bc 6-9
+packages/web/astro/src/components/sections/FeaturesSection.astro
+  s_56d884d1e62fa5::t_59c7c35bd2e004 1-44
+packages/web/astro/src/components/Nav.astro
+  s_56d884d1e62fa5::t_c18d7bda19c805 1-12,14-56
+  s_56d884d1e62fa5::t_a7c63106882d2d 13
+packages/web/astro/src/content/addons/media.json
+  s_56d884d1e62fa5::t_d814989e3fe61e 1-10
+  s_56d884d1e62fa5::t_0a008b375a8d7c 11-15
+packages/web/astro/src/content/addons/emoji-selector.json
+  s_56d884d1e62fa5::t_3c67b72ad61660 1-9
+  s_56d884d1e62fa5::t_bf4ed0e8395c9e 10-13
+packages/web/astro/src/layouts/Base.astro
+  s_56d884d1e62fa5::t_3aa447daed795b 1-56
+packages/web/astro/src/components/ShaderBackdrop.astro
+  s_56d884d1e62fa5::t_dfde6aefe4c057 1-54
+packages/web/astro/src/components/sections/NavigationSection.astro
+  s_56d884d1e62fa5::t_13abc5e3c87f4e 1-45
+packages/web/astro/src/styles/global.css
+  s_56d884d1e62fa5::t_19309de3728e47 1,5-10,13-25,29-58
+packages/web/astro/src/pages/addons/index.astro
+  s_56d884d1e62fa5::t_b18e6264840e3e 114
+  s_56d884d1e62fa5::t_0d365b0c0e2f7f 1-113,115-176
+packages/web/astro/src/content/addons/session.json
+  s_56d884d1e62fa5::t_ae194ac1c0a893 1-9
+packages/web/astro/src/components/sections/InstallSection.astro
+  s_56d884d1e62fa5::t_ce9c814ea69527 1-89,91-99
+  s_56d884d1e62fa5::t_ff0c58be38e3c7 90
+packages/web/astro/src/content/addons/date-time.json
+  s_56d884d1e62fa5::t_6b7b295dbaccfb 1-10
+  s_56d884d1e62fa5::t_8687c717cc2d2c 11-15
+packages/web/astro/src/content/themes/riptide.json
+  s_56d884d1e62fa5::t_c0202026f991d1 1-16
+packages/web/astro/src/content/themes/neon-grids.json
+  s_56d884d1e62fa5::t_8b34bab2382c11 1-15
+packages/web/astro/src/design/tokens.generated.ts
+  s_56d884d1e62fa5::t_980b8bafd5cb92 12
+packages/web/pnpm-lock.yaml
+  s_56d884d1e62fa5::t_6cf7411266f603 14-19,26-31,35-40,170-172,201-205,210-218,272-275,302-313,1281-1283,1561-1572,1621-1628,1647-1652,2010-2013,2063-2065,2075-2078,2115-2117,2167-2170,2223-2226,2346-2349,2372-2374,2836-2839,2844-2847,2914-2917,3092-3095,3255-3264,3324-3327,3455-3458,3934-3944,4022-4030,4035-4060,4178-4179,4199-4208,5096-5097,5348-5368,5423-5430,5447-5458,5902-5903,5947-5948,5958-5959,6024-6025,6078-6079,6133-6134,6371-6378,6394-6395,7071-7072,7077-7080,7132-7135,7332-7333,7590-7609,7693-7694,7786-7787
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "b4c092e723326db83c65f21442c3c0df54c3f2de",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
