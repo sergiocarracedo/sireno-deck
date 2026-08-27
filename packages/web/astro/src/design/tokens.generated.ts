@@ -9,11 +9,9 @@ export const colors = {
   "foreground-contrast": "#333",
   primary: "#7dd3fc",
   accent: "#C3F5FF",
+  muted: "#b8bfc8",
   success: "#34d399",
   danger: "#FFB4AB",
-  tintBlue: "#7dd3fc",
-  tintGreen: "#34d399",
-  tintPurple: "#c4b5fd",
 } as const
 
 export const typography = {

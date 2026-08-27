@@ -1,0 +1,75 @@
+---
+/**
+ * Footer — logo + links + license.
+ */
+const year = new Date().getFullYear()
+
+const linkGroups = [
+  {
+    title: "Product",
+    links: [
+      { href: "/", label: "Home" },
+      { href: "/addons/", label: "Addons" },
+      { href: "/themes/", label: "Themes" },
+      { href: "/user/installation/", label: "Docs" },
+    ],
+  },
+  {
+    title: "Project",
+    links: [
+      {
+        href: "https://github.com/sireno-deck/sireno-deck",
+        label: "GitHub",
+        external: true,
+      },
+      {
+        href: "https://github.com/sireno-deck/sireno-deck/discussions",
+        label: "Discussions",
+        external: true,
+      },
+      {
+        href: "https://github.com/sireno-deck/sireno-deck/issues",
+        label: "Issues",
+        external: true,
+      },
+    ],
+  },
+]
+---
+
+<footer class="px-8 py-12 mt-24" style="background: var(--color-surface); border-top: 1px solid var(--color-border);">
+  <div class="max-w-6xl mx-auto flex flex-wrap items-start justify-between gap-8">
+    <div class="flex items-center gap-3">
+      <img src="/logo-icon.png" alt="" class="h-8 w-8" />
+      <div>
+        <p class="font-display font-bold text-base text-fg">Sireno Deck</p>
+        <p class="text-xs mt-1" style="color: var(--color-muted);">© {year} · MIT License</p>
+      </div>
+    </div>
+
+    {
+      linkGroups.map((g) => (
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color: var(--color-muted);">
+            {g.title}
+          </p>
+          <ul class="list-none flex flex-col gap-2">
+            {g.links.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  target={"external" in l && l.external ? "_blank" : undefined}
+                  rel={"external" in l && l.external ? "noopener noreferrer" : undefined}
+                  class="text-sm transition-colors"
+                  style="color: var(--color-muted);"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</footer>

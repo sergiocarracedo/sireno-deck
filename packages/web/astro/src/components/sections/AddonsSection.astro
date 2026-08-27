@@ -1,0 +1,42 @@
+---
+/**
+ * AddonsSection — grid of all addons (compact, for the homepage).
+ */
+import SectionHeader from "../SectionHeader.astro"
+import AddonCard from "../AddonCard.astro"
+import { getCollection } from "astro:content"
+
+const addons = (await getCollection("addons"))
+  .sort((a, b) => a.data.order - b.data.order)
+---
+
+<section id="addons" class="px-6 py-24">
+  <div class="max-w-6xl mx-auto">
+    <SectionHeader
+      eyebrow="Ecosystem"
+      title="Included addons"
+      body={`${addons.length} powerful addons ready to use. Build your own and share them via npm.`}
+    />
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {addons.map((a) => <AddonCard id={a.id} />)}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+      <img src="/captures/06-weather.png" alt="Weather addon" class="rounded-xl" style="border: 1px solid var(--color-border);" />
+      <img src="/captures/07-action-buttons.png" alt="Action buttons" class="rounded-xl" style="border: 1px solid var(--color-border);" />
+      <img src="/captures/11-pomodoro.png" alt="Pomodoro addon" class="rounded-xl" style="border: 1px solid var(--color-border);" />
+    </div>
+
+    <div class="text-center mt-12">
+      <a
+        href="/addons/"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold transition-all"
+        style="background: transparent; color: var(--color-fg); border: 1px solid var(--color-border);"
+      >
+        Browse Addon Registry
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </a>
+    </div>
+  </div>
+</section>

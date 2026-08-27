@@ -1,0 +1,13 @@
+{
+  "displayName": "Emoji Selector",
+  "description": "Emoji picker with categories and favorites. Tap to launch, browse, and copy any unicode emoji to the clipboard.",
+  "category": "builtin",
+  "tags": ["emoji", "clipboard", "productivity"],
+  "icon": "smile",
+  "buttonTypes": [
+    "emoji-selector:launcher",
+    "emoji-selector:category",
+    "emoji-selector:emoji"
+  ],
+  "order": 5
+}

@@ -1,0 +1,38 @@
+---
+/**
+ * ThemesSection — small theme gallery (3 cards) linking to /themes/.
+ */
+import SectionHeader from "../SectionHeader.astro"
+import ThemeCard from "../ThemeCard.astro"
+import { getCollection } from "astro:content"
+
+const themes = (await getCollection("themes"))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3)
+---
+
+<section id="themes" class="px-6 py-24" style="background: var(--color-surface);">
+  <div class="max-w-6xl mx-auto">
+    <SectionHeader
+      eyebrow="Customization"
+      title="Themes that fit you"
+      body="Built-in themes for any environment. Create your own with color and typography variables."
+      accent="violet"
+    />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {themes.map((t) => <ThemeCard id={t.id} {...t.data} />)}
+    </div>
+
+    <div class="text-center mt-12">
+      <a
+        href="/themes/"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold transition-all"
+        style="background: transparent; color: var(--color-fg); border: 1px solid var(--color-border);"
+      >
+        Browse All Themes
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </a>
+    </div>
+  </div>
+</section>

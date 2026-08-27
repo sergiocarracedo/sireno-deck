@@ -1,0 +1,67 @@
+---
+/**
+ * ConfigSection — YAML config showcase + feature bullets.
+ */
+import SectionHeader from "../SectionHeader.astro"
+import CodeBlock from "../CodeBlock.astro"
+
+const yaml = `theme: default
+
+decks:
+  main:
+    name: Main
+    buttons:
+      - position: 0
+        type: core:action
+        config:
+          command: "xdg-open https://github.com"
+
+      - position: 2
+        type: date-time:time
+        config:
+          variant: big
+
+      - position: 4
+        type: weather:weather
+        config:
+          location:
+            latitude: 42.2304
+            longitude: -8.7256
+            name: Vigo`
+
+const features = [
+  { icon: "check-circle", title: "Strict typing", body: "Full schema validation prevents runtime errors before your deck ever boots." },
+  { icon: "refresh-cw", title: "Hot reload", body: "YAML changes reload automatically via SIGUSR1 — no restart loop." },
+  { icon: "package", title: "Addons as types", body: "Simple addon:type syntax for any button — your own, third-party, or core." },
+]
+---
+
+<section id="config" class="px-6 py-24">
+  <div class="max-w-6xl mx-auto">
+    <SectionHeader
+      eyebrow="Configuration"
+      title="Simple, straightforward YAML"
+      body="No JavaScript required for basic usage. Define decks, buttons, and actions in a human-readable YAML file."
+    />
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <CodeBlock filename="config.yml" language="yaml" code={yaml} />
+
+      <div class="flex flex-col gap-5">
+        {
+          features.map((f) => (
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 mt-1">
+                <i data-lucide={f.icon} class="w-4 h-4" style="color: var(--color-accent);"></i>
+              </div>
+              <div>
+                <strong class="block text-fg mb-1">{f.title}</strong>
+                <p class="text-sm" style="color: var(--color-muted);">{f.body}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

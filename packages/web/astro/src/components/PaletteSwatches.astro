@@ -1,0 +1,44 @@
+---
+/**
+ * PaletteSwatches — render a theme's palette as colored chips.
+ */
+interface Swatch {
+  label: string
+  value: string
+}
+
+interface Props {
+  palette: {
+    background: string
+    frame: string
+    foreground: string
+    primary: string
+    accent: string
+  }
+}
+
+const { palette } = Astro.props
+const swatches: Swatch[] = [
+  { label: "background", value: palette.background },
+  { label: "frame", value: palette.frame },
+  { label: "foreground", value: palette.foreground },
+  { label: "primary", value: palette.primary },
+  { label: "accent", value: palette.accent },
+]
+---
+
+<div class="flex flex-wrap gap-2">
+  {
+    swatches.map((s) => (
+      <div class="flex items-center gap-2 rounded-md px-3 py-1.5" style="background: var(--color-surface-raised); border: 1px solid var(--color-border);">
+        <span
+          class="w-3.5 h-3.5 rounded-sm"
+          style={`background: ${s.value}; border: 1px solid rgba(255, 255, 255, 0.1);`}
+          aria-hidden="true"
+        />
+        <span class="text-xs font-mono" style="color: var(--color-muted);">{s.label}</span>
+        <span class="text-xs font-mono text-fg">{s.value}</span>
+      </div>
+    ))
+  }
+</div>

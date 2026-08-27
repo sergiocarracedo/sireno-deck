@@ -1,0 +1,16 @@
+{
+  "displayName": "Core",
+  "description": "Core deck navigation: action, change-deck, page-nav, toggle, media-sample, lock. The runtime backbone — every config.yml uses these.",
+  "category": "builtin",
+  "tags": ["navigation", "core", "required"],
+  "icon": "anchor",
+  "buttonTypes": [
+    "core:action",
+    "core:change-deck",
+    "core:page-nav",
+    "core:toggle",
+    "core:media-sample",
+    "core:lock"
+  ],
+  "order": 1
+}

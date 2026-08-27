@@ -1,0 +1,15 @@
+{
+  "displayName": "Light",
+  "description": "Clean minimal light theme. Perfect for bright environments and daytime use.",
+  "category": "builtin",
+  "tags": ["light", "minimal"],
+  "palette": {
+    "background": "#ffffff",
+    "frame": "#e5e7eb",
+    "foreground": "#1f2937",
+    "primary": "#3b82f6",
+    "accent": "#1d4ed8"
+  },
+  "preview": "/captures/13-light.png",
+  "order": 2
+}

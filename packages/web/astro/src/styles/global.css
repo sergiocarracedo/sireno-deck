@@ -1,29 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 /*
- * Design tokens are read from packages/cli/src/themes/default/sirenodeck.json
- * by packages/web/scripts/sync-tokens.mjs. They are mirrored as Tailwind 4
- * @theme tokens here so utility classes (bg-sireno-background, etc.) work.
- * When the source JSON changes, re-run `pnpm sync-tokens` and update the
- * values below to match.
+ * Sireno Deck — marketing site.
+ * Visual direction: OpenDesign HTML (Instrument Serif display, Lucide icons,
+ * dark `#0a0a0f` palette with cyan/violet accent).
+ *
+ * The in-app default theme (slate) is intentionally separate; this file is
+ * the marketing site only.
  */
 @theme {
-  --color-sireno-background: #2e3540;
-  --color-sireno-frame: #53738b;
-  --color-sireno-foreground: #eef2f7;
-  --color-sireno-foreground-contrast: #333333;
-  --color-sireno-primary: #7dd3fc;
-  --color-sireno-accent: #c3f5ff;
-  --color-sireno-success: #34d399;
-  --color-sireno-danger: #ffb4ab;
-  --color-sireno-tint-blue: #7dd3fc;
-  --color-sireno-tint-green: #34d399;
-  --color-sireno-tint-purple: #c4b5fd;
+  --color-bg: #0a0a0f;
+  --color-surface: #14141a;
+  --color-surface-raised: #1c1c24;
+  --color-fg: #e4e4e7;
+  --color-muted: #71717a;
+  --color-border: #27272a;
+  --color-accent: #22d3ee;
+  --color-accent-2: #a78bfa;
+  --color-accent-glow: rgba(34, 211, 238, 0.15);
+
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --font-mono: "Source Code Pro", ui-monospace, monospace;
 }
 
 html {
-  background: var(--color-sireno-background);
-  color: var(--color-sireno-foreground);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  line-height: 1.6;
+}
+
+/* Lucide icons inherit currentColor and snap to 1em. */
+[data-lucide] {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.125em;
+}
+
+/* Hero shader backdrop — animated radial noise fallback. */
+@keyframes hero-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-2%, 1%, 0) scale(1.05);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

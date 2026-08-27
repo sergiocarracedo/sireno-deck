@@ -1,0 +1,54 @@
+---
+/**
+ * ShaderBackdrop — animated SVG fractal-noise + radial gradient backdrop.
+ *
+ * Pure SVG + CSS. No WebGL, no React island. Honors prefers-reduced-motion.
+ * Designed for the hero section: deep `#0a0a0f` base with cyan/violet glow
+ * drifting from above and below, plus grain for texture.
+ */
+interface Props {
+  variant?: "hero" | "page"
+}
+
+const { variant = "hero" } = Astro.props
+---
+
+<div
+  aria-hidden="true"
+  class="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
+  style={`background: var(--color-bg);`}
+>
+  {
+    variant === "hero" ? (
+      <>
+        {/* Drifting glows */}
+        <div
+          class="absolute left-1/2 -translate-x-1/2 rounded-full blur-3xl"
+          style={`top: -10%; width: 1100px; height: 1100px; background: radial-gradient(circle, var(--color-accent-glow) 0%, transparent 60%); animation: hero-drift 18s ease-in-out infinite;`}
+        />
+        <div
+          class="absolute right-0 bottom-0 rounded-full blur-3xl"
+          style={`width: 700px; height: 700px; background: radial-gradient(circle, rgba(167, 139, 250, 0.18) 0%, transparent 60%); animation: hero-drift 24s ease-in-out infinite reverse;`}
+        />
+        {/* Grain */}
+        <svg class="absolute inset-0 w-full h-full opacity-[0.06] mix-blend-screen">
+          <filter id="hero-noise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#hero-noise)" />
+        </svg>
+        {/* Bottom vignette to keep copy readable */}
+        <div
+          class="absolute inset-0"
+          style="background: linear-gradient(180deg, transparent 60%, var(--color-bg) 100%);"
+        />
+      </>
+    ) : (
+      <div
+        class="absolute inset-0"
+        style="background: radial-gradient(ellipse 600px 300px at 50% 0%, var(--color-accent-glow), transparent 70%);"
+      />
+    )
+  }
+</div>

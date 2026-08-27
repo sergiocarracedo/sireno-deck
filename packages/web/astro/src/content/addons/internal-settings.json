@@ -1,0 +1,13 @@
+{
+  "displayName": "Internal Settings",
+  "description": "Internal deck used by the runtime to expose brightness and app info. Not intended to be configured directly.",
+  "category": "builtin",
+  "tags": ["settings", "brightness", "internal"],
+  "icon": "settings",
+  "buttonTypes": [
+    "internal-settings:brightness-down",
+    "internal-settings:brightness-up",
+    "internal-settings:app-info"
+  ],
+  "order": 2
+}

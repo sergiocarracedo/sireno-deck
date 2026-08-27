@@ -3,6 +3,10 @@ dist/
 # generated types
 .astro/
 
+# docs synced from packages/cli/docs by scripts/sync-cli-docs.mjs
+# (single source of truth: packages/cli/docs/*)
+src/content/docs/
+
 # dependencies
 node_modules/
 

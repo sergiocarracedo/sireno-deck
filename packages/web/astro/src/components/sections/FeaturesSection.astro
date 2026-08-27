@@ -1,0 +1,44 @@
+---
+/**
+ * FeaturesSection — three flagship cards: Overlay Decks, Addons & Themes,
+ * Coding Agents.
+ */
+import SectionHeader from "../SectionHeader.astro"
+import FeatureCard from "../FeatureCard.astro"
+
+const features = [
+  {
+    icon: "layers",
+    title: "Overlay Decks",
+    body: "Contextual decks that appear automatically when you switch applications. Your main deck stays intact while an app-specific overlay takes over temporarily. Overlays maintain their own navigation and return to the previous deck when you close the app.",
+    screenshot: "/captures/10-app-overlays.png",
+  },
+  {
+    icon: "puzzle",
+    title: "Addons & Themes",
+    body: "Extensible plugin system with a well-defined API. Share addons via npm. Custom themes via YAML with color, typography, and more. Twelve addons included or distributed across the workspace.",
+    screenshot: "/captures/13-light.png",
+  },
+  {
+    icon: "bot",
+    title: "Coding Agents",
+    body: "Specialized addon for AI coding agent integration. Live status of OpenCode + Claude Code sessions on the deck — see active agents, send prompts, manage contexts.",
+    screenshot: "/captures/09-app-shortcuts.png",
+    accent: "violet" as const,
+  },
+]
+---
+
+<section id="features" class="px-6 py-24">
+  <div class="max-w-6xl mx-auto">
+    <SectionHeader
+      eyebrow="Features"
+      title="Power up your workflow"
+      body="Three execution surfaces from the same codebase: browser emulator, real hardware, and Vite-powered development SPA."
+    />
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {features.map((f) => <FeatureCard {...f} />)}
+    </div>
+  </div>
+</section>

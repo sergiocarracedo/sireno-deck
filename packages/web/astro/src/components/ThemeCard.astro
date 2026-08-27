@@ -1,0 +1,86 @@
+---
+/**
+ * ThemeCard — single theme entry, used in /themes/ and the homepage.
+ */
+interface Props {
+  id: string
+  displayName: string
+  description: string
+  tags: string[]
+  category: string
+  palette: {
+    background: string
+    frame: string
+    foreground: string
+    primary: string
+    accent: string
+  }
+  preview?: string
+}
+
+const { id, displayName, description, tags, category, palette, preview } = Astro.props
+const isBuiltIn = category === "builtin"
+---
+
+<a
+  href={`/themes/${id}/`}
+  class="group block rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+  style="background: var(--color-surface); border: 1px solid var(--color-border);"
+>
+  {preview ? (
+    <div class="aspect-[16/10] overflow-hidden">
+      <img src={preview} alt="" class="w-full h-full object-cover" loading="lazy" />
+    </div>
+  ) : (
+    <div class="aspect-[16/10] flex items-center justify-center" style={`background: ${palette.background};`}>
+      <div
+        class="w-32 h-12 rounded"
+        style={`background: ${palette.primary}; box-shadow: 0 0 24px ${palette.primary}66;`}
+      />
+    </div>
+  )}
+
+  <div class="p-5">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-display text-base font-semibold text-fg">{displayName}</h3>
+      <span
+        class="text-[0.6875rem] font-mono px-2 py-0.5 rounded"
+        style={
+          isBuiltIn
+            ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
+            : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"
+        }
+      >
+        {isBuiltIn ? "built-in" : "third-party"}
+      </span>
+    </div>
+    <p class="text-sm leading-relaxed mb-3" style="color: var(--color-muted);">{description}</p>
+
+    <div class="flex items-center gap-1.5 mb-3">
+      {[
+        palette.background,
+        palette.frame,
+        palette.foreground,
+        palette.primary,
+        palette.accent,
+      ].map((c) => (
+        <span
+          class="w-5 h-5 rounded-sm"
+          style={`background: ${c}; border: 1px solid rgba(255, 255, 255, 0.1);`}
+          aria-hidden="true"
+        />
+      ))}
+    </div>
+
+    <div class="flex items-center justify-between pt-3" style="border-top: 1px solid var(--color-border);">
+      <div class="flex flex-wrap gap-1.5">
+        {tags.slice(0, 3).map((t) => (
+          <span class="text-[0.6875rem] font-mono px-1.5 py-0.5 rounded" style="background: var(--color-surface-raised); color: var(--color-muted);">
+            {t}
+          </span>
+        ))}
+      </div>
+      <i data-lucide="arrow-right" class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" style="color: var(--color-accent);"></i>
+    </div>
+  </div>
+</a>

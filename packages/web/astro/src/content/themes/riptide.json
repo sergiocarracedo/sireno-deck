@@ -1,0 +1,16 @@
+{
+  "displayName": "Riptide",
+  "description": "Oceanic dark blue theme. Deep navy tones with teal highlights and a late-night surf-poster aesthetic.",
+  "category": "third-party",
+  "tags": ["dark", "blue", "neon"],
+  "palette": {
+    "background": "#0a0e1a",
+    "frame": "#00d4ff",
+    "foreground": "#fff89e",
+    "primary": "#f5ff00",
+    "accent": "#ff0099"
+  },
+  "preview": "/captures/14-riptide.png",
+  "repo": "https://github.com/sireno-deck/sireno-deck/tree/main/packages/themes/riptide",
+  "order": 10
+}

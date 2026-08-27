@@ -1,0 +1,176 @@
+---
+/**
+ * /addons/ — registry page.
+ *
+ * Two sections: Built-in Addons + Community Addons. Client-side filter
+ * via data attributes (no JS framework; plain script in the layout).
+ */
+import Layout from "../../layouts/Base.astro"
+import AddonCard from "../../components/AddonCard.astro"
+import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
+import { getCollection } from "astro:content"
+
+const addons = await getCollection("addons")
+const builtIns = addons.filter((a) => a.data.category === "builtin").sort((a, b) => a.data.order - b.data.order)
+const community = addons.filter((a) => a.data.category === "community").sort((a, b) => a.data.order - b.data.order)
+---
+
+<Layout title="Addon Registry — Sireno Deck" description="Browse and discover addons for Sireno Deck.">
+  <section class="relative px-6 pt-32 pb-12 text-center overflow-hidden">
+    <ShaderBackdrop variant="page" />
+    <div class="relative">
+      <h1 class="font-display text-4xl sm:text-6xl font-bold mb-4">
+        Addon <span style="color: var(--color-accent);">Registry</span>
+      </h1>
+      <p class="text-lg max-w-xl mx-auto" style="color: var(--color-muted);">
+        Discover and install powerful addons to extend your Sireno Deck experience.
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 pb-24">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-10">
+      <div class="relative flex-1 max-w-md">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style="color: var(--color-muted);"></i>
+        <input
+          id="addon-search"
+          type="text"
+          placeholder="Search addons..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-md text-sm"
+          style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-fg);"
+        />
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {[
+          { id: "all", label: "All", icon: "grid-3x3" },
+          { id: "builtin", label: "Built-in", icon: "package-check" },
+          { id: "community", label: "Community", icon: "users" },
+        ].map((f, i) => (
+          <button
+            type="button"
+            data-filter={f.id}
+            class={`filter-btn flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-colors ${i === 0 ? "active" : ""}`}
+            style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-muted);"
+          >
+            <i data-lucide={f.icon} class="w-3.5 h-3.5"></i>
+            {f.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <section class="mb-16">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="font-display text-2xl font-semibold">Built-in Addons</h2>
+        <a
+          href="https://github.com/sireno-deck/sireno-deck/tree/main/packages/cli/src/builtin-addons"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs inline-flex items-center gap-1"
+          style="color: var(--color-accent);"
+        >
+          View source
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {builtIns.map((a) => (
+          <div data-addon-card data-category={a.data.category} data-name={a.data.displayName.toLowerCase()}>
+            <AddonCard id={a.id} />
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="font-display text-2xl font-semibold">Community Addons</h2>
+        <a
+          href="https://github.com/sireno-deck/sireno-deck/discussions/categories/addons"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs inline-flex items-center gap-1"
+          style="color: var(--color-accent);"
+        >
+          Submit an addon
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+
+      {community.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {community.map((a) => (
+            <div data-addon-card data-category={a.data.category} data-name={a.data.displayName.toLowerCase()}>
+              <AddonCard id={a.id} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16 rounded-xl" style="background: var(--color-surface); border: 1px dashed var(--color-border);">
+          <i data-lucide="package-open" class="w-12 h-12 mx-auto mb-4 opacity-50" style="color: var(--color-muted);"></i>
+          <h3 class="font-display text-xl mb-2 text-fg">No community addons yet</h3>
+          <p class="text-sm mb-6" style="color: var(--color-muted);">Be the first to share your addon with the community!</p>
+          <a
+            href="/developer/addon-authoring/"
+            class="inline-block px-5 py-2.5 rounded-lg text-sm font-semibold"
+            style="background: var(--color-accent); color: var(--color-bg);"
+          >
+            Learn how to build addons
+          </a>
+        </div>
+      )}
+    </section>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const search = document.getElementById("addon-search")
+      const filterBtns = document.querySelectorAll(".filter-btn")
+      const cards = document.querySelectorAll("[data-addon-card]")
+      let currentFilter = "all"
+      let query = ""
+
+      const apply = () => {
+        cards.forEach((card) => {
+          const name = (card.getAttribute("data-name") || "").toLowerCase()
+          const category = card.getAttribute("data-category") || ""
+          const matchesSearch = !query || name.includes(query)
+          const matchesFilter = currentFilter === "all" || category === currentFilter
+          ;(card).style.display = matchesSearch && matchesFilter ? "" : "none"
+        })
+      }
+
+      filterBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          filterBtns.forEach((b) => {
+            b.classList.remove("active")
+            b.style.background = "var(--color-surface)"
+            b.style.color = "var(--color-muted)"
+            b.style.borderColor = "var(--color-border)"
+          })
+          btn.classList.add("active")
+          btn.style.background = "var(--color-surface-raised)"
+          btn.style.color = "var(--color-fg)"
+          btn.style.borderColor = "var(--color-accent)"
+          currentFilter = btn.getAttribute("data-filter") || "all"
+          apply()
+        })
+      })
+
+      if (search) {
+        search.addEventListener("input", (e) => {
+          query = (e.target.value || "").toLowerCase()
+          apply()
+        })
+      }
+
+      // Set initial active state for "all"
+      const allBtn = document.querySelector('.filter-btn[data-filter="all"]')
+      if (allBtn) {
+        allBtn.style.background = "var(--color-surface-raised)"
+        allBtn.style.color = "var(--color-fg)"
+        allBtn.style.borderColor = "var(--color-accent)"
+      }
+    })()
+  </script>
+</Layout>

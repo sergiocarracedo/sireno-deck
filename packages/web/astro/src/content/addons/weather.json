@@ -1,0 +1,10 @@
+{
+  "displayName": "Weather",
+  "description": "Real-time weather with temperature, conditions, and forecast. Configure latitude / longitude, get automatic geocoding by name.",
+  "category": "builtin",
+  "tags": ["weather", "productivity"],
+  "icon": "cloud-sun",
+  "buttonTypes": ["weather:weather"],
+  "screenshot": "/captures/06-weather.png",
+  "order": 9
+}

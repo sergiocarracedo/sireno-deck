@@ -1,86 +1,62 @@
 ---
 /**
- * Hero — top section of the landing page.
+ * Hero — top of the landing page.
  *
- * Background: subtle radial gradient over the Sireno background.
- * Foreground: wordmark, tagline, and two CTAs.
- * Video: HeroLoop.mp4 loops silently behind the text (Phase D asset).
+ * ShaderBackdrop lives in the section background. Foreground: tagline,
+ * value-prop paragraph, and two CTAs. Below the CTA pair sits the looping
+ * demo video frame.
  */
+import ShaderBackdrop from "../ShaderBackdrop.astro"
 ---
 
-<section
-  class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
->
-  <!-- Gradient backdrop -->
-  <div
-    class="absolute inset-0 pointer-events-none"
-    style="background: radial-gradient(ellipse 80% 60% at 50% 40%, #1a2a3a 0%, #2e3540 60%, #2e3540 100%);"
-    aria-hidden="true"
-  >
-  </div>
+<section class="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16">
+  <ShaderBackdrop variant="hero" />
 
-  <!-- Phase D: HeroLoop.mp4 renders here, replacing the gradient -->
-  <div
-    class="absolute inset-0 opacity-30 pointer-events-none"
-    aria-hidden="true"
-  >
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-sireno-background/60 to-sireno-background">
-    </div>
-  </div>
-
-  <!-- Content -->
-  <div class="relative z-10 text-center px-6 py-24 max-w-5xl mx-auto">
-    <p
-      class="text-sireno-accent text-xs font-semibold tracking-[0.25em] uppercase mb-6"
-    >
-      Sireno Deck
+  <div class="relative z-10 text-center max-w-4xl mx-auto">
+    <p class="font-mono text-xs font-medium uppercase tracking-[0.25em] mb-6" style="color: var(--color-accent);">
+      Your Stream Deck, your rules
     </p>
 
-    <h1
-      class="text-5xl sm:text-7xl font-semibold tracking-tight leading-[1.05]"
-      style="color: #eef2f7;"
-    >
-      Buttons belong<br />in your dotfiles.
+    <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6">
+      Declarative control for<br />
+      <span style="background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        your Stream Deck
+      </span>
     </h1>
 
-    <p
-      class="mt-8 max-w-2xl mx-auto text-xl leading-relaxed"
-      style="color: #c8d3e5;"
-    >
-      Declarative control for your Elgato Stream Deck. Theme it. Theme it
-      again. Reshape the deck based on what's focused.
+    <p class="text-lg sm:text-xl max-w-2xl mx-auto mb-10" style="color: var(--color-muted);">
+      A Node.js CLI that drives your Elgato Stream Deck from a single YAML config.
+      Emulator, real hardware, and dev SPA — all from the same React interface.
     </p>
 
-    <div class="mt-12 flex flex-wrap items-center justify-center gap-4">
+    <div class="flex flex-wrap items-center justify-center gap-3 mb-16">
       <a
-        href="/docs/install/"
-        class="rounded-full px-8 py-3.5 text-sm font-semibold transition-all duration-200 cursor-pointer"
-        style="background: #eef2f7; color: #2e3540;"
-        onmouseover="this.style.background='#c3f5ff'; this.style.color='#2e3540';"
-        onmouseout="this.style.background='#eef2f7'; this.style.color='#2e3540';"
+        href="#install"
+        class="px-7 py-3 rounded-lg text-sm font-semibold transition-all hover:-translate-y-0.5"
+        style="background: var(--color-accent); color: var(--color-bg);"
       >
-        Install
+        Get Started
       </a>
       <a
-        href="/docs/"
-        class="rounded-full px-8 py-3.5 text-sm font-semibold transition-all duration-200 cursor-pointer"
-        style="background: transparent; color: #eef2f7; border: 1.5px solid #53738b;"
-        onmouseover="this.style.borderColor='#7dd3fc'; this.style.color='#7dd3fc';"
-        onmouseout="this.style.borderColor='#53738b'; this.style.color='#eef2f7';"
+        href="https://github.com/sireno-deck/sireno-deck"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="px-7 py-3 rounded-lg text-sm font-semibold transition-all"
+        style="background: transparent; color: var(--color-fg); border: 1px solid var(--color-border);"
       >
-        Read the docs
+        View on GitHub
+        <i data-lucide="arrow-right" class="w-4 h-4 inline-block -mt-0.5 ml-1"></i>
       </a>
     </div>
 
-    <!-- Platform badges -->
-    <div class="mt-16 flex items-center justify-center gap-6 text-xs" style="color: #7a8fa8;">
-      <span>Linux</span>
-      <span aria-hidden="true">·</span>
-      <span>macOS</span>
-      <span aria-hidden="true">·</span>
-      <span>Windows</span>
-      <span aria-hidden="true">·</span>
-      <span>MIT License</span>
+    <div
+      class="mx-auto max-w-3xl rounded-xl overflow-hidden"
+      style="background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-accent-glow);"
+    >
+      <video autoplay loop muted playsinline preload="metadata" class="w-full block">
+        <source src="/sirenodeck-demo.webm" type="video/webm" />
+        Your browser does not support video playback.
+      </video>
     </div>
   </div>
 </section>

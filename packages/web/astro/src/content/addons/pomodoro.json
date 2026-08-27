@@ -1,0 +1,12 @@
+{
+  "displayName": "Pomodoro",
+  "description": "Pomodoro timer with arc progress, blink on completion, OS notification, and a bundled bell sound.",
+  "category": "community",
+  "tags": ["productivity", "timer", "focus"],
+  "icon": "timer",
+  "buttonTypes": [],
+  "npm": "@sirenodeck/addon-pomodoro",
+  "repo": "https://github.com/sireno-deck/sireno-deck/tree/main/packages/addons/pomodoro",
+  "screenshot": "/captures/11-pomodoro.png",
+  "order": 21
+}

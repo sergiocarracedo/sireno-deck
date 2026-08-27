@@ -1,0 +1,22 @@
+---
+/**
+ * Icon — Lucide icon wrapper.
+ *
+ * Usage: <Icon name="layers" class="w-5 h-5" />
+ * Renders `<i data-lucide="layers" class="..."></i>`. The `createIcons()`
+ * call from Layout.astro walks the DOM and swaps it for the SVG.
+ */
+interface Props {
+  name: string
+  class?: string
+  "stroke-width"?: string | number
+}
+
+const { name, class: cls = "w-4 h-4", "stroke-width": strokeWidth } = Astro.props
+---
+
+<i
+  data-lucide={name}
+  class={cls}
+  style={strokeWidth ? `stroke-width: ${strokeWidth}` : undefined}
+></i>

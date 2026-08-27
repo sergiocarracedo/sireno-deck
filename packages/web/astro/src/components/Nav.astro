@@ -1,0 +1,56 @@
+---
+/**
+ * Nav — fixed top nav. Logo left, primary links center, GitHub CTA right.
+ * Active link styled with `data-active` set by the page consumer via Astro.url.
+ */
+
+const path = Astro.url.pathname
+const links = [
+  { href: "/#features", label: "Features" },
+  { href: "/#config", label: "Config" },
+  { href: "/themes/", label: "Themes" },
+  { href: "/addons/", label: "Addons" },
+  { href: "/user/installation/", label: "Docs" },
+]
+---
+
+<nav
+  class="fixed top-0 left-0 right-0 z-50 px-8 py-4 backdrop-blur-md"
+  style="background: rgba(10, 10, 15, 0.8); border-bottom: 1px solid var(--color-border);"
+>
+  <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 font-display font-bold text-lg text-fg no-underline">
+      <img src="/logo-icon.png" alt="" class="h-9 w-9" />
+      Sireno Deck
+    </a>
+
+    <ul class="hidden md:flex gap-8 list-none">
+      {
+        links.map((l) => {
+          const active = path.startsWith(l.href.split("#")[0]!) && l.href !== "/#features" && l.href !== "/#config"
+          return (
+            <li>
+              <a
+                href={l.href}
+                class="text-sm font-medium transition-colors"
+                style={active ? "color: var(--color-fg);" : "color: var(--color-muted);"}
+              >
+                {l.label}
+              </a>
+            </li>
+          )
+        })
+      }
+    </ul>
+
+    <a
+      href="https://github.com/sireno-deck/sireno-deck"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-sm font-semibold px-5 py-2 rounded-md transition-all hover:-translate-y-px"
+      style="background: var(--color-accent); color: var(--color-bg);"
+    >
+      GitHub
+    </a>
+  </div>
+</nav>

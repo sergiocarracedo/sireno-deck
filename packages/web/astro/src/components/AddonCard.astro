@@ -1,0 +1,69 @@
+---
+/**
+ * AddonCard — single addon entry, used in /addons/ and the homepage.
+ *
+ * Click navigates to /addons/[id]/.
+ */
+import { getEntry } from "astro:content"
+import Icon from "./Icon.astro"
+
+interface Props {
+  id: string
+}
+
+const { id } = Astro.props
+const entry = await getEntry("addons", id)
+if (!entry) throw new Error(`addon ${id} not found`)
+
+const { displayName, description, category, tags, icon, screenshot } = entry.data
+const isBuiltIn = category === "builtin"
+---
+
+<a
+  href={`/addons/${id}/`}
+  class="group flex flex-col rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
+  style="background: var(--color-surface); border: 1px solid var(--color-border);"
+>
+  <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-3">
+      <div
+        class="w-10 h-10 rounded-lg flex items-center justify-center"
+        style="background: var(--color-surface-raised);"
+      >
+        <i data-lucide={icon} class="w-5 h-5" style="color: var(--color-accent);"></i>
+      </div>
+      <h3 class="font-display text-base font-semibold text-fg">{displayName}</h3>
+    </div>
+    <span
+      class="text-[0.6875rem] font-mono px-2 py-0.5 rounded"
+      style={
+        isBuiltIn
+          ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
+          : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"
+      }
+    >
+      {isBuiltIn ? "built-in" : "community"}
+    </span>
+  </div>
+
+  <p class="text-sm leading-relaxed mb-4 flex-1" style="color: var(--color-muted);">{description}</p>
+
+  {screenshot && (
+    <div class="rounded-md overflow-hidden mb-4" style="border: 1px solid var(--color-border); aspect-ratio: 16 / 10;">
+      <img src={screenshot} alt="" class="w-full h-full object-cover" loading="lazy" />
+    </div>
+  )}
+
+  <div class="flex items-center justify-between pt-3" style="border-top: 1px solid var(--color-border);">
+    <div class="flex flex-wrap gap-1.5">
+      {tags.slice(0, 3).map((t) => (
+        <span class="text-[0.6875rem] font-mono px-1.5 py-0.5 rounded" style="background: var(--color-surface-raised); color: var(--color-muted);">
+          {t}
+        </span>
+      ))}
+    </div>
+    <span class="text-fg opacity-0 group-hover:opacity-100 transition-opacity" style="color: var(--color-accent);">
+      <Icon name="arrow-right" class="w-4 h-4" />
+    </span>
+  </div>
+</a>

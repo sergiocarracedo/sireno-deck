@@ -1,0 +1,9 @@
+{
+  "displayName": "Session",
+  "description": "Show lock / session state. Useful for showing whether the desktop session is active or locked.",
+  "category": "builtin",
+  "tags": ["session", "lock", "info"],
+  "icon": "lock",
+  "buttonTypes": ["session:info"],
+  "order": 3
+}

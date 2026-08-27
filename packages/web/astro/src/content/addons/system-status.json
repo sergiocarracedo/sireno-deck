@@ -1,0 +1,13 @@
+{
+  "displayName": "System Status",
+  "description": "CPU, RAM, swap, disk, network, battery, and temperature metrics with bars, KPIs, and chart visualizations.",
+  "category": "builtin",
+  "tags": ["system", "metrics", "monitoring"],
+  "icon": "activity",
+  "buttonTypes": [
+    "system-status:bars",
+    "system-status:kpis",
+    "system-status:chart"
+  ],
+  "order": 7
+}

@@ -1,0 +1,15 @@
+{
+  "displayName": "Media",
+  "description": "Media playback controls. Play, pause, skip, and volume control for any media application.",
+  "category": "builtin",
+  "tags": ["system", "media", "volume"],
+  "icon": "music",
+  "buttonTypes": [
+    "media:player",
+    "media:volume-up",
+    "media:volume-down",
+    "media:mute"
+  ],
+  "screenshot": "/captures/02-media.png",
+  "order": 6
+}

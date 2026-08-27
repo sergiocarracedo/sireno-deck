@@ -1,0 +1,143 @@
+---
+/**
+ * /addons/[slug]/ — addon detail page.
+ *
+ * Renders the meta entry as a header card, plus the button-types and
+ * links out to source / npm.
+ */
+import Layout from "../../layouts/Base.astro"
+import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
+import Icon from "../../components/Icon.astro"
+import { getCollection, getEntry } from "astro:content"
+
+export async function getStaticPaths() {
+  const addons = await getCollection("addons")
+  return addons.map((a) => ({ params: { slug: a.id }, props: { id: a.id } }))
+}
+
+const { id } = Astro.props
+const entry = await getEntry("addons", id)
+if (!entry) throw new Error(`addon ${id} not found`)
+const a = entry.data
+const isBuiltIn = a.category === "builtin"
+---
+
+<Layout
+  title={`${a.displayName} — Sireno Deck Addon`}
+  description={a.description}
+>
+  <section class="relative px-6 pt-32 pb-16 overflow-hidden">
+    <ShaderBackdrop variant="page" />
+    <div class="relative max-w-5xl mx-auto">
+      <a
+        href="/addons/"
+        class="inline-flex items-center gap-1 text-xs mb-6"
+        style="color: var(--color-muted);"
+      >
+        <Icon name="arrow-left" class="w-3.5 h-3.5" />
+        Back to registry
+      </a>
+
+      <div class="flex items-start gap-5 mb-6">
+        <div
+          class="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0"
+          style="background: var(--color-surface); border: 1px solid var(--color-border);"
+        >
+          <i data-lucide={a.icon} class="w-8 h-8" style="color: var(--color-accent);"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <h1 class="font-display text-4xl font-bold text-fg">{a.displayName}</h1>
+            <span
+              class="text-xs font-mono px-2 py-0.5 rounded"
+              style={
+                isBuiltIn
+                  ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
+                  : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"
+              }
+            >
+              {isBuiltIn ? "built-in" : a.category}
+            </span>
+          </div>
+          <p class="text-lg max-w-2xl" style="color: var(--color-muted);">{a.description}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 mb-10">
+        {
+          a.tags.map((t) => (
+            <span class="text-xs font-mono px-2 py-1 rounded" style="background: var(--color-surface-raised); color: var(--color-muted);">
+              {t}
+            </span>
+          ))
+        }
+      </div>
+
+      {a.screenshot && (
+        <div class="rounded-xl overflow-hidden mb-12" style="border: 1px solid var(--color-border);">
+          <img src={a.screenshot} alt={`${a.displayName} preview`} class="w-full block" />
+        </div>
+      )}
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+          <h2 class="font-display text-lg font-semibold mb-4">Button types</h2>
+          {a.buttonTypes.length > 0 ? (
+            <ul class="space-y-2">
+              {a.buttonTypes.map((bt) => (
+                <li>
+                  <code class="text-sm font-mono px-3 py-1.5 rounded inline-block" style="background: var(--color-bg); color: var(--color-accent); border: 1px solid var(--color-border);">
+                    {bt}
+                  </code>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="text-sm" style="color: var(--color-muted);">
+              This addon publishes its own deck and button set — see the package README for details.
+            </p>
+          )}
+        </div>
+
+        <div class="rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+          <h2 class="font-display text-lg font-semibold mb-4">Links</h2>
+          <ul class="space-y-3 text-sm">
+            {a.npm && (
+              <li>
+                <a
+                  href={`https://www.npmjs.com/package/${a.npm}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 transition-colors hover:text-fg"
+                  style="color: var(--color-muted);"
+                >
+                  <i data-lucide="package" class="w-4 h-4"></i>
+                  <code class="font-mono">{a.npm}</code>
+                </a>
+              </li>
+            )}
+            {a.repo && (
+              <li>
+                <a
+                  href={a.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 transition-colors hover:text-fg"
+                  style="color: var(--color-muted);"
+                >
+                  <i data-lucide="github" class="w-4 h-4"></i>
+                  Source on GitHub
+                </a>
+              </li>
+            )}
+            {!a.npm && !a.repo && (
+              <li class="text-sm" style="color: var(--color-muted);">
+                Ships with the Sireno Deck CLI.
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,66 @@
+---
+/**
+ * SectionHeader — eyebrow + title (display font) + body copy.
+ *
+ * Variants:
+ *   - "default"   — cyan accent eyebrow, plain title
+ *   - "violet"    — violet accent eyebrow
+ *   - "gradient"  — title with last word highlighted in cyan→violet gradient
+ */
+interface Props {
+  eyebrow?: string
+  title: string
+  highlight?: string
+  body?: string
+  accent?: "cyan" | "violet" | "gradient"
+  align?: "left" | "center"
+}
+
+const {
+  eyebrow,
+  title,
+  highlight,
+  body,
+  accent = "cyan",
+  align = "center",
+} = Astro.props
+
+const alignCls = align === "center" ? "text-center mx-auto" : "text-left"
+const eyebrowColor =
+  accent === "violet"
+    ? "var(--color-accent-2)"
+    : accent === "gradient"
+      ? "var(--color-accent)"
+      : "var(--color-accent)"
+
+const titleStyle =
+  accent === "gradient" && highlight
+    ? "background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+    : undefined
+---
+
+<header class={`max-w-3xl mb-12 px-2 ${alignCls}`}>
+  {
+    eyebrow && (
+      <p
+        class="text-xs font-semibold tracking-[0.25em] uppercase mb-4 font-mono"
+        style={`color: ${eyebrowColor};`}
+      >
+        {eyebrow}
+      </p>
+    )
+  }
+  <h2
+    class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-fg"
+  >
+    {highlight ? (
+      <>
+        {title.replace(highlight, "")}
+        <span style={titleStyle}>{highlight}</span>
+      </>
+    ) : (
+      title
+    )}
+  </h2>
+  {body && <p class="mt-5 text-lg leading-relaxed" style="color: var(--color-muted);">{body}</p>}
+</header>
