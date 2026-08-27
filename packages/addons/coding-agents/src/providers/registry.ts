@@ -40,7 +40,11 @@ export const loadProviders = async (
     !providers.has("opencode") ||
     !(await probeOpencodeHealth(opencodeUrl, signal))
   ) {
-    if (config.spawnOpencodeIfMissing && !signal.aborted) {
+    if (!(await opencodeInstalled())) {
+      // CLI not on $PATH — skip spawn entirely; requirement check
+      // surfaces "opencode not installed" distinctly.
+      providers.delete("opencode")
+    } else if (config.spawnOpencodeIfMissing && !signal.aborted) {
       try {
         const ensure =
           deps.ensureOpencodeServer ??
@@ -89,4 +93,14 @@ const probeOpencodeHealth = async (
   } catch {
     return false
   }
+}
+
+// ponytail: the opencode CLI must be on $PATH for `opencode serve` to be
+// spawnable. Surfaced via manifest checks so the banner distinguishes
+// "CLI not installed" from "installed but no server running".
+export const opencodeInstalled = async (): Promise<boolean> => {
+  const { execFile } = await import("node:child_process")
+  return new Promise<boolean>((resolve) => {
+    execFile("which", ["opencode"], (err) => resolve(err === null))
+  })
 }

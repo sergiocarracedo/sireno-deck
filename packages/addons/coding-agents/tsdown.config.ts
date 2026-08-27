@@ -12,7 +12,7 @@ export default defineConfig({
   // the consumer's host project. Bundling them would duplicate them
   // and risk version drift. The CLI loads the addon via dynamic
   // import() so this list must match what the host already has installed.
-  // chokidar, execa, and @opencode-ai/sdk are CLI-side tools the
+  // chokidar and execa are CLI-side tools the
   // addon's opencode-server spawner uses; the consumer's host project
   // has them as transitive deps of @sirenodeck/cli.
   // NOTE: `react/jsx-runtime` must be listed explicitly — rolldown treats
@@ -28,7 +28,6 @@ export default defineConfig({
     "zod",
     "chokidar",
     "execa",
-    "@opencode-ai/sdk",
   ],
   // ponytail: tsdown defaults to .mjs for ESM output (because platform=node
   // sets `fixedExtension = true`). The previous tsc build produced .js

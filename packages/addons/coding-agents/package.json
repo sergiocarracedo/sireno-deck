@@ -32,7 +32,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@opencode-ai/sdk": "^1.18.5",
     "chokidar": "^4.0.1",
     "execa": "^9.5.1",
     "zod": "^4.4.3"

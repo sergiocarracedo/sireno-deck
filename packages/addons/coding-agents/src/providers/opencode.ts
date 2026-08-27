@@ -1,6 +1,8 @@
-import { createOpencodeClient } from "@opencode-ai/sdk"
-
-// ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
+// ponytail: talks to the `opencode serve` HTTP API directly — no SDK
+// dependency. Endpoints (v1.x): GET /session, GET /session/status,
+// GET /global/events (SSE). Presence of a field named `attention` in
+// /session/status entries overrides the derived status to
+// waiting_for_human (opencode v1.1+).
 import type { Agent, AgentProvider, AgentStatus } from "../shared/state.js"
 import {
   opencodeEventToStatus,
@@ -15,67 +17,104 @@ interface OpencodeSessionLike {
   readonly time?: { readonly updated?: number; readonly created?: number }
 }
 
-export interface OpencodeClientLike {
-  session: {
-    list(): Promise<ReadonlyArray<OpencodeSessionLike>>
-    status(): Promise<Record<string, OpencodeSessionStatus>>
-  }
-  event: {
-    subscribe(): Promise<{
-      stream: AsyncIterable<OpencodeEvent | unknown>
-    }>
-  }
+type SessionStatusEntry = OpencodeSessionStatus & { attention?: boolean }
+
+export interface OpencodeHttpApi {
+  listSessions(signal: AbortSignal): Promise<ReadonlyArray<OpencodeSessionLike>>
+  sessionStatus(
+    signal: AbortSignal,
+  ): Promise<Record<string, SessionStatusEntry>>
+  eventStream(
+    signal: AbortSignal,
+  ): Promise<AsyncIterable<OpencodeEvent | unknown>>
 }
 
 export const OPENCODE_LOGO =
   "addon://coding-agents/assets/opencode-dark-square.svg"
+
+const requestJson = async <T>(
+  baseUrl: string,
+  path: string,
+  signal: AbortSignal,
+): Promise<T> => {
+  const res = await fetch(`${baseUrl}${path}`, { signal })
+  if (!res.ok) {
+    throw new Error(`opencode ${path} → HTTP ${res.status}`)
+  }
+  return (await res.json()) as T
+}
+
+const httpApi = (baseUrl: string): OpencodeHttpApi => ({
+  listSessions: (signal) => requestJson(baseUrl, "/session", signal),
+  sessionStatus: (signal) =>
+    requestJson<Record<string, SessionStatusEntry>>(
+      baseUrl,
+      "/session/status",
+      signal,
+    ),
+  eventStream: async (signal) => streamEvents(baseUrl, signal),
+})
+
+// ponytail: minimal SSE reader over fetch's streaming body. opencode
+// emits `event: <name>\ndata: <json>\n\n` frames; we only need the data
+// payloads, mapped through opencodeEventToStatus by the caller.
+async function* streamEvents(
+  baseUrl: string,
+  signal: AbortSignal,
+): AsyncIterable<OpencodeEvent | unknown> {
+  const res = await fetch(`${baseUrl}/global/events`, {
+    signal,
+    headers: { Accept: "text/event-stream" },
+  })
+  if (!res.ok || res.body === null) return
+  const decoder = new TextDecoder()
+  let buffer = ""
+  for await (const chunk of res.body) {
+    buffer += decoder.decode(chunk as Uint8Array, { stream: true })
+    let idx: number
+    while ((idx = buffer.indexOf("\n\n")) !== -1) {
+      const frame = buffer.slice(0, idx)
+      buffer = buffer.slice(idx + 2)
+      for (const line of frame.split("\n")) {
+        if (!line.startsWith("data:")) continue
+        const payload = line.slice(5).trim()
+        if (payload.length === 0) continue
+        try {
+          yield JSON.parse(payload) as OpencodeEvent
+        } catch {
+          // non-JSON frame — ignore
+        }
+      }
+    }
+  }
+}
 
 export class OpenCodeProvider implements AgentProvider {
   readonly id = "opencode" as const
   readonly displayName = "OpenCode"
   readonly logoPath = OPENCODE_LOGO
 
-  readonly #client: OpencodeClientLike
-  readonly #clientFactory: (baseUrl: string) => OpencodeClientLike
+  readonly #api: OpencodeHttpApi
+  readonly #apiFactory: (baseUrl: string) => OpencodeHttpApi
 
   constructor(opts: {
     baseUrl: string
-    clientFactory?: (baseUrl: string) => OpencodeClientLike
+    apiFactory?: (baseUrl: string) => OpencodeHttpApi
   }) {
-    this.#clientFactory =
-      opts.clientFactory ??
-      ((baseUrl: string) =>
-        createOpencodeClient({ baseUrl }) as unknown as OpencodeClientLike)
-    this.#client = this.#clientFactory(opts.baseUrl)
+    this.#apiFactory = opts.apiFactory ?? httpApi
+    this.#api = this.#apiFactory(opts.baseUrl)
   }
 
   async fetchSnapshot(signal: AbortSignal): Promise<readonly Agent[]> {
     if (signal.aborted) return []
     try {
-      const [listRes, statusRes] = await Promise.all([
-        this.#client.session.list(),
-        this.#client.session.status(),
+      const [sessions, statusMap] = await Promise.all([
+        this.#api.listSessions(signal),
+        this.#api.sessionStatus(signal),
       ])
-      // ponytail: the SDK is a HeyApi client — with throwOnError:false
-      // (default) calls resolve to `{ data, error, response }`, NOT the
-      // payload. Treating the result as an array threw TypeError, the
-      // catch below swallowed it, and every snapshot came back as zero
-      // agents regardless of how many opencode instances were open.
-      const sessions =
-        (listRes as unknown as { data?: ReadonlyArray<OpencodeSessionLike> })
-          .data ?? []
-      const statusMap =
-        (
-          statusRes as unknown as {
-            data?: Record<string, OpencodeSessionStatus>
-          }
-        ).data ?? {}
       return sessions.map((s) => toAgent(s, statusMap[s.id]))
     } catch (err) {
       if (signal.aborted) return []
-      // ponytail: surface unavailability instead of silently reporting
-      // zero — consumers can distinguish "no agents" from "broken probe"
-      // via the error field, and daemon logs get the reason.
       console.warn(
         "[coding-agents] opencode snapshot failed:",
         err instanceof Error ? err.message : String(err),
@@ -95,9 +134,9 @@ export class OpenCodeProvider implements AgentProvider {
     const run = async () => {
       outer: while (!cancelled && !signal.aborted) {
         try {
-          const sub = await this.#client.event.subscribe()
+          const sub = await this.#api.eventStream(signal)
           try {
-            for await (const raw of sub.stream) {
+            for await (const raw of sub) {
               if (cancelled || signal.aborted) break
               const evt = raw as OpencodeEvent
               if (!evt || typeof evt !== "object") continue
@@ -113,7 +152,7 @@ export class OpenCodeProvider implements AgentProvider {
           if (cancelled || signal.aborted) break outer
           // ponytail: yield to the event loop between reconnect attempts so
           // an unsub/abort from another microtask has a chance to flip the
-          // `cancelled` flag — otherwise an empty SSE stream creates a tight
+          // `cancelled` flag — otherwise an empty stream creates a tight
           // synchronous loop that starves setTimeout-based tests.
           await new Promise<void>((resolve) => {
             if (signal.aborted) {
@@ -150,11 +189,15 @@ export class OpenCodeProvider implements AgentProvider {
 
 const toAgent = (
   s: OpencodeSessionLike,
-  status: OpencodeSessionStatus | undefined,
+  status: SessionStatusEntry | undefined,
 ): Agent => {
   let normalizedStatus: AgentStatus = "idle"
   if (status?.type === "busy") normalizedStatus = "running"
   else if (status?.type === "retry") normalizedStatus = "waiting"
+  // ponytail: opencode v1.1+ surfaces an `attention` boolean on
+  // /session/status entries when the assistant needs human input — trust
+  // it over our inference since it comes from the source itself.
+  if (status?.attention === true) normalizedStatus = "waiting_for_human"
   return {
     sessionId: s.id,
     providerId: "opencode",

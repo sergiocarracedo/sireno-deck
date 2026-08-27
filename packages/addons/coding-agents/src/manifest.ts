@@ -5,6 +5,7 @@ import agentFrontend from "./buttons/agent/frontend.js"
 import summaryBackend from "./buttons/summary/backend.js"
 import summaryFrontend from "./buttons/summary/frontend.js"
 import { createAgentsDecks } from "./decks/agents.js"
+import { opencodeInstalled } from "./providers/registry.js"
 import type { AddonManifestV1 } from "./types/types.js"
 
 const probeOpencodeReachable = async (): Promise<{
@@ -81,6 +82,15 @@ export const manifest = {
   globalService,
   checks: [
     { name: "opencode-reachable", check: probeOpencodeReachable },
+    {
+      name: "opencode-installed",
+      check: async () => {
+        const installed = await opencodeInstalled()
+        return installed
+          ? { available: true }
+          : { available: false, reason: "opencode CLI not found on $PATH" }
+      },
+    },
     { name: "claude-code-projects-readable", check: probeClaudeProjectsDir },
   ],
 } satisfies AddonManifestV1

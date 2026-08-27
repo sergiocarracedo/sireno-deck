@@ -42,9 +42,6 @@ importers:
 
   packages/addons/coding-agents:
     dependencies:
-      '@opencode-ai/sdk':
-        specifier: ^1.18.5
-        version: 1.18.22
       chokidar:
         specifier: ^4.0.1
         version: 4.0.3
@@ -1039,9 +1036,6 @@ packages:
   '@npmcli/fs@3.1.1':
     resolution: {integrity: sha512-q9CRWjpHCMIh5sVyefoD1cA7PkvILqCZsnSOEUUivORLjxCO/Irmue2DprETiNgEqktDBZaM1Bi+jrarx1XdCg==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-
-  '@opencode-ai/sdk@1.18.22':
-    resolution: {integrity: sha512-fRZ2r6nqdLBXfs7j531aibrqCC9tpbL2tmz3ThnwtLa3bMNUozEVAOPnZjh86JcTBDhNtACt5CNgKDZ1Pve1NA==}
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
@@ -6826,10 +6820,6 @@ snapshots:
     dependencies:
       semver: 7.8.5
     optional: true
-
-  '@opencode-ai/sdk@1.18.22':
-    dependencies:
-      cross-spawn: 7.0.6
 
   '@oslojs/encoding@1.1.0': {}
 
