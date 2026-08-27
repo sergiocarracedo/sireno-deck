@@ -305,8 +305,18 @@ export interface AddonGlobalService {
   readonly pollers?: ReadonlyArray<AddonGlobalPoller>
   readonly subscriptions?: ReadonlyArray<AddonGlobalSubscription>
   readonly methods?: Readonly<Record<string, AddonServiceMethod>>
-  readonly onLoad?: (ctx: AddonServiceContext) => void | Promise<void>
-  readonly onUnload?: (ctx: AddonServiceContext) => void | Promise<void>
+  // onLoad/onUnload accept an optional addon-specific config (typed as
+  // `unknown` since the runtime doesn't know the addon's config shape).
+  // Built-in addons ignore it; third-party / builtin addons that need
+  // hydrated state can read it. The runtime calls these once per process.
+  readonly onLoad?: (
+    ctx: AddonServiceContext,
+    config?: unknown,
+  ) => void | Promise<void>
+  readonly onUnload?: (
+    ctx: AddonServiceContext,
+    config?: unknown,
+  ) => void | Promise<void>
 }
 
 export type AddonServiceMethod = (

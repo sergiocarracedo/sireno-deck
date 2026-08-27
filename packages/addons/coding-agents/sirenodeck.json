@@ -1,6 +1,0 @@
-{
-  "kind": "addon",
-  "apiVersion": 1,
-  "name": "coding-agents",
-  "entry": "./dist/index.js"
-}

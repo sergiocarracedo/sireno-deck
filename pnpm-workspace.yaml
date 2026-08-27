@@ -1,6 +1,7 @@
 packages:
   - packages/*
-  - packages/addons/*
+  - packages/addons/app-shortcuts
+  - packages/addons/pomodoro
   - packages/web/astro
   - packages/web/videos
 
@@ -10,6 +11,5 @@ onlyBuiltDependencies:
   - get-windows
   - lefthook
   - node-hid
-  - opencode-ai
   - sharp
   - usocket

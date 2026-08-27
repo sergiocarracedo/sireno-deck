@@ -2,6 +2,7 @@ import type { AddonRegistry } from "@/addon/registry"
 
 import { registerBuiltInThemes, registerSiblingThemes } from "@/themes/loader"
 
+import { registerCodingAgentsAddon } from "./coding-agents"
 import brightnessAddon from "./brightness/index"
 import { coreAddon } from "./core/index"
 import dateTimeAddon from "./date-time/index"
@@ -26,4 +27,5 @@ export const registerBuiltins = (registry: AddonRegistry): void => {
   registry.load(valueDisplayAddon)
   registry.load(weatherAddon)
   registry.load(brightnessAddon)
+  registerCodingAgentsAddon(registry)
 }
