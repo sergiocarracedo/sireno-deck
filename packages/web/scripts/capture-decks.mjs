@@ -22,6 +22,13 @@
 // busy — stop your `sireno start --emulator` (and any vite processes on
 // those ports) before running it.
 //
+// Note on session state: the daemon's session provider reports the host
+// desktop's lock state. In a headless shell (no logged-in user) it
+// stays "locked" and the SPA first shows the `core:lock` deck. The
+// captures in that case are real renders of the lock deck, not the
+// main deck. Run the script from your usual dev shell (where the
+// session is unlocked) to get the demo decks captured.
+//
 // Run: pnpm --filter sirenodeck-web run sync-captures
 
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
