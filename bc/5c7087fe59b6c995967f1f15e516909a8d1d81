@@ -1,0 +1,23 @@
+AGENTS.md
+  s_6431f34a133923::t_766466c443e8cb 92
+demos/demo-coding-agents.yml
+  s_6431f34a133923::t_87dde68ffd2696 1-6
+config.yml
+  s_6431f34a133923::t_9d7a2b747715bd 112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "bc5c7087fe59b6c995967f1f15e516909a8d1d81",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
