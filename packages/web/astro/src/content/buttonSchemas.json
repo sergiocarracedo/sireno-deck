@@ -42,21 +42,20 @@
   },
   "coding-agents:agent": {
     "jsonSchema": {
-      "default": {},
       "type": "object",
       "properties": {
-        "providerId": {
-          "type": "string",
-          "enum": ["opencode", "claude-code"]
-        },
-        "sessionId": {
-          "type": "string",
-          "minLength": 1
+        "slot": {
+          "default": 0,
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
         }
       },
       "additionalProperties": false
     },
-    "example": {}
+    "example": {
+      "slot": 0
+    }
   },
   "core:action": {
     "jsonSchema": {
