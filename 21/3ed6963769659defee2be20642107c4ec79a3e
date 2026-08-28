@@ -1,0 +1,83 @@
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_9523a1e230f0e7::t_bc293565cc98db 165
+  s_9523a1e230f0e7::t_cec6173ba9d094 225-226,232
+  s_9523a1e230f0e7::t_4725e4a19d9d97 112,118-119
+  s_9523a1e230f0e7::t_68b55d43e6dcc8 2-5,13-20,31-41,47-50,79-84,89,94,97-103,146-164,182-183,188-189,193-194,204-209,220-224,227-231,233-251,309,311-313,321,323-332
+  s_9523a1e230f0e7::t_678cac293b3d3c 95-96,104-111,113-117,120-133,136-138,143-145
+  s_9523a1e230f0e7::t_4f2e4b77946a2a 166-174,333-339
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/frontend.tsx
+  s_9523a1e230f0e7::t_3c3df505c00051 50-53
+  s_9523a1e230f0e7::t_bb281ca0bd19b2 140-144
+packages/cli/src/builtin-addons/coding-agents/providers/claude-code.ts
+  s_9523a1e230f0e7::t_c34844906cb77e 17
+  s_9523a1e230f0e7::t_a66dadc5640f13 26-28,35,39,44-47
+  s_9523a1e230f0e7::t_0555515bedcfd9 156-158,170-175
+packages/cli/src/cli/commands/start.ts
+  s_9523a1e230f0e7::t_441d5334127dd3 497-501
+packages/cli/src/builtin-addons/coding-agents/decks/agents.ts
+  s_9523a1e230f0e7::t_b544fef361d1dc 3-10,15-16,33-36
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-provider.test.ts
+  s_9523a1e230f0e7::t_1f80be36840eb3 91-139,143,151,155
+  s_9523a1e230f0e7::t_bdd932e98b3e05 13
+  s_9523a1e230f0e7::t_080692a8b9016e 8
+  s_9523a1e230f0e7::t_2f9e896866336f 14-16,22,140-142,144-150,152-154
+packages/cli/src/builtin-addons/coding-agents/__tests__/deck.test.ts
+  s_9523a1e230f0e7::t_0511f208440920 1-9,11,13-23
+  s_9523a1e230f0e7::t_a0b0bb6755c118 12
+  s_9523a1e230f0e7::t_0873b0cacc0f85 10
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_9523a1e230f0e7::t_1bbac800aa3f81 774,776-787,794-807,809
+  s_9523a1e230f0e7::t_034d2adf137875 749-757
+packages/cli/src/builtin-addons/coding-agents/__tests__/claude-status.test.ts
+  s_9523a1e230f0e7::t_d7077a2ca4fd5a 11-24,30,32,41,44,48-50,53-93,95-96,100,104-110,113-114,119-122,125-127,131-132,180
+  s_9523a1e230f0e7::t_1432d8f9090b37 123-124,128-130,161
+packages/cli/src/builtin-addons/coding-agents/__tests__/snapshot.test.ts
+  s_9523a1e230f0e7::t_51ab579cb3c682 62,65-66,70,72,76-78,82,85-86,90-91
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_9523a1e230f0e7::t_65d0af08f87932 1-2,30,36-38,44-45,53,65,80,83-86,96-111,113-115
+  s_9523a1e230f0e7::t_cd8a61f7e1b57d 39-43,46-50
+  s_9523a1e230f0e7::t_fabf520d4a2704 89-94
+packages/cli/src/cli/commands/pipeline/preflight.ts
+  s_9523a1e230f0e7::t_c5fcb4dc12f66f 16-21,29-45
+  s_9523a1e230f0e7::t_dfb1f73fde6358 46-47
+packages/cli/src/builtin-addons/coding-agents/shared/claude-status.ts
+  s_9523a1e230f0e7::t_8609658f19574d 202-203
+  s_9523a1e230f0e7::t_fe2c82fb2b591d 91-103
+  s_9523a1e230f0e7::t_d79aea9b622b14 5,20-27,29-31,33-39,51-52,54-55,78-82,84,90,104-114,117-132,134-147,150,159,169,173-178,185-187,189,191-201,220,228
+  s_9523a1e230f0e7::t_2d362fc66507e2 168
+  s_9523a1e230f0e7::t_d0bacc251fbf8d 188
+  s_9523a1e230f0e7::t_57b712d9dca5e1 83,85-89
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/backend.ts
+  s_9523a1e230f0e7::t_c69793583ddc88 7
+  s_9523a1e230f0e7::t_11d87862fa5fcb 24,29
+packages/cli/src/builtin-addons/coding-agents/global/backend.ts
+  s_9523a1e230f0e7::t_89c9b1d73c2c07 39
+  s_9523a1e230f0e7::t_086da259b45b0c 66-69
+  s_9523a1e230f0e7::t_b4cc62eb4f54b6 268,270-273,284
+  s_9523a1e230f0e7::t_1606ec92d8fd40 50-65,70-76
+  s_9523a1e230f0e7::t_fb1b082ab3fb6e 230
+  s_9523a1e230f0e7::t_817a1985235401 200-207,216
+  s_9523a1e230f0e7::t_5bff20c2a0566a 11-12
+  s_9523a1e230f0e7::t_697e1341fdd5ab 303
+packages/cli/src/builtin-addons/coding-agents/shared/state.ts
+  s_9523a1e230f0e7::t_14bed52a5dde64 27-29
+  s_9523a1e230f0e7::t_c8002bb167c54c 18
+packages/cli/src/builtin-addons/coding-agents/shared/snapshot.ts
+  s_9523a1e230f0e7::t_3d63bb85e3e8ac 46-49,55-56,61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "213ed6963769659defee2be20642107c4ec79a3e",
+  "prompts": {},
+  "sessions": {
+    "s_9523a1e230f0e7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb87bf784ffefGEv5K2HyNy4Lf",
+        "model": "z-ai/glm-5.3-flash"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
