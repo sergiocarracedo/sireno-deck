@@ -6,6 +6,10 @@ import type {
   AddonServiceContext,
   AddonServiceMethod,
 } from "../types/types.js"
+import { existsSync, readFileSync, renameSync, writeFileSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
+import { resolveDaemonPaths } from "@/util/daemon"
 import {
   agentKey,
   CHANNEL,
@@ -43,6 +47,73 @@ const state: GlobalState = {
   context: null,
 }
 
+// --- reboot survival -------------------------------------------------------
+// ponytail: persists lastSnapshot + lastSeenStatus under dataDir
+// (XDG_STATE_HOME) so a systemd auto-restart after reboot rehydrates instead
+// of replaying every agent as a fresh notification and showing an empty deck
+// for one poll tick. No staleness cap — mergeSnapshot replaces per-provider
+// lists wholesale on first live fetch, so stale data self-heals within ~2s.
+
+const PERSISTED_FILE = "coding-agents-state.json"
+
+interface PersistedState {
+  snapshot: AgentsSnapshot
+  lastSeenStatus: Array<[string, import("../shared/state.js").AgentStatus]>
+}
+
+const persistedStateFile = (): string | null => {
+  try {
+    return join(resolveDaemonPaths().dataDir, PERSISTED_FILE)
+  } catch {
+    return null
+  }
+}
+
+const persistState = (): void => {
+  const file = persistedStateFile()
+  if (file === null) return
+  try {
+    const payload: PersistedState = {
+      snapshot: state.lastSnapshot,
+      lastSeenStatus: [...state.lastSeenStatus],
+    }
+    const tmp = `${file}.tmp.${process.pid}`
+    writeFileSync(tmp, JSON.stringify(payload), "utf8")
+    renameSync(tmp, file)
+  } catch {
+    // best-effort — disk full, perms, sandbox; never break the poll loop
+  }
+}
+
+const hydratePersisted = (): void => {
+  const file = persistedStateFile()
+  if (file === null) return
+  try {
+    if (!existsSync(file)) return
+    const raw = JSON.parse(
+      readFileSync(file, "utf8"),
+    ) as Partial<PersistedState>
+    if (
+      raw.snapshot &&
+      typeof raw.snapshot === "object" &&
+      typeof raw.snapshot.byProvider === "object" &&
+      raw.snapshot.byProvider !== null
+    ) {
+      // recompute attention + generatedAt from real statuses instead of
+      // trusting the serialized copy
+      state.lastSnapshot = mergeSnapshot(EMPTY_SNAPSHOT, {
+        opencode: raw.snapshot.byProvider["opencode"] ?? [],
+        "claude-code": raw.snapshot.byProvider["claude-code"] ?? [],
+      })
+    }
+    if (Array.isArray(raw.lastSeenStatus)) {
+      state.lastSeenStatus = new Map(raw.lastSeenStatus)
+    }
+  } catch {
+    // corrupt or unreadable → cold start; first publish overwrites the file
+  }
+}
+
 const setStateFromProviders = async (): Promise<void> => {
   const next: Record<ProviderId, Agent[]> = {
     opencode: [],
@@ -59,6 +130,7 @@ const setStateFromProviders = async (): Promise<void> => {
     }
   }
   state.lastSnapshot = mergeSnapshot(state.lastSnapshot, next)
+  persistState()
 }
 
 const fireNotices = (snapshot: AgentsSnapshot): void => {
@@ -163,6 +235,7 @@ export const globalService: AddonGlobalService = {
   },
   onLoad: async (ctx: AddonServiceContext, config?: unknown): Promise<void> => {
     state.context = ctx
+    hydratePersisted()
     const cfg: ProviderRegistryConfig = (config as
       | ProviderRegistryConfig
       | undefined) ?? {

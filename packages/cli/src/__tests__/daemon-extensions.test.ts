@@ -23,8 +23,10 @@ const testPaths = {
   pidFile: join(testDir, "test.pid"),
   tokenFile: join(testDir, "test.token"),
   childrenFile: join(testDir, "test.children.json"),
+  dataDir: testDir,
   configPathFile: join(testDir, "test.config"),
   flagsFile: join(testDir, "test.flags"),
+  runtimeStateFile: join(testDir, "runtime-state.json"),
 }
 
 beforeEach(() => {

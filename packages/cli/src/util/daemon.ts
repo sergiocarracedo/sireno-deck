@@ -29,12 +29,20 @@ const getUid = (): number | null => {
 import type pino from "pino"
 
 export interface DaemonPaths {
+  // XDG_RUNTIME_DIR — tmpfs in Linux user scope; vanishes on reboot.
+  // pidFile + tokenFile MUST live here: the token rotates per daemon start
+  // and child PIDs are re-spawned on every boot. childrenFile stays here too
+  // — its only value is post-crash child tracking within a session.
   runtimeDir: string
   pidFile: string
   tokenFile: string
   childrenFile: string
+  // XDG_STATE_HOME — persistent; survives reboot. Restart-mode preferences,
+  // last runtime URLs, resolved config pointer.
+  dataDir: string
   configPathFile: string
   flagsFile: string
+  runtimeStateFile: string
 }
 
 const writeAtomic = (path: string, content: string, mode: number): void => {
@@ -79,6 +87,25 @@ const defaultRuntimeDir = (): string => {
   }
 }
 
+// ponytail: persistent storage — XDG_STATE_HOME (~/.local/state on Linux),
+// Library/Application Support on macOS, %LOCALAPPDATA% on Windows. Env vars
+// win so sandboxes/CI can redirect.
+const defaultDataDir = (): string => {
+  const xdgState = process.env["XDG_STATE_HOME"]
+  if (xdgState) return join(xdgState, DAEMON_NAME)
+  switch (platform) {
+    case "darwin":
+      return join(homedir(), "Library", "Application Support", DAEMON_NAME)
+    case "win32":
+      return join(process.env["LOCALAPPDATA"] ?? tmpdir(), DAEMON_NAME)
+    default:
+      return join(
+        process.env["XDG_DATA_HOME"] ?? join(homedir(), ".local", "state"),
+        DAEMON_NAME,
+      )
+  }
+}
+
 export const resolveDaemonPaths = (): DaemonPaths => {
   const runtimeDir = defaultRuntimeDir()
   if (!existsSync(runtimeDir)) {
@@ -87,13 +114,22 @@ export const resolveDaemonPaths = (): DaemonPaths => {
       chmodSync(runtimeDir, 0o700)
     }
   }
+  const dataDir = defaultDataDir()
+  if (!existsSync(dataDir)) {
+    mkdirSync(dataDir, { recursive: true })
+    if (platform !== "win32") {
+      chmodSync(dataDir, 0o700)
+    }
+  }
   return {
     runtimeDir,
     pidFile: join(runtimeDir, `${DAEMON_NAME}.pid`),
     tokenFile: join(runtimeDir, `${DAEMON_NAME}.token`),
     childrenFile: join(runtimeDir, `${DAEMON_NAME}.children.json`),
-    configPathFile: join(runtimeDir, `${DAEMON_NAME}.config`),
-    flagsFile: join(runtimeDir, `${DAEMON_NAME}.flags.json`),
+    dataDir,
+    configPathFile: join(dataDir, `${DAEMON_NAME}.config`),
+    flagsFile: join(dataDir, `${DAEMON_NAME}.flags.json`),
+    runtimeStateFile: join(dataDir, RUNTIME_STATE_FILE),
   }
 }
 
@@ -309,9 +345,14 @@ export const removeConfigPathFile = (paths = resolveDaemonPaths()): void => {
 export const readFlags = (
   paths = resolveDaemonPaths(),
 ): RuntimeFlags | null => {
-  if (!existsSync(paths.flagsFile)) return null
+  // ponytail: pre-dataDir daemons cached flags in the tmpfs runtime dir;
+  // a same-session upgrade would otherwise lose `restart`'s memory until the
+  // next real start. Delete once nobody upgrades across this boundary.
+  const file = existsSync(paths.flagsFile)
+    ? paths.flagsFile
+    : join(paths.runtimeDir, `${DAEMON_NAME}.flags.json`)
   try {
-    const raw = readFileSync(paths.flagsFile, "utf8")
+    const raw = readFileSync(file, "utf8")
     const parsed = JSON.parse(raw) as Partial<RuntimeFlags>
     if (
       typeof parsed.emulator !== "boolean" ||
@@ -363,17 +404,13 @@ export const writeRuntimeState = (
   state: RuntimeState,
   paths = resolveDaemonPaths(),
 ): void => {
-  writeAtomic(
-    join(paths.runtimeDir, RUNTIME_STATE_FILE),
-    JSON.stringify(state, null, 2),
-    0o600,
-  )
+  writeAtomic(paths.runtimeStateFile, JSON.stringify(state, null, 2), 0o600)
 }
 
 export const readRuntimeState = (
   paths = resolveDaemonPaths(),
 ): RuntimeState | null => {
-  const filePath = join(paths.runtimeDir, RUNTIME_STATE_FILE)
+  const filePath = paths.runtimeStateFile
   if (!existsSync(filePath)) return null
   try {
     const raw = readFileSync(filePath, "utf8")
@@ -411,8 +448,8 @@ export const readRuntimeState = (
 }
 
 export const removeRuntimeStateFile = (paths = resolveDaemonPaths()): void => {
-  if (existsSync(join(paths.runtimeDir, RUNTIME_STATE_FILE))) {
-    unlinkSync(join(paths.runtimeDir, RUNTIME_STATE_FILE))
+  if (existsSync(paths.runtimeStateFile)) {
+    unlinkSync(paths.runtimeStateFile)
   }
 }
 

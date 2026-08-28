@@ -1,4 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
+import { mkdtempSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
+
+// must land before any test triggers resolveDaemonPaths(); the statement
+// below runs at module eval, before every test body and before the first
+// onLoad call that persists state.
+process.env["XDG_STATE_HOME"] = mkdtempSync(
+  join(tmpdir(), "sireno-deck-addon-test-"),
+)
 
 import { globalService, POLLER_INTERVAL_MS } from "../global/backend"
 import { CHANNEL } from "../shared/state"
@@ -50,7 +60,8 @@ const makeCtx = () => {
 
 describe("coding-agents globalService", () => {
   afterEach(() => {
-    globalService.onUnload?.()
+    const noopCtx = { signal: new AbortController().signal } as never
+    globalService.onUnload?.(noopCtx)
   })
 
   it("exposes the shared channel on its poller", () => {
@@ -60,7 +71,8 @@ describe("coding-agents globalService", () => {
   })
 
   it("onUnload is a no-op when onLoad was not called", () => {
-    expect(() => globalService.onUnload?.()).not.toThrow()
+    const noopCtx = { signal: new AbortController().signal } as never
+    expect(() => globalService.onUnload?.(noopCtx)).not.toThrow()
   })
 
   it("methods.getSnapshot returns last snapshot (empty before onLoad)", () => {
