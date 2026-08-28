@@ -1,0 +1,70 @@
+packages/cli/src/builtin-addons/coding-agents/__tests__/snapshot.test.ts
+  s_9523a1e230f0e7::t_03007c78cdb1b7 3
+  s_9523a1e230f0e7::t_ebb37750b27069 60-94
+packages/cli/src/builtin-addons/coding-agents/shared/claude-status.ts
+  s_9523a1e230f0e7::t_ae18a46f72d05b 121-138
+  s_9523a1e230f0e7::t_ceee311aef3db4 14-15
+  s_9523a1e230f0e7::t_c9280150cf93d0 80-81
+packages/cli/src/builtin-addons/coding-agents/sirenodeck.json
+  s_9523a1e230f0e7::t_60722a88914386 1-6
+packages/cli/src/cli/commands/addon-registry.ts
+  s_9523a1e230f0e7::t_1e0abfb97aacf7 335-342
+packages/cli/src/builtin-addons/coding-agents/decks/agents.ts
+  s_9523a1e230f0e7::t_36f2d55eb17232 3-6,8,10-19,24
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/backend.ts
+  s_9523a1e230f0e7::t_1f53696434074c 7-31,36-47
+  s_9523a1e230f0e7::t_d3895b8e3011cf 48-50,64-66
+packages/cli/frontend/src/components/Deck.tsx
+  s_9523a1e230f0e7::t_b0059eb49e1581 43-45
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_9523a1e230f0e7::t_f6c7a5ac5a5b61 113-122
+packages/cli/src/builtin-addons/coding-agents/__tests__/agent-backend.test.ts
+  s_9523a1e230f0e7::t_fe22af3abfdb80 1-3,5,14-18,20-28,30-40,42-67,72-80,84-92
+  s_9523a1e230f0e7::t_8f3b225f1d6dfd 4,6-13,19,29,41
+  s_9523a1e230f0e7::t_8bc5349b674281 68-71,81-83
+  s_9523a1e230f0e7::t_9f7b530cf4f524 93-102
+packages/cli/src/builtin-addons/coding-agents/providers/claude-code.ts
+  s_9523a1e230f0e7::t_8eff2b04dfcc5b 152-157
+packages/cli/src/builtin-addons/coding-agents/__tests__/claude-status.test.ts
+  s_9523a1e230f0e7::t_fefab82dde1ee9 92-122
+  s_9523a1e230f0e7::t_c45d7e20477a15 123-126
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_9523a1e230f0e7::t_9cf3b4305d9ed1 44-51,54-55,59-73,78-80,82,85-86,88,104
+  s_9523a1e230f0e7::t_304e6dc364d226 21-30,32
+  s_9523a1e230f0e7::t_28f133da181f15 52-53,56-58
+  s_9523a1e230f0e7::t_ab6531f5f9abdc 91,93,96-98
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_9523a1e230f0e7::t_010feca58ee11f 17
+  s_9523a1e230f0e7::t_ab77ddc2793502 208-210
+packages/cli/src/builtin-addons/coding-agents/shared/state.ts
+  s_9523a1e230f0e7::t_e0c44748ae6946 17
+config.yml
+  s_9523a1e230f0e7::t_d07b416d58af9f 92-96
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/config.ts
+  s_9523a1e230f0e7::t_f9fd9ea2a3a453 5-9
+packages/cli/src/builtin-addons/coding-agents/shared/snapshot.ts
+  s_9523a1e230f0e7::t_c00747cf511b2f 54-64,66-68,74-75
+  s_9523a1e230f0e7::t_226d07707ea2ba 45-53,65,69-73,76-84
+  s_9523a1e230f0e7::t_7ab2af000a41e2 85
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/frontend.tsx
+  s_9523a1e230f0e7::t_7cc10a43dab329 1-2,30-34,40-47,52-65,67-70,72-98,107-111,113-120,129,136,140-145
+  s_9523a1e230f0e7::t_bea21778a4fd27 137
+  s_9523a1e230f0e7::t_8a60583c2cab1a 66
+  s_9523a1e230f0e7::t_71191d18a957d2 71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "fd74c61b1cf58b48560c933d617b55046ba58a89",
+  "prompts": {},
+  "sessions": {
+    "s_9523a1e230f0e7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb87bf784ffefGEv5K2HyNy4Lf",
+        "model": "z-ai/glm-5.3-flash"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
