@@ -149,9 +149,12 @@ export class ClaudeCodeProvider implements AgentProvider {
         ...(derived.preview !== undefined
           ? { lastMessagePreview: derived.preview }
           : {}),
-        ...(existing?.directory !== undefined
-          ? { directory: existing.directory }
-          : {}),
+        ...(derived.cost !== undefined ? { cost: derived.cost } : {}),
+        ...(derived.cwd !== undefined
+          ? { directory: derived.cwd }
+          : existing?.directory !== undefined
+            ? { directory: existing.directory }
+            : {}),
       }
       this.#agents.set(sessionId, agent)
       onChange()

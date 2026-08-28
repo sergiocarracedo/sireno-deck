@@ -89,4 +89,39 @@ describe("deriveClaudeStatus", () => {
     const r = deriveClaudeStatus(entries, now)
     expect(r?.status).toBe("idle")
   })
+
+  it("sums costUSD across assistant entries and derives cwd", () => {
+    const entries: ClaudeJsonlEntry[] = [
+      { type: "user", timestamp: ago(60_000), cwd: "/home/sergio/foo" },
+      {
+        type: "assistant",
+        message: { role: "assistant", content: "a" },
+        timestamp: ago(50_000),
+        costUSD: 0.1,
+      },
+      {
+        type: "assistant",
+        message: { role: "assistant", content: "b" },
+        timestamp: ago(40_000),
+        costUSD: 0.05,
+      },
+    ]
+    const r = deriveClaudeStatus(entries, now)
+    expect(r?.cost).toBeCloseTo(0.15, 5)
+    expect(r?.cwd).toBe("/home/sergio/foo")
+  })
+
+  it("omits cost when absent", () => {
+    const entries: ClaudeJsonlEntry[] = [
+      { type: "user", timestamp: ago(60_000), cwd: "/tmp/x" },
+      {
+        type: "assistant",
+        message: { role: "assistant", content: "a" },
+        timestamp: ago(40_000),
+      },
+    ]
+    const r = deriveClaudeStatus(entries, now)
+    expect(r?.cost).toBeUndefined()
+    expect(r?.cwd).toBe("/tmp/x")
+  })
 })

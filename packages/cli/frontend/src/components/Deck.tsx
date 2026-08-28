@@ -40,6 +40,9 @@ import { ErrorBoundary } from "./ErrorBoundary"
 ;(
   globalThis as { __pomodoroUseAddonChannel?: typeof useAddonChannel }
 ).__pomodoroUseAddonChannel = useAddonChannel
+;(
+  globalThis as { __codingAgentsUseAddonChannel?: typeof useAddonChannel }
+).__codingAgentsUseAddonChannel = useAddonChannel
 
 const BUTTON_SIZE = BUTTON_SIZE_PX
 const BUTTON_GAP_PX = 8
