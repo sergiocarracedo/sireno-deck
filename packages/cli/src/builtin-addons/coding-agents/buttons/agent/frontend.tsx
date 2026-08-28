@@ -1,3 +1,5 @@
+import { Icon } from "@sirenodeck/cli"
+
 import type { AddonFrontendButtonProps } from "../../types/types.js"
 
 import type { AgentConfig } from "./config.js"
@@ -25,14 +27,30 @@ interface AgentLike {
   status: string
   directory?: string
   cost?: number
+  createdAt?: number
   lastMessagePreview?: string
 }
 
 interface SnapshotLike {
   byProvider?: Record<string, AgentLike[]>
+  icons?: Record<string, string>
 }
 
-const STATUS_COLOR_VAR: Record<string, string> = {
+// ponytail: color-mix tints the tile by state using theme tokens; `idle`
+// stays transparent so stale sessions read as quiet.
+const tint = (c: string): string =>
+  `color-mix(in srgb, var(--sireno-color-${c}) 18%, transparent)`
+
+const TILE_BG: Record<string, string> = {
+  idle: "transparent",
+  running: tint("success"),
+  waiting: tint("accent"),
+  waiting_for_human: tint("danger"),
+  error: tint("danger"),
+  compacting: tint("primary"),
+}
+
+const DOT_COLOR: Record<string, string> = {
   idle: "var(--sireno-color-muted)",
   running: "var(--sireno-color-success)",
   waiting: "var(--sireno-color-accent)",
@@ -41,28 +59,10 @@ const STATUS_COLOR_VAR: Record<string, string> = {
   compacting: "var(--sireno-color-primary)",
 }
 
-const PROVIDER_LABEL: Record<string, string> = {
-  opencode: "opencode",
-  "claude-code": "claude",
-}
-
-// ponytail: slot tiles are static; the live agent is picked by slot index
-// from the merged, active-first sorted list (see agentAtSlot). No logo
-// <img> — title/status/cost on a key would push an icon out.
 const agentAt = (snapshot: SnapshotLike, slot: number): AgentLike | null => {
   const all: AgentLike[] = []
   for (const list of Object.values(snapshot.byProvider ?? {})) all.push(...list)
-  const ACTIVE = new Set([
-    "running",
-    "waiting",
-    "waiting_for_human",
-    "error",
-    "compacting",
-  ])
-  const ATTENTION = new Set(["waiting_for_human", "error"])
-  const rank = (s: string): number =>
-    ATTENTION.has(s) ? 2 : ACTIVE.has(s) ? 1 : 0
-  all.sort((x, y) => rank(y.status) - rank(x.status))
+  all.sort((x, y) => (y.createdAt ?? 0) - (x.createdAt ?? 0) || 0)
   return all[slot] ?? null
 }
 
@@ -76,37 +76,49 @@ const formatCost = (cost: number | undefined): string | null => {
 const AgentFrontend = (props: AddonFrontendButtonProps<AgentConfig>) => {
   const { data } = useAddonChannel<SnapshotLike>(CHANNEL_NAME)
   const snapshot = data ?? { byProvider: {} }
-  const agent = agentAt(snapshot, props.config?.slot ?? 0)
   const slot = props.config?.slot ?? 0
+  const agent = agentAt(snapshot, slot)
 
-  const title = agent?.title ?? (slot === 0 ? "no agents" : "")
   const status = agent?.status ?? "idle"
-  const dotColorVar = STATUS_COLOR_VAR[status] ?? STATUS_COLOR_VAR["idle"]!
-  const provider = agent
-    ? (PROVIDER_LABEL[agent.providerId] ?? agent.providerId)
-    : ""
+  const bgVar = TILE_BG[status] ?? TILE_BG["idle"]!
+  const dotColorVar = DOT_COLOR[status] ?? DOT_COLOR["idle"]!
+  const title = agent?.title ?? (slot === 0 ? "no agents" : "")
+  const iconSource = agent ? snapshot.icons?.[agent.providerId] : undefined
   const cost = formatCost(agent?.cost)
 
+  // ponytail: empty slots (no live session for this tile) read as blank —
+  // trailing pages of the paginated deck stay quiet.
+  if (agent === null && slot !== 0) {
+    return <div className="h-full w-full" />
+  }
+
   return (
-    <div className="flex h-full w-full flex-col justify-between p-1.5 text-[color:var(--sireno-color-foreground)]">
-      <span className="line-clamp-2 text-[11px] font-medium leading-tight">
-        {title || <span className="opacity-40">empty</span>}
-      </span>
-      <div className="flex items-center justify-between gap-1">
-        <span className="text-[9px] uppercase opacity-70">
-          {agent ? `${status}${provider ? ` · ${provider}` : ""}` : ""}
+    <div
+      className="flex h-full w-full flex-col justify-between p-1"
+      style={{ background: bgVar }}
+    >
+      <div className="flex items-start gap-1">
+        {iconSource !== undefined ? (
+          <Icon source={iconSource} size={12} />
+        ) : (
+          <span
+            className="mt-[1px] inline-block h-2 w-2 shrink-0 rounded-full opacity-70"
+            style={{ backgroundColor: dotColorVar }}
+            aria-label={status}
+          />
+        )}
+        <span className="line-clamp-2 text-[11px] font-medium leading-tight">
+          {title || <span className="opacity-40">empty</span>}
         </span>
+      </div>
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-[9px] uppercase opacity-70">{status}</span>
         {agent?.lastMessagePreview !== undefined && (
           <span className="line-clamp-1 text-[9px] opacity-70">
             {agent.lastMessagePreview}
           </span>
         )}
         {cost !== null && <span className="text-[9px] opacity-70">{cost}</span>}
-        <span
-          className="inline-block h-2 w-2 shrink-0 rounded-full"
-          style={{ backgroundColor: dotColorVar }}
-          aria-label={status}
-        />
       </div>
     </div>
   )

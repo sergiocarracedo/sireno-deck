@@ -2,6 +2,7 @@ import type { AgentStatus } from "./state.js"
 
 export interface ClaudeJsonlEntry {
   readonly type: string
+  readonly subtype?: string
   readonly message?: {
     readonly role?: string
     readonly content?: unknown
@@ -16,9 +17,26 @@ export interface ClaudeJsonlEntry {
   readonly timestamp?: string | number
 }
 
+// ponytail: real claude jsonl has none of the v1 phantom shapes. The
+// signals that exist (verified against ~/.claude/projects) are:
+//   • message.content as an ARRAY of blocks — tool_use blocks carry id+name
+//   • user tool_result blocks resolve a pending tool_use
+//   • system entries with subtype "turn_duration" mark the turn finished
+//   • progress entries stream while a tool/step runs
+// Stalled (needs-human) heuristics below still work on the edge where a
+// permission prompt ends the turn as a pending tool_use.
 const IDLE_AFTER_MS = 30 * 60 * 1000
+// ponytail: a pending non-AskUserQuestion tool longer than this is stuck on
+// a permission prompt or a slow tool → surface as "waiting".
+const STALLED_MS = 90 * 1000
 
-const flattenText = (content: unknown, max = 60): string | undefined => {
+interface ToolUseBlock {
+  readonly type?: string
+  readonly id?: string
+  readonly name?: string
+}
+
+const textFromContent = (content: unknown, max = 60): string | undefined => {
   if (typeof content === "string") {
     return content.length > max ? `${content.slice(0, max - 1)}…` : content
   }
@@ -30,10 +48,11 @@ const flattenText = (content: unknown, max = 60): string | undefined => {
       } else if (
         part !== null &&
         typeof part === "object" &&
-        "text" in part &&
-        typeof (part as { text: unknown }).text === "string"
+        "type" in part &&
+        (part as { type: unknown }).type === "text"
       ) {
-        parts.push((part as { text: string }).text)
+        const text = (part as { text?: unknown }).text
+        if (typeof text === "string") parts.push(text)
       }
     }
     const joined = parts.join(" ")
@@ -56,21 +75,79 @@ const lastTimestamp = (
   return undefined
 }
 
-const hasPendingToolUse = (entries: readonly ClaudeJsonlEntry[]): boolean => {
-  // ponytail: a tool_use without a following tool_result (or a tool_result
-  // for a different tool_use) means the assistant is mid-tool-call waiting
-  // for the host. Cheap heuristic — only needs to be wrong on the edge.
-  let lastToolUseId: string | null = null
+const firstTimestamp = (
+  entries: readonly ClaudeJsonlEntry[],
+): number | undefined => {
   for (const e of entries) {
-    if (e.type === "assistant") {
-      const tu = (e as { toolUse?: { id?: string } }).toolUse
-      if (tu && typeof tu.id === "string") lastToolUseId = tu.id
-    } else if (e.type === "user") {
-      const tr = (e as { toolResult?: { tool_use_id?: string } }).toolResult
-      if (tr?.tool_use_id === lastToolUseId) lastToolUseId = null
+    const ts = e?.timestamp
+    if (typeof ts === "number") return ts
+    if (typeof ts === "string") {
+      const parsed = Date.parse(ts)
+      if (!Number.isNaN(parsed)) return parsed
     }
   }
-  return lastToolUseId !== null
+  return undefined
+}
+
+const lastAssistantText = (
+  entries: readonly ClaudeJsonlEntry[],
+): string | undefined => {
+  for (let i = entries.length - 1; i >= 0; i -= 1) {
+    const e = entries[i]
+    if (e?.type !== "assistant") continue
+    const text = textFromContent(e.message?.content)
+    if (text !== undefined) return text
+  }
+  return undefined
+}
+
+interface PendingTool {
+  readonly id: string
+  readonly name: string
+}
+
+// ponytail: track tool_use blocks until their matching tool_result. A tool
+// still pending at the end of the stream is what the agent is doing right now.
+const pendingToolUses = (
+  entries: readonly ClaudeJsonlEntry[],
+): readonly PendingTool[] => {
+  const pending = new Map<string, string>()
+  for (const e of entries) {
+    if (e.type === "assistant") {
+      const content = e.message?.content
+      if (Array.isArray(content)) {
+        for (const block of content) {
+          if (
+            typeof block !== "object" ||
+            block === null ||
+            (block as ToolUseBlock).type !== "tool_use"
+          ) {
+            continue
+          }
+          const b = block as ToolUseBlock
+          if (typeof b.id === "string" && typeof b.name === "string") {
+            pending.set(b.id, b.name)
+          }
+        }
+      }
+    } else if (e.type === "user") {
+      const content = e.message?.content
+      if (Array.isArray(content)) {
+        for (const block of content) {
+          if (
+            typeof block !== "object" ||
+            block === null ||
+            (block as { type?: string }).type !== "tool_result"
+          ) {
+            continue
+          }
+          const id = (block as { tool_use_id?: unknown }).tool_use_id
+          if (typeof id === "string") pending.delete(id)
+        }
+      }
+    }
+  }
+  return [...pending.entries()].map(([id, name]) => ({ id, name }))
 }
 
 export interface ClaudeDeriveResult {
@@ -79,6 +156,7 @@ export interface ClaudeDeriveResult {
   readonly updatedAt: number
   readonly cost?: number
   readonly cwd?: string
+  readonly createdAt?: number
 }
 
 export const deriveClaudeStatus = (
@@ -87,33 +165,44 @@ export const deriveClaudeStatus = (
 ): ClaudeDeriveResult | null => {
   if (entries.length === 0) return null
 
-  const last = entries[entries.length - 1]
-  if (!last) return null
-
+  const last = entries[entries.length - 1]!
+  const ts = lastTimestamp(entries) ?? now
   let status: AgentStatus = "idle"
   let preview: string | undefined
 
-  if (last.type === "error") {
+  const pending = pendingToolUses(entries)
+  const pendingAsk = pending.find((t) => t.name === "AskUserQuestion")
+  if (pendingAsk !== undefined) {
+    status = "waiting_for_human"
+    preview = "asking for your input"
+  } else if (last.type === "error") {
     status = "error"
     preview =
       (typeof last.error?.message === "string" && last.error.message) ||
       "session error"
-  } else if (last.type === "permission_request") {
-    status = "waiting_for_human"
   } else if (typeof last.rateLimit !== "undefined") {
     status = "waiting"
-  } else if (last.type === "assistant") {
-    if (hasPendingToolUse(entries)) {
-      status = "waiting"
-    } else {
-      status = "running"
-    }
-    preview = flattenText(last.message?.content)
-  } else {
+  } else if (last.type === "system" && last.subtype === "turn_duration") {
+    // ponytail: turn finished — agent await
+    status = "idle"
+    preview = lastAssistantText(entries) ?? preview
+  } else if (last.type === "progress") {
     status = "running"
+  } else if (pending.length > 0) {
+    // A non-AskUserQuestion tool is still open: running now, "waiting" once
+    // it stalls (permission prompt / hung tool).
+    const stalled = now - ts > STALLED_MS
+    status = stalled ? "waiting" : "running"
+    const toolName = pending[pending.length - 1]?.name
+    preview = toolName !== undefined ? `running ${toolName}` : undefined
+  } else if (last.type === "user") {
+    // Agent hasn't replied yet — mid-turn.
+    status = "running"
+  } else if (last.type === "assistant") {
+    preview = textFromContent(last.message?.content)
+    status = "idle"
   }
 
-  const ts = lastTimestamp(entries) ?? now
   if (now - ts > IDLE_AFTER_MS) {
     status = "idle"
   }
@@ -128,6 +217,7 @@ export const deriveClaudeStatus = (
     }
   }
   const cwd = entries.find((e) => typeof e.cwd === "string")?.cwd
+  const createdAt = firstTimestamp(entries)
 
   return {
     status,
@@ -135,5 +225,6 @@ export const deriveClaudeStatus = (
     updatedAt: ts,
     ...(cost > 0 ? { cost } : {}),
     ...(cwd !== undefined && cwd.length > 0 ? { cwd } : {}),
+    ...(createdAt !== undefined ? { createdAt } : {}),
   }
 }

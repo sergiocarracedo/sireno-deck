@@ -59,36 +59,35 @@ describe("mergeSnapshot", () => {
 })
 
 describe("agentAtSlot", () => {
-  it("orders active before idle, then by recency, across providers", () => {
+  it("orders by creation date desc across providers", () => {
     const snap = mergeSnapshot(EMPTY_SNAPSHOT, {
       opencode: [
-        agent({ sessionId: "idle-new", status: "idle", updatedAt: 300 }),
-        agent({ sessionId: "run", status: "running", updatedAt: 100 }),
+        agent({ sessionId: "new", createdAt: 300, updatedAt: 100 }),
+        agent({ sessionId: "old", createdAt: 100, updatedAt: 999 }),
       ],
       "claude-code": [
         agent({
-          sessionId: "wait",
+          sessionId: "mid",
           providerId: "claude-code",
-          status: "waiting_for_human",
-          updatedAt: 200,
+          createdAt: 200,
         }),
       ],
     })
-    expect(agentAtSlot(snap, 0)?.sessionId).toBe("wait")
-    expect(agentAtSlot(snap, 1)?.sessionId).toBe("run")
-    expect(agentAtSlot(snap, 2)?.sessionId).toBe("idle-new")
+    expect(agentAtSlot(snap, 0)?.sessionId).toBe("new")
+    expect(agentAtSlot(snap, 1)?.sessionId).toBe("mid")
+    expect(agentAtSlot(snap, 2)?.sessionId).toBe("old")
     expect(agentAtSlot(snap, 99)).toBeUndefined()
   })
 
-  it("floats attention sessions to the top regardless of recency", () => {
+  it("falls back to updatedAt when createdAt is missing", () => {
     const snap = mergeSnapshot(EMPTY_SNAPSHOT, {
       opencode: [
-        agent({ sessionId: "recent", status: "running", updatedAt: 999 }),
-        agent({ sessionId: "err", status: "error", updatedAt: 10 }),
+        agent({ sessionId: "a", updatedAt: 100 }),
+        agent({ sessionId: "b", updatedAt: 200 }),
       ],
       "claude-code": [],
     })
-    expect(agentAtSlot(snap, 0)?.sessionId).toBe("err")
-    expect(agentAtSlot(snap, 1)?.sessionId).toBe("recent")
+    expect(agentAtSlot(snap, 0)?.sessionId).toBe("b")
+    expect(agentAtSlot(snap, 1)?.sessionId).toBe("a")
   })
 })

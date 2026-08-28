@@ -14,6 +14,7 @@ export const CLAUDE_LOGO = "addon://coding-agents/assets/claude-code.svg"
 
 export interface ClaudeCodeProviderOptions {
   readonly projectsDir?: string
+  readonly recentWindowMs?: number
 }
 
 const DEFAULT_PROJECTS_DIR = join(
@@ -22,22 +23,28 @@ const DEFAULT_PROJECTS_DIR = join(
   "projects",
 )
 
+// ponytail: "live" window — sessions idle longer than this stay off the deck.
+const RECENT_WINDOW_MS = 6 * 60 * 60 * 1000
+
 export class ClaudeCodeProvider implements AgentProvider {
   readonly id = "claude-code" as const
   readonly displayName = "Claude Code"
   readonly logoPath = CLAUDE_LOGO
 
   readonly #projectsDir: string
+  readonly #recentWindowMs: number
 
   constructor(opts: ClaudeCodeProviderOptions = {}) {
     this.#projectsDir = opts.projectsDir ?? DEFAULT_PROJECTS_DIR
+    this.#recentWindowMs = opts.recentWindowMs ?? RECENT_WINDOW_MS
   }
 
   async fetchSnapshot(_signal: AbortSignal): Promise<readonly Agent[]> {
     // ponytail: snapshot is served from the in-memory map populated by
-    // the watcher. fetchSnapshot is only called on the poller; subscribe()
-    // is the source of truth.
-    return [...this.#agents.values()]
+    // the watcher (which applies the recency filter on ingest). fetchSnapshot
+    // is only called on the poller; subscribe() is the source of truth.
+    const cutoff = Date.now() - this.#recentWindowMs
+    return [...this.#agents.values()].filter((a) => a.updatedAt >= cutoff)
   }
 
   subscribe(signal: AbortSignal, onChange: () => void): () => void {
@@ -146,6 +153,9 @@ export class ClaudeCodeProvider implements AgentProvider {
         title,
         status: derived.status,
         updatedAt: derived.updatedAt,
+        ...(derived.createdAt !== undefined
+          ? { createdAt: derived.createdAt }
+          : {}),
         ...(derived.preview !== undefined
           ? { lastMessagePreview: derived.preview }
           : {}),
@@ -157,6 +167,12 @@ export class ClaudeCodeProvider implements AgentProvider {
             : {}),
       }
       this.#agents.set(sessionId, agent)
+      // ponytail: drop sessions idle past the recency window from memory so
+      // they stop showing up on the deck/counter without a full rescan.
+      const cutoff = Date.now() - this.#recentWindowMs
+      for (const [id, a] of this.#agents) {
+        if (a.updatedAt < cutoff) this.#agents.delete(id)
+      }
       onChange()
     } catch {
       // file may be unreadable; skip

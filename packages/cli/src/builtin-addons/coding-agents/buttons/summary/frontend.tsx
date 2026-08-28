@@ -47,7 +47,10 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
 
   const showCount = props.config?.showCount ?? true
   const attentionOnly = props.config?.attentionOnly ?? false
-  const liveCount = attention.length > 0 ? attention.length : all.length
+  // ponytail: "live" means actually doing something — attention (waiting /
+  // error) first, else non-idle active work. Historical idle sessions (all of
+  // opencode's /session store, every claude jsonl ever) never inflate this.
+  const hasSessions = all.length > 0
 
   // --- blink on change ---------------------------------------------------
   // Blink the tile background when an agent enters attention (waiting/error)
@@ -134,14 +137,15 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
         >
           {attention.length > 0
             ? `${attention.length} ${attention.length === 1 ? "wait" : "waiting"}`
-            : `${liveCount} live`}
+            : active > 0
+              ? `${active} active`
+              : hasSessions
+                ? "0 active"
+                : "no agents"}
         </span>
       )}
       {detail.length > 0 && (
         <span className="text-[9px] leading-tight opacity-80">{detail}</span>
-      )}
-      {liveCount === 0 && (
-        <span className="text-[9px] leading-tight opacity-50">no agents</span>
       )}
     </div>
   )

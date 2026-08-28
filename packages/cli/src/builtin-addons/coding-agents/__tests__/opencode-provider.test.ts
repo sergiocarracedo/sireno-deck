@@ -5,17 +5,21 @@ import { OpenCodeProvider, type OpencodeHttpApi } from "../providers/opencode"
 const makeSession = (overrides: Record<string, unknown> = {}) => ({
   id: "abc",
   title: "demo",
-  time: { updated: 1 },
+  time: { updated: Date.now(), created: Date.now() },
   ...overrides,
 })
 
 type ApiOverrides = Partial<
-  Pick<OpencodeHttpApi, "listSessions" | "sessionStatus" | "eventStream">
+  Pick<
+    OpencodeHttpApi,
+    "listSessions" | "sessionStatus" | "eventStream" | "sessionMessages"
+  >
 >
 
 const makeApi = (overrides: ApiOverrides = {}): OpencodeHttpApi => ({
   listSessions: async () => [makeSession()],
   sessionStatus: async () => ({ abc: { type: "busy", attention: false } }),
+  sessionMessages: async () => [],
   eventStream: async () =>
     (async function* () {
       // empty stream
@@ -82,6 +86,71 @@ describe("OpenCodeProvider", () => {
     })
     const agents = await p.fetchSnapshot(new AbortController().signal)
     expect(agents[0]?.status).toBe("waiting_for_human")
+  })
+
+  it("filters out sessions updated outside the recency window", async () => {
+    const old = makeSession({
+      id: "old",
+      time: { updated: Date.now() - 48 * 60 * 60 * 1000, created: 1 },
+    })
+    const api = makeApi({ listSessions: async () => [old] })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+    const agents = await p.fetchSnapshot(new AbortController().signal)
+    expect(agents).toHaveLength(0)
+  })
+
+  it("derives running from a message tool part state running", async () => {
+    const api = makeApi({
+      listSessions: async () => [makeSession()],
+      sessionStatus: async () => ({}),
+      sessionMessages: async () => [
+        {
+          info: { role: "assistant" },
+          parts: [{ type: "tool", tool: "bash", state: { status: "running" } }],
+        },
+      ],
+    })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+    const agents = await p.fetchSnapshot(new AbortController().signal)
+    expect(agents[0]?.status).toBe("running")
+  })
+
+  it("derives waiting_for_human from a pending tool part", async () => {
+    const api = makeApi({
+      listSessions: async () => [makeSession()],
+      sessionStatus: async () => ({}),
+      sessionMessages: async () => [
+        {
+          info: { role: "assistant" },
+          parts: [{ type: "tool", tool: "ask", state: { status: "pending" } }],
+        },
+      ],
+    })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+    const agents = await p.fetchSnapshot(new AbortController().signal)
+    expect(agents[0]?.status).toBe("waiting_for_human")
+  })
+
+  it("exposes createdAt from the session time", async () => {
+    const api = makeApi({
+      listSessions: async () => [makeSession()],
+      sessionStatus: async () => ({}),
+    })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+    const agents = await p.fetchSnapshot(new AbortController().signal)
+    expect(typeof agents[0]?.createdAt).toBe("number")
   })
 
   it("subscribe calls onChange when SSE event maps to a status", async () => {

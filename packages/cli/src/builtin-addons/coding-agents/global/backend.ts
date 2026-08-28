@@ -8,6 +8,8 @@ import type {
 } from "../types/types.js"
 import { existsSync, readFileSync, renameSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
+import { fileURLToPath } from "node:url"
+import { registerIconForDeck, getAssetByPath } from "@/core/icon-asset-registry"
 import { resolveDaemonPaths } from "@/util/daemon"
 import {
   agentKey,
@@ -34,6 +36,7 @@ interface GlobalState {
   lastSeenStatus: Map<string, import("../shared/state.js").AgentStatus>
   throttle: NotificationThrottle
   context: AddonServiceContext | null
+  icons: Partial<Record<ProviderId, string>>
 }
 
 const state: GlobalState = {
@@ -44,6 +47,33 @@ const state: GlobalState = {
   lastSeenStatus: new Map(),
   throttle: new NotificationThrottle(),
   context: null,
+  icons: {},
+}
+
+// ponytail: register both provider logos as WS assets (absolute paths, so no
+// addonDirs needed) and publish their `asset://` ids in the snapshot. This is
+// the only path that works in BOTH dev (vite middleware) and real (screenshots)
+// mode — a bare `addon://` <img> would 404 in the real HTTP server.
+const registerProviderIcons = (): Partial<Record<ProviderId, string>> => {
+  const assets: Array<[ProviderId, string]> = [
+    ["opencode", "assets/opencode-dark-square.svg"],
+    ["claude-code", "assets/claude-code.svg"],
+  ]
+  const resolved: Array<[ProviderId, string]> = []
+  for (const [id, rel] of assets) {
+    try {
+      const full = fileURLToPath(new URL(`../${rel}`, import.meta.url))
+      registerIconForDeck(
+        [{ id: `${id}-logo`, type: "icon", config: { icon: full } }],
+        {},
+      )
+      const asset = getAssetByPath(full)
+      if (asset !== undefined) resolved.push([id, `asset://${asset.id}`])
+    } catch {
+      // icon registration is best-effort; tiles fall back to text labels
+    }
+  }
+  return Object.fromEntries(resolved) as Partial<Record<ProviderId, string>>
 }
 
 // --- reboot survival -------------------------------------------------------
@@ -167,6 +197,14 @@ const humanStatus = (s: import("../shared/state.js").AgentStatus): string => {
   }
 }
 
+const publishSnapshot = (): void => {
+  const payload: AgentsSnapshot = {
+    ...state.lastSnapshot,
+    icons: state.icons,
+  }
+  state.context?.publish(payload)
+}
+
 const poller: AddonGlobalPoller = {
   id: "agents",
   channel: CHANNEL,
@@ -175,7 +213,7 @@ const poller: AddonGlobalPoller = {
     state.context = ctx
     await setStateFromProviders()
     fireNotices(state.lastSnapshot)
-    ctx.publish(state.lastSnapshot)
+    publishSnapshot()
   },
 }
 
@@ -189,7 +227,7 @@ const subscription: AddonGlobalSubscription = {
         void (async () => {
           await setStateFromProviders()
           fireNotices(state.lastSnapshot)
-          ctx.publish(state.lastSnapshot)
+          publishSnapshot()
         })()
       })
       unsubs.push(unsub)
@@ -227,7 +265,12 @@ export const globalService: AddonGlobalService = {
   },
   onLoad: async (ctx: AddonServiceContext, config?: unknown): Promise<void> => {
     state.context = ctx
+    state.icons = registerProviderIcons()
     hydratePersisted()
+    state.lastSnapshot = mergeSnapshot(state.lastSnapshot, {
+      opencode: [],
+      "claude-code": [],
+    })
     const cfg: ProviderRegistryConfig = (config as
       | ProviderRegistryConfig
       | undefined) ?? {
@@ -238,7 +281,7 @@ export const globalService: AddonGlobalService = {
     state.providers = loaded.providers as Map<ProviderId, never>
     state.spawnedChild = loaded.spawnedChild
     await setStateFromProviders()
-    ctx.publish(state.lastSnapshot)
+    publishSnapshot()
   },
   onUnload: (): void => {
     for (const u of state.unsubscribers) {
@@ -257,6 +300,7 @@ export const globalService: AddonGlobalService = {
     state.lastSnapshot = EMPTY_SNAPSHOT
     state.lastSeenStatus.clear()
     state.throttle.reset()
+    state.icons = {}
     state.context = null
   },
 }
