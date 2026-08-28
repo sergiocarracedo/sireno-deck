@@ -1,6 +1,6 @@
 ---
 /**
- * /themes/ — registry page. Two sections: Built-in + Third-party.
+ * /themes/ — registry page. Two sections: Official + Community.
  */
 import Layout from "../../layouts/Base.astro"
 import ThemeCard from "../../components/ThemeCard.astro"
@@ -8,8 +8,10 @@ import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
 import { getCollection } from "astro:content"
 
 const themes = await getCollection("themes")
-const builtIns = themes.filter((t) => t.data.category === "builtin").sort((a, b) => a.data.order - b.data.order)
-const thirdParty = themes.filter((t) => t.data.category === "third-party").sort((a, b) => a.data.order - b.data.order)
+const official = themes.filter((t) => t.data.category === "official").sort((a, b) => a.data.order - b.data.order)
+const community = themes.filter((t) => t.data.category === "community").sort((a, b) => a.data.order - b.data.order)
+const submitIssueUrl =
+  "https://github.com/sergiocarracedo/sireno-deck/issues/new?assignees=&labels=theme&template=theme-submission.md&title=New%20Theme%3A%20%3Cyour-theme-name%3E"
 ---
 
 <Layout title="Theme Registry — Sireno Deck" description="Browse and discover themes for Sireno Deck.">
@@ -19,9 +21,19 @@ const thirdParty = themes.filter((t) => t.data.category === "third-party").sort(
       <h1 class="font-display text-4xl sm:text-6xl font-bold mb-4">
         Theme <span style="color: var(--color-accent-2);">Registry</span>
       </h1>
-      <p class="text-lg max-w-xl mx-auto" style="color: var(--color-muted);">
+      <p class="text-lg max-w-xl mx-auto mb-8" style="color: var(--color-muted);">
         Customize your Sireno Deck with beautiful themes or create your own.
       </p>
+      <a
+        href={submitIssueUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold transition-all hover:-translate-y-0.5"
+        style="background: var(--color-accent-2); color: var(--color-bg);"
+      >
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        Submit a theme
+      </a>
     </div>
   </section>
 
@@ -40,8 +52,8 @@ const thirdParty = themes.filter((t) => t.data.category === "third-party").sort(
       <div class="flex flex-wrap gap-2">
         {[
           { id: "all", label: "All", icon: "grid-3x3" },
-          { id: "builtin", label: "Built-in", icon: "package-check" },
-          { id: "third-party", label: "Third-party", icon: "users" },
+          { id: "official", label: "Official", icon: "package-check" },
+          { id: "community", label: "Community", icon: "users" },
         ].map((f, i) => (
           <button
             type="button"
@@ -57,9 +69,9 @@ const thirdParty = themes.filter((t) => t.data.category === "third-party").sort(
     </div>
 
     <section class="mb-16">
-      <h2 class="font-display text-2xl font-semibold mb-6">Built-in Themes</h2>
+      <h2 class="font-display text-2xl font-semibold mb-6">Official Themes</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {builtIns.map((t) => (
+        {official.map((t) => (
           <div data-theme-card data-category={t.data.category} data-name={t.data.displayName.toLowerCase()}>
             <ThemeCard id={t.id} {...t.data} />
           </div>
@@ -90,10 +102,10 @@ const thirdParty = themes.filter((t) => t.data.category === "third-party").sort(
     </section>
 
     <section>
-      <h2 class="font-display text-2xl font-semibold mb-6">Third-party Themes</h2>
-      {thirdParty.length > 0 ? (
+      <h2 class="font-display text-2xl font-semibold mb-6">Community Themes</h2>
+      {community.length > 0 ? (
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {thirdParty.map((t) => (
+          {community.map((t) => (
             <div data-theme-card data-category={t.data.category} data-name={t.data.displayName.toLowerCase()}>
               <ThemeCard id={t.id} {...t.data} />
             </div>
@@ -105,11 +117,13 @@ const thirdParty = themes.filter((t) => t.data.category === "third-party").sort(
           <h3 class="font-display text-xl mb-2 text-fg">No community themes yet</h3>
           <p class="text-sm mb-6" style="color: var(--color-muted);">Share your custom theme with the community!</p>
           <a
-href="/developer/theme-authoring/"
+            href={submitIssueUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             class="inline-block px-5 py-2.5 rounded-lg text-sm font-semibold"
             style="background: var(--color-accent-2); color: var(--color-bg);"
           >
-            Learn how to build themes
+            Submit your theme
           </a>
         </div>
       )}

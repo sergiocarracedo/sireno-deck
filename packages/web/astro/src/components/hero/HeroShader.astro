@@ -1,0 +1,17 @@
+---
+/**
+ * HeroShader — client-side animated mesh-gradient for the hero backdrop.
+ * A Canvas2D island (no WebGL dep); falls back to the CSS glow layers in
+ * ShaderBackdrop when JS is disabled or reduced-motion is set.
+ */
+import PaperShader from "./PaperShader"
+---
+
+<div aria-hidden="true" class="absolute inset-0 -z-10 overflow-hidden">
+  <PaperShader client:only="react" />
+  {/* Vignette so the headline keeps contrast over the moving canvas */}
+  <div
+    class="absolute inset-0 pointer-events-none"
+    style="background: radial-gradient(ellipse 75% 65% at 50% 40%, transparent 35%, rgba(10, 10, 15, 0.55) 75%, rgba(10, 10, 15, 0.85) 100%);"
+  ></div>
+</div>

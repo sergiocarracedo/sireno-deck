@@ -1,7 +1,7 @@
 {
   "displayName": "Brightness",
   "description": "Set the Stream Deck button brightness from a button press. Polls current brightness for live feedback.",
-  "category": "builtin",
+  "category": "official",
   "tags": ["device", "settings"],
   "icon": "sun",
   "buttonTypes": ["brightness:brightness"],

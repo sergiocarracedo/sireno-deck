@@ -1,7 +1,7 @@
 {
   "displayName": "Default",
   "description": "The built-in slate dark theme. Deep slate background, cyan accents, IBM Plex Sans + Plex Mono typography.",
-  "category": "builtin",
+  "category": "official",
   "tags": ["dark", "default", "minimal"],
   "palette": {
     "background": "#2e3540",

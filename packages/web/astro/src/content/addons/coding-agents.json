@@ -1,7 +1,7 @@
 {
   "displayName": "Coding Agents",
   "description": "Live status of OpenCode + Claude Code sessions on the deck. See active agents, send prompts, manage contexts.",
-  "category": "builtin",
+  "category": "official",
   "tags": ["ai", "agents", "coding"],
   "icon": "bot",
   "buttonTypes": ["coding-agents:summary", "coding-agents:agent"],

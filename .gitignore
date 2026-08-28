@@ -28,3 +28,6 @@ packages/cli/emulator/.sireno-deck/
 packages/cli/src/themes/*/theme.generated.css
 packages/cli/src/themes/*/theme.generated.css
 .worktrees/
+
+# runtime capture configs
+.capture-configs/

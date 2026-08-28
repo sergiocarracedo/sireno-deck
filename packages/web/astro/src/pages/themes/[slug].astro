@@ -22,7 +22,7 @@ const entry = await getEntry("themes", id)
 if (!entry) throw new Error(`theme ${id} not found`)
 const t = entry.data
 const themeId = entry.id
-const isBuiltIn = t.category === "builtin"
+const isOfficial = t.category === "official"
 ---
 
 <Layout title={`${t.displayName} Theme — Sireno Deck`} description={t.description}>
@@ -40,11 +40,11 @@ const isBuiltIn = t.category === "builtin"
             <h1 class="font-display text-4xl font-bold text-fg">{t.displayName}</h1>
             <span
               class="text-xs font-mono px-2 py-0.5 rounded"
-              style={isBuiltIn
+              style={isOfficial
                 ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
                 : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"}
             >
-              {t.category}
+              {isOfficial ? "official" : "community"}
             </span>
           </div>
           <p class="text-lg max-w-2xl" style="color: var(--color-muted);">{t.description}</p>
@@ -65,6 +65,20 @@ const isBuiltIn = t.category === "builtin"
             <div class="w-48 h-16 rounded-lg" style={`background: ${t.palette.primary}; box-shadow: 0 0 40px ${t.palette.primary}99;`}></div>
           </div>
         )}
+      </div>
+
+      {/* Custom themes concept — how a theme customizes the deck */}
+      <div class="mb-10 rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-accent);">
+        <p class="text-xs font-semibold uppercase tracking-widest text-accent mb-3" style="color: var(--color-accent);">
+          Custom themes
+        </p>
+        <p class="text-sm leading-relaxed" style="color: var(--color-muted);">
+          Custom themes allow you to change the theme just by defining the new
+          color tokens in a manifest file (YAML) — but you can also override the
+          React primitive UI components for deeper customization. Start with
+          tokens for a quick restyle, then drop in your own components when you
+          need pixel-level control.
+        </p>
       </div>
 
       <div class="grid lg:grid-cols-3 gap-6">
@@ -92,17 +106,17 @@ const isBuiltIn = t.category === "builtin"
         <div class="rounded-xl p-6 flex flex-col gap-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
           <h2 class="font-display text-lg font-semibold mb-0">Usage</h2>
 
-          {isBuiltIn ? (
+          {isOfficial ? (
             <>
               <p class="text-sm leading-relaxed -mt-3" style="color: var(--color-muted);">
-                Ships with Sireno Deck. Reference it from your
+                Official theme from this repository. Reference it from your
                 <code class="font-mono text-xs px-1 py-0.5 rounded" style="background: var(--color-bg);">config.yml</code>:
               </p>
               <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>theme: {themeId}</code></pre>
             </>
           ) : (
             <>
-              {!isBuiltIn && t.repo && (
+              {t.repo && (
                 <p class="text-sm leading-relaxed -mt-3">
                   <a href={t.repo} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 transition-colors hover:text-fg" style="color: var(--color-muted);">
                     <i data-lucide="github" class="w-4 h-4"></i>
@@ -111,9 +125,9 @@ const isBuiltIn = t.category === "builtin"
                 </p>
               )}
               <p class="text-sm leading-relaxed -mt-3" style="color: var(--color-muted);">
-                Third-party theme. Point your config at its path or npm name:
+                Community theme. Point your config at its path or npm name:
               </p>
-              <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>{`# local path\ntheme: ./packages/themes/${themeId}\n\n# or npm package\ntheme: @sireno-deck/theme-${themeId}`}</code></pre>
+              <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>{`theme: ./packages/themes/${themeId}\n\n# or npm package\ntheme: @sireno-deck/theme-${themeId}`}</code></pre>
               <p class="text-xs" style="color: var(--color-muted);">
                 Any string that isn't a registered theme or filesystem path is
                 resolved as an npm package — see

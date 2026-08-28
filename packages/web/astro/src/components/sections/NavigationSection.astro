@@ -2,7 +2,10 @@
 /**
  * NavigationSection — visual demo of the deck hierarchy.
  *
- * Mock flow `Main → App Shortcuts → Discord Overlay` over the deck image.
+ * Decks form a tree (Main → sub-decks → sub-sub-decks …) but navigation is
+ * always linear: from any deck you can move to the next deck in the current
+ * branch, or back to the previous one. Holding back returns you to Main.
+ * The same rules apply to overlay decks.
  */
 import SectionHeader from "../SectionHeader.astro"
 ---
@@ -12,32 +15,51 @@ import SectionHeader from "../SectionHeader.astro"
     <SectionHeader
       eyebrow="Navigation"
       title="Intuitive deck hierarchy"
-      body="Navigate between decks with back buttons and a slot system. Each deck has its own independent navigation stack."
+      body="Decks are organised as a tree, but navigation stays linear — at any deck you can move to the next deck in the current branch or go back to the previous one."
       accent="violet"
     />
 
     <div
-      class="rounded-2xl p-10 grid gap-8 items-center"
+      class="rounded-2xl p-10"
       style="background: var(--color-surface-raised); border: 1px solid var(--color-border);"
     >
-      <div class="grid lg:grid-cols-2 gap-10 items-center">
+      <div class="grid lg:grid-cols-2 gap-12 items-start">
         <div>
-          <h3 class="font-display text-2xl font-semibold mb-4 text-fg">Navigation flow</h3>
-          <p class="mb-6" style="color: var(--color-muted);">
-            From the main deck you can access any sub-deck. Overlays maintain their own
-            independent navigation and automatically return to the previous deck when you
-            close the app.
-          </p>
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="font-mono text-sm px-4 py-2 rounded-md" style="background: var(--color-bg); border: 1px solid var(--color-border);">Main</span>
-            <i data-lucide="arrow-right" class="w-5 h-5" style="color: var(--color-accent);"></i>
-            <span class="font-mono text-sm px-4 py-2 rounded-md" style="background: var(--color-bg); border: 1px solid var(--color-border);">App Shortcuts</span>
-            <i data-lucide="arrow-right" class="w-5 h-5" style="color: var(--color-accent);"></i>
-            <span class="font-mono text-sm px-4 py-2 rounded-md" style="background: var(--color-bg); border: 1px solid var(--color-border);">Discord Overlay</span>
-          </div>
+          <h3 class="font-display text-2xl font-semibold mb-4 text-fg">A tree of decks, linear navigation</h3>
+          <ul class="space-y-3 text-sm leading-relaxed" style="color: var(--color-muted);">
+            <li>
+              Decks form a <strong class="text-fg">tree</strong>: a deck can have
+              sub-decks, and a sub-deck can have its own sub-decks.
+            </li>
+            <li>
+              You navigate <strong class="text-fg">linearly</strong> along the
+              current branch — tap into the next deck level, or back to the
+              previous one.
+            </li>
+            <li>
+              <strong class="text-fg">Hold the back button</strong> from any
+              sub-deck to return straight to Main.
+            </li>
+            <li>
+              The same rules apply to <strong class="text-fg">overlay decks</strong> —
+              they follow their own branch and return to the deck that was
+              active before the overlay appeared.
+            </li>
+          </ul>
         </div>
-        <div class="rounded-xl overflow-hidden" style="border: 1px solid var(--color-border);">
-          <img src="/captures/demo-date-time.png" alt="Deck hierarchy in Sireno Deck" class="w-full block" />
+
+        <div class="rounded-xl p-6" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+          <p class="font-mono text-xs uppercase tracking-widest mb-4" style="color: var(--color-accent);">Deck tree</p>
+          <pre class="font-mono text-sm leading-loose text-fg">Main
+├── Deck 1
+│   └── Deck 3
+└── Deck 2
+    ├── Deck 4
+    │   └── Deck 5
+    └── Deck 6</pre>
+          <p class="font-mono text-xs mt-4" style="color: var(--color-muted);">
+            Any point → next level or previous · hold back → Main
+          </p>
         </div>
       </div>
     </div>

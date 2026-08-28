@@ -1,7 +1,7 @@
 {
   "displayName": "Value Display",
   "description": "Display any shell command output as a button label. Stream values, run periodic refresh, format on the fly.",
-  "category": "builtin",
+  "category": "official",
   "tags": ["productivity", "shell", "data"],
   "icon": "gauge",
   "buttonTypes": ["value-display:display"],

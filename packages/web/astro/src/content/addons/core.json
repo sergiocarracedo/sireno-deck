@@ -1,7 +1,7 @@
 {
   "displayName": "Core",
-  "description": "Core deck navigation: action, change-deck, page-nav, toggle, media-sample, lock. The runtime backbone — every config.yml uses these.",
-  "category": "builtin",
+  "description": "Core deck navigation: action, change-deck, page-nav, toggle, media-sample, lock. The runtime backbone \u2014 every config.yml uses these.",
+  "category": "official",
   "tags": ["navigation", "core", "required"],
   "icon": "anchor",
   "buttonTypes": [

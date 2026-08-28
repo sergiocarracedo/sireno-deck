@@ -19,8 +19,9 @@ import {
   mkdirSync,
   readdirSync,
   statSync,
-  copyFileSync,
   rmSync,
+  readFileSync,
+  writeFileSync,
 } from "node:fs"
 import { dirname, join, relative, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -37,6 +38,31 @@ if (!existsSync(sourceDir)) {
 
 mkdirSync(targetDir, { recursive: true })
 
+/**
+ * Starlight renders the page <h1> from the frontmatter `title`. When a body
+ * also opens with a matching `# Title`, the page ends up with a duplicated
+ * heading at the top. Drop the first H1 only when it exactly repeats the
+ * frontmatter title (case-insensitive) — we never touch other headings.
+ */
+const stripDuplicateTitle = (sourceText) => {
+  const titleMatch = /^title:\s*(['"]?)(.+?)\1\s*$/m.exec(sourceText)
+  if (!titleMatch) return sourceText
+  const title = titleMatch[2].trim()
+
+  // First H1 whose text equals the frontmatter title (case-insensitive).
+  const h1 = /\n^#\s+(.+?)\s*$/m.exec(sourceText)
+  if (!h1) return sourceText
+  const heading = h1[1]
+  if (heading.trim().toLowerCase() !== title.toLowerCase()) return sourceText
+
+  // Remove that exact line, and collapse the blank line left behind.
+  const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  const line = `\n# ${escaped}\n`
+  let out = sourceText.replace(new RegExp(line, "m"), "\n")
+  out = out.replace(/\n{3,}/g, "\n\n")
+  return out
+}
+
 const visit = (src, dst) => {
   for (const name of readdirSync(src)) {
     const s = join(src, name)
@@ -48,7 +74,8 @@ const visit = (src, dst) => {
       mkdirSync(d, { recursive: true })
       visit(s, d)
     } else if (st.isFile() && /\.(md|mdx)$/i.test(name)) {
-      copyFileSync(s, d)
+      const text = readFileSync(s, "utf8")
+      writeFileSync(d, stripDuplicateTitle(text), "utf8")
     }
   }
 }
