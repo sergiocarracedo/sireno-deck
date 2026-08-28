@@ -43,41 +43,22 @@ export const diffStatus = (
   after: AgentStatus,
 ): boolean => before !== after
 
-const ACTIVE: ReadonlySet<AgentStatus> = new Set([
-  "running",
-  "waiting",
-  "waiting_for_human",
-  "error",
-  "compacting",
-])
-
-const ATTENTION: ReadonlySet<AgentStatus> = new Set([
-  "waiting_for_human",
-  "error",
-])
-
-const rank = (s: AgentStatus): number => {
-  if (ATTENTION.has(s)) return 2
-  if (ACTIVE.has(s)) return 1
-  return 0
-}
-
-const byActiveThenRecent = (a: Agent, b: Agent): number => {
-  const aRank = rank(a.status)
-  const bRank = rank(b.status)
-  if (aRank !== bRank) return bRank - aRank
+const byCreatedDesc = (a: Agent, b: Agent): number => {
+  const aCreated = a.createdAt ?? 0
+  const bCreated = b.createdAt ?? 0
+  if (aCreated !== bCreated) return bCreated - aCreated
   return b.updatedAt - a.updatedAt
 }
 
 // ponytail: the agents deck is materialized once at startup with a fixed
 // number of slot tiles, so which agent fills each tile is resolved per
-// broadcast from the live snapshot. Sessions needing attention (waiting /
-// error) sit at the very top, other active work next, idle history last.
+// broadcast from the live snapshot. Ordered by creation date (newest first);
+// state is conveyed by the tile's color instead of ordering.
 export const listAgents = (snapshot: AgentsSnapshot): readonly Agent[] =>
   [
     ...snapshot.byProvider["opencode"],
     ...snapshot.byProvider["claude-code"],
-  ].sort(byActiveThenRecent)
+  ].sort(byCreatedDesc)
 
 export const agentAtSlot = (
   snapshot: AgentsSnapshot,

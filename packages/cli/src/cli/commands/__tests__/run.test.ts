@@ -746,7 +746,15 @@ describe("preflight", () => {
   })
 
   it("propagates the friendly error from outputClient.validateReady()", async () => {
-    const realClient = makeFakeOutputClient("real", [])
+    const realClient = makeFakeOutputClient("real", [
+      {
+        id: "real:mk2",
+        model: "mk2",
+        keyCount: 15,
+        label: "Stream Deck MK.2",
+        transport: "real",
+      },
+    ])
     realClient.validateReady.mockRejectedValueOnce(
       new Error(
         "No Stream Deck devices found. Connect a device and try again.",
@@ -763,24 +771,42 @@ describe("preflight", () => {
     ).rejects.toThrow(/No Stream Deck devices found/)
   })
 
-  it("real client with no devices in non-TTY throws the friendly error", async () => {
+  it("real client with no devices in non-TTY falls back to emulator", async () => {
     const realClient = makeFakeOutputClient("real", [])
-    setHappyPath({ outputClient: realClient })
+    const emulatorClient = makeFakeOutputClient("emulator", [
+      {
+        id: "emulator:mk2",
+        model: "mk2",
+        keyCount: 15,
+        label: "Emulator MK.2",
+        transport: "emulated",
+      },
+    ])
+    selectOutputClientMock
+      .mockReturnValueOnce(realClient)
+      .mockReturnValueOnce(emulatorClient)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: false,
       configurable: true,
     })
     try {
-      await expect(
-        preflight({
-          config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
-          xdgConfigHome: "/xdg",
-          homeDir: "/home",
-          logger: silentLogger(),
-        }),
-      ).rejects.toThrow(/No Stream Deck devices found/)
+      const opts: {
+        config: string
+        xdgConfigHome: string
+        homeDir: string
+        logger: ReturnType<typeof silentLogger>
+        emulator?: boolean
+      } = {
+        config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+        xdgConfigHome: "/xdg",
+        homeDir: "/home",
+        logger: silentLogger(),
+      }
+      await preflight(opts)
+      expect(opts.emulator).toBe(true)
       expect(realClient.validateReady).not.toHaveBeenCalled()
+      expect(emulatorClient.validateReady).toHaveBeenCalledTimes(1)
     } finally {
       Object.defineProperty(process.stdin, "isTTY", {
         value: originalIsTTY,

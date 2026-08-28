@@ -4,6 +4,7 @@ import type {
   AddonButtonTypeService,
 } from "../../types/types.js"
 
+import { AGENTS_FIRST_PAGE } from "../../decks/agents.js"
 import { summaryConfigSchema, type SummaryConfig } from "./config.js"
 
 interface CoreMethodsShape {
@@ -20,14 +21,12 @@ export default {
   onTap: (ctx: AddonButtonServiceContext<SummaryConfig>): void => {
     const core = ctx.coreMethods as CoreMethodsShape | undefined
     if (core?.navigateToDeck) {
-      core.navigateToDeck({ id: "coding-agents:agents", addToHistory: true })
+      core.navigateToDeck({ id: AGENTS_FIRST_PAGE, addToHistory: true })
       return
     }
     const fallback = methodsFor(ctx)["coding-agents:open"]
     if (typeof fallback === "function") {
-      ;(fallback as (a: { id: string }) => void)({
-        id: "coding-agents:agents",
-      })
+      ;(fallback as (a: { id: string }) => void)({ id: AGENTS_FIRST_PAGE })
     }
   },
   dispose: (_ctx: AddonButtonServiceContext<SummaryConfig>): void => {},

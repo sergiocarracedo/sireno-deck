@@ -15,6 +15,7 @@ export interface Agent {
   readonly status: AgentStatus
   readonly directory?: string
   readonly cost?: number
+  readonly createdAt?: number
   readonly updatedAt: number
   readonly lastMessagePreview?: string
 }
@@ -23,6 +24,9 @@ export interface AgentsSnapshot {
   readonly byProvider: Readonly<Record<ProviderId, readonly Agent[]>>
   readonly attention: readonly string[]
   readonly generatedAt: number
+  // ponytail: provider logo asset ids (asset://...) registered daemon-side so
+  // the frontend can render small `<Icon>` logos on tiles in dev AND real mode.
+  readonly icons?: Readonly<Partial<Record<ProviderId, string>>>
 }
 
 export const CHANNEL = "coding-agents:agents" as const

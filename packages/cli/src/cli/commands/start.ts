@@ -23,7 +23,6 @@ import {
   isRunning,
   pruneStaleChildren,
   readConfigPath,
-  readFlags,
   readPid,
   readToken,
   removeChildrenFile,
@@ -495,7 +494,11 @@ const runInProcessSetup = async (
     { configPath, source: resolved.source },
     `start: using config ${configPath}`,
   )
-  const runtimeFlags = readFlags() ?? buildRuntimeFlags(options)
+  // ponytail: an explicit `start` always wins — never replay the persisted
+  // flags file here. The file exists so `restart` can reuse the last mode;
+  // letting it also override a fresh invocation made one past `--emulator`
+  // run force every later plain `p dev start` into emulator mode.
+  const runtimeFlags = buildRuntimeFlags(options)
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
 
