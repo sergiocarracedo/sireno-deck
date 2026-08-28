@@ -66,7 +66,7 @@ export const OverlayDeckShowcase = () => {
             fontWeight: 300,
             letterSpacing: "0.2em",
             textTransform: "uppercase",
-            color: colors.tintGreen,
+            color: colors.success,
           }}
         >
           Overlay deck: Spotify
@@ -97,14 +97,14 @@ export const OverlayDeckShowcase = () => {
               style={{
                 transform: isSpotlight ? "scale(1.06)" : "scale(1)",
                 border: isOverlay
-                  ? `2px solid ${colors.tintGreen}`
+                  ? `2px solid ${colors.success}`
                   : isSpotlight
-                    ? `2px solid ${colors.tintBlue}`
+                    ? `2px solid ${colors.primary}`
                     : undefined,
                 boxShadow: isOverlay
-                  ? `0 0 20px ${colors.tintGreen}44`
+                  ? `0 0 20px ${colors.success}44`
                   : isSpotlight
-                    ? `0 0 12px ${colors.tintBlue}33`
+                    ? `0 0 12px ${colors.primary}33`
                     : undefined,
               }}
             >

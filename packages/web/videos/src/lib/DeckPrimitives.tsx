@@ -177,19 +177,19 @@ const VARIANT_STYLES: Record<
     color: colors.danger,
   },
   blue: {
-    background: colors.tintBlue + "40",
-    border: colors.tintBlue + "8c",
-    color: colors.tintBlue,
+    background: colors.primary + "40",
+    border: colors.primary + "8c",
+    color: colors.primary,
   },
   green: {
-    background: colors.tintGreen + "40",
-    border: colors.tintGreen + "8c",
-    color: colors.tintGreen,
+    background: colors.success + "40",
+    border: colors.success + "8c",
+    color: colors.success,
   },
   purple: {
-    background: colors.tintPurple + "40",
-    border: colors.tintPurple + "8c",
-    color: colors.tintPurple,
+    background: colors.accent + "40",
+    border: colors.accent + "8c",
+    color: colors.accent,
   },
 }
 

@@ -71,9 +71,9 @@ export const HeroLoop = () => {
           borderRadius: 40,
           background:
             currentVariant === "blue"
-              ? `radial-gradient(ellipse, ${colors.tintBlue}18 0%, transparent 70%)`
+              ? `radial-gradient(ellipse, ${colors.primary}18 0%, transparent 70%)`
               : currentVariant === "green"
-                ? `radial-gradient(ellipse, ${colors.tintGreen}18 0%, transparent 70%)`
+                ? `radial-gradient(ellipse, ${colors.success}18 0%, transparent 70%)`
                 : `radial-gradient(ellipse, ${colors.frame}12 0%, transparent 70%)`,
           filter: "blur(20px)",
           opacity: fadeIn,
