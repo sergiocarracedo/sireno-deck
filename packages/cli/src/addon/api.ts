@@ -438,5 +438,3 @@ export type AddonJsonManifestSchema = z.ZodType<AddonJsonManifest>
 
 /** The current JSON manifest schema version. */
 export const SIRENO_ADDON_JSON_API_VERSION = 1 as const
-
-export type { GestureKind } from "@/core/gesture-state"

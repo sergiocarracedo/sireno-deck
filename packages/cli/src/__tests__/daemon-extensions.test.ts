@@ -27,6 +27,7 @@ const testPaths = {
   configPathFile: join(testDir, "test.config"),
   flagsFile: join(testDir, "test.flags"),
   runtimeStateFile: join(testDir, "runtime-state.json"),
+  stateFile: join(testDir, "runtime-state.json"),
 }
 
 beforeEach(() => {
