@@ -1,0 +1,23 @@
+packages/web/videos/src/lib/DeckPrimitives.tsx
+  s_6431f34a133923::t_ab8a5a358a2cbe 180-182,185-187,190-192
+packages/web/videos/src/compositions/OverlayDeckShowcase.tsx
+  s_6431f34a133923::t_ab8a5a358a2cbe 69,100,102,105,107
+packages/web/videos/src/compositions/HeroLoop.tsx
+  s_6431f34a133923::t_ab8a5a358a2cbe 74,76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "64b55dd873d13a4572bcf8b352c9ff1716576ec8",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
