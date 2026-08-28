@@ -11,6 +11,8 @@ export interface ClaudeJsonlEntry {
   readonly permissionRequest?: unknown
   readonly error?: { readonly message?: string }
   readonly rateLimit?: unknown
+  readonly costUSD?: number
+  readonly cwd?: string
   readonly timestamp?: string | number
 }
 
@@ -75,6 +77,8 @@ export interface ClaudeDeriveResult {
   readonly status: AgentStatus
   readonly preview?: string
   readonly updatedAt: number
+  readonly cost?: number
+  readonly cwd?: string
 }
 
 export const deriveClaudeStatus = (
@@ -114,5 +118,22 @@ export const deriveClaudeStatus = (
     status = "idle"
   }
 
-  return { status, preview, updatedAt: ts }
+  // ponytail: costUSD is per-assistant-message; sum gives a rough session
+  // total. Not every version files cost on every message — absent values
+  // just don't accrue.
+  let cost = 0
+  for (const e of entries) {
+    if (typeof e.costUSD === "number" && Number.isFinite(e.costUSD)) {
+      cost += e.costUSD
+    }
+  }
+  const cwd = entries.find((e) => typeof e.cwd === "string")?.cwd
+
+  return {
+    status,
+    preview,
+    updatedAt: ts,
+    ...(cost > 0 ? { cost } : {}),
+    ...(cwd !== undefined && cwd.length > 0 ? { cwd } : {}),
+  }
 }

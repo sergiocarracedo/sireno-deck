@@ -120,11 +120,6 @@ describe("coding-agents globalService", () => {
     expect(snap).toBeDefined()
     expect(Array.isArray(snap().attention)).toBe(true)
   })
-
-  it("focus is a no-op stub for now", async () => {
-    const focus = globalService.methods?.["focus"]
-    expect(() => (focus as (a: unknown) => void)("anything")).not.toThrow()
-  })
 })
 
 // ponytail: silence the unused-import warning from makeAgent without

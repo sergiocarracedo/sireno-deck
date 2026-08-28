@@ -89,6 +89,11 @@ decks:
         config:
           durationSec: 5
 
+      - position: 11
+        type: "coding-agents:summary"
+        config:
+          showCount: true
+
       - position: 12
         type: "media:player"
 

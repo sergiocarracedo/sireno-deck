@@ -14,6 +14,7 @@ export interface Agent {
   readonly title: string
   readonly status: AgentStatus
   readonly directory?: string
+  readonly cost?: number
   readonly updatedAt: number
   readonly lastMessagePreview?: string
 }

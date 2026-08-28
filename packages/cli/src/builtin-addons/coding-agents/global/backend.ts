@@ -7,7 +7,6 @@ import type {
   AddonServiceMethod,
 } from "../types/types.js"
 import { existsSync, readFileSync, renameSync, writeFileSync } from "node:fs"
-import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { resolveDaemonPaths } from "@/util/daemon"
 import {
@@ -218,13 +217,6 @@ export const globalService: AddonGlobalService = {
   subscriptions: [subscription],
   methods: {
     getSnapshot: (() => state.lastSnapshot) as AddonServiceMethod,
-    focus: ((sessionId: unknown) => {
-      // ponytail: v1 stub — OS-level window focusing is intentionally
-      // out of scope (the deck can't reliably ask X11/Wayland to surface
-      // a tmux pane). Wired so future versions can replace this body
-      // without changing the per-button backend contract.
-      void sessionId
-    }) as AddonServiceMethod,
     dismissAttention: ((key: unknown) => {
       if (typeof key !== "string") return
       const [providerId, sessionId] = key.split(":")

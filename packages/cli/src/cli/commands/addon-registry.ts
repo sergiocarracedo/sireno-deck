@@ -332,7 +332,14 @@ const scanAddonJsonManifest = async (
     buttonTypes,
     deckTypes: {},
     source: "json",
-    globalServiceEntry: hasGlobalService ? entryPath : null,
+    // ponytail: prefer a dedicated global-entry.ts when present (mirrors the
+    // regex path's rule at line 153). A browser-safe manifest can't export a
+    // node-only globalService, so this entry file is where it lives.
+    globalServiceEntry: existsSync(join(addonDir, "global-entry.ts"))
+      ? join(addonDir, "global-entry.ts")
+      : hasGlobalService
+        ? entryPath
+        : null,
     decks,
     internal: true,
     path: addonDir,

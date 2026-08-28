@@ -110,4 +110,14 @@ describe("JSON manifest scan path", () => {
     expect(registry.byType.get("date-time:date-time")?.name).toBe("date-time")
     expect(registry.byType.get("date-time")?.name).toBe("date-time")
   })
+
+  it("discovers coding-agents with its button types and global-entry", async () => {
+    const builtinScanned = await scanBuiltinAddons()
+    const codingAgents = builtinScanned.find((s) => s.name === "coding-agents")
+    expect(codingAgents).toBeDefined()
+    expect(codingAgents?.types).toEqual(
+      expect.arrayContaining(["coding-agents:summary", "coding-agents:agent"]),
+    )
+    expect(codingAgents?.globalServiceEntry).toContain("global-entry.ts")
+  })
 })

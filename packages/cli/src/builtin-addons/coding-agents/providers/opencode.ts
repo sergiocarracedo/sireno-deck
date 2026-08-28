@@ -14,6 +14,7 @@ interface OpencodeSessionLike {
   readonly id: string
   readonly title?: string
   readonly directory?: string
+  readonly cost?: number
   readonly time?: { readonly updated?: number; readonly created?: number }
 }
 
@@ -204,6 +205,9 @@ const toAgent = (
     title: s.title && s.title.length > 0 ? s.title : "Untitled session",
     status: normalizedStatus,
     ...(s.directory !== undefined ? { directory: s.directory } : {}),
+    ...(typeof s.cost === "number" && Number.isFinite(s.cost)
+      ? { cost: s.cost }
+      : {}),
     updatedAt: s.time?.updated ?? s.time?.created ?? 0,
   }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { mergeSnapshot } from "../shared/snapshot"
+import { agentAtSlot, mergeSnapshot } from "../shared/snapshot"
 import { EMPTY_SNAPSHOT, type Agent } from "../shared/state"
 
 const agent = (overrides: Partial<Agent> = {}): Agent => ({
@@ -55,5 +55,40 @@ describe("mergeSnapshot", () => {
     expect(next.byProvider.opencode).toHaveLength(1)
     expect(next.byProvider.opencode[0]?.status).toBe("idle")
     expect(next.byProvider["claude-code"]).toHaveLength(1)
+  })
+})
+
+describe("agentAtSlot", () => {
+  it("orders active before idle, then by recency, across providers", () => {
+    const snap = mergeSnapshot(EMPTY_SNAPSHOT, {
+      opencode: [
+        agent({ sessionId: "idle-new", status: "idle", updatedAt: 300 }),
+        agent({ sessionId: "run", status: "running", updatedAt: 100 }),
+      ],
+      "claude-code": [
+        agent({
+          sessionId: "wait",
+          providerId: "claude-code",
+          status: "waiting_for_human",
+          updatedAt: 200,
+        }),
+      ],
+    })
+    expect(agentAtSlot(snap, 0)?.sessionId).toBe("wait")
+    expect(agentAtSlot(snap, 1)?.sessionId).toBe("run")
+    expect(agentAtSlot(snap, 2)?.sessionId).toBe("idle-new")
+    expect(agentAtSlot(snap, 99)).toBeUndefined()
+  })
+
+  it("floats attention sessions to the top regardless of recency", () => {
+    const snap = mergeSnapshot(EMPTY_SNAPSHOT, {
+      opencode: [
+        agent({ sessionId: "recent", status: "running", updatedAt: 999 }),
+        agent({ sessionId: "err", status: "error", updatedAt: 10 }),
+      ],
+      "claude-code": [],
+    })
+    expect(agentAtSlot(snap, 0)?.sessionId).toBe("err")
+    expect(agentAtSlot(snap, 1)?.sessionId).toBe("recent")
   })
 })

@@ -1,35 +1,27 @@
 import type { AddonDeckEntryCtx, AddonGeneratedDeck } from "../types/types.js"
 
+// ponytail: decks are materialized ONCE from createDecks, so tiles can't
+// follow sessions live. Fixed slot tiles resolve which agent each shows from
+// the latest snapshot (see agentAtSlot in shared/snapshot.ts) — active /
+// attention sessions float to the lowest slots, idle history fills the rest.
 export const createAgentsDecks = (
-  _ctx: AddonDeckEntryCtx,
+  ctx: AddonDeckEntryCtx,
 ): Record<string, AddonGeneratedDeck> => {
-  // ponytail: decks are materialized ONCE from createDecks — there is no
-  // per-broadcast refill pass yet, so per-agent tiles can't be listed
-  // dynamically. Until that machinery exists, ship a single info tile so
-  // this deck reads as intentional instead of an empty grid. The summary
-  // button on main carries the live instance/attention count.
+  const keyCount = ctx.keyCount ?? 15
+  const agentSlots = Math.max(0, keyCount - 1)
+  const buttons: Array<Record<string, unknown>> = []
+  for (let slot = 0; slot < agentSlots; slot += 1) {
+    buttons.push({
+      position: slot,
+      type: "coding-agents:agent",
+      config: { slot },
+    })
+  }
   return {
     "coding-agents:agents": {
       name: "Coding agents",
       icon: "addon://coding-agents/assets/opencode-dark-square.svg",
-      buttons: [
-        {
-          position: 0,
-          type: "core:action",
-          config: {
-            icon: "icon://bot",
-            label: "See summary",
-          },
-        },
-        {
-          position: 1,
-          type: "core:action",
-          config: {
-            icon: "icon://info",
-            label: "Per-agent view coming soon",
-          },
-        },
-      ],
+      buttons,
     },
   }
 }
