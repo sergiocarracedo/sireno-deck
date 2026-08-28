@@ -1,0 +1,24 @@
+packages/cli/src/util/daemon.ts
+  s_56d884d1e62fa5::t_4e229c603197f9 33-37,42-47,52-56,101-104,106-107,110-114,119-121,142,148-154,158-159
+  s_56d884d1e62fa5::t_c11a6fbae46024 375,377
+packages/cli/src/builtin-addons/coding-agents/__tests__/backend.test.ts
+  s_56d884d1e62fa5::t_4e229c603197f9 45
+packages/cli/src/addon/api.ts
+  s_56d884d1e62fa5::t_4e229c603197f9 441-442
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "d9aac474163fe7e482bbdb9a24faf402c96829dd",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
