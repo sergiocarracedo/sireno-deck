@@ -65,7 +65,7 @@ const THEMES = [
   { id: "neon-grids", theme: "./packages/themes/neon-grids" },
 ]
 
-const FS_PORT = 53238
+const FS_PORT = 5180 // frontend vite (fixed port in emulator mode)
 const BUSY_PORTS = [52937, 5180, 52938]
 
 const probeBusyPorts = async () => {
