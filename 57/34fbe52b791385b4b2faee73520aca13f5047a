@@ -1,0 +1,21 @@
+packages/web/astro/src/content/buttonSchemas.json
+  s_56d884d1e62fa5::t_6163c3dcd8cb77 47-51,56-58
+pnpm-lock.yaml
+  s_56d884d1e62fa5::t_e70e8b6e25ef23 203-205,1452-1463,7201-7209
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "5734fbe52b791385b4b2faee73520aca13f5047a",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
