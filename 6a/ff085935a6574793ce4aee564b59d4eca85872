@@ -1,0 +1,19 @@
+packages/cli/src/__tests__/daemon-extensions.test.ts
+  s_9523a1e230f0e7::t_3809316ce3ac2f 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6aff085935a6574793ce4aee564b59d4eca85872",
+  "prompts": {},
+  "sessions": {
+    "s_9523a1e230f0e7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb87bf784ffefGEv5K2HyNy4Lf",
+        "model": "z-ai/glm-5.3-flash"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
