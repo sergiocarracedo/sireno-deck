@@ -249,7 +249,15 @@ export const isOrphanedToInit = (): boolean => {
     const closeParen = stat.lastIndexOf(")")
     const tail = stat.slice(closeParen + 2)
     const ppid = Number.parseInt(tail.split(" ")[1] ?? "", 10)
-    return Number.isFinite(ppid) && ppid === 1
+    if (!Number.isFinite(ppid)) return false
+    // ppid === 1 covers system-level services and true orphans; a systemd
+    // --user unit's parent is the user manager itself (not pid 1), and
+    // treating that as "not a service" made the daemon try `systemctl
+    // restart` on its own unit — a self-restart loop under Restart=.
+    // Interactive shells never have systemd as a direct parent, so the
+    // stray-env false-positive defense still holds.
+    if (ppid === 1) return true
+    return readFileSync(`/proc/${ppid}/comm`, "utf8").trim() === "systemd"
   } catch {
     return false
   }
@@ -264,13 +272,12 @@ export interface ServiceModeDeps {
 export const createIsServiceMode = (deps: ServiceModeDeps) => (): boolean => {
   if (process.env["SIRENO_DAEMON_CHILD"]) return true
   if (process.env["LAUNCH_JOB_NAME"]) return deps.isOrphaned()
-  if (
-    process.env["INVOCATION_ID"] &&
-    process.env["JOURNAL_STREAM"] &&
-    deps.isOrphaned()
-  ) {
-    return true
-  }
+  // INVOCATION_ID is systemd-scoped: user-unit children always have it, and
+  // it can only leak into a shell when that shell's ANCESTOR is a user unit
+  // (terminal-server etc). isOrphaned() requires our DIRECT parent to be
+  // systemd, which a shell never is — so the pair is false-positive-proof.
+  // JOURNAL_STREAM proved unreliable: user units don't always export it.
+  if (process.env["INVOCATION_ID"] && deps.isOrphaned()) return true
   return false
 }
 

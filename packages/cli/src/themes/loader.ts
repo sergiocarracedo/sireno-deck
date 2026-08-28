@@ -10,13 +10,42 @@ import { buildThemeCss } from "./css"
 import type { ThemeEntry } from "@/config/schemas"
 
 const here = dirname(fileURLToPath(import.meta.url))
-const themesRoot = here
+
+// ponytail: `here` is the themes dir when running from source
+// (`packages/cli/src/themes`) but the BUNDLE dir when running from dist
+// (`packages/cli/dist`), where the source tree isn't shipped. The dist build
+// sits one level below src/, so try the sibling src/themes fallback first —
+// this is what let the systemd unit (dist) crash on `theme: default` with
+// "not a registered theme". Each candidate is validated by the presence of
+// the `default` theme manifest so a stale candidate can never win.
+const resolveThemesRoot = (): string => {
+  const candidates = [
+    here,
+    resolvePath(here, "..", "src", "themes"),
+    resolvePath(here, "..", "..", "src", "themes"),
+  ]
+  for (const candidate of candidates) {
+    if (existsSync(join(candidate, "default", "sirenodeck.json"))) {
+      return candidate
+    }
+  }
+  return here
+}
+
+const themesRoot = resolveThemesRoot()
+
 // ponytail: sibling scan — first-party themes shipped outside the CLI package
 // (e.g. packages/themes/<name>) get registered as "sibling" so authors can
-// iterate on a theme in a separate workspace. `here` is
+// iterate on a theme in a separate workspace. From source `here` is
 // `<repo>/packages/cli/src/themes`, so `../../../themes` lands in
-// `<repo>/packages/themes`.
-const siblingThemesRoot = resolvePath(here, "..", "..", "..", "themes")
+// `<repo>/packages/themes`; from dist it's `<repo>/packages/cli/dist`, so
+// `../../themes` lands there instead.
+const siblingCandidates = [
+  resolvePath(themesRoot, "..", "..", "..", "themes"),
+  resolvePath(themesRoot, "..", "..", "themes"),
+]
+const siblingThemesRoot =
+  siblingCandidates.find((root) => existsSync(root)) ?? siblingCandidates[0]!
 
 export interface BuiltInThemeSpec {
   name: string

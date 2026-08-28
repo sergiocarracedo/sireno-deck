@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process"
-import { createWriteStream, existsSync, openSync } from "node:fs"
+import { createWriteStream, existsSync, openSync, readFileSync } from "node:fs"
 
 import { resolveDaemonPaths } from "@/util/daemon"
 import { formatHuman } from "@/util/logger"
@@ -7,7 +7,18 @@ import { readParentPid } from "@/util/process-title"
 
 export const isOrphanedToInit = (): boolean => {
   const ppid = readParentPid()
-  return ppid === 1
+  if (ppid === null) return false
+  // ppid === 1 covers system services and true orphans; a systemd --user
+  // unit's parent is the user manager itself (not pid 1). Interactive
+  // shells never have systemd as their DIRECT parent, so a shell that
+  // inherited INVOCATION_ID from a unit-launched terminal still lands here
+  // as false. Must stay in lockstep with isOrphanedToInit in util/logger.ts.
+  if (ppid === 1) return true
+  try {
+    return readFileSync(`/proc/${ppid}/comm`, "utf8").trim() === "systemd"
+  } catch {
+    return false
+  }
 }
 
 export interface UnderServiceManagerDeps {
@@ -18,13 +29,12 @@ export const createIsUnderServiceManager =
   (deps: UnderServiceManagerDeps) => (): boolean => {
     if (process.env["SIRENO_DAEMON_CHILD"]) return true
     if (process.env["LAUNCH_JOB_NAME"]) return deps.isOrphaned()
-    if (
-      process.env["INVOCATION_ID"] &&
-      process.env["JOURNAL_STREAM"] &&
-      deps.isOrphaned()
-    ) {
-      return true
-    }
+    // INVOCATION_ID is systemd-scoped; isOrphaned() requires a direct
+    // systemd parent, so interactive shells (which can inherit
+    // INVOCATION_ID from a unit-launched terminal) stay false. See the
+    // twin comment in util/logger.ts createIsServiceMode — these two
+    // predicates must stay in lockstep.
+    if (process.env["INVOCATION_ID"] && deps.isOrphaned()) return true
     return false
   }
 export const isUnderServiceManager = createIsUnderServiceManager({
