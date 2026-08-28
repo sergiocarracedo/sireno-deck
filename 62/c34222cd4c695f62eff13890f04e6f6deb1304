@@ -1,0 +1,36 @@
+packages/cli/src/builtin-addons/coding-agents/__tests__/backend.test.ts
+  s_6431f34a133923::t_079fdc46fd6087 63-64
+  s_6431f34a133923::t_927215734d00c5 74-75
+  s_6431f34a133923::t_149941e1f76605 2-11
+packages/cli/src/util/daemon.ts
+  s_6431f34a133923::t_6e9e0aa3633ec4 90-108,117-121,123,130-132
+  s_6431f34a133923::t_e924a11406801f 32-35,40-42,45
+  s_6431f34a133923::t_afa9e2130125d9 129
+  s_6431f34a133923::t_66ce0a7254b956 407,413,451-452
+  s_6431f34a133923::t_9a4ec9dcb70285 348-353,355
+  s_6431f34a133923::t_6b89872c9fc786 122
+packages/cli/src/__tests__/daemon-extensions.test.ts
+  s_6431f34a133923::t_410da44a6686a2 26,29
+packages/cli/src/builtin-addons/coding-agents/global/backend.ts
+  s_6431f34a133923::t_9f44dc5f36626c 9,93-95
+  s_6431f34a133923::t_9eceb84d84d489 10-12
+  s_6431f34a133923::t_9d7928ad5a4777 238
+  s_6431f34a133923::t_3aac4eedf31775 133
+  s_6431f34a133923::t_ab5ce72ac245db 50-92,96-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "62c34222cd4c695f62eff13890f04e6f6deb1304",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
