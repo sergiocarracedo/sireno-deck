@@ -1,11 +1,13 @@
 // ponytail: see packages/addons/app-shortcuts/src/index.ts for context.
-import { globalService } from "./global/backend.js"
+// This module is imported by the frontend's virtual addons/registry, so the
+// import graph reachable from here must stay browser-safe: no static imports
+// of node builtins or node-only modules. Node-side pieces (globalService,
+// provider registry) live behind global-entry.ts / dynamic imports.
 import agentBackend from "./buttons/agent/backend.js"
 import agentFrontend from "./buttons/agent/frontend.js"
 import summaryBackend from "./buttons/summary/backend.js"
 import summaryFrontend from "./buttons/summary/frontend.js"
 import { createAgentsDecks } from "./decks/agents.js"
-import { opencodeInstalled } from "./providers/registry.js"
 import type { AddonManifestV1 } from "./types/types.js"
 
 const probeOpencodeReachable = async (): Promise<{
@@ -79,12 +81,14 @@ export const manifest = {
           : never,
     },
   ] as unknown as AddonManifestV1["decks"],
-  globalService,
   checks: [
     { name: "opencode-reachable", check: probeOpencodeReachable },
     {
       name: "opencode-installed",
+      // ponytail: dynamic import keeps providers/registry (node-only) out of
+      // the browser graph — the check body only ever runs on the daemon side.
       check: async () => {
+        const { opencodeInstalled } = await import("./providers/registry.js")
         const installed = await opencodeInstalled()
         return installed
           ? { available: true }

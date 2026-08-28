@@ -5,6 +5,8 @@ import type { z } from "zod"
 import type { ActionExecutor } from "@/action/executor"
 import type { Store } from "@/core/store"
 import type { GestureKind } from "@/core/gesture-state"
+
+export type { GestureKind }
 import type { Methods } from "@/deck/methods"
 
 /** The runtime manifest API version (`AddonManifestV1`). */

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 
+import { globalService } from "../global-entry"
 import { manifest } from "../manifest"
 
 describe("coding-agents manifest", () => {
@@ -10,13 +11,17 @@ describe("coding-agents manifest", () => {
     expect(Object.keys(manifest.buttonTypes)).toContain("coding-agents:agent")
   })
 
+  it("keeps the manifest browser-safe (no node-only fields)", () => {
+    expect("globalService" in manifest).toBe(false)
+  })
+
   it("exposes globalService with methods, pollers, subscriptions, lifecycle", () => {
-    expect(manifest.globalService).toBeDefined()
-    expect(manifest.globalService?.methods).toBeDefined()
-    expect(manifest.globalService?.pollers).toBeDefined()
-    expect(manifest.globalService?.subscriptions).toBeDefined()
-    expect(manifest.globalService?.onLoad).toBeDefined()
-    expect(manifest.globalService?.onUnload).toBeDefined()
+    expect(globalService).toBeDefined()
+    expect(globalService.methods).toBeDefined()
+    expect(globalService.pollers).toBeDefined()
+    expect(globalService.subscriptions).toBeDefined()
+    expect(globalService.onLoad).toBeDefined()
+    expect(globalService.onUnload).toBeDefined()
   })
 
   it("button types declare gesture handlers", () => {
@@ -47,7 +52,7 @@ describe("coding-agents manifest", () => {
 
   it("channel name matches the shared constant", async () => {
     const { CHANNEL } = await import("../shared/state")
-    const poller = manifest.globalService?.pollers?.[0]
+    const poller = globalService.pollers?.[0]
     expect(poller?.channel).toBe(CHANNEL)
   })
 })

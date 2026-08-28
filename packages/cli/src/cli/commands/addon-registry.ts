@@ -145,8 +145,16 @@ const scanAddonDir = async (
     buttonTypes,
     deckTypes: {},
     source: "regex",
-    globalServiceEntry:
-      hasGlobalService && indexFile !== null ? indexFile : null,
+    // ponytail: prefer a dedicated global-entry.ts — index.ts is imported by
+    // the frontend's virtual addons/registry, so a global backend reachable
+    // from it puts node builtins in the browser graph and crashes the app.
+    // A global-entry.ts next to index.ts keeps the node side out of the
+    // browser bundle entirely.
+    globalServiceEntry: existsSync(join(addonDir, "global-entry.ts"))
+      ? join(addonDir, "global-entry.ts")
+      : hasGlobalService && indexFile !== null
+        ? indexFile
+        : null,
     decks: [],
     internal: true,
     path: addonDir,
