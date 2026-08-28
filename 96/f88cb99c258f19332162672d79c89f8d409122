@@ -1,0 +1,36 @@
+packages/cli/src/builtin-addons/emoji-selector/support.ts
+  s_6431f34a133923::t_6c62f18251d2f0 31-35
+  s_6431f34a133923::t_e0ca867ab7f0f1 39-41
+  s_6431f34a133923::t_0c2733bd05594f 42
+docs/solutions/emoji-selector-favorites-config.md
+  s_6431f34a133923::t_9d1d68b5a4b350 12,14
+  s_6431f34a133923::t_d388640136cdbf 1-11,13,15-57
+packages/cli/src/builtin-addons/emoji-selector/__tests__/support.test.ts
+  s_6431f34a133923::t_2c5f6fd16615fc 1-2,4-20,24-35
+  s_6431f34a133923::t_e0ca867ab7f0f1 3,21-23
+packages/cli/src/cli/commands/addon-decks.ts
+  s_6431f34a133923::t_f1c3c277b61b7c 5
+  s_6431f34a133923::t_d836bb9ba4ad5c 320,324-338
+  s_6431f34a133923::t_d53c8ccdb501ea 252-273
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_6431f34a133923::t_e0ca867ab7f0f1 1007,1075-1082,1113-1120,1170-1172
+  s_6431f34a133923::t_4d651bb9bf100f 411-415
+  s_6431f34a133923::t_8329e74c66a5b8 1005-1006,1008-1074,1083-1112,1121-1169,1173
+  s_6431f34a133923::t_f837f7e069b4b8 1174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "96f88cb99c258f19332162672d79c89f8d409122",
+  "prompts": {},
+  "sessions": {
+    "s_6431f34a133923": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fca635dccffeFD9GGTiqh6B1fq",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
