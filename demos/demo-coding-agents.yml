@@ -1,0 +1,6 @@
+name: Coding agents demo
+buttons:
+  - position: 0
+    type: "coding-agents:summary"
+    config:
+      showCount: true
