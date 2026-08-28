@@ -5,6 +5,11 @@ import { docsSchema } from "@astrojs/starlight/schema"
 
 const addonCategory = z.enum(["official", "community"])
 const themeCategory = z.enum(["official", "community"])
+// `source: "cli"` = bundled inside @sirenodeck/cli (ships to every user).
+// `source: "monorepo"` = first-party in this workspace but a separate
+// npm package (e.g. app-shortcuts, pomodoro). Homepage filters to `cli`
+// only so the "Included addons" list reflects what a vanilla install gets.
+const addonSource = z.enum(["cli", "monorepo"])
 
 export const collections = {
   docs: defineCollection({
@@ -18,6 +23,7 @@ export const collections = {
       displayName: z.string(),
       description: z.string(),
       category: addonCategory,
+      source: addonSource.default("cli"),
       tags: z.array(z.string()).default([]),
       icon: z.string().default("puzzle"),
       buttonTypes: z.array(z.string()).default([]),

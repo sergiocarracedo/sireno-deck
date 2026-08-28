@@ -12,5 +12,6 @@
     "core:media-sample",
     "core:lock"
   ],
-  "order": 1
+  "order": 1,
+  "source": "cli"
 }

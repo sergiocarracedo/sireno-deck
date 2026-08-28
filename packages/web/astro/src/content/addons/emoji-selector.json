@@ -9,5 +9,6 @@
     "emoji-selector:category",
     "emoji-selector:emoji"
   ],
-  "order": 5
+  "order": 5,
+  "source": "cli"
 }

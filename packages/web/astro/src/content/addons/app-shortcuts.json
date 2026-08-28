@@ -8,5 +8,6 @@
   "npm": "@sirenodeck/addon-app-shortcuts",
   "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/addons/app-shortcuts",
   "screenshot": "/captures/demo-app-shortcuts.png",
-  "order": 20
+  "order": 20,
+  "source": "monorepo"
 }

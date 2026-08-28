@@ -5,5 +5,6 @@
   "tags": ["device", "settings"],
   "icon": "sun",
   "buttonTypes": ["brightness:brightness"],
-  "order": 10
+  "order": 10,
+  "source": "cli"
 }

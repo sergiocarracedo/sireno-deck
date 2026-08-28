@@ -9,5 +9,6 @@
     "system-status:kpis",
     "system-status:chart"
   ],
-  "order": 7
+  "order": 7,
+  "source": "cli"
 }

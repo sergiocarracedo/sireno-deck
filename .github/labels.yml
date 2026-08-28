@@ -1,0 +1,26 @@
+# GitHub labels for sergio/sireno-deck.
+#
+# Apply on the repo with: gh label sync --file .github/labels.yml
+# Or copy-paste each line into `Issues → Labels` in the repo UI.
+#
+# The website's Submit-an-addon / Submit-a-theme buttons link to
+# /issues/new?labels=addon,theme&template=addon-submission.md,theme-submission.md
+# — those template files only appear in the picker if GitHub has them on the
+# default branch, and the labels are applied automatically only if they
+# already exist. Keep this file in sync with the on-site buttons.
+
+- name: addon
+  description: Community addon submission — see /addons registry
+  color: 1d4ed8
+- name: theme
+  description: Community theme submission — see /themes registry
+  color: a78bfa
+- name: bug
+  description: Something isn't working
+  color: dc2626
+- name: docs
+  description: Documentation improvement
+  color: 22d3ee
+- name: enhancement
+  description: New feature or improvement
+  color: 16a34a

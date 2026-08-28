@@ -11,5 +11,6 @@
     "date-time:analog-clock"
   ],
   "screenshot": "/captures/demo-date-time.png",
-  "order": 4
+  "order": 4,
+  "source": "cli"
 }

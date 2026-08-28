@@ -1,12 +1,15 @@
 ---
 /**
- * AddonsSection — grid of all addons (compact, for the homepage).
+ * AddonsSection — homepage grid of addons shipped INSIDE the CLI package.
+ * Excludes workspace addons (packages/addons/*) so the "Included addons"
+ * list reflects what a vanilla `pnpm dlx sirenodeck start` install gets.
  */
 import SectionHeader from "../SectionHeader.astro"
 import AddonCard from "../AddonCard.astro"
 import { getCollection } from "astro:content"
 
 const addons = (await getCollection("addons"))
+  .filter((a) => a.data.source === "cli")
   .sort((a, b) => a.data.order - b.data.order)
 ---
 
@@ -15,7 +18,7 @@ const addons = (await getCollection("addons"))
     <SectionHeader
       eyebrow="Ecosystem"
       title="Included addons"
-      body={`${addons.length} powerful addons ready to use. Build your own and share them via npm.`}
+      body={`${addons.length} first-party addons ship with the CLI — plus more workspace addons and a growing community list in the registry.`}
     />
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

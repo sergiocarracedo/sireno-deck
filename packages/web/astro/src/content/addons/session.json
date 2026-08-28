@@ -5,5 +5,6 @@
   "tags": ["session", "lock", "info"],
   "icon": "lock",
   "buttonTypes": ["session:info"],
-  "order": 3
+  "order": 3,
+  "source": "cli"
 }

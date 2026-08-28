@@ -15,7 +15,7 @@ const { id } = Astro.props
 const entry = await getEntry("addons", id)
 if (!entry) throw new Error(`addon ${id} not found`)
 
-const { displayName, description, category, tags, icon, screenshot } = entry.data
+const { displayName, description, category, tags, icon } = entry.data
 const isOfficial = category === "official"
 ---
 
@@ -47,12 +47,6 @@ const isOfficial = category === "official"
   </div>
 
   <p class="text-sm leading-relaxed mb-4 flex-1" style="color: var(--color-muted);">{description}</p>
-
-  {screenshot && (
-    <div class="rounded-md overflow-hidden mb-4" style="border: 1px solid var(--color-border); aspect-ratio: 16 / 10;">
-      <img src={screenshot} alt="" class="w-full h-full object-cover" loading="lazy" />
-    </div>
-  )}
 
   <div class="flex items-center justify-between pt-3" style="border-top: 1px solid var(--color-border);">
     <div class="flex flex-wrap gap-1.5">

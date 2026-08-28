@@ -6,5 +6,6 @@
   "icon": "gauge",
   "buttonTypes": ["value-display:display"],
   "screenshot": "/captures/demo-value-display.png",
-  "order": 8
+  "order": 8,
+  "source": "cli"
 }

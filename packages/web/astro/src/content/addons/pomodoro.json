@@ -8,5 +8,6 @@
   "npm": "@sirenodeck/addon-pomodoro",
   "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/addons/pomodoro",
   "screenshot": "/captures/demo-pomodoro.png",
-  "order": 21
+  "order": 21,
+  "source": "monorepo"
 }

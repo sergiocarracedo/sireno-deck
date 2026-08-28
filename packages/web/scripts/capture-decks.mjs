@@ -11,19 +11,21 @@
 // a temp config and capture its main deck again.
 //
 // Output: packages/web/astro/public/captures/
-//   demo-<deck-id>.png        (default theme, every deck)
-//   theme-<theme-name>.png    (main deck in that theme)
+//   demo-<deck-id>.png       (default theme, every deck)
+//   theme-<theme-name>.png   (main deck in that theme)
+//   01-default.png           (alias of main.png for theme gallery)
+//   13-light.png / 14-riptide.png / 15-neon-grids.png (theme aliases)
 //
-// Run: node packages/web/scripts/capture-decks.mjs
+// Important: the daemon's emulator uses FIXED ports 5180 (frontend vite)
+// and 52938 (emulator vite). The WS bridge port is set with --port.
+// This script will fail cleanly with a clear error if any of those are
+// busy — stop your `sireno start --emulator` (and any vite processes on
+// those ports) before running it.
+//
+// Run: pnpm --filter sirenodeck-web run sync-captures
 
-import {
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs"
-import { dirname, resolve } from "node:path"
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { spawn } from "node:child_process"
 import { createRequire } from "node:module"
@@ -37,8 +39,6 @@ const cliPkg = resolve(repoRoot, "packages/cli/package.json")
 const requireFromCli = createRequire(cliPkg)
 const { chromium } = requireFromCli("playwright")
 
-// Deck ids present in config.yml's decks (via !include). We resolve the
-// visible set from config.yml at runtime, minus the alias names we keep.
 const BASE_DECKS = [
   "main",
   "demo-app-shortcuts",
@@ -52,14 +52,12 @@ const BASE_DECKS = [
   "demo-pomodoro",
 ]
 
-// Legacy aliases the site references today (see page metas / sections).
 const THEME_ALIASES = {
   light: "13-light.png",
   riptide: "14-riptide.png",
   "neon-grids": "15-neon-grids.png",
 }
 
-// Theme id → config.yml `theme:` value.
 const THEMES = [
   { id: "default", theme: "default" },
   { id: "light", theme: "light" },
@@ -67,8 +65,23 @@ const THEMES = [
   { id: "neon-grids", theme: "./packages/themes/neon-grids" },
 ]
 
-const EMPORT = 53237
 const FS_PORT = 53238
+const BUSY_PORTS = [52937, 5180, 52938]
+
+const probeBusyPorts = async () => {
+  const busy = []
+  for (const p of BUSY_PORTS) {
+    try {
+      const res = await fetch(`http://127.0.0.1:${p}/`, {
+        signal: AbortSignal.timeout(300),
+      })
+      busy.push({ port: p, status: res.status })
+    } catch {
+      /* free */
+    }
+  }
+  return busy
+}
 
 const waitFor = async (url, timeoutMs) => {
   const start = Date.now()
@@ -86,12 +99,11 @@ const waitFor = async (url, timeoutMs) => {
 
 const writeTempConfig = (themeValue) => {
   const base = readFileSync(resolve(repoRoot, "config.yml"), "utf8")
-  // Replace the theme line (or inject one at the top).
   let cfg = base.replace(/^theme:.*$/m, `theme: ${themeValue}`)
-  if (!/^theme:/m.test(cfg)) {
-    cfg = `theme: ${themeValue}\n` + cfg
-  }
-  const p = resolve(repoRoot, ".capture-configs/decks.yml")
+  if (!/^theme:/m.test(cfg)) cfg = `theme: ${themeValue}\n` + cfg
+  const dir = resolve(repoRoot, ".capture-configs")
+  mkdirSync(dir, { recursive: true })
+  const p = join(dir, "captures.yml")
   writeFileSync(p, cfg)
   return p
 }
@@ -107,7 +119,7 @@ const bootDaemon = async (themeValue) => {
     cfgPath,
     "--emulator",
     "--port",
-    String(EMPORT),
+    "53237",
     "--log-level",
     "warn",
   ]
@@ -118,7 +130,7 @@ const bootDaemon = async (themeValue) => {
       SIRENO_CWD: repoRoot,
       TSX_TSCONFIG_PATH: resolve(repoRoot, "packages/cli/tsconfig.json"),
     },
-    stdio: ["ignore", "ignore", "ignore"],
+    stdio: ["ignore", "ignore", "inherit"],
     detached: true,
   })
 
@@ -144,12 +156,22 @@ const cleanup = (proc) => {
 }
 
 const main = async () => {
+  const busy = await probeBusyPorts()
+  if (busy.length > 0) {
+    const list = busy.map((b) => `  - ${b.port} (HTTP ${b.status})`).join("\n")
+    console.error(
+      `[capture] daemon ports already bound; stop your dev daemon and try again:\n${list}\n` +
+        `Expected free: 52937 (WS bridge), 5180 (frontend vite), 52938 (emulator vite).\n` +
+        `Hint: pnpm --filter @sirenodeck/cli exec sireno stop`,
+    )
+    process.exit(2)
+  }
+
   const browser = await chromium.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-dev-shm-usage"],
   })
 
-  // --- default theme: every demo deck ---
   let daemon = null
   try {
     const boot = await bootDaemon("default")
@@ -158,7 +180,6 @@ const main = async () => {
       console.error("[capture] daemon never bound frontend port")
       return
     }
-
     const ctx = await browser.newContext({
       viewport: { width: 1600, height: 1000 },
       deviceScaleFactor: 2,
@@ -172,15 +193,14 @@ const main = async () => {
           waitUntil: "networkidle",
           timeout: 25000,
         })
-        await page.waitForTimeout(1200)
+        await page.waitForTimeout(1500)
         const el = page.locator(`[data-deck-id="${deckId}"]`)
+        const out = resolve(outDir, `${deckId}.png`)
         if (await el.count()) {
-          const out = resolve(outDir, `${deckId}.png`)
           await el.screenshot({ path: out })
           console.log(`[capture] ok  ${deckId}  ->  ${out}`)
         } else {
-          // fall back to full-viewport shot of the frame
-          await page.screenshot({ path: resolve(outDir, `${deckId}.png`) })
+          await page.screenshot({ path: out })
           console.log(`[capture] ok  ${deckId} (frame fallback)`)
         }
       } catch (err) {
@@ -191,52 +211,50 @@ const main = async () => {
     cleanup(daemon)
     await new Promise((res) => daemon.once("exit", res))
     daemon = null
+
+    for (const theme of THEMES.filter((t) => t.id !== "default")) {
+      const bootT = await bootDaemon(theme.theme)
+      daemon = bootT.proc
+      if (!bootT.up) {
+        console.error(`[capture] theme ${theme.id} never bound`)
+        cleanup(daemon)
+        continue
+      }
+      const ctx = await browser.newContext({
+        viewport: { width: 1600, height: 1000 },
+        deviceScaleFactor: 2,
+      })
+      const page = await ctx.newPage()
+      try {
+        await page.goto(`http://127.0.0.1:${FS_PORT}/decks/main`, {
+          waitUntil: "networkidle",
+          timeout: 30000,
+        })
+        await page.waitForTimeout(2000)
+        const el = page.locator('[data-deck-id="main"]')
+        const out = resolve(outDir, `theme-${theme.id}.png`)
+        await el.screenshot({ path: out })
+        console.log(`[capture] ok  theme-${theme.id}`)
+        const alias = THEME_ALIASES[theme.id]
+        if (alias) {
+          copyFileSync(out, resolve(outDir, alias))
+          console.log(`[capture]        alias -> ${alias}`)
+        }
+      } catch (err) {
+        console.warn(`[capture] fail theme-${theme.id}: ${err.message}`)
+      }
+      await ctx.close()
+      cleanup(daemon)
+      await new Promise((res) => daemon.once("exit", res))
+      daemon = null
+    }
   } finally {
     if (daemon) {
       cleanup(daemon)
       await new Promise((res) => daemon.once("exit", res))
     }
+    await browser.close()
   }
-
-  // --- extra themes: main deck only ---
-  for (const theme of THEMES.filter((t) => t.id !== "default")) {
-    const boot = await bootDaemon(theme.theme)
-    daemon = boot.proc
-    if (!boot.up) {
-      console.error(`[capture] theme ${theme.id} never bound`)
-      cleanup(daemon)
-      continue
-    }
-    const ctx = await browser.newContext({
-      viewport: { width: 1600, height: 1000 },
-      deviceScaleFactor: 2,
-    })
-    const page = await ctx.newPage()
-    try {
-      await page.goto(`http://127.0.0.1:${FS_PORT}/decks/main`, {
-        waitUntil: "networkidle",
-        timeout: 30000,
-      })
-      await page.waitForTimeout(1800)
-      const el = page.locator('[data-deck-id="main"]')
-      const out = resolve(outDir, `theme-${theme.id}.png`)
-      await el.screenshot({ path: out })
-      console.log(`[capture] ok  theme-${theme.id}`)
-      const alias = THEME_ALIASES[theme.id]
-      if (alias) {
-        copyFileSync(out, resolve(outDir, alias))
-        console.log(`[capture]        alias -> ${alias}`)
-      }
-    } catch (err) {
-      console.warn(`[capture] fail theme-${theme.id}: ${err.message}`)
-    }
-    await ctx.close()
-    cleanup(daemon)
-    await new Promise((res) => daemon.once("exit", res))
-    daemon = null
-  }
-
-  await browser.close()
   console.log("[capture] done")
 }
 

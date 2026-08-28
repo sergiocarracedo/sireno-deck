@@ -11,5 +11,6 @@
     "media:mute"
   ],
   "screenshot": "/captures/demo-media.png",
-  "order": 6
+  "order": 6,
+  "source": "cli"
 }

@@ -24,6 +24,7 @@
     "@astrojs/node": "^11.1.0",
     "@astrojs/react": "^6.0.2",
     "@astrojs/starlight": "^0.41.5",
+    "@paper-design/shaders-react": "^0.0.80",
     "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.3",
