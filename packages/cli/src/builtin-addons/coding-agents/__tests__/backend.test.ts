@@ -42,6 +42,7 @@ const makeProvider = (
   logoPath: "",
   fetchSnapshot: async () => agents,
   subscribe: () => () => {},
+  refreshDecks: () => null,
 })
 
 const makeCtx = () => {

@@ -30,19 +30,30 @@ import type pino from "pino"
 
 export interface DaemonPaths {
   // XDG_RUNTIME_DIR — tmpfs in Linux user scope; vanishes on reboot.
-  // pidFile + tokenFile MUST live here: the token rotates per daemon start
-  // and child PIDs are re-spawned on every boot. childrenFile stays here too
-  // — its only value is post-crash child tracking within a session.
+  // pidFile + tokenFile MUST live here: token rotates per daemon start
+  // and child PIDs are re-spawned on every boot, so neither is worth
+  // persisting. childrenFile is XDG_RUNTIME_DIR too — the SPA/vite/playwright
+  // children re-derive on boot anyway, so the file's value across reboots
+  // is post-crash child tracking only.
   runtimeDir: string
   pidFile: string
   tokenFile: string
   childrenFile: string
-  // XDG_STATE_HOME — persistent; survives reboot. Restart-mode preferences,
-  // last runtime URLs, resolved config pointer.
+  // XDG_STATE_HOME — persistent. Survives reboot. Holds the bits the
+  // daemon needs to hand the same live experience back to the user on
+  // next boot: last published snapshot (provider agent counts, statuses,
+  // attention flags), restart-mode preferences, and the resolved config
+  // path pointer so the daemon re-loads the user's config without
+  // requiring a fresh `p dev` invocation.
   dataDir: string
   configPathFile: string
   flagsFile: string
   runtimeStateFile: string
+  // Ponytail: stateFile is the legacy alias for runtimeStateFile —
+  // callers from older builds reference this name. Kept as a re-export
+  // of `runtimeStateFile` so the value is shared regardless of which
+  // an addon reads.
+  stateFile: string
 }
 
 const writeAtomic = (path: string, content: string, mode: number): void => {
@@ -87,20 +98,27 @@ const defaultRuntimeDir = (): string => {
   }
 }
 
-// ponytail: persistent storage — XDG_STATE_HOME (~/.local/state on Linux),
-// Library/Application Support on macOS, %LOCALAPPDATA% on Windows. Env vars
-// win so sandboxes/CI can redirect.
+// ponytail: persistent storage location. On Linux, XDG_STATE_HOME
+// defaults to ~/.local/state; macOS uses Library/Application Support;
+// Windows uses %LOCALAPPDATA%. Always prefer the env var when set so
+// CI / sandboxed environments can override.
 const defaultDataDir = (): string => {
-  const xdgState = process.env["XDG_STATE_HOME"]
-  if (xdgState) return join(xdgState, DAEMON_NAME)
+  const xdg = process.env["XDG_STATE_HOME"]
+  if (xdg) return join(xdg, DAEMON_NAME)
   switch (platform) {
     case "darwin":
-      return join(homedir(), "Library", "Application Support", DAEMON_NAME)
+      return join(
+        process.env["XDG_DATA_HOME"] ??
+          join(homedir(), "Library", "Application Support"),
+        DAEMON_NAME,
+      )
     case "win32":
       return join(process.env["LOCALAPPDATA"] ?? tmpdir(), DAEMON_NAME)
     default:
       return join(
-        process.env["XDG_DATA_HOME"] ?? join(homedir(), ".local", "state"),
+        process.env["XDG_STATE_HOME"] ??
+          process.env["XDG_DATA_HOME"] ??
+          join(homedir(), ".local", "state"),
         DAEMON_NAME,
       )
   }
@@ -121,15 +139,24 @@ export const resolveDaemonPaths = (): DaemonPaths => {
       chmodSync(dataDir, 0o700)
     }
   }
+  const runtimeStateFile = join(dataDir, RUNTIME_STATE_FILE)
   return {
     runtimeDir,
     pidFile: join(runtimeDir, `${DAEMON_NAME}.pid`),
     tokenFile: join(runtimeDir, `${DAEMON_NAME}.token`),
     childrenFile: join(runtimeDir, `${DAEMON_NAME}.children.json`),
+    // ponytail: restart-survival — files that have to outlive a reboot
+    // live under dataDir (XDG_STATE_HOME). runtime-state.json is the live
+    // snapshot the daemon rehydrates from; flags.json is the user's
+    // restart-mode preferences (emulator vs real, remote, port); the
+    // config-path pointer lets the daemon re-load the same user config
+    // without requiring a fresh invocation. config and flags used to live
+    // in tmpfs — they now persist.
     dataDir,
     configPathFile: join(dataDir, `${DAEMON_NAME}.config`),
     flagsFile: join(dataDir, `${DAEMON_NAME}.flags.json`),
-    runtimeStateFile: join(dataDir, RUNTIME_STATE_FILE),
+    runtimeStateFile,
+    stateFile: runtimeStateFile,
   }
 }
 
@@ -345,14 +372,9 @@ export const removeConfigPathFile = (paths = resolveDaemonPaths()): void => {
 export const readFlags = (
   paths = resolveDaemonPaths(),
 ): RuntimeFlags | null => {
-  // ponytail: pre-dataDir daemons cached flags in the tmpfs runtime dir;
-  // a same-session upgrade would otherwise lose `restart`'s memory until the
-  // next real start. Delete once nobody upgrades across this boundary.
-  const file = existsSync(paths.flagsFile)
-    ? paths.flagsFile
-    : join(paths.runtimeDir, `${DAEMON_NAME}.flags.json`)
+  if (!existsSync(paths.flagsFile)) return null
   try {
-    const raw = readFileSync(file, "utf8")
+    const raw = readFileSync(paths.flagsFile, "utf8")
     const parsed = JSON.parse(raw) as Partial<RuntimeFlags>
     if (
       typeof parsed.emulator !== "boolean" ||
