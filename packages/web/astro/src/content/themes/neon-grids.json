@@ -1,7 +1,7 @@
 {
   "displayName": "Neon Grids",
   "description": "Synthwave theme: black background, electric-cyan primary with magenta/pink contrast, perspective grid icons.",
-  "category": "third-party",
+  "category": "official",
   "tags": ["dark", "synthwave", "neon", "magenta"],
   "palette": {
     "background": "#000000",
@@ -11,6 +11,6 @@
     "accent": "#8a2be2"
   },
   "preview": "/captures/15-neon-grids.png",
-  "repo": "https://github.com/sireno-deck/sireno-deck/tree/main/packages/themes/neon-grids",
+  "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/themes/neon-grids",
   "order": 11
 }

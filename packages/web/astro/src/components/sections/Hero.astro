@@ -6,11 +6,11 @@
  * value-prop paragraph, and two CTAs. Below the CTA pair sits the looping
  * demo video frame.
  */
-import ShaderBackdrop from "../ShaderBackdrop.astro"
+import HeroShader from "../hero/HeroShader.astro"
 ---
 
 <section class="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16">
-  <ShaderBackdrop variant="hero" />
+  <HeroShader />
 
   <div class="relative z-10 text-center max-w-4xl mx-auto">
     <p class="font-mono text-xs font-medium uppercase tracking-[0.25em] mb-6" style="color: var(--color-accent);">
@@ -38,7 +38,7 @@ import ShaderBackdrop from "../ShaderBackdrop.astro"
         Get Started
       </a>
       <a
-        href="https://github.com/sireno-deck/sireno-deck"
+        href="https://github.com/sergiocarracedo/sireno-deck"
         target="_blank"
         rel="noopener noreferrer"
         class="px-7 py-3 rounded-lg text-sm font-semibold transition-all"

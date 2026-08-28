@@ -17,7 +17,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/sireno-deck/sireno-deck",
+          href: "https://github.com/sergiocarracedo/sireno-deck",
         },
       ],
       customCss: [

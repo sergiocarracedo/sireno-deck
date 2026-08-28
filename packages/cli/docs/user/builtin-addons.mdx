@@ -6,16 +6,29 @@ order: 8
 tags: [addons, builtin, reference]
 ---
 
-# Built-in Addons
+Sireno Deck ships a set of first-party addons. They are enabled by default —
+no configuration is required to load them, though almost every one exposes
+options on its buttons.
 
-Sireno Deck includes several built-in addons that provide common functionality.
+## Summary
 
-## Adding Built-in Addons
+| Addon          | Button types                                                                                        | Category     |
+| -------------- | --------------------------------------------------------------------------------------------------- | ------------ |
+| Core           | `core:action`, `core:change-deck`, `core:page-nav`, `core:toggle`, `core:media-sample`, `core:lock` | navigation   |
+| Date Time      | `date-time:time`, `date-time:date`, `date-time:date-time`, `date-time:analog-clock`                 | productivity |
+| Media          | `media:player`, `media:mute`, `media:volume:up`, `media:volume:down`                                | system       |
+| System Status  | `system-status:system-status`                                                                       | monitoring   |
+| Value Display  | `value-display:display`                                                                             | productivity |
+| Weather        | `weather:weather`                                                                                   | productivity |
+| Emoji Selector | `emoji-selector:launcher`, `emoji-selector:category`, `emoji-selector:emoji`                        | productivity |
+| Brightness     | `brightness:brightness`                                                                             | device       |
+| Session        | `session:info`                                                                                      | lock/session |
+| Coding Agents  | `coding-agents:summary`, `coding-agents:agent`                                                      | ai           |
 
-Built-in addons are enabled by default. No additional configuration needed unless you want to customize them.
+Built-in addons are enabled by default:
 
 ```yaml
-# Default - all built-ins enabled
+# Default - all built-ins enabled. You only list them here to override config.
 addons:
   - date-time
   - media
@@ -24,18 +37,45 @@ addons:
 
 ## Addon Reference
 
-### date-time
+### core
 
-Displays current date and time.
+The runtime backbone — every config uses these.
 
 **Button Types:**
 
-- `date-time:date-time` — Full date and time
-- `date-time:time` — Time only
-- `date-time:date` — Date only
-- `date-time:analog-clock` — Analog clock face
+- `core:action` — Run a shell command. Config: `icon` (any `icon://name`) and/or `label`.
+- `core:change-deck` — Navigate to another deck. Config: `deck` (target deck id), `icon`, `label`.
+- `core:page-nav` — Page navigation (system-managed).
+- `core:toggle` — Toggle between two states. Config: `key`, `default`.
+- `core:media-sample` — Sample the active media session.
+- `core:lock` — Toggle the deck lock.
 
 **Configuration:**
+
+```yaml
+- position: 0
+  type: "core:action"
+  config:
+    icon: icon://search
+    label: "Google"
+  actions:
+    tap: "xdg-open https://google.com"
+```
+
+### date-time
+
+Clocks and calendars.
+
+**Button Types:**
+
+- `date-time:time` — Time only.
+- `date-time:date` — Date only.
+- `date-time:date-time` — Full date and time.
+- `date-time:analog-clock` — Analog clock face.
+
+**Configuration** (per button type):
+
+`date-time:time` / `date-time:date`:
 
 ```yaml
 - position: 0
@@ -44,16 +84,25 @@ Displays current date and time.
     variant: "default" # or "big"
 ```
 
+`date-time:date-time` (full) — custom format string:
+
+```yaml
+- position: 0
+  type: "date-time:date-time"
+  config:
+    format: "DD/MM/YYYY HH:mm:ss"
+```
+
 ### media
 
-Media player controls and display.
+Media playback controls and status.
 
 **Button Types:**
 
-- `media:player` — Play/pause toggle
-- `media:mute` — Mute toggle
-- `media:volume:up` — Volume up
-- `media:volume:down` — Volume down
+- `media:player` — Play/pause, shows current track.
+- `media:mute` — Mute toggle.
+- `media:volume:up` — Volume up.
+- `media:volume:down` — Volume down.
 
 **Features:**
 
@@ -61,26 +110,22 @@ Media player controls and display.
 - Shows playback state
 - Volume level display
 
+These buttons need no extra config — just place the type:
+
+```yaml
+- position: 0
+  type: "media:player"
+```
+
 ### system-status
 
-System metrics display.
+System metrics display (bars, KPIs, charts).
 
-**Button Types:**
+**Button Type:**
 
-- `system-status:system-status` — Bars view
-- `system-status:kpis` — Key metrics
-- `system-status:chart` — Chart view
+- `system-status:system-status`
 
-**Metrics Available:**
-
-- CPU usage
-- RAM usage
-- Swap usage
-- Disk usage
-- Battery level
-- Temperature
-- Network stats
-- And more...
+**Metrics available:** CPU, RAM, swap, disk, battery, temperature, network, and more.
 
 **Configuration:**
 
@@ -121,7 +166,7 @@ Display dynamic values from shell commands.
 
 ### weather
 
-Weather information display.
+Live weather conditions.
 
 **Button Type:**
 
@@ -129,36 +174,44 @@ Weather information display.
 
 **Configuration:**
 
+- `location.latitude` / `location.longitude` — coordinates (required to fetch).
+- `location.name` — display name (optional).
+- `units` — `metric` or `imperial` (default `metric`).
+- `poll_interval_ms` — refresh interval (default `600000`).
+
 ```yaml
 - position: 0
   type: "weather:weather"
   config:
-    location: "San Francisco"
-    units: "metric" # or "imperial"
+    location:
+      latitude: 42.2304
+      longitude: -8.7256
+      name: "Vigo"
+    units: "metric"
 ```
 
 ### emoji-selector
 
-Emoji picker with categories.
+Emoji picker with categories and favorites.
 
 **Button Types:**
 
-- `emoji-selector:launcher` — Opens emoji selector
-- `emoji-selector:category` — Category button
-- `emoji-selector:emoji` — Individual emoji
+- `emoji-selector:launcher` — Opens the selector.
+- `emoji-selector:category` — Category button.
+- `emoji-selector:emoji` — Individual emoji.
 
-**Usage:**
+**Configuration:**
 
 ```yaml
 - position: 0
-  type: "emoji-selector"
+  type: "emoji-selector:launcher"
   config:
-    favorites: ["😀", "😃", "😄"]
+    label: "Emojis"
 ```
 
 ### brightness
 
-Screen brightness controls.
+Device screen brightness controls.
 
 **Button Type:**
 
@@ -175,8 +228,46 @@ Screen brightness controls.
 
 ### session
 
-Current session information.
+Current session / lock status.
 
 **Button Type:**
 
-- `session:info` — Lock/session status
+- `session:info` — Lock/session status.
+
+No extra config:
+
+```yaml
+- position: 0
+  type: "session:info"
+```
+
+### coding-agents
+
+Live status of OpenCode and Claude Code sessions.
+
+**Button Types:**
+
+- `coding-agents:summary` — Count of active agents.
+- `coding-agents:agent` — A specific agent session.
+
+**Configuration:**
+
+`coding-agents:summary`:
+
+```yaml
+- position: 0
+  type: "coding-agents:summary"
+  config:
+    showCount: true
+    attentionOnly: false
+```
+
+`coding-agents:agent`:
+
+```yaml
+- position: 0
+  type: "coding-agents:agent"
+  config:
+    providerId: "opencode" # or "claude-code"
+    sessionId: "<session id>" # optional — latest when omitted
+```

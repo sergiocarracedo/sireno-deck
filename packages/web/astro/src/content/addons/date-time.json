@@ -1,7 +1,7 @@
 {
   "displayName": "Date Time",
   "description": "Clock, date, and analog-clock widgets. Multiple display variants \u2014 drop one in any deck position.",
-  "category": "builtin",
+  "category": "official",
   "tags": ["clock", "calendar", "productivity"],
   "icon": "calendar",
   "buttonTypes": [

@@ -19,7 +19,7 @@ interface Props {
 }
 
 const { id, displayName, description, tags, category, palette, preview } = Astro.props
-const isBuiltIn = category === "builtin"
+const isOfficial = category === "official"
 ---
 
 <a
@@ -46,12 +46,12 @@ const isBuiltIn = category === "builtin"
       <span
         class="text-[0.6875rem] font-mono px-2 py-0.5 rounded"
         style={
-          isBuiltIn
+          isOfficial
             ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
             : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"
         }
       >
-        {isBuiltIn ? "built-in" : "third-party"}
+        {isOfficial ? "official" : "community"}
       </span>
     </div>
     <p class="text-sm leading-relaxed mb-3" style="color: var(--color-muted);">{description}</p>

@@ -2,10 +2,10 @@
 /**
  * /addons/[slug]/ — addon detail page.
  *
- * - Built-in addons: button types + live Zod-derived config schema example.
- *   No "source" panel — they ship inside the CLI package.
- * - Third-party (community) addons: same + Install block (npm + config.yml
- *   addon entry).
+ * - Official addons (this monorepo): button types + live Zod-derived config
+ *   schema example + source repo. No install step.
+ * - Community addons (external): same + an Install block (npm package +
+ *   config.yml addon entry).
  */
 import Layout from "../../layouts/Base.astro"
 import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
@@ -23,7 +23,7 @@ const { id } = Astro.props
 const entry = await getEntry("addons", id)
 if (!entry) throw new Error(`addon ${id} not found`)
 const a = entry.data
-const isBuiltIn = a.category === "builtin"
+const isOfficial = a.category === "official"
 
 const typeBlocks = buttonTypeBlocks(a.buttonTypes ?? [])
 const blockOf = (typeId: string) => typeBlocks.find((t) => t.typeId === typeId && t.body !== null)
@@ -52,11 +52,11 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
             <h1 class="font-display text-4xl font-bold text-fg">{a.displayName}</h1>
             <span
               class="text-xs font-mono px-2 py-0.5 rounded"
-              style={isBuiltIn
+              style={isOfficial
                 ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
                 : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"}
             >
-              {isBuiltIn ? "built-in" : a.category}
+              {isOfficial ? "official" : "community"}
             </span>
           </div>
           <p class="text-lg max-w-2xl" style="color: var(--color-muted);">{a.description}</p>
@@ -75,8 +75,8 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
         </div>
       )}
 
-      {/* Install — third-party only */}
-      {!isBuiltIn && a.npm && (
+      {/* Install — community (external) addons only */}
+      {!isOfficial && a.npm && (
         <div class="mb-10 rounded-xl overflow-hidden" style="background: var(--color-surface); border: 1px solid var(--color-accent);">
           <p class="text-xs font-semibold uppercase tracking-widest px-6 pt-5 pb-3" style="color: var(--color-accent-2);">
             Install
@@ -123,12 +123,27 @@ addons:
 
         <div class="rounded-xl p-6 flex flex-col gap-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
           <h2 class="font-display text-lg font-semibold mb-0">Links</h2>
-          {isBuiltIn ? (
-            <p class="text-sm leading-relaxed" style="color: var(--color-muted);">
-              Ships with the Sireno Deck CLI — nothing to install. Enable it by
-              referencing its buttons straight from your
-              <code class="font-mono text-xs px-1 py-0.5 rounded" style="background: var(--color-bg);">config.yml</code>.
-            </p>
+          {isOfficial ? (
+            <div class="flex flex-col gap-3">
+              <p class="text-sm leading-relaxed" style="color: var(--color-muted);">
+                First-party addon from this repository. Enable its buttons
+                straight from your
+                <code class="font-mono text-xs px-1 py-0.5 rounded" style="background: var(--color-bg);">config.yml</code>
+                — nothing to install separately.
+              </p>
+              {a.repo && (
+                <a
+                  href={a.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 text-sm transition-colors hover:text-fg"
+                  style="color: var(--color-muted);"
+                >
+                  <i data-lucide="github" class="w-4 h-4"></i>
+                  Source on GitHub
+                </a>
+              )}
+            </div>
           ) : (
             <ul class="space-y-3 text-sm">
               {a.npm && (
@@ -161,7 +176,7 @@ addons:
               )}
             </ul>
           )}
-          {!isBuiltIn && !a.npm && !a.repo && (
+          {!isOfficial && !a.npm && !a.repo && (
             <p class="text-sm" style="color: var(--color-muted);">Community package.</p>
           )}
         </div>

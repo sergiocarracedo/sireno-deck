@@ -3,8 +3,8 @@ import { glob } from "astro/loaders"
 import { docsLoader } from "@astrojs/starlight/loaders"
 import { docsSchema } from "@astrojs/starlight/schema"
 
-const addonCategory = z.enum(["builtin", "community"])
-const themeCategory = z.enum(["builtin", "community", "third-party"])
+const addonCategory = z.enum(["official", "community"])
+const themeCategory = z.enum(["official", "community"])
 
 export const collections = {
   docs: defineCollection({
