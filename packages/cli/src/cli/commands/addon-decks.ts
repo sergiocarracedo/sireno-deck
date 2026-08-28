@@ -2,6 +2,7 @@ import type { AddonRegistry } from "@/addon/registry"
 import { paginateDeck } from "@/deck/paginate-deck"
 import { positionButtons } from "@/deck/position-buttons"
 import type { RuntimeDeck } from "@/deck/runtime"
+import { EmojiLauncherButtonSchema } from "@/builtin-addons/emoji-selector/support"
 import type pino from "pino"
 
 interface AddonGeneratedDeck {
@@ -248,6 +249,28 @@ export interface AddonDeckOverride {
   readonly config?: Record<string, unknown>
 }
 
+// ponytail: emoji-selector favorites — the launcher button's config.favorites
+// feeds the generated deck, because the button is where users naturally put
+// their curated list (it used to live there before the deck-config refactor).
+// Precedence: launcher button (wins) > per-deck override config > defaults.
+// Targeted at emoji-selector; genericize if a second addon needs the pattern.
+const collectLauncherFavorites = (
+  userDecks: ReadonlyArray<RuntimeDeck>,
+): string[] => {
+  const out: string[] = []
+  for (const deck of userDecks) {
+    for (const btn of deck.buttons) {
+      if (btn.type !== "emoji-selector:launcher") continue
+      const parsed = EmojiLauncherButtonSchema.safeParse(btn.config ?? {})
+      if (!parsed.success) continue
+      for (const fav of parsed.data.favorites ?? []) {
+        if (!out.includes(fav)) out.push(fav)
+      }
+    }
+  }
+  return out
+}
+
 export const materializeAddonDecks = (
   registry: AddonRegistry,
   userDecks: ReadonlyArray<RuntimeDeck>,
@@ -294,9 +317,24 @@ export const materializeAddonDecks = (
       const deckType = registry.getDeckType(lookupId)
       if (deckType === undefined) continue
       const baseAddonConfig = addonConfigs.get(addon.name) ?? {}
-      const addonConfig = {
+      let addonConfig: Record<string, unknown> = {
         ...baseAddonConfig,
         ...addonWideOverride,
+      }
+      // ponytail: forward the per-deck override's opaque `config` for the
+      // multi-dynamic lookup id — schemas.ts documents config as "forwarded
+      // to createDeck(s)({config})" but only autoShow/name/icon/trigger were
+      // actually applied. Field-level overrides below stay post-generation.
+      const multiOverride = perDeckOverrides.get(lookupId)
+      if (multiOverride?.config !== undefined) {
+        addonConfig = { ...addonConfig, ...multiOverride.config }
+      }
+      // launcher favorites win over everything merged above
+      if (addon.name === "emoji-selector") {
+        const launcherFavorites = collectLauncherFavorites(userDecks)
+        if (launcherFavorites.length > 0) {
+          addonConfig = { ...addonConfig, favorites: launcherFavorites }
+        }
       }
       let generated: Record<string, AddonGeneratedDeck>
       try {

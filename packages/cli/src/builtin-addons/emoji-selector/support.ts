@@ -28,8 +28,17 @@ export const DEFAULT_FAVORITES: readonly string[] = [
 export const EmojiLauncherButtonSchema = z
   .object({
     label: z.string().min(1).default("Emojis"),
+    // Curated favorites shown first in the emoji deck. Valid on the launcher
+    // button (this schema) AND on the per-deck override record
+    // (decks["emoji-selector:__multi__"].config.favorites); the launcher
+    // wins when both are set. Falls back to DEFAULT_FAVORITES.
+    favorites: z.array(z.string().min(1)).optional(),
   })
   .strict()
+
+export type EmojiLauncherButtonConfig = z.infer<
+  typeof EmojiLauncherButtonSchema
+>
 
 export const EmojiSelectorDeckSchema = z
   .object({

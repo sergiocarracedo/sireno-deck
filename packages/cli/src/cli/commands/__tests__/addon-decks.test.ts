@@ -408,7 +408,11 @@ describe("materializeAddonDecks", () => {
     const result = materializeAddonDecks(reg, userDecks, logger, 15)
     const deck = result.find((d) => d.id === "emoji-selector")!
 
-    expect(deck.name).toContain("favs: 1")
+    // ponytail: launcher favorites now concatenate across ALL launcher
+    // buttons (dedupe, first occurrence wins) instead of first-only — the
+    // emoji-selector-specific path supersedes the generic defaultButton
+    // first-wins aggregation. The generic multiple-buttons warn still fires.
+    expect(deck.name).toContain("favs: 3")
     expect(warn).toHaveBeenCalledWith(
       expect.objectContaining({
         addon: "emoji-selector",
@@ -996,5 +1000,175 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
     const genDeck = result.find((d) => d.id === "gen-deck")!
     expect(genDeck.buttonColor).toBe("cyan")
     expect(genDeck.variant).toBe("highlighted")
+  })
+})
+
+describe("emoji-selector launcher favorites", () => {
+  const makeEmojiAddon = (capture: { config: unknown }): AddonManifestV1 =>
+    makeFakeAddon({
+      apiVersion: 1,
+      name: "emoji-selector",
+      buttonTypes: { "emoji-selector:launcher": { type: "launcher" } },
+      decks: [
+        {
+          createDecks: (ctx: { config: unknown; deck: { id: string } }) => {
+            capture.config = ctx.config
+            return { "emoji-selector:favorites": { name: "Fav", buttons: [] } }
+          },
+        },
+      ],
+    })
+
+  it("launcher button config.favorites reaches createDecks", () => {
+    const capture = { config: null as unknown }
+    const reg = mockRegistry([makeEmojiAddon(capture)])
+    const userDecks: RuntimeDeck[] = [
+      {
+        id: "main",
+        name: "Main",
+        buttons: [
+          {
+            id: "main-9",
+            type: "emoji-selector:launcher",
+            position: 9,
+            config: { label: "Emoji", favorites: ["🐱", "🐙"] },
+          },
+        ],
+      },
+    ]
+    materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    expect(capture.config).toMatchObject({ favorites: ["🐱", "🐙"] })
+  })
+
+  it("launcher wins over per-deck override config.favorites", () => {
+    const capture = { config: null as unknown }
+    const reg = mockRegistry([makeEmojiAddon(capture)])
+    const userDecks: RuntimeDeck[] = [
+      {
+        id: "main",
+        name: "Main",
+        buttons: [
+          {
+            id: "main-9",
+            type: "emoji-selector:launcher",
+            position: 9,
+            config: { favorites: ["🐱"] },
+          },
+        ],
+      },
+    ]
+    const overrides = new Map([
+      [
+        "emoji-selector",
+        {
+          addonWideConfig: {},
+          perDeck: new Map([
+            [
+              "emoji-selector:__multi__",
+              { config: { favorites: ["👑", "🦄"] } },
+            ],
+          ]),
+          defaults: undefined,
+        },
+      ],
+    ])
+    materializeAddonDecks(
+      reg,
+      userDecks,
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
+    expect(capture.config).toMatchObject({ favorites: ["🐱"] })
+  })
+
+  it("per-deck override config.favorites applies when no launcher carries favorites", () => {
+    const capture = { config: null as unknown }
+    const reg = mockRegistry([makeEmojiAddon(capture)])
+    const userDecks: RuntimeDeck[] = [
+      {
+        id: "main",
+        name: "Main",
+        buttons: [
+          { id: "main-9", type: "emoji-selector:launcher", position: 9 },
+        ],
+      },
+    ]
+    const overrides = new Map([
+      [
+        "emoji-selector",
+        {
+          addonWideConfig: {},
+          perDeck: new Map([
+            [
+              "emoji-selector:__multi__",
+              { config: { favorites: ["👑", "🦄"] } },
+            ],
+          ]),
+          defaults: undefined,
+        },
+      ],
+    ])
+    materializeAddonDecks(
+      reg,
+      userDecks,
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
+    expect(capture.config).toMatchObject({ favorites: ["👑", "🦄"] })
+  })
+
+  it("multiple launcher favorites concatenate and dedupe (first wins)", () => {
+    const capture = { config: null as unknown }
+    const reg = mockRegistry([makeEmojiAddon(capture)])
+    const userDecks: RuntimeDeck[] = [
+      {
+        id: "main",
+        name: "Main",
+        buttons: [
+          {
+            id: "main-9",
+            type: "emoji-selector:launcher",
+            position: 9,
+            config: { favorites: ["🐱", "🐙"] },
+          },
+        ],
+      },
+      {
+        id: "other",
+        name: "Other",
+        buttons: [
+          {
+            id: "other-0",
+            type: "emoji-selector:launcher",
+            position: 0,
+            config: { favorites: ["🐙", "🦄"] },
+          },
+        ],
+      },
+    ]
+    materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    expect(capture.config).toMatchObject({ favorites: ["🐱", "🐙", "🦄"] })
+  })
+
+  it("no favorites anywhere leaves config untouched (defaults apply in createDecks)", () => {
+    const capture = { config: null as unknown }
+    const reg = mockRegistry([makeEmojiAddon(capture)])
+    const userDecks: RuntimeDeck[] = [
+      {
+        id: "main",
+        name: "Main",
+        buttons: [
+          { id: "main-9", type: "emoji-selector:launcher", position: 9 },
+        ],
+      },
+    ]
+    materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    expect(
+      (capture.config as Record<string, unknown>)["favorites"],
+    ).toBeUndefined()
   })
 })
