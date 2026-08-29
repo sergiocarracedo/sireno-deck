@@ -122,9 +122,13 @@ const waitFor = async (url, timeoutMs) => {
 }
 
 const writeTempConfig = (themeValue) => {
+  let themeAbs = themeValue
+  if (themeValue.startsWith("./") || themeValue.startsWith("../")) {
+    themeAbs = resolve(repoRoot, themeValue)
+  }
   const base = readFileSync(resolve(repoRoot, "config.yml"), "utf8")
-  let cfg = base.replace(/^theme:.*$/m, `theme: ${themeValue}`)
-  if (!/^theme:/m.test(cfg)) cfg = `theme: ${themeValue}\n` + cfg
+  let cfg = base.replace(/^theme:.*$/m, `theme: ${themeAbs}`)
+  if (!/^theme:/m.test(cfg)) cfg = `theme: ${themeAbs}\n` + cfg
   const dir = resolve(repoRoot, ".capture-configs")
   mkdirSync(dir, { recursive: true })
   const p = join(dir, "captures.yml")
@@ -371,10 +375,11 @@ const main = async () => {
         .first()
         .getAttribute("data-deck-id")
       if (agentsId && agentsId.startsWith("coding-agents:")) {
+        const safe = agentsId.replace(/:/g, "-")
         await page
           .locator(`[data-deck-id="${agentsId}"]`)
-          .screenshot({ path: resolve(outDir, `${agentsId}.png`) })
-        console.log(`[capture] ok  ${agentsId}`)
+          .screenshot({ path: resolve(outDir, `${safe}.png`) })
+        console.log(`[capture] ok  ${agentsId} -> ${safe}.png`)
       }
     } catch {}
 
