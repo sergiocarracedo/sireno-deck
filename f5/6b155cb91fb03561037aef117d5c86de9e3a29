@@ -1,0 +1,104 @@
+packages/web/astro/src/components/sections/VariantsSection.astro
+  s_56d884d1e62fa5::t_b1c9931845cf83 1-83
+packages/web/astro/src/pages/index.astro
+  s_56d884d1e62fa5::t_c1b67da4438a9b 23-24
+  s_56d884d1e62fa5::t_06ae7c76eddb5d 8-9
+config.yml
+  s_56d884d1e62fa5::t_ce69a4e2306f6f 118-134
+packages/web/astro/src/components/carousel/DeckCarousel.astro
+  s_56d884d1e62fa5::t_bdcb86e6db0187 1-17
+packages/web/astro/src/components/carousel/DeckCarousel.tsx
+  s_56d884d1e62fa5::t_72f54b658db1f7 1-134
+  s_56d884d1e62fa5::t_e2edb14f3eb77d 135-153
+packages/web/astro/src/content.config.ts
+  s_56d884d1e62fa5::t_fcaf3e58702243 33-34
+packages/web/scripts/capture-decks.mjs
+  s_56d884d1e62fa5::t_45e0d2d60696ae 4-6,8-14,18-24,39-53,56-66,69-92,135,156,183-309,328-329,335,339,341-346,348,353,359,364,366
+  s_56d884d1e62fa5::t_a1ab21274b15d9 349-352,354-358,360-363,365,367-383,385-404,406-408,410,412,416,422,424,431,435-448,450
+packages/web/astro/src/components/sections/AddonsSection.astro
+  s_56d884d1e62fa5::t_541252b74051ff 12
+packages/web/astro/src/components/sections/Hero.astro
+  s_56d884d1e62fa5::t_4c85f89c847620 53,56-60,63-96
+packages/web/astro/src/components/sections/OverlaysSection.astro
+  s_56d884d1e62fa5::t_4945bc458ddb2a 1-84
+packages/web/astro/src/pages/addons/[slug].astro
+  s_56d884d1e62fa5::t_a1d679e9a777d4 72-94
+packages/cli/src/builtin-addons/coding-agents/global/backend.ts
+  s_56d884d1e62fa5::t_c70a7fb2978ffd 270-310
+demos/demo-decks-index.yml
+  s_56d884d1e62fa5::t_9b696c503c8a56 57-62
+demos/web-snapshot-coding-agents.yml
+  s_56d884d1e62fa5::t_1091f82d905e05 1-6
+demos/web-snapshot-color-amber.yml
+  s_56d884d1e62fa5::t_e1fb94a67698e0 1-14
+demos/web-snapshot-color-blue.yml
+  s_56d884d1e62fa5::t_64ad957679d05c 1-14
+demos/web-snapshot-color-cyan.yml
+  s_56d884d1e62fa5::t_8e8b4c46d553a6 1-14
+demos/web-snapshot-color-green.yml
+  s_56d884d1e62fa5::t_ae2841234b5793 1-14
+demos/web-snapshot-color-lime.yml
+  s_56d884d1e62fa5::t_ec4fa4f0f136e1 1-14
+demos/web-snapshot-color-magenta.yml
+  s_56d884d1e62fa5::t_abfeaae9f2768b 1-14
+demos/web-snapshot-color-purple.yml
+  s_56d884d1e62fa5::t_c79da951d4c070 1-14
+demos/web-snapshot-core.yml
+  s_56d884d1e62fa5::t_137ff867f3d055 1-7
+demos/web-snapshot-date-time.yml
+  s_56d884d1e62fa5::t_487a4a0afe2d9d 1-6
+demos/web-snapshot-emoji.yml
+  s_56d884d1e62fa5::t_9e84d6b4c9be05 1-4
+demos/web-snapshot-index.yml
+  s_56d884d1e62fa5::t_baffcda7401cdb 1-62
+demos/web-snapshot-media.yml
+  s_56d884d1e62fa5::t_1aa556010bcbcd 1-10
+demos/web-snapshot-pomodoro.yml
+  s_56d884d1e62fa5::t_1d96fdb8db44cd 1-6
+demos/web-snapshot-system-status.yml
+  s_56d884d1e62fa5::t_caae42bb695bb7 1-10
+demos/web-snapshot-value-display.yml
+  s_56d884d1e62fa5::t_89c8b662be6732 1-9
+demos/web-snapshot-weather.yml
+  s_56d884d1e62fa5::t_fe32f954de2fca 1-9
+packages/web/astro/src/content/addons/app-shortcuts.json
+  s_56d884d1e62fa5::t_b5f3b39cfd5e96 10,12-23
+packages/web/astro/src/content/addons/brightness.json
+  s_56d884d1e62fa5::t_0c451ac4a922c3 9-11
+packages/web/astro/src/content/addons/coding-agents.json
+  s_56d884d1e62fa5::t_e9e5cd5af415c2 9-15
+packages/web/astro/src/content/addons/core.json
+  s_56d884d1e62fa5::t_0f6c4108dc660b 3,16-19
+packages/web/astro/src/content/addons/date-time.json
+  s_56d884d1e62fa5::t_71c7a0ee0b4e66 3,13,15-17
+packages/web/astro/src/content/addons/emoji-selector.json
+  s_56d884d1e62fa5::t_d1c11f6567d22f 13-16
+packages/web/astro/src/content/addons/media.json
+  s_56d884d1e62fa5::t_63fd0daf6bccd2 13,15-23
+packages/web/astro/src/content/addons/pomodoro.json
+  s_56d884d1e62fa5::t_09a59426dd283f 10,12-14
+packages/web/astro/src/content/addons/session.json
+  s_56d884d1e62fa5::t_52fa1079187617 9-11
+packages/web/astro/src/content/addons/system-status.json
+  s_56d884d1e62fa5::t_4551ae1169d5ee 13-16
+packages/web/astro/src/content/addons/value-display.json
+  s_56d884d1e62fa5::t_464735b38eceaf 8,10-12
+packages/web/astro/src/content/addons/weather.json
+  s_56d884d1e62fa5::t_09f3f220c31fea 8,10-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "f56b155cb91fb03561037aef117d5c86de9e3a29",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
