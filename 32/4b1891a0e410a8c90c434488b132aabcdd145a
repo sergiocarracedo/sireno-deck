@@ -1,0 +1,29 @@
+packages/web/scripts/capture-decks.mjs
+  s_56d884d1e62fa5::t_906913e1baf743 125-128,130-131
+  s_56d884d1e62fa5::t_2a2fee10289edb 378,381-382
+packages/web/astro/src/components/sections/FeaturesSection.astro
+  s_56d884d1e62fa5::t_e6fe1a838becca 14-24,30-39,45-46
+packages/web/astro/src/components/FeatureCard.astro
+  s_56d884d1e62fa5::t_5f6231ff1dbe75 3,5-7,15-16,26-27,32
+  s_56d884d1e62fa5::t_23f1d1aa57e4dc 52-107,111
+packages/web/astro/src/content/buttonSchemas.json
+  s_56d884d1e62fa5::t_2d2943b486e02a 9-13,99-101,118-120,146-151,165-167,194-197,248-252,268-270,370-374,388-391,408-410,437-440,452-455
+packages/web/astro/src/design/tokens.generated.ts
+  s_56d884d1e62fa5::t_1b2448105e31cc 6-8,10-14,18-21,23-27,29-34,39-42,45-48,51-54,57-60,63-66,69-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "324b1891a0e410a8c90c434488b132aabcdd145a",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
