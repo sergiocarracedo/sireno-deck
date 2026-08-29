@@ -1,0 +1,32 @@
+demos/demo-media.yml
+  s_56d884d1e62fa5::t_f12e9d4957d4d2 12-13,15,20
+packages/web/astro/src/components/Nav.astro
+  s_56d884d1e62fa5::t_acc85ad873ee66 18
+release-please-config.json
+  s_56d884d1e62fa5::t_5af57085513946 14-16
+packages/web/astro/src/layouts/Base.astro
+  s_56d884d1e62fa5::t_16f346fe77568e 54
+  s_56d884d1e62fa5::t_7bfde27742e55b 44-52
+packages/cli/package.json
+  s_56d884d1e62fa5::t_701292948a1a71 3
+release-please-manifest.json
+  s_56d884d1e62fa5::t_90f0feb0cdd1bb 2
+packages/web/scripts/capture-decks.mjs
+  s_56d884d1e62fa5::t_5301ff751838f7 205-207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ebf097b3b5f8ecc7eecd43b0bea2f6d6f147fa10",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
