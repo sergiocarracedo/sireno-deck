@@ -202,7 +202,9 @@ const main = async () => {
           timeout: 25000,
         })
         // Wait for the deck grid to render (WS deck-config → React state)
-        await page.waitForSelector(`[data-deck-id="${deckId}"]`, { timeout: 15000 })
+        await page.waitForSelector(`[data-deck-id="${deckId}"]`, {
+          timeout: 15000,
+        })
         await page.waitForTimeout(800)
         const el = page.locator(`[data-deck-id="${deckId}"]`)
         const out = resolve(outDir, `${deckId}.png`)

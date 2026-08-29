@@ -11,7 +11,9 @@
       "include-v-in-tag": false,
       "changelog-path": "packages/cli/CHANGELOG.md",
       "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
+      "bump-patch-for-minor-pre-major": true,
+      "prerelease": true,
+      "prerelease-type": "alpha"
     },
     "packages/addons/app-shortcuts": {
       "package-name": "@sirenodeck/addon-app-shortcuts",
