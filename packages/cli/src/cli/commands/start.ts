@@ -432,6 +432,21 @@ const stopExisting = async (
 }
 
 const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
+  // ponytail: an explicit --config always wins. The cache below exists so
+  // `restart` / in-place edits keep the same config the session launched
+  // with, but a user (or tooling) that passes --config clearly wants THAT
+  // file — honoring the cache over an explicit arg silently swapped in the
+  // user's ~/.config/sireno-deck/config.yml instead (the bug that made
+  // --config appear to "do nothing").
+  if (options.config !== undefined) {
+    if (!existsSync(options.config)) {
+      throw new Error(
+        `Config file not found: ${options.config}\n` +
+          `  Fix: pass a valid --config path.`,
+      )
+    }
+    return { path: options.config, source: "cli" }
+  }
   // ponytail: the daemon honors the cached pointer first so the running
   // session keeps editing the same config it was launched with. When the
   // cached path is gone (e.g. worktree removed) we fall through to the
@@ -442,7 +457,6 @@ const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
     return { path: cachedUsable, source: "cli" }
   }
   return resolveRunConfigPath({
-    ...(options.config !== undefined ? { config: options.config } : {}),
     ...(options.xdgConfigHome !== undefined
       ? { xdgConfigHome: options.xdgConfigHome }
       : {}),

@@ -25,7 +25,14 @@ sireno run --emulator --device-model xl
 
 # Start daemon with emulator
 sireno start --emulator
+
+# Headless / capture runs: don't auto-open the browser
+sireno start --emulator --no-autoopen
 ```
+
+By default the emulator URL auto-opens in your system browser. Pass
+`--no-autoopen` to skip that — useful for scripts and capture tooling
+(the emulator is still served at its URL, it just won't launch a tab).
 
 ### Emulator URL
 

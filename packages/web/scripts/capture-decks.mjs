@@ -154,6 +154,7 @@ function buildConfig(theme, deckYml, overlayTarget) {
     config:
       defaults:
         autoShow: false
+  - src: ${repoRoot}/packages/addons/pomodoro
 `
   let main = ""
   if (overlayTarget) {
@@ -198,6 +199,7 @@ async function bootDaemon(cfg) {
       "--emulator",
       "--port",
       "53237",
+      "--no-autoopen",
       "--log-level",
       "warn",
     ],
@@ -244,9 +246,19 @@ async function capture(browser, outName) {
   return eff
 }
 
+async function bootWithRetry(cfg) {
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const { proc, up } = await bootDaemon(cfg)
+    if (up) return { proc, up, attempt }
+    if (proc) await shutdown(proc)
+    await sleep(800)
+  }
+  return { proc: null, up: false, attempt: 2 }
+}
+
 async function shutdown(proc) {
   try {
-    if (proc.pid !== undefined && proc.exitCode === null)
+    if (proc && proc.pid !== undefined && proc.exitCode === null)
       process.kill(-proc.pid, "SIGKILL")
   } catch {}
   await sleep(1500)
@@ -274,7 +286,7 @@ const main = async () => {
       ...COLOR_VARIANTS.map((c) => `${c}.yml`),
     ]) {
       const outName = `${deckYml.replace(/\.yml$/, "")}.png`
-      const { proc, up } = await bootDaemon(
+      const { proc, up } = await bootWithRetry(
         buildConfig("default", deckYml, null),
       )
       if (!up) {
@@ -289,7 +301,7 @@ const main = async () => {
     // --- overlay per-app decks ---
     for (const app of OVERLAY_APPS) {
       const outName = `overlay-${app}.png`
-      const { proc, up } = await bootDaemon(
+      const { proc, up } = await bootWithRetry(
         buildConfig("default", null, `app-shortcuts:${app}`),
       )
       if (!up) {
@@ -311,21 +323,30 @@ const main = async () => {
       await page.waitForTimeout(2000)
       const tile = page.locator('[data-button-type="core:change-deck"]').first()
       if (await tile.count()) await tile.click()
-      await page.waitForSelector(`[data-deck-id="app-shortcuts:${app}"]`, {
-        timeout: 10000,
-      })
-      await page.waitForTimeout(3000)
-      const out = resolve(outDir, outName)
+      // Overlay decks are paginated -> materialize as `<base>-p1`. Wait for
+      // the page-1 id first, falling back to the base id.
       await page
-        .locator(`[data-deck-id="app-shortcuts:${app}"]`)
-        .screenshot({ path: out })
+        .waitForSelector(
+          `[data-deck-id="app-shortcuts:${app}-p1"],[data-deck-id="app-shortcuts:${app}"]`,
+          { timeout: 10000 },
+        )
+        .catch(() => {})
+      await page.waitForTimeout(3000)
+      const overlayId =
+        (await page
+          .locator(`[data-deck-id="app-shortcuts:${app}-p1"]`)
+          .count()) > 0
+          ? `app-shortcuts:${app}-p1`
+          : `app-shortcuts:${app}`
+      const out = resolve(outDir, outName)
+      await page.locator(`[data-deck-id="${overlayId}"]`).screenshot({ path: out })
       await ctx.close()
       console.log(`ok ${outName}`)
       await shutdown(proc)
     }
     // --- themes ---
     for (const theme of THEMES) {
-      const { proc, up } = await bootDaemon(
+      const { proc, up } = await bootWithRetry(
         buildConfig(theme.theme, "web-snapshot-date-time.yml", null),
       )
       if (!up) {
