@@ -1,8 +1,7 @@
 ---
 /**
  * ThemeCard — single theme entry, used in /themes/ and the homepage.
- * No preview image: keeps cards equal-height across the grid. The full
- * theme preview lives on /themes/[id]/ instead.
+ * Shows the real theme deck capture as the preview thumb.
  */
 interface Props {
   id: string
@@ -20,7 +19,7 @@ interface Props {
   preview?: string
 }
 
-const { id, displayName, description, tags, category, palette } = Astro.props
+const { id, displayName, description, tags, category, palette, preview } = Astro.props
 const isOfficial = category === "official"
 ---
 
@@ -29,15 +28,21 @@ const isOfficial = category === "official"
   class="group block rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
   style="background: var(--color-surface); border: 1px solid var(--color-border);"
 >
-  <div
-    class="aspect-[16/10] flex items-center justify-center"
-    style={`background: linear-gradient(135deg, ${palette.background} 0%, ${palette.frame} 100%);`}
-  >
+  {preview ? (
+    <div class="aspect-[16/10] overflow-hidden" style="border-bottom: 1px solid var(--color-border);">
+      <img src={preview} alt={`${displayName} preview`} class="w-full h-full object-cover" loading="lazy" />
+    </div>
+  ) : (
     <div
-      class="w-32 h-12 rounded"
-      style={`background: ${palette.primary}; box-shadow: 0 0 24px ${palette.primary}66;`}
-    />
-  </div>
+      class="aspect-[16/10] flex items-center justify-center"
+      style={`background: linear-gradient(135deg, ${palette.background} 0%, ${palette.frame} 100%);`}
+    >
+      <div
+        class="w-32 h-12 rounded"
+        style={`background: ${palette.primary}; box-shadow: 0 0 24px ${palette.primary}66;`}
+      />
+    </div>
+  )}
 
   <div class="p-5">
     <div class="flex items-center justify-between mb-2">

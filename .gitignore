@@ -31,3 +31,6 @@ packages/cli/src/themes/*/theme.generated.css
 
 # runtime capture configs
 .capture-configs/
+
+# capture temp config
+.sireno-capture.yml
