@@ -198,21 +198,27 @@ const main = async () => {
     for (const deckId of BASE_DECKS) {
       try {
         await page.goto(`http://127.0.0.1:${FS_PORT}/decks/${deckId}`, {
-          waitUntil: "networkidle",
+          waitUntil: "domcontentloaded",
           timeout: 25000,
         })
-        await page.waitForTimeout(1500)
+        // Wait for the deck grid to render (WS deck-config → React state)
+        await page.waitForSelector(`[data-deck-id="${deckId}"]`, { timeout: 15000 })
+        await page.waitForTimeout(800)
         const el = page.locator(`[data-deck-id="${deckId}"]`)
         const out = resolve(outDir, `${deckId}.png`)
-        if (await el.count()) {
-          await el.screenshot({ path: out })
-          console.log(`[capture] ok  ${deckId}  ->  ${out}`)
-        } else {
-          await page.screenshot({ path: out })
-          console.log(`[capture] ok  ${deckId} (frame fallback)`)
-        }
+        await el.screenshot({ path: out })
+        console.log(`[capture] ok  ${deckId}  ->  ${out}`)
       } catch (err) {
         console.warn(`[capture] fail ${deckId}: ${err.message}`)
+        // Fallback: screenshot whatever deck is visible
+        try {
+          const fallback = page.locator(".grid[data-deck-id]").first()
+          if (await fallback.count()) {
+            const out = resolve(outDir, `${deckId}.png`)
+            await fallback.screenshot({ path: out })
+            console.log(`[capture] ok  ${deckId} (fallback deck)`)
+          }
+        } catch {}
       }
     }
     await ctx.close()
@@ -235,10 +241,11 @@ const main = async () => {
       const page = await ctx.newPage()
       try {
         await page.goto(`http://127.0.0.1:${FS_PORT}/decks/main`, {
-          waitUntil: "networkidle",
+          waitUntil: "domcontentloaded",
           timeout: 30000,
         })
-        await page.waitForTimeout(2000)
+        await page.waitForSelector('[data-deck-id="main"]', { timeout: 15000 })
+        await page.waitForTimeout(800)
         const el = page.locator('[data-deck-id="main"]')
         const out = resolve(outDir, `theme-${theme.id}.png`)
         await el.screenshot({ path: out })
