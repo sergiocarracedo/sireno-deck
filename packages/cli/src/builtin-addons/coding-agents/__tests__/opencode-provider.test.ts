@@ -140,6 +140,52 @@ describe("OpenCodeProvider", () => {
     expect(agents[0]?.status).toBe("waiting_for_human")
   })
 
+  it("treats a mid-stream turn (finish null, no parts) as running", async () => {
+    const api = makeApi({
+      listSessions: async () => [makeSession()],
+      sessionStatus: async () => ({}),
+      sessionMessages: async () => [
+        // the in-flight message: finish null, empty parts (streaming)
+        { info: { role: "assistant" }, finish: null, parts: [] },
+      ],
+    })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+    const agents = await p.fetchSnapshot(new AbortController().signal)
+    expect(agents[0]?.status).toBe("running")
+  })
+
+  it("treats an empty message list as idle", async () => {
+    const api = makeApi({
+      listSessions: async () => [makeSession()],
+      sessionStatus: async () => ({}),
+      sessionMessages: async () => [],
+    })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+    const agents = await p.fetchSnapshot(new AbortController().signal)
+    expect(agents[0]?.status).toBe("idle")
+  })
+
+  it("passes the message limit when fetching session messages", async () => {
+    const sessionMessages = vi.fn(async () => [])
+    const api = makeApi({ sessionMessages })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+    await p.fetchSnapshot(new AbortController().signal)
+    expect(sessionMessages).toHaveBeenCalledWith(
+      expect.any(AbortSignal),
+      "abc",
+      6,
+    )
+  })
+
   it("exposes createdAt from the session time", async () => {
     const api = makeApi({
       listSessions: async () => [makeSession()],

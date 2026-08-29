@@ -91,6 +91,13 @@ export interface Methods {
   ): void
   adjustBrightness(args: { direction: "up" | "down" }): void
   dispatch(value: string): Promise<void>
+  /**
+   * Ask the host to re-materialize the addon decks (used when a dynamic deck's
+   * shape depends on live state, e.g. session counts). The host replaces the
+   * runtime deck set and rebroadcasts deck-config. Set via `setDeckRebuilder`.
+   */
+  requestDeckRebuild(): void
+  setDeckRebuilder(rebuild: () => void): void
 }
 
 export const createMethods = (ctx: MethodsContext): Methods => {
@@ -118,6 +125,19 @@ export const createMethods = (ctx: MethodsContext): Methods => {
   }
 
   let requirements: RequirementsCheckResult | undefined = undefined
+  let deckRebuilder: (() => void) | undefined
+  const setDeckRebuilder: Methods["setDeckRebuilder"] = (rebuild) => {
+    deckRebuilder = rebuild
+  }
+  const requestDeckRebuild: Methods["requestDeckRebuild"] = () => {
+    if (deckRebuilder === undefined) {
+      logger.warn(
+        "methods.requestDeckRebuild: no deck rebuilder wired; skipping",
+      )
+      return
+    }
+    deckRebuilder()
+  }
   const setRequirements: Methods["setRequirements"] = (value) => {
     requirements = value
   }
@@ -310,6 +330,8 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     checkRequirement,
     showTemporaryError,
     adjustBrightness,
+    requestDeckRebuild,
+    setDeckRebuilder,
   }
 }
 

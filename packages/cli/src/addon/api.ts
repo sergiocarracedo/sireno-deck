@@ -353,6 +353,11 @@ export interface AddonServiceContext {
   executor: ActionExecutor
   /** Fire an OS notification. */
   notify(args: { title: string; body: string; sound?: boolean }): Promise<void>
+  /**
+   * Ask the host to re-materialize addon decks (dynamic deck shape). No-op
+   * when the host hasn't wired a rebuilder.
+   */
+  requestDeckRebuild?: () => void
 }
 
 /**

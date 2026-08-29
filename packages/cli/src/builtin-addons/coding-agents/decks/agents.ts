@@ -1,19 +1,25 @@
 import type { AddonDeckEntryCtx, AddonGeneratedDeck } from "../types/types.js"
+import {
+  AGENTS_DECK_BASE,
+  getLiveCount,
+  setPageCount,
+} from "../shared/live-count.js"
 
-// ponytail: decks are materialized ONCE from createDecks, so tile count is
-// fixed. Generate 3 pages worth of slot tiles (pageSize = keyCount-2); the
-// runtime's paginateDeck splits them into `-p1/-p2/-p3` with a core:page-nav
-// at n-2. Which agent fills a slot is resolved per broadcast from the latest
-// snapshot (agentAtSlot). Trailing pages can sit empty when few sessions are
-// live — dynamic page counts need per-broadcast deck refill machinery.
-const PAGES_CAP = 3
+// ponytail: decks are re-materialized on demand (see requestDeckRebuild) so
+// the page count follows the live session count. One page up to
+// (keyCount-2) sessions; pagination appears automatically beyond that.
+// Cap pages to avoid pathological decks.
+const MAX_PAGES = 6
 
 export const createAgentsDecks = (
   ctx: AddonDeckEntryCtx,
 ): Record<string, AddonGeneratedDeck> => {
   const keyCount = ctx.keyCount ?? 15
   const pageSize = Math.max(1, keyCount - 2)
-  const agentSlots = PAGES_CAP * pageSize
+  const live = getLiveCount()
+  const pages = Math.min(MAX_PAGES, Math.max(1, Math.ceil(live / pageSize)))
+  setPageCount(pages)
+  const agentSlots = pages * pageSize
   const buttons: Array<Record<string, unknown>> = []
   for (let slot = 0; slot < agentSlots; slot += 1) {
     buttons.push({
@@ -23,14 +29,10 @@ export const createAgentsDecks = (
     })
   }
   return {
-    "coding-agents:agents": {
+    [AGENTS_DECK_BASE]: {
       name: "Coding agents",
       icon: "addon://coding-agents/assets/opencode-dark-square.svg",
       buttons,
     },
   }
 }
-
-// ponytail: paginated decks materialize as `coding-agents:agents-p1…`; the
-// base id is not a runtime deck. The summary button navigates here.
-export const AGENTS_FIRST_PAGE = "coding-agents:agents-p1" as const
