@@ -1,0 +1,52 @@
+packages/cli/src/util/daemon.ts
+  s_56d884d1e62fa5::t_86495a287da123 77-78
+packages/cli/src/cli/commands/start.ts
+  s_56d884d1e62fa5::t_8b962fcab5577d 97
+  s_56d884d1e62fa5::t_cbce3d6acdc4ed 653-654
+  s_56d884d1e62fa5::t_a4c8f6eb1733b2 76
+  s_56d884d1e62fa5::t_4d1cbda4d3ccf2 458,463-465
+packages/cli/src/outputClient/emulator.ts
+  s_56d884d1e62fa5::t_f55c4e6f406618 42-50
+  s_56d884d1e62fa5::t_3746e4eb5bdd1f 293
+packages/cli/src/cli/index.ts
+  s_56d884d1e62fa5::t_5247f1481859c7 45
+  s_56d884d1e62fa5::t_0939ef722ff6ae 94,96,98
+  s_56d884d1e62fa5::t_ec2f44068505ad 92-93,95,97
+  s_56d884d1e62fa5::t_dbc20629d02238 142
+packages/cli/src/outputClient/types.ts
+  s_56d884d1e62fa5::t_a5dfdfa8846d1b 40-43
+  s_9523a1e230f0e7::t_8d8ae650efae7d 39
+packages/cli/src/cli/commands/run.ts
+  s_56d884d1e62fa5::t_43e467bdcd7fa0 136
+  s_56d884d1e62fa5::t_d9068d215ea522 1636
+packages/web/astro/src/content/buttonSchemas.json
+  s_9523a1e230f0e7::t_d15c7089dbd855 9,95,112,138,152,179,230,246,346,360,377,404,416
+packages/web/astro/src/design/tokens.generated.ts
+  s_9523a1e230f0e7::t_84ce1ae3e95984 6-8,10-14,18-21,23-33,39-42,45-48,51-54,57-60,63-66,69-73
+packages/web/scripts/capture-decks.mjs
+  s_9523a1e230f0e7::t_44d1e07dfdd1df 36-38,42-47,49-60,74-92,95-102,105-108,114-116,126-134,136-145,186-188,191-216,222-225,227-230,236-239,248-251,257-260,277-284,292-299,301-304,306-309,314-316,319-321,328-335,338-345,355-358
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "73a7bfd297b2d5ff8f51a1584ca01d1204b77a9e",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_9523a1e230f0e7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb87bf784ffefGEv5K2HyNy4Lf",
+        "model": "z-ai/glm-5.3-flash"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
