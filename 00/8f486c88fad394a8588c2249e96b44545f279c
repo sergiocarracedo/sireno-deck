@@ -1,0 +1,38 @@
+packages/web/astro/src/content/buttonSchemas.json
+  s_56d884d1e62fa5::t_1cd0033132bb2e 9-13,99-101,118-120,146-151,165-167,194-197,248-252,268-270,370-374,388-391,408-410,437-440,452-455
+packages/cli/docs/user/emulator-vs-hardware.mdx
+  s_56d884d1e62fa5::t_20c0489c8339f2 28-30,33-35
+  s_56d884d1e62fa5::t_1f2a7813368506 36
+packages/cli/docs/reference/cli-commands.mdx
+  s_56d884d1e62fa5::t_31e91a8a9a7065 56
+packages/web/scripts/capture-decks.mjs
+  s_56d884d1e62fa5::t_12a0d8c9a6070f 249-252,255,257-258
+  s_56d884d1e62fa5::t_dbc02f24aa55ff 349
+  s_56d884d1e62fa5::t_90dae4e5f9ff28 157
+  s_56d884d1e62fa5::t_ff2502d91f8e2d 253-254,256
+  s_56d884d1e62fa5::t_591e4b8598bc02 326-333,335-340,342
+  s_56d884d1e62fa5::t_4319d487472c30 304
+  s_56d884d1e62fa5::t_0c178f5d924c91 202
+  s_56d884d1e62fa5::t_fbbb93dd4f7e2f 261
+  s_56d884d1e62fa5::t_fc4443525247b3 289
+packages/cli/src/cli/commands/start.ts
+  s_56d884d1e62fa5::t_3f61b4f8fe4c37 435-449
+packages/web/astro/src/design/tokens.generated.ts
+  s_56d884d1e62fa5::t_4d5af47f5ee654 6-8,10-14,18-21,23-27,29-34,39-42,45-48,51-54,57-60,63-66,69-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "008f486c88fad394a8588c2249e96b44545f279c",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
