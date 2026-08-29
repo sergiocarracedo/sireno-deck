@@ -163,6 +163,8 @@ export interface SetupAddonServicesOptions {
   // type here would re-import a stale pre-existing module
   // (`@/render/icon-resolver`) that doesn't exist on disk.
   readonly resolverOptions: ReturnType<typeof buildResolverOptions>
+  /** Optional host callback that re-materializes addon decks (dynamic decks). */
+  readonly requestDeckRebuild?: () => void
 }
 
 export interface SetupAddonServicesResult {
@@ -201,6 +203,7 @@ export const setupAddonServices = (
     methods,
     logger,
     resolverOptions,
+    requestDeckRebuild,
   } = options
 
   void bridgeAddonServices({
@@ -216,6 +219,7 @@ export const setupAddonServices = (
     bridge,
     store,
     methods,
+    ...(requestDeckRebuild !== undefined ? { requestDeckRebuild } : {}),
   })
 
   const unsubscribeDeck = pubSub.subscribe(
@@ -1507,6 +1511,72 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     const mainDeckId = mainDeck?.id ?? "main"
     bridge.setDeckTree(buildDeckTree(decks, mainDeckId))
 
+    // ponytail: addon-triggered deck rebuild (dynamic decks). Mirrors the
+    // config hot-reload decks-only branch: rebuild the runtime deck set,
+    // fall back if the active deck vanished (e.g. a page count shrank), and
+    // rebroadcast deck-config so the frontend sees the new pages.
+    const requestDeckRebuild = (): void => {
+      if (
+        runtime === null ||
+        descriptor === null ||
+        outputClient === null ||
+        bridge === null ||
+        addonBundle === null ||
+        loadedConfig === null ||
+        providers === null
+      ) {
+        return
+      }
+      const rebuilt = buildRuntime(
+        options,
+        loadedConfig,
+        descriptor.keyCount,
+        providers.session.getState() === "locked",
+      ).decks
+      decks = rebuilt
+      runtime.setDecks(rebuilt)
+      const activeId = runtime.getActiveDeckId()
+      if (!rebuilt.some((d) => d.id === activeId)) {
+        const fallback = rebuilt.some((d) => d.id === "main")
+          ? "main"
+          : (rebuilt[0]?.id ?? activeId)
+        runtime.navigateToDeck(fallback, { addToHistory: false })
+      }
+      for (const deck of rebuilt) {
+        registerDeckIcon(deck, resolverOptions, logger)
+        registerIconForDeck(deck.buttons ?? [], resolverOptions, logger)
+      }
+      bridge.setDeckTree(buildDeckTree(rebuilt, runtime.getActiveDeckId()))
+      const activeDeck = runtime.getActiveDeck()
+      const msg = buildDeckConfigMessage(
+        activeDeck,
+        addonBundle.addonByType,
+        resolverOptions,
+        {
+          navStackDepth: runtime.navStackDepth(),
+          hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+          inOverlayMode: runtime.getOverlay() !== null,
+        },
+        descriptor.keyCount,
+        outputClient.kind === "real",
+        (fullPath) => getAssetByPath(fullPath)?.id,
+        runtime.getAvailableOverlayDeckIcon(),
+        runtime.getAvailableOverlayDeckName(),
+        { lockActive: runtime.isLockActive() },
+      )
+      bridge.broadcast(msg)
+      logger.info(
+        {
+          deckId: msg.deckId,
+          buttonCount: (
+            msg.surfaces[msg.deckId] as { buttons?: unknown[] } | undefined
+          )?.buttons?.length,
+        },
+        "addon requested deck rebuild",
+      )
+    }
+    methods?.setDeckRebuilder(requestDeckRebuild)
+
     addonServices = setupAddonServices({
       runtime,
       methods,
@@ -1523,6 +1593,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       bridge,
       isCompact,
       resolverOptions,
+      requestDeckRebuild,
       ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
       signal: bridgeSignal.signal,
       store,

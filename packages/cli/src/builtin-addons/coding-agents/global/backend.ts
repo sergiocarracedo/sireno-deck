@@ -19,7 +19,8 @@ import {
   type AgentsSnapshot,
   type ProviderId,
 } from "../shared/state.js"
-import { mergeSnapshot } from "../shared/snapshot.js"
+import { mergeSnapshot, listAgents } from "../shared/snapshot.js"
+import { deckTarget, setLiveCount } from "../shared/live-count.js"
 import { NotificationThrottle } from "../shared/notifier.js"
 import {
   loadProviders,
@@ -48,6 +49,24 @@ const state: GlobalState = {
   throttle: new NotificationThrottle(),
   context: null,
   icons: {},
+}
+
+// ponytail: deck re-materialization tracking — when the live agent count
+// changes, ask the host to rebuild the (dynamic) agents deck so page count
+// follows reality. Debounced to avoid rebuild storms during rapid churn.
+let lastLiveCount = -1
+let rebuildTimer: ReturnType<typeof setTimeout> | null = null
+
+const syncLiveCountAndMaybeRebuild = (): void => {
+  const count = listAgents(state.lastSnapshot).length
+  setLiveCount(count)
+  if (count === lastLiveCount) return
+  lastLiveCount = count
+  if (rebuildTimer !== null) clearTimeout(rebuildTimer)
+  rebuildTimer = setTimeout(() => {
+    rebuildTimer = null
+    state.context?.requestDeckRebuild?.()
+  }, 1500)
 }
 
 // ponytail: register both provider logos as WS assets (absolute paths, so no
@@ -198,6 +217,7 @@ const humanStatus = (s: import("../shared/state.js").AgentStatus): string => {
 }
 
 const publishSnapshot = (): void => {
+  syncLiveCountAndMaybeRebuild()
   const payload: AgentsSnapshot = {
     ...state.lastSnapshot,
     icons: state.icons,
@@ -255,6 +275,7 @@ export const globalService: AddonGlobalService = {
   subscriptions: [subscription],
   methods: {
     getSnapshot: (() => state.lastSnapshot) as AddonServiceMethod,
+    getDeckTarget: (() => deckTarget()) as AddonServiceMethod,
     dismissAttention: ((key: unknown) => {
       if (typeof key !== "string") return
       const [providerId, sessionId] = key.split(":")
@@ -343,5 +364,8 @@ export const globalService: AddonGlobalService = {
     state.throttle.reset()
     state.icons = {}
     state.context = null
+    if (rebuildTimer !== null) clearTimeout(rebuildTimer)
+    rebuildTimer = null
+    lastLiveCount = -1
   },
 }

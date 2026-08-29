@@ -337,6 +337,7 @@ const setHappyPath = (
       setNotificationProvider: () => undefined,
       setClipboardProvider: () => undefined,
       setRequirements: () => undefined,
+      setDeckRebuilder: () => undefined,
       checkRequirement: () => true,
       showTemporaryError: () => undefined,
       runCommand: () => undefined,

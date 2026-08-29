@@ -34,6 +34,8 @@ export interface BridgeAddonServicesParams {
   readonly statePublisher: Pick<StatePublisher, "registerChannel">
   readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
   readonly methods: Methods
+  /** Optional host callback that re-materializes addon decks (dynamic decks). */
+  readonly requestDeckRebuild?: () => void
 }
 
 type AddonModule = {
@@ -63,6 +65,7 @@ export const bridgeAddonServices = async (
     statePublisher,
     bridge,
     methods,
+    requestDeckRebuild,
   } = params
   const logger = params.logger.child({ component: "addon-handler" })
 
@@ -158,6 +161,7 @@ export const bridgeAddonServices = async (
       signal: abortController.signal,
       executor,
       notify: methods.notify,
+      ...(requestDeckRebuild !== undefined ? { requestDeckRebuild } : {}),
     }
 
     if (globalService.pollers !== undefined) {

@@ -36,18 +36,16 @@ interface SnapshotLike {
   icons?: Record<string, string>
 }
 
-// ponytail: color-mix tints the tile by state using theme tokens; `idle`
-// stays transparent so stale sessions read as quiet.
-const tint = (c: string): string =>
-  `color-mix(in srgb, var(--sireno-color-${c}) 18%, transparent)`
-
-const TILE_BG: Record<string, string> = {
+// ponytail: solid status color underlay at fixed opacity — unlike color-mix
+// it's universally supported (emulator + headless hardware screenshots).
+// idle stays transparent so stale sessions read as quiet.
+const TILE_COLOR: Record<string, string> = {
   idle: "transparent",
-  running: tint("success"),
-  waiting: tint("accent"),
-  waiting_for_human: tint("danger"),
-  error: tint("danger"),
-  compacting: tint("primary"),
+  running: "var(--sireno-color-success)",
+  waiting: "var(--sireno-color-accent)",
+  waiting_for_human: "var(--sireno-color-danger)",
+  error: "var(--sireno-color-danger)",
+  compacting: "var(--sireno-color-primary)",
 }
 
 const DOT_COLOR: Record<string, string> = {
@@ -80,45 +78,47 @@ const AgentFrontend = (props: AddonFrontendButtonProps<AgentConfig>) => {
   const agent = agentAt(snapshot, slot)
 
   const status = agent?.status ?? "idle"
-  const bgVar = TILE_BG[status] ?? TILE_BG["idle"]!
+  const tileColor = TILE_COLOR[status] ?? TILE_COLOR["idle"]!
   const dotColorVar = DOT_COLOR[status] ?? DOT_COLOR["idle"]!
   const title = agent?.title ?? (slot === 0 ? "no agents" : "")
   const iconSource = agent ? snapshot.icons?.[agent.providerId] : undefined
   const cost = formatCost(agent?.cost)
 
   // ponytail: empty slots (no live session for this tile) read as blank —
-  // trailing pages of the paginated deck stay quiet.
+  // trailing tiles of the paginated deck stay quiet.
   if (agent === null && slot !== 0) {
     return <div className="h-full w-full" />
   }
 
   return (
-    <div
-      className="flex h-full w-full flex-col justify-between p-1"
-      style={{ background: bgVar }}
-    >
-      <div className="flex items-start gap-1">
+    <div className="relative flex h-full w-full flex-col justify-between p-1">
+      {tileColor !== "transparent" && (
+        <div
+          className="pointer-events-none absolute inset-0 rounded-xl"
+          style={{ backgroundColor: tileColor, opacity: 0.32 }}
+        />
+      )}
+      <div className="relative flex items-start gap-1.5">
         {iconSource !== undefined ? (
-          <Icon source={iconSource} size={12} />
+          <Icon source={iconSource} size={14} />
         ) : (
           <span
-            className="mt-[1px] inline-block h-2 w-2 shrink-0 rounded-full opacity-70"
+            className="mt-[2px] inline-block h-2.5 w-2.5 shrink-0 rounded-full"
             style={{ backgroundColor: dotColorVar }}
             aria-label={status}
           />
         )}
-        <span className="line-clamp-2 text-[11px] font-medium leading-tight">
+        <span className="line-clamp-2 text-[13px] font-semibold leading-snug">
           {title || <span className="opacity-40">empty</span>}
         </span>
       </div>
-      <div className="flex items-center justify-between gap-1">
-        <span className="text-[9px] uppercase opacity-70">{status}</span>
-        {agent?.lastMessagePreview !== undefined && (
-          <span className="line-clamp-1 text-[9px] opacity-70">
-            {agent.lastMessagePreview}
-          </span>
+      <div className="relative flex items-center justify-between gap-1">
+        <span className="text-[10px] font-medium uppercase opacity-80">
+          {status}
+        </span>
+        {cost !== null && (
+          <span className="text-[10px] font-medium opacity-80">{cost}</span>
         )}
-        {cost !== null && <span className="text-[9px] opacity-70">{cost}</span>}
       </div>
     </div>
   )

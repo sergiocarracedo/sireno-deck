@@ -39,18 +39,22 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
   const attention = snapshot.attention ?? []
 
   const count = (s: string): number => all.filter((a) => a.status === s).length
-  const waiting = count("waiting_for_human")
-  const errors = count("error")
-  const running = count("running")
-  const active =
-    waiting + errors + running + count("waiting") + count("compacting")
 
   const showCount = props.config?.showCount ?? true
   const attentionOnly = props.config?.attentionOnly ?? false
-  // ponytail: "live" means actually doing something — attention (waiting /
-  // error) first, else non-idle active work. Historical idle sessions (all of
-  // opencode's /session store, every claude jsonl ever) never inflate this.
   const hasSessions = all.length > 0
+
+  // ponytail: statuses with a count render as a colored ball + number row.
+  // Danger covers both waiting_for_human and error; accent for stalled/waiting;
+  // success for running. Only non-zero statuses are shown.
+  const balls: Array<{ color: string; count: number }> = [
+    {
+      color: "var(--sireno-color-danger)",
+      count: count("waiting_for_human") + count("error"),
+    },
+    { color: "var(--sireno-color-accent)", count: count("waiting") },
+    { color: "var(--sireno-color-success)", count: count("running") },
+  ].filter((b) => b.count > 0)
 
   // --- blink on change ---------------------------------------------------
   // Blink the tile background when an agent enters attention (waiting/error)
@@ -107,11 +111,6 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
     )
   }
 
-  const detail = [waiting, errors, running]
-    .map((n, i) => (n > 0 ? `${["wait", "err", "run"][i]} ${n}` : ""))
-    .filter(Boolean)
-    .join(" · ")
-
   return (
     <div
       key={blinkKey}
@@ -122,31 +121,26 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
     >
       <style>{BLINK_CSS}</style>
       <span className="text-sm font-bold leading-tight">Agents</span>
-      {showCount && (
-        <span
-          className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-          style={{
-            backgroundColor:
-              attention.length > 0
-                ? "var(--sireno-color-danger)"
-                : active > 0
-                  ? "var(--sireno-color-success)"
-                  : "var(--sireno-color-muted)",
-            color: "var(--sireno-color-foreground-contrast)",
-          }}
-        >
-          {attention.length > 0
-            ? `${attention.length} ${attention.length === 1 ? "wait" : "waiting"}`
-            : active > 0
-              ? `${active} active`
-              : hasSessions
-                ? "0 active"
-                : "no agents"}
-        </span>
-      )}
-      {detail.length > 0 && (
-        <span className="text-[9px] leading-tight opacity-80">{detail}</span>
-      )}
+      {showCount &&
+        (balls.length > 0 ? (
+          <div className="flex flex-col gap-0.5">
+            {balls.map((b, i) => (
+              <div key={i} className="flex items-center gap-1 leading-none">
+                <span
+                  className="inline-block h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: b.color }}
+                />
+                <span className="text-[11px] font-semibold tabular-nums">
+                  {b.count}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span className="text-[10px] opacity-50">
+            {hasSessions ? "0 active" : "no agents"}
+          </span>
+        ))}
     </div>
   )
 }

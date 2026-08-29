@@ -13,16 +13,18 @@ import {
 // ponytail: "live" window — only sessions updated within this are surfaced.
 const RECENT_WINDOW_MS = 6 * 60 * 60 * 1000
 
-// ponytail: a message-part poll (GET /session/<id>/message) runs per recent
-// session per tick; only sessions touched within this window are polled so
-// the request count stays at 1–3.
-const STATUS_WINDOW_MS = 2 * 60 * 60 * 1000
+// ponytail: how many trailing messages to fetch per session for status. A
+// mid-turn session's newest message streams with finish==null and empty parts,
+// so the previous message(s) carry the live tool state — 6 is enough to see
+// the open tool while the response streams.
+const STATUS_MESSAGE_LIMIT = 6
 
 interface OpencodeSessionLike {
   readonly id: string
   readonly title?: string
   readonly directory?: string
   readonly cost?: number
+  readonly agent?: string
   readonly time?: { readonly updated?: number; readonly created?: number }
 }
 
@@ -36,6 +38,7 @@ interface MessagePart {
 
 interface MessageLike {
   readonly info?: { readonly role?: string; readonly tokens?: unknown }
+  readonly finish?: string | null
   readonly parts?: readonly MessagePart[]
 }
 
@@ -47,6 +50,7 @@ export interface OpencodeHttpApi {
   sessionMessages(
     signal: AbortSignal,
     id: string,
+    limit: number,
   ): Promise<ReadonlyArray<MessageLike>>
   eventStream(
     signal: AbortSignal,
@@ -76,10 +80,10 @@ const httpApi = (baseUrl: string): OpencodeHttpApi => ({
       "/session/status",
       signal,
     ),
-  sessionMessages: (signal, id) =>
+  sessionMessages: (signal, id, limit) =>
     requestJson<ReadonlyArray<MessageLike>>(
       baseUrl,
-      `/session/${encodeURIComponent(id)}/message`,
+      `/session/${encodeURIComponent(id)}/message?limit=${limit}`,
       signal,
     ),
   eventStream: async (signal) => streamEvents(baseUrl, signal),
@@ -144,24 +148,30 @@ const startsDataFrame = (chunk: Uint8Array): boolean =>
   String.fromCharCode(...chunk.slice(0, 32)).includes("data:")
 
 // ponytail: this fork's /session/status is empty even mid-turn, so live
-// status comes from the session's last message parts: a `tool` part with
-// state.status "pending" means the agent is asking the user (needs
-// approval/answer) → waiting_for_human; "running" → running; otherwise the
-// turn has finished (idle). Honored last message role: assistant text = idle.
+// status comes from the trailing message parts. A `tool` part with
+// state.status "pending" means the agent is waiting on the user (permission
+// prompt or a `question`) → waiting_for_human; "running" → running. The
+// newest message of an in-flight turn streams with finish==null and (often)
+// empty parts — that's still "running". Otherwise the turn has finished.
 const statusFromMessages = (
   messages: ReadonlyArray<MessageLike>,
 ): AgentStatus => {
-  const last = messages[messages.length - 1]
-  if (!last) return "idle"
-  const parts = last.parts ?? []
-  for (const p of parts) {
-    if (p.type !== "tool") continue
-    const st = p.state?.status
-    if (st === "pending") return "waiting_for_human"
-    if (st === "running") return "running"
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const m = messages[i]
+    const parts = m?.parts ?? []
+    for (const p of parts) {
+      if (p?.type !== "tool") continue
+      const st = p.state?.status
+      if (st === "pending") return "waiting_for_human"
+      if (st === "running") return "running"
+    }
   }
-  const role = last.info?.role
-  return role === "user" ? "running" : "idle"
+  const last = messages[messages.length - 1]
+  if (last === undefined) return "idle"
+  // ponytail: an in-flight turn streams with finish==null and empty parts —
+  // that's still "running". A finished turn carries a real finish value.
+  if (last.finish === null || last.finish === undefined) return "running"
+  return "idle"
 }
 
 // ponytail: the fork's /session/status is usually empty, so live status comes
@@ -180,18 +190,15 @@ export class OpenCodeProvider implements AgentProvider {
   readonly #api: OpencodeHttpApi
   readonly #apiFactory: (baseUrl: string) => OpencodeHttpApi
   readonly #recentWindowMs: number
-  readonly #statusWindowMs: number
 
   constructor(opts: {
     baseUrl: string
     apiFactory?: (baseUrl: string) => OpencodeHttpApi
     recentWindowMs?: number
-    statusWindowMs?: number
   }) {
     this.#apiFactory = opts.apiFactory ?? httpApi
     this.#api = this.#apiFactory(opts.baseUrl)
     this.#recentWindowMs = opts.recentWindowMs ?? RECENT_WINDOW_MS
-    this.#statusWindowMs = opts.statusWindowMs ?? STATUS_WINDOW_MS
   }
 
   async fetchSnapshot(signal: AbortSignal): Promise<readonly Agent[]> {
@@ -222,16 +229,17 @@ export class OpenCodeProvider implements AgentProvider {
     statusMap: Record<string, SessionStatusEntry>,
     signal: AbortSignal,
   ): Promise<readonly Agent[]> {
-    const now = Date.now()
     const out: Agent[] = []
     for (const s of recent) {
       const fromMap = toStatusFromMap(s, statusMap)
       let status = fromMap
-      const statusEligible =
-        (s.time?.updated ?? 0) >= now - this.#statusWindowMs
-      if (statusEligible && status !== "waiting_for_human") {
+      if (status !== "waiting_for_human") {
         try {
-          const messages = await this.#api.sessionMessages(signal, s.id)
+          const messages = await this.#api.sessionMessages(
+            signal,
+            s.id,
+            STATUS_MESSAGE_LIMIT,
+          )
           status = combineStatus(fromMap, statusFromMessages(messages))
         } catch {
           // keep derived status; message endpoint may 4xx for closed sessions
