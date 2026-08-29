@@ -39,7 +39,15 @@ const isButtonAction = (m: WsMessage): m is ButtonActionMessage =>
 const isSetDevice = (m: WsMessage): m is SetDeviceMessage =>
   m.type === "set-device"
 
-const openBrowser = (url: string, logger: pino.Logger): void => {
+const openBrowser = (
+  url: string,
+  logger: pino.Logger,
+  noOpen = false,
+): void => {
+  if (noOpen) {
+    logger.debug("browser auto-open disabled")
+    return
+  }
   const os = platform()
   const cmd = os === "win32" ? "cmd" : os === "darwin" ? "open" : "xdg-open"
   const args = os === "win32" ? ["/c", "start", "", url] : [url]
@@ -282,7 +290,7 @@ export class EmulatorOutputClient implements OutputClient {
       process.stdout.write(
         `\n  Emulator:  ${emulatorUrl}\n  Frontend:  ${frontendUrl}\n\n`,
       )
-      openBrowser(emulatorUrl, logger)
+      openBrowser(emulatorUrl, logger, opts.noAutoOpen === true)
       const lanHost = opts.lanHost ?? "127.0.0.1"
       const state: RuntimeState = {
         emulatorUrl,

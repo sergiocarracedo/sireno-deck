@@ -73,6 +73,7 @@ export interface StartOptions {
   readonly httpPort?: number
   readonly logs?: boolean
   readonly system?: boolean
+  readonly noAutoOpen?: boolean
   readonly signals?: SignalProvider
   readonly logger: pino.Logger
 }
@@ -93,6 +94,7 @@ const toRunOptions = (
   xdgConfigHome: options.xdgConfigHome,
   homeDir: options.homeDir,
   signals: options.signals,
+  noAutoOpen: options.noAutoOpen === true,
   onChildren,
   onAddonsUpdate,
 })
@@ -453,10 +455,14 @@ const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
   emulator: options.emulator === true || options.remote === true,
   remote: options.remote,
   httpPort: options.httpPort ?? 3939,
+  ...(options.config !== undefined ? { config: options.config } : {}),
   ...(options.deviceModel !== undefined
     ? { deviceModel: options.deviceModel }
     : {}),
   ...(options.port !== undefined ? { port: options.port } : {}),
+  ...(options.noAutoOpen !== undefined
+    ? { noAutoOpen: options.noAutoOpen }
+    : {}),
 })
 
 const runInProcess = async (options: StartOptions): Promise<void> => {
@@ -644,6 +650,8 @@ const buildDetachedArgs = (flags: RuntimeFlags): string[] => {
   if (flags.emulator) args.push("--emulator")
   if (flags.remote) args.push("--remote")
   if (flags.port !== undefined) args.push("--port", String(flags.port))
+  if (flags.config !== undefined) args.push("--config", flags.config)
+  if (flags.noAutoOpen === true) args.push("--no-autoopen")
   if (flags.deviceModel !== undefined) {
     args.push("--device-model", flags.deviceModel)
   }

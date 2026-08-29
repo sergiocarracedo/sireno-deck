@@ -133,6 +133,7 @@ export interface RunOptions {
   readonly intervalMs?: number
   readonly xdgConfigHome?: string
   readonly homeDir?: string
+  readonly noAutoOpen?: boolean
   readonly signals?: SignalProvider
   readonly onChildren?: (pids: ReadonlyArray<number>) => void
   readonly onAddonsUpdate?: (addons: ReadonlyArray<ScannedAddon>) => void
@@ -1632,6 +1633,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       bridge,
       runtime,
       pubSub,
+      noAutoOpen: options.noAutoOpen === true,
       store,
       decks,
       theme: {

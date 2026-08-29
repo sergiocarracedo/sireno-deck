@@ -33,14 +33,31 @@ const outDir = resolve(repoRoot, "packages/web/astro/public/captures")
 mkdirSync(outDir, { recursive: true })
 const stateDir = `${process.env.HOME}/.local/state/sireno-deck`
 
-const { chromium } = createRequire(resolve(repoRoot, "packages/cli/package.json"))("playwright")
+const { chromium } = createRequire(
+  resolve(repoRoot, "packages/cli/package.json"),
+)("playwright")
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 const THEMES = [
-  { id: "default", theme: "default", alias: "01-default.png", expected: "#7dd3fc" },
+  {
+    id: "default",
+    theme: "default",
+    alias: "01-default.png",
+    expected: "#7dd3fc",
+  },
   { id: "light", theme: "light", alias: "13-light.png", expected: "#0284c7" },
-  { id: "riptide", theme: "./packages/themes/riptide", alias: "14-riptide.png", expected: "#f5ff00" },
-  { id: "neon-grids", theme: "./packages/themes/neon-grids", alias: "15-neon-grids.png", expected: "#00e5ff" },
+  {
+    id: "riptide",
+    theme: "./packages/themes/riptide",
+    alias: "14-riptide.png",
+    expected: "#f5ff00",
+  },
+  {
+    id: "neon-grids",
+    theme: "./packages/themes/neon-grids",
+    alias: "15-neon-grids.png",
+    expected: "#00e5ff",
+  },
 ]
 
 const SNAPSHOT_DECKS = [
@@ -54,22 +71,49 @@ const SNAPSHOT_DECKS = [
   "web-snapshot-pomodoro",
   "web-snapshot-coding-agents",
 ]
-const COLOR_VARIANTS = ["blue", "green", "purple", "cyan", "magenta", "amber", "lime"].map(
-  (c) => `web-snapshot-color-${c}`,
-)
-const OVERLAY_APPS = ["vscode", "chrome", "slack", "discord", "teams", "opencode", "claude-code", "google-meet"]
+const COLOR_VARIANTS = [
+  "blue",
+  "green",
+  "purple",
+  "cyan",
+  "magenta",
+  "amber",
+  "lime",
+].map((c) => `web-snapshot-color-${c}`)
+const OVERLAY_APPS = [
+  "vscode",
+  "chrome",
+  "slack",
+  "discord",
+  "teams",
+  "opencode",
+  "claude-code",
+  "google-meet",
+]
 
 const isBusy = async (port) => {
-  try { await fetch(`http://127.0.0.1:${port}/`, { signal: AbortSignal.timeout(400) }); return true } catch { return false }
+  try {
+    await fetch(`http://127.0.0.1:${port}/`, {
+      signal: AbortSignal.timeout(400),
+    })
+    return true
+  } catch {
+    return false
+  }
 }
 const waitPortFree = async (port) => {
-  for (let i = 0; i < 60; i++) { if (!(await isBusy(port))) return true; await sleep(500) }
+  for (let i = 0; i < 60; i++) {
+    if (!(await isBusy(port))) return true
+    await sleep(500)
+  }
   return false
 }
 const waitForHtml = async () => {
   for (let i = 0; i < 300; i++) {
     try {
-      const r = await fetch("http://127.0.0.1:5180/", { signal: AbortSignal.timeout(600) })
+      const r = await fetch("http://127.0.0.1:5180/", {
+        signal: AbortSignal.timeout(600),
+      })
       const t = await r.text()
       if (r.status < 500 && t.includes('<div id="root"')) return true
     } catch {}
@@ -79,11 +123,26 @@ const waitForHtml = async () => {
 }
 
 const stopAll = () => {
-  for (const pat of ["sirenodeck:dm", "sirenodeck:wrp", "packages/cli/frontend/vite.config.ts", "packages/cli/emulator/vite.config.ts"]) {
-    try { execSync(`pkill -9 -f "${pat}"`, { timeout: 3000 }) } catch {}
+  for (const pat of [
+    "sirenodeck:dm",
+    "sirenodeck:wrp",
+    "packages/cli/frontend/vite.config.ts",
+    "packages/cli/emulator/vite.config.ts",
+  ]) {
+    try {
+      execSync(`pkill -9 -f "${pat}"`, { timeout: 3000 })
+    } catch {}
   }
-  for (const f of ["sireno-deck.config", "sireno-deck.flags.json", "sireno-deck.pid", "sireno-deck.token", "sireno-deck.children.json"]) {
-    try { execSync(`rm -f ${stateDir}/${f}`, { timeout: 2000 }) } catch {}
+  for (const f of [
+    "sireno-deck.config",
+    "sireno-deck.flags.json",
+    "sireno-deck.pid",
+    "sireno-deck.token",
+    "sireno-deck.children.json",
+  ]) {
+    try {
+      execSync(`rm -f ${stateDir}/${f}`, { timeout: 2000 })
+    } catch {}
   }
 }
 
@@ -124,29 +183,60 @@ async function bootDaemon(cfg) {
   writeFileSync(resolve(repoRoot, ".sireno-capture.yml"), cfg)
   stopAll()
   await sleep(1500)
-  await waitPortFree(5180); await waitPortFree(52937); await waitPortFree(52938)
+  await waitPortFree(5180)
+  await waitPortFree(52937)
+  await waitPortFree(52938)
   const tsx = resolve(repoRoot, "packages/cli/node_modules/.bin/tsx")
   const entry = resolve(repoRoot, "packages/cli/src/cli/main.ts")
-  const proc = spawn(tsx, [entry, "start", "--config", resolve(repoRoot, ".sireno-capture.yml"), "--emulator", "--port", "53237", "--log-level", "warn"], {
-    cwd: repoRoot,
-    env: { ...process.env, SIRENO_CWD: repoRoot, SIRENO_CAPTURE_UNLOCKED: "1", SIRENO_CAPTURE_FAKE_AGENTS: "1", TSX_TSCONFIG_PATH: resolve(repoRoot, "packages/cli/tsconfig.json") },
-    stdio: ["ignore", "ignore", "inherit"],
-    detached: true,
-  })
+  const proc = spawn(
+    tsx,
+    [
+      entry,
+      "start",
+      "--config",
+      resolve(repoRoot, ".sireno-capture.yml"),
+      "--emulator",
+      "--port",
+      "53237",
+      "--log-level",
+      "warn",
+    ],
+    {
+      cwd: repoRoot,
+      env: {
+        ...process.env,
+        SIRENO_CWD: repoRoot,
+        SIRENO_CAPTURE_UNLOCKED: "1",
+        SIRENO_CAPTURE_FAKE_AGENTS: "1",
+        TSX_TSCONFIG_PATH: resolve(repoRoot, "packages/cli/tsconfig.json"),
+      },
+      stdio: ["ignore", "ignore", "inherit"],
+      detached: true,
+    },
+  )
   const up = await waitForHtml()
   return { proc, up }
 }
 
 async function capture(browser, outName) {
-  const ctx = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 2 })
+  const ctx = await browser.newContext({
+    viewport: { width: 1600, height: 1000 },
+    deviceScaleFactor: 2,
+  })
   const page = await ctx.newPage()
-  await page.goto("http://127.0.0.1:5180/", { waitUntil: "domcontentloaded", timeout: 25000 })
+  await page.goto("http://127.0.0.1:5180/", {
+    waitUntil: "domcontentloaded",
+    timeout: 25000,
+  })
   await page.waitForSelector(".grid[data-deck-id]", { timeout: 20000 })
   await page.waitForTimeout(3000)
   const eff = await page.evaluate(() => {
     const el = document.querySelector(".grid[data-deck-id]")
     const cs = el ? getComputedStyle(el) : null
-    return { id: el?.getAttribute("data-deck-id"), primary: cs?.getPropertyValue("--sireno-color-primary").trim() }
+    return {
+      id: el?.getAttribute("data-deck-id"),
+      primary: cs?.getPropertyValue("--sireno-color-primary").trim(),
+    }
   })
   const out = resolve(outDir, outName)
   await page.locator(".grid[data-deck-id]").screenshot({ path: out })
@@ -155,13 +245,19 @@ async function capture(browser, outName) {
 }
 
 async function shutdown(proc) {
-  try { if (proc.pid !== undefined && proc.exitCode === null) process.kill(-proc.pid, "SIGKILL") } catch {}
+  try {
+    if (proc.pid !== undefined && proc.exitCode === null)
+      process.kill(-proc.pid, "SIGKILL")
+  } catch {}
   await sleep(1500)
   stopAll()
 }
 
 const main = async () => {
-  const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] })
+  const browser = await chromium.launch({
+    headless: true,
+    args: ["--no-sandbox"],
+  })
   const results = []
   try {
     // --- web-snapshot + color + demo decks (default theme) ---
@@ -178,8 +274,14 @@ const main = async () => {
       ...COLOR_VARIANTS.map((c) => `${c}.yml`),
     ]) {
       const outName = `${deckYml.replace(/\.yml$/, "")}.png`
-      const { proc, up } = await bootDaemon(buildConfig("default", deckYml, null))
-      if (!up) { console.log(`FAIL boot ${outName}`); await shutdown(proc); continue }
+      const { proc, up } = await bootDaemon(
+        buildConfig("default", deckYml, null),
+      )
+      if (!up) {
+        console.log(`FAIL boot ${outName}`)
+        await shutdown(proc)
+        continue
+      }
       const eff = await capture(browser, outName)
       console.log(`ok ${outName} deck=${eff?.id}`)
       await shutdown(proc)
@@ -187,32 +289,60 @@ const main = async () => {
     // --- overlay per-app decks ---
     for (const app of OVERLAY_APPS) {
       const outName = `overlay-${app}.png`
-      const { proc, up } = await bootDaemon(buildConfig("default", null, `app-shortcuts:${app}`))
-      if (!up) { console.log(`FAIL boot ${outName}`); await shutdown(proc); continue }
+      const { proc, up } = await bootDaemon(
+        buildConfig("default", null, `app-shortcuts:${app}`),
+      )
+      if (!up) {
+        console.log(`FAIL boot ${outName}`)
+        await shutdown(proc)
+        continue
+      }
       // click the single change-deck tile to reach the overlay
-      const ctx = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 2 })
+      const ctx = await browser.newContext({
+        viewport: { width: 1600, height: 1000 },
+        deviceScaleFactor: 2,
+      })
       const page = await ctx.newPage()
-      await page.goto("http://127.0.0.1:5180/", { waitUntil: "domcontentloaded", timeout: 25000 })
+      await page.goto("http://127.0.0.1:5180/", {
+        waitUntil: "domcontentloaded",
+        timeout: 25000,
+      })
       await page.waitForSelector('[data-deck-id="main"]', { timeout: 20000 })
       await page.waitForTimeout(2000)
       const tile = page.locator('[data-button-type="core:change-deck"]').first()
       if (await tile.count()) await tile.click()
-      await page.waitForSelector(`[data-deck-id="app-shortcuts:${app}"]`, { timeout: 10000 })
+      await page.waitForSelector(`[data-deck-id="app-shortcuts:${app}"]`, {
+        timeout: 10000,
+      })
       await page.waitForTimeout(3000)
       const out = resolve(outDir, outName)
-      await page.locator(`[data-deck-id="app-shortcuts:${app}"]`).screenshot({ path: out })
+      await page
+        .locator(`[data-deck-id="app-shortcuts:${app}"]`)
+        .screenshot({ path: out })
       await ctx.close()
       console.log(`ok ${outName}`)
       await shutdown(proc)
     }
     // --- themes ---
     for (const theme of THEMES) {
-      const { proc, up } = await bootDaemon(buildConfig(theme.theme, "web-snapshot-date-time.yml", null))
-      if (!up) { console.log(`FAIL boot theme ${theme.id}`); await shutdown(proc); continue }
+      const { proc, up } = await bootDaemon(
+        buildConfig(theme.theme, "web-snapshot-date-time.yml", null),
+      )
+      if (!up) {
+        console.log(`FAIL boot theme ${theme.id}`)
+        await shutdown(proc)
+        continue
+      }
       const eff = await capture(browser, `theme-${theme.id}.png`)
       const ok = eff?.primary?.toLowerCase() === theme.expected.toLowerCase()
-      if (ok) copyFileSync(resolve(outDir, `theme-${theme.id}.png`), resolve(outDir, theme.alias))
-      console.log(`${ok ? "PASS" : "FAIL"} theme ${theme.id}: primary=${eff?.primary} -> ${theme.alias}`)
+      if (ok)
+        copyFileSync(
+          resolve(outDir, `theme-${theme.id}.png`),
+          resolve(outDir, theme.alias),
+        )
+      console.log(
+        `${ok ? "PASS" : "FAIL"} theme ${theme.id}: primary=${eff?.primary} -> ${theme.alias}`,
+      )
       await shutdown(proc)
     }
   } finally {
@@ -222,4 +352,7 @@ const main = async () => {
   console.log("done")
 }
 
-main().catch((e) => { console.error("[fatal]", e); process.exit(1) })
+main().catch((e) => {
+  console.error("[fatal]", e)
+  process.exit(1)
+})

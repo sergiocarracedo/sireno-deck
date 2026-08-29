@@ -74,6 +74,8 @@ export interface RuntimeFlags {
   deviceModel?: string
   port?: number
   httpPort: number
+  config?: string
+  noAutoOpen?: boolean
 }
 
 const DAEMON_NAME = "sireno-deck"

@@ -42,6 +42,7 @@ interface StartArgs extends GlobalOptions {
   httpPort?: number
   logs?: boolean
   system?: boolean
+  autoopen?: boolean
 }
 
 interface StatusArgs extends GlobalOptions {
@@ -88,7 +89,13 @@ const startCommand: CommandModule<object, StartArgs> = {
         type: "boolean",
         default: false,
         description:
-          "Run the emulator (full UI with sidebar, toolbar, device selector) at 127.0.0.1. Browser auto-opens.",
+          "Run the emulator (full UI with sidebar, toolbar, device selector) at 127.0.0.1. Browser auto-opens unless --no-autoopen.",
+      })
+      .option("autoopen", {
+        type: "boolean",
+        default: true,
+        description:
+          "Auto-open the emulator URL in a browser after start. Pass --no-autoopen for headless / capture runs.",
       })
       .option("remote", {
         type: "boolean",
@@ -132,6 +139,7 @@ const startCommand: CommandModule<object, StartArgs> = {
         ? { httpPort: argv.httpPort as number }
         : {}),
       ...(argv.system === true ? { system: true } : {}),
+      ...(argv.autoopen === false ? { noAutoOpen: true } : {}),
     }
     try {
       await buildStartupBanner(

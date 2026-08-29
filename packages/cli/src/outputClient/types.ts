@@ -37,6 +37,11 @@ export interface InitOptions {
    */
   readonly remote?: boolean
   /**
+   * --no-autoopen: do not launch the emulator URL in the system browser.
+   * Useful for capture tooling and headless runs. Default false.
+   */
+  readonly noAutoOpen?: boolean
+  /**
    * The resolved LAN IP to use in the runtime-state.json. Only set when
    * remote is true or --emulator is set.
    */
