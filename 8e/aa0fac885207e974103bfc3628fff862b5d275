@@ -1,0 +1,20 @@
+packages/web/scripts/capture-decks.mjs
+  s_56d884d1e62fa5::t_ba3dc930425354 201,204-206,209-210,213-221
+  s_56d884d1e62fa5::t_aed59961eaad69 244,247-248
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "8eaa0fac885207e974103bfc3628fff862b5d275",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
