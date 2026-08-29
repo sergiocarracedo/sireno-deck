@@ -1,0 +1,21 @@
+packages/cli/src/system/providers/session.ts
+  s_56d884d1e62fa5::t_e0c529b1537794 46-54
+packages/web/scripts/capture-decks.mjs
+  s_56d884d1e62fa5::t_766a99da62d9d9 138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c4df306f7e51b07775fce03e1fe91bb5a7bc1b83",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
