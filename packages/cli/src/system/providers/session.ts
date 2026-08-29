@@ -43,6 +43,15 @@ export interface CreateSessionProviderOptions {
 export const createSessionProvider = async (
   options: CreateSessionProviderOptions,
 ): Promise<SessionProvider> => {
+  // ponytail: capture mode — force unlocked so screenshots show the real
+  // decks instead of the lock screen. Set by capture-decks.mjs.
+  if (process.env["SIRENO_CAPTURE_UNLOCKED"] === "1") {
+    return {
+      getState: () => "unlocked" as const,
+      subscribe: () => noopUnsubscribe,
+      stop: async () => {},
+    }
+  }
   const logger = options.logger.child({ component: "session" })
   const platform = options.platform ?? process.platform
   if (platform === "linux") {

@@ -135,6 +135,7 @@ const bootDaemon = async (themeValue) => {
     env: {
       ...process.env,
       SIRENO_CWD: repoRoot,
+      SIRENO_CAPTURE_UNLOCKED: "1",
       TSX_TSCONFIG_PATH: resolve(repoRoot, "packages/cli/tsconfig.json"),
     },
     stdio: ["ignore", "ignore", "inherit"],
