@@ -1,0 +1,14 @@
+name: Color — amber
+buttons:
+  - position: 5
+    type: "media:player"
+    buttonColor: amber
+  - position: 7
+    type: "media:volume:down"
+    buttonColor: amber
+  - position: 8
+    type: "media:volume:up"
+    buttonColor: amber
+  - position: 9
+    type: "media:mute"
+    buttonColor: amber

@@ -1,0 +1,9 @@
+name: Value Display — Web Snapshot
+buttons:
+  - position: 5
+    type: "value-display:display"
+    config:
+      values:
+        - label: "IP"
+          command: "curl -s ifconfig.me"
+          formatter: "strip"

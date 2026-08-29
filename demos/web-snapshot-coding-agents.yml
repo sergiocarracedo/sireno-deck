@@ -1,0 +1,6 @@
+name: Agents — Web Snapshot
+buttons:
+  - position: 5
+    type: "coding-agents:summary"
+    config:
+      showCount: true

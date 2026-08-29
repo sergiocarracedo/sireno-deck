@@ -69,11 +69,29 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
         ))}
       </div>
 
-      {a.screenshot && (
-        <div class="rounded-xl overflow-hidden mb-12" style="border: 1px solid var(--color-border);">
-          <img src={a.screenshot} alt={`${a.displayName} preview`} class="w-full block" />
-        </div>
-      )}
+      {(() => {
+        const shots: string[] = [
+          ...((a as unknown as { screenshots?: string[] }).screenshots ?? []),
+          ...(a.screenshot ? [a.screenshot] : []),
+        ].filter((v, i, arr) => arr.indexOf(v) === i);
+        if (shots.length === 0) return null;
+        if (shots.length === 1) {
+          return (
+            <div class="rounded-xl overflow-hidden mb-12" style="border: 1px solid var(--color-border);">
+              <img src={shots[0]} alt={`${a.displayName} preview`} class="w-full block" />
+            </div>
+          );
+        }
+        return (
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+            {shots.map((src: string) => (
+              <div class="rounded-xl overflow-hidden" style="border: 1px solid var(--color-border);">
+                <img src={src} alt={`${a.displayName} preview`} class="w-full block" />
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Install — community (external) addons only */}
       {!isOfficial && a.npm && (

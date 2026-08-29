@@ -115,3 +115,20 @@ decks:
   demo-core: !include demos/demo-core.yml
   demo-pomodoro: !include demos/demo-pomodoro.yml
   demo-coding-agents: !include demos/demo-coding-agents.yml
+  web-snapshot-index: !include demos/web-snapshot-index.yml
+  web-snapshot-media: !include demos/web-snapshot-media.yml
+  web-snapshot-color-blue: !include demos/web-snapshot-color-blue.yml
+  web-snapshot-color-green: !include demos/web-snapshot-color-green.yml
+  web-snapshot-color-purple: !include demos/web-snapshot-color-purple.yml
+  web-snapshot-color-cyan: !include demos/web-snapshot-color-cyan.yml
+  web-snapshot-color-magenta: !include demos/web-snapshot-color-magenta.yml
+  web-snapshot-color-amber: !include demos/web-snapshot-color-amber.yml
+  web-snapshot-color-lime: !include demos/web-snapshot-color-lime.yml
+  web-snapshot-core: !include demos/web-snapshot-core.yml
+  web-snapshot-weather: !include demos/web-snapshot-weather.yml
+  web-snapshot-date-time: !include demos/web-snapshot-date-time.yml
+  web-snapshot-system-status: !include demos/web-snapshot-system-status.yml
+  web-snapshot-value-display: !include demos/web-snapshot-value-display.yml
+  web-snapshot-emoji: !include demos/web-snapshot-emoji.yml
+  web-snapshot-pomodoro: !include demos/web-snapshot-pomodoro.yml
+  web-snapshot-coding-agents: !include demos/web-snapshot-coding-agents.yml

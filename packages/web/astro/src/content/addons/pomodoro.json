@@ -7,7 +7,9 @@
   "buttonTypes": ["pomodoro:pomodoro"],
   "npm": "@sirenodeck/addon-pomodoro",
   "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/addons/pomodoro",
-  "screenshot": "/captures/demo-pomodoro.png",
+  "screenshot": "/captures/web-snapshot-pomodoro.png",
   "order": 21,
-  "source": "monorepo"
+  "source": "monorepo",
+  "featured": false,
+  "screenshots": ["/captures/web-snapshot-pomodoro.png"]
 }

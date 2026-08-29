@@ -1,0 +1,14 @@
+name: Color — green
+buttons:
+  - position: 5
+    type: "media:player"
+    buttonColor: green
+  - position: 7
+    type: "media:volume:down"
+    buttonColor: green
+  - position: 8
+    type: "media:volume:up"
+    buttonColor: green
+  - position: 9
+    type: "media:mute"
+    buttonColor: green

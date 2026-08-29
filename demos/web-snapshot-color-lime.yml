@@ -1,0 +1,14 @@
+name: Color — lime
+buttons:
+  - position: 5
+    type: "media:player"
+    buttonColor: lime
+  - position: 7
+    type: "media:volume:down"
+    buttonColor: lime
+  - position: 8
+    type: "media:volume:up"
+    buttonColor: lime
+  - position: 9
+    type: "media:mute"
+    buttonColor: lime

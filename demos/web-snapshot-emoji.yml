@@ -1,0 +1,4 @@
+name: Emoji — Web Snapshot
+buttons:
+  - position: 5
+    type: "emoji-selector:launcher"

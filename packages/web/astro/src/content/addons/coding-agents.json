@@ -6,5 +6,11 @@
   "icon": "bot",
   "buttonTypes": ["coding-agents:summary", "coding-agents:agent"],
   "order": 11,
-  "source": "cli"
+  "source": "cli",
+  "featured": true,
+  "screenshots": [
+    "/captures/web-snapshot-coding-agents.png",
+    "/captures/coding-agents-agents-p1.png"
+  ],
+  "screenshot": "/captures/web-snapshot-coding-agents.png"
 }

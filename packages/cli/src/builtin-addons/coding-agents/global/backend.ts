@@ -267,6 +267,47 @@ export const globalService: AddonGlobalService = {
     state.context = ctx
     state.icons = registerProviderIcons()
     hydratePersisted()
+    // ponytail: SIRENO_CAPTURE_FAKE_AGENTS=1 — capture-only stub. Bypasses
+    // provider polling and injects a deterministic agent list so web captures
+    // show realistic "Agents" tiles without a live opencode / claude-code.
+    if (process.env["SIRENO_CAPTURE_FAKE_AGENTS"] === "1") {
+      const now = Date.now()
+      const fake: Agent[] = [
+        {
+          sessionId: "sireno-capture-opencode-1",
+          providerId: "opencode" as ProviderId,
+          title: "Refactor capture pipeline",
+          status: "running" as const,
+          directory: "/works/sireno-deck",
+          updatedAt: now,
+          createdAt: now - 1000 * 60 * 12,
+        },
+        {
+          sessionId: "sireno-capture-opencode-2",
+          providerId: "opencode" as ProviderId,
+          title: "Fix flaky session tests",
+          status: "idle" as const,
+          directory: "/works/sireno-deck/packages/cli",
+          updatedAt: now - 1000 * 60 * 4,
+          createdAt: now - 1000 * 60 * 40,
+        },
+        {
+          sessionId: "sireno-capture-claude-1",
+          providerId: "claude-code" as ProviderId,
+          title: "Migrate themes",
+          status: "waiting_for_human" as const,
+          directory: "/works/sireno-deck/packages/web",
+          updatedAt: now - 1000 * 60 * 2,
+          createdAt: now - 1000 * 60 * 90,
+        },
+      ]
+      state.lastSnapshot = mergeSnapshot(state.lastSnapshot, {
+        opencode: fake.filter((a) => a.providerId === "opencode"),
+        "claude-code": fake.filter((a) => a.providerId === "claude-code"),
+      })
+      publishSnapshot()
+      return
+    }
     state.lastSnapshot = mergeSnapshot(state.lastSnapshot, {
       opencode: [],
       "claude-code": [],

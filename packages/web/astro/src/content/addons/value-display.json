@@ -5,7 +5,9 @@
   "tags": ["productivity", "shell", "data"],
   "icon": "gauge",
   "buttonTypes": ["value-display:display"],
-  "screenshot": "/captures/demo-value-display.png",
+  "screenshot": "/captures/web-snapshot-value-display.png",
   "order": 8,
-  "source": "cli"
+  "source": "cli",
+  "featured": false,
+  "screenshots": ["/captures/web-snapshot-value-display.png"]
 }

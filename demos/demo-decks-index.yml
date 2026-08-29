@@ -54,6 +54,12 @@ buttons:
       deck: demo-app-overlays
       icon: icon://layers
       label: App Overlays
+  - position: 9
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-index
+      icon: icon://camera
+      label: Web Snapshots
   - position: 13
     type: "core:change-deck"
     config:

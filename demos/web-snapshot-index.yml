@@ -1,0 +1,62 @@
+name: Web Snapshots
+buttons:
+  - position: 0
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-media
+      icon: icon://music
+      label: Media
+  - position: 1
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-core
+      icon: icon://settings
+      label: Core
+  - position: 2
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-weather
+      icon: icon://cloud-sun
+      label: Weather
+  - position: 3
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-date-time
+      icon: icon://clock
+      label: Date/Time
+  - position: 4
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-system-status
+      icon: icon://gauge
+      label: System Status
+  - position: 5
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-value-display
+      icon: icon://chart-bar
+      label: Values
+  - position: 6
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-emoji
+      icon: icon://smile
+      label: Emoji
+  - position: 7
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-pomodoro
+      icon: icon://timer
+      label: Pomodoro
+  - position: 8
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-coding-agents
+      icon: icon://bot
+      label: Agents
+  - position: 9
+    type: "core:change-deck"
+    config:
+      deck: web-snapshot-color-blue
+      icon: icon://palette
+      label: Blue

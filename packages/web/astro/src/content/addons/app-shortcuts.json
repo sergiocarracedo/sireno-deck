@@ -7,7 +7,18 @@
   "buttonTypes": [],
   "npm": "@sirenodeck/addon-app-shortcuts",
   "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/addons/app-shortcuts",
-  "screenshot": "/captures/demo-app-shortcuts.png",
+  "screenshot": "/captures/overlay-vscode.png",
   "order": 20,
-  "source": "monorepo"
+  "source": "monorepo",
+  "featured": false,
+  "screenshots": [
+    "/captures/overlay-vscode.png",
+    "/captures/overlay-chrome.png",
+    "/captures/overlay-slack.png",
+    "/captures/overlay-discord.png",
+    "/captures/overlay-teams.png",
+    "/captures/overlay-opencode.png",
+    "/captures/overlay-claude-code.png",
+    "/captures/overlay-google-meet.png"
+  ]
 }

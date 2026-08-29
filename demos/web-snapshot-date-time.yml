@@ -1,0 +1,6 @@
+name: Date/Time — Web Snapshot
+buttons:
+  - position: 5
+    type: "date-time:time"
+    config:
+      variant: big

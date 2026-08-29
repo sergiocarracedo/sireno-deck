@@ -30,6 +30,8 @@ export const collections = {
       npm: z.string().optional(),
       repo: z.string().optional(),
       screenshot: z.string().optional(),
+      screenshots: z.array(z.string()).default([]),
+      featured: z.boolean().default(false),
       order: z.number().default(100),
     }),
   }),

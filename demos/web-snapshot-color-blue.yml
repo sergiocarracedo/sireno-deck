@@ -1,0 +1,14 @@
+name: Color — blue
+buttons:
+  - position: 5
+    type: "media:player"
+    buttonColor: blue
+  - position: 7
+    type: "media:volume:down"
+    buttonColor: blue
+  - position: 8
+    type: "media:volume:up"
+    buttonColor: blue
+  - position: 9
+    type: "media:mute"
+    buttonColor: blue

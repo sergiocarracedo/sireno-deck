@@ -1,6 +1,6 @@
 {
   "displayName": "Core",
-  "description": "Core deck navigation: action, change-deck, page-nav, toggle, media-sample, lock. The runtime backbone \u2014 every config.yml uses these.",
+  "description": "Core deck navigation: action, change-deck, page-nav, toggle, media-sample, lock. The runtime backbone — every config.yml uses these.",
   "category": "official",
   "tags": ["navigation", "core", "required"],
   "icon": "anchor",
@@ -13,5 +13,8 @@
     "core:lock"
   ],
   "order": 1,
-  "source": "cli"
+  "source": "cli",
+  "featured": true,
+  "screenshots": ["/captures/web-snapshot-core.png"],
+  "screenshot": "/captures/web-snapshot-core.png"
 }

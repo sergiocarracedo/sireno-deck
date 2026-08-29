@@ -1,0 +1,14 @@
+name: Color — magenta
+buttons:
+  - position: 5
+    type: "media:player"
+    buttonColor: magenta
+  - position: 7
+    type: "media:volume:down"
+    buttonColor: magenta
+  - position: 8
+    type: "media:volume:up"
+    buttonColor: magenta
+  - position: 9
+    type: "media:mute"
+    buttonColor: magenta

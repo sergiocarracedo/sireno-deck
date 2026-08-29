@@ -1,0 +1,10 @@
+name: Media — Web Snapshot
+buttons:
+  - position: 5
+    type: "media:player"
+  - position: 7
+    type: "media:volume:down"
+  - position: 8
+    type: "media:volume:up"
+  - position: 9
+    type: "media:mute"

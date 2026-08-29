@@ -1,0 +1,10 @@
+name: System Status — Web Snapshot
+buttons:
+  - position: 5
+    type: "system-status:system-status"
+    config:
+      pages:
+        - type: kpis
+          metrics:
+            - cpu
+            - ram

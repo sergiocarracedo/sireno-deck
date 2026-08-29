@@ -1,0 +1,9 @@
+name: Weather — Web Snapshot
+buttons:
+  - position: 5
+    type: "weather:weather"
+    config:
+      location:
+        latitude: 42.2304
+        longitude: -8.7256
+        name: Vigo

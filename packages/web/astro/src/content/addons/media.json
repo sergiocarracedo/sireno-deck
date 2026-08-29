@@ -10,7 +10,15 @@
     "media:volume-down",
     "media:mute"
   ],
-  "screenshot": "/captures/demo-media.png",
+  "screenshot": "/captures/web-snapshot-media.png",
   "order": 6,
-  "source": "cli"
+  "source": "cli",
+  "featured": true,
+  "screenshots": [
+    "/captures/web-snapshot-media.png",
+    "/captures/web-snapshot-color-blue.png",
+    "/captures/web-snapshot-color-green.png",
+    "/captures/web-snapshot-color-purple.png",
+    "/captures/web-snapshot-color-cyan.png"
+  ]
 }

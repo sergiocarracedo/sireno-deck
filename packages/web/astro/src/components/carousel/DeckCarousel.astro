@@ -1,0 +1,17 @@
+---
+/**
+ * DeckCarousel — server wrapper around the React island client.
+ * The island owns pause-on-hover, keyboard nav, autoplay, dot pagination.
+ */
+import { DeckCarouselClient, type CarouselSlide } from "./DeckCarousel"
+
+interface Props {
+  slides: CarouselSlide[]
+}
+
+const { slides } = Astro.props
+---
+
+<div class="w-full">
+  <DeckCarouselClient slides={slides} client:load />
+</div>

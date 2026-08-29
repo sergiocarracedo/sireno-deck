@@ -10,5 +10,8 @@
     "system-status:chart"
   ],
   "order": 7,
-  "source": "cli"
+  "source": "cli",
+  "featured": true,
+  "screenshots": ["/captures/web-snapshot-system-status.png"],
+  "screenshot": "/captures/web-snapshot-system-status.png"
 }

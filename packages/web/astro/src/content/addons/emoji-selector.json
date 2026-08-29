@@ -10,5 +10,8 @@
     "emoji-selector:emoji"
   ],
   "order": 5,
-  "source": "cli"
+  "source": "cli",
+  "featured": false,
+  "screenshots": ["/captures/web-snapshot-emoji.png"],
+  "screenshot": "/captures/web-snapshot-emoji.png"
 }

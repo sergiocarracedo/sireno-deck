@@ -6,5 +6,7 @@
   "icon": "sun",
   "buttonTypes": ["brightness:brightness"],
   "order": 10,
-  "source": "cli"
+  "source": "cli",
+  "featured": false,
+  "screenshots": []
 }

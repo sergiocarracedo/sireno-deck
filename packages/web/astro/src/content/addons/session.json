@@ -6,5 +6,7 @@
   "icon": "lock",
   "buttonTypes": ["session:info"],
   "order": 3,
-  "source": "cli"
+  "source": "cli",
+  "featured": false,
+  "screenshots": []
 }
