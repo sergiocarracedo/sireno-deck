@@ -383,6 +383,39 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
   const baseClass = `grid rounded-xl ${compact ? "p-0" : "p-4"}`
   const deckClass =
     extras.length > 0 ? `${baseClass} ${extras}` : `${baseClass} bg-neutral-950`
+
+  // ponytail: positions without a button render a faint outline (emulator /
+  // browser only, not the hardware screenshot). border-2 rounded matches the
+  // ButtonFrame language; opacity dims the border since there is no bg.
+  const occupiedPositions = new Set(
+    deck.buttons
+      .map((b, idx) => resolvePosition(b, idx))
+      .filter((p) => p < model.keyCount),
+  )
+  const emptyCells: ReactNode[] = []
+  if (!compact) {
+    for (let position = 0; position < model.keyCount; position += 1) {
+      if (occupiedPositions.has(position)) continue
+      const col = (position % columns) + 1
+      const row = Math.floor(position / columns) + 1
+      emptyCells.push(
+        <div
+          key={`empty-${position}`}
+          data-empty-cell="true"
+          aria-hidden="true"
+          className="rounded-2xl border-2 border-solid opacity-30"
+          style={{
+            gridColumn: col,
+            gridRow: row,
+            width: BUTTON_SIZE,
+            height: BUTTON_SIZE,
+            borderColor: "var(--sireno-variant-default-border)",
+          }}
+        />,
+      )
+    }
+  }
+
   return (
     <div
       className={deckClass}
@@ -426,6 +459,7 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
           />
         )
       })}
+      {!compact && emptyCells}
       {children}
     </div>
   )

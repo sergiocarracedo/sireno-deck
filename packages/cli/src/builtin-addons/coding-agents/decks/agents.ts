@@ -19,9 +19,12 @@ export const createAgentsDecks = (
   const live = getLiveCount()
   const pages = Math.min(MAX_PAGES, Math.max(1, Math.ceil(live / pageSize)))
   setPageCount(pages)
-  const agentSlots = pages * pageSize
+  // ponytail: only materialize tiles for live sessions (capped by MAX_PAGES
+  // worth of slots) — trailing slots stay unoccupied so the frontend draws a
+  // faint empty-key outline instead of a themed background behind blank content.
+  const cappedLive = Math.min(live, pages * pageSize)
   const buttons: Array<Record<string, unknown>> = []
-  for (let slot = 0; slot < agentSlots; slot += 1) {
+  for (let slot = 0; slot < cappedLive; slot += 1) {
     buttons.push({
       position: slot,
       type: "coding-agents:agent",

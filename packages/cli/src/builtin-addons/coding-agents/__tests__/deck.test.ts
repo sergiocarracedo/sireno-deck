@@ -20,24 +20,34 @@ describe("createAgentsDecks", () => {
     setPageCount(1)
   })
 
-  it("materializes a single page when few sessions are live", () => {
+  it("materializes a single page with only the live sessions", () => {
     setLiveCount(2)
+    setPageCount(1)
     const deck = createAgentsDecks(ctx(15))[AGENTS_DECK_BASE]!
     const agentSlots = (deck.buttons ?? []).filter(
       (b) => (b as { type?: string }).type === "coding-agents:agent",
     )
-    // one page worth (keyCount-2 slots), pagination only past the page size
-    expect(agentSlots.length).toBe(15 - 2)
+    // only live sessions are materialized; empty keys come from the frontend
+    expect(agentSlots.length).toBe(2)
   })
 
-  it("pads pages beyond the live count", () => {
+  it("materializes more than a page worth of buttons past the page size", () => {
     setLiveCount(20)
     const deck = createAgentsDecks(ctx(15))[AGENTS_DECK_BASE]!
     const agentSlots = (deck.buttons ?? []).filter(
       (b) => (b as { type?: string }).type === "coding-agents:agent",
     )
-    // 20 sessions → 2 pages × (15-2) slots
-    expect(agentSlots.length).toBe(2 * (15 - 2))
+    // 20 sessions across 2 pages
+    expect(agentSlots.length).toBe(20)
+  })
+
+  it("emits no buttons when no sessions are live", () => {
+    setLiveCount(0)
+    const deck = createAgentsDecks(ctx(15))[AGENTS_DECK_BASE]!
+    const agentSlots = (deck.buttons ?? []).filter(
+      (b) => (b as { type?: string }).type === "coding-agents:agent",
+    )
+    expect(agentSlots.length).toBe(0)
   })
 
   it("caps pages", () => {
