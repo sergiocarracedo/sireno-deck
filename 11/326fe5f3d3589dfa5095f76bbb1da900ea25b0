@@ -1,0 +1,42 @@
+packages/web/astro/src/components/FeatureCard.astro
+  s_56d884d1e62fa5::t_32f07cd842a2a5 5-8,10-11,38,55-56,58
+packages/web/astro/src/pages/addons/[slug].astro
+  s_56d884d1e62fa5::t_7b2e19a66cd0bd 87-88
+  s_56d884d1e62fa5::t_501fa471a8c71a 16
+packages/web/astro/src/content/buttonSchemas.json
+  s_56d884d1e62fa5::t_f49cbfe5a1b15b 9-13,38-41,48-49,104-106,123-125,151-156,170-172,199-202,253-257,273-275,375-379,393-396,413-415,442-445,457-460
+demos/web-snapshot-color-amber.yml
+  s_56d884d1e62fa5::t_c8b8859ab51119 3,6,12
+demos/web-snapshot-color-blue.yml
+  s_56d884d1e62fa5::t_037330482e28ad 3,6,12
+demos/web-snapshot-color-cyan.yml
+  s_56d884d1e62fa5::t_3f53afdc3af9cd 3,6,12
+demos/web-snapshot-color-green.yml
+  s_56d884d1e62fa5::t_dec664b00bde26 3,6,12
+demos/web-snapshot-color-lime.yml
+  s_56d884d1e62fa5::t_cc01dd1231b1aa 3,6,12
+demos/web-snapshot-color-magenta.yml
+  s_56d884d1e62fa5::t_9d547da51add6d 3,6,12
+demos/web-snapshot-color-purple.yml
+  s_56d884d1e62fa5::t_d2c68c7b461c9f 3,6,12
+packages/web/astro/src/design/tokens.generated.ts
+  s_56d884d1e62fa5::t_d648a2de91e9bc 6-8,10-14,18-21,23-27,29-34,39-42,45-48,51-54,57-60,63-66,69-73
+demos/web-snapshot-media.yml
+  s_56d884d1e62fa5::t_921bbf1c5b26dc 3,5,9-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "11326fe5f3d3589dfa5095f76bbb1da900ea25b0",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
