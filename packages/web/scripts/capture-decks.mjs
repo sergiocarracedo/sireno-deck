@@ -339,7 +339,9 @@ const main = async () => {
           ? `app-shortcuts:${app}-p1`
           : `app-shortcuts:${app}`
       const out = resolve(outDir, outName)
-      await page.locator(`[data-deck-id="${overlayId}"]`).screenshot({ path: out })
+      await page
+        .locator(`[data-deck-id="${overlayId}"]`)
+        .screenshot({ path: out })
       await ctx.close()
       console.log(`ok ${outName}`)
       await shutdown(proc)
