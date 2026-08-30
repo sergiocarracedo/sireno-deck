@@ -103,6 +103,7 @@ export function buildVariantCascade(variant: string): Record<string, string> {
           : token
     result[`--color-${cssToken}`] = value
   }
+  result["--sireno-frame-border"] = variantVar(variant, "border")
   return result
 }
 
