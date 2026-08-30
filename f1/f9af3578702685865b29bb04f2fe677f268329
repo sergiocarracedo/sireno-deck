@@ -1,0 +1,56 @@
+packages/web/astro/src/components/AddonCard.astro
+  s_56d884d1e62fa5::t_230509e87e9860 5-8,23-28,34,37-42,44-45,47-61,63-72,75,77-87
+packages/web/astro/src/content/addons/emoji-selector.json
+  s_56d884d1e62fa5::t_f52407258005ca 3,15-18
+packages/web/astro/src/pages/themes/[slug].astro
+  s_56d884d1e62fa5::t_99df48cb8aef6d 14
+  s_56d884d1e62fa5::t_649a19d0e3effc 130-132,134-142
+  s_56d884d1e62fa5::t_3c7b0a024c1a46 110-112
+packages/web/astro/scripts/sync-cli-docs.mjs
+  s_56d884d1e62fa5::t_c046e924ca1e5a 78
+  s_56d884d1e62fa5::t_117a18ee3e507e 90-94
+  s_56d884d1e62fa5::t_ee9797c89ccb9a 66-77,87
+packages/web/astro/src/components/sections/ConfigSection.astro
+  s_56d884d1e62fa5::t_8a784a32523ea9 64-72
+packages/web/astro/src/content/themes/riptide.json
+  s_56d884d1e62fa5::t_426755a14fa423 15-16
+packages/cli/docs/user/installation.mdx
+  s_56d884d1e62fa5::t_4278368230c879 14,23-24,26-30
+  s_56d884d1e62fa5::t_01b1e7f451c3d4 13
+packages/web/astro/src/components/CommandTabs.astro
+  s_56d884d1e62fa5::t_e612a9a550183a 1-129
+packages/web/astro/src/components/sections/InstallSection.astro
+  s_56d884d1e62fa5::t_192df8cc85adf0 3-7,9-10,12,27-28,31-44,46-56,59-61,64-71,73-93,96-102,105-114,116,134
+packages/web/astro/src/components/sections/RemoteSection.astro
+  s_56d884d1e62fa5::t_4ecb1d259485bb 1-99
+packages/web/astro/src/pages/addons/[slug].astro
+  s_56d884d1e62fa5::t_5387156dfcfd85 100-107
+  s_56d884d1e62fa5::t_dd4ead34fa1e1c 17
+packages/web/astro/src/content/addons/system-status.json
+  s_56d884d1e62fa5::t_01b1e7f451c3d4 7
+  s_56d884d1e62fa5::t_f52407258005ca 11-21
+packages/web/astro/src/pages/index.astro
+  s_56d884d1e62fa5::t_b28724c10d4582 7
+  s_56d884d1e62fa5::t_2abb79171fe9bb 21
+packages/web/astro/src/content/themes/neon-grids.json
+  s_56d884d1e62fa5::t_426755a14fa423 15-16
+packages/web/scripts/capture-decks.mjs
+  s_56d884d1e62fa5::t_b369c7680d70b6 329-360,362-384,388-397,430-483,487-506
+  s_56d884d1e62fa5::t_01b1e7f451c3d4 361,385-387,398-429,484-486
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "f1f9af3578702685865b29bb04f2fe677f268329",
+  "prompts": {},
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
