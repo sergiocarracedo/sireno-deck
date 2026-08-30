@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { summaryConfigSchema } from "../config"
+import { configSchema } from "../config"
 
 describe("coding-agents:summary config schema", () => {
   it("defaults fallingLetters to true", () => {
-    const result = summaryConfigSchema.safeParse({})
+    const result = configSchema.safeParse({})
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.fallingLetters).toBe(true)
@@ -12,7 +12,7 @@ describe("coding-agents:summary config schema", () => {
   })
 
   it("honors fallingLetters: false", () => {
-    const result = summaryConfigSchema.safeParse({ fallingLetters: false })
+    const result = configSchema.safeParse({ fallingLetters: false })
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.fallingLetters).toBe(false)
@@ -20,7 +20,7 @@ describe("coding-agents:summary config schema", () => {
   })
 
   it("rejects unknown keys", () => {
-    const result = summaryConfigSchema.safeParse({ bogus: 1 })
+    const result = configSchema.safeParse({ bogus: 1 })
     expect(result.success).toBe(false)
   })
 })

@@ -6,11 +6,7 @@
         "action": {
           "default": "up",
           "type": "string",
-          "enum": [
-            "up",
-            "down",
-            "set"
-          ]
+          "enum": ["up", "down", "set"]
         },
         "value": {
           "type": "integer",
@@ -101,9 +97,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "deck"
-      ]
+      "required": ["deck"]
     },
     "example": {}
   },
@@ -120,9 +114,7 @@
           "type": "boolean"
         }
       },
-      "required": [
-        "key"
-      ],
+      "required": ["key"],
       "additionalProperties": false
     },
     "example": {}
@@ -148,12 +140,7 @@
           "minLength": 1
         }
       },
-      "required": [
-        "currentPage",
-        "totalPages",
-        "prevDeckId",
-        "nextDeckId"
-      ]
+      "required": ["currentPage", "totalPages", "prevDeckId", "nextDeckId"]
     },
     "example": {}
   },
@@ -167,9 +154,7 @@
         },
         "fallback": {}
       },
-      "required": [
-        "channel"
-      ]
+      "required": ["channel"]
     },
     "example": {}
   },
@@ -196,10 +181,7 @@
         "variant": {
           "default": "default",
           "type": "string",
-          "enum": [
-            "default",
-            "big"
-          ]
+          "enum": ["default", "big"]
         }
       },
       "additionalProperties": false
@@ -250,11 +232,7 @@
           "minLength": 1
         }
       },
-      "required": [
-        "target_deck",
-        "icon",
-        "label"
-      ]
+      "required": ["target_deck", "icon", "label"]
     },
     "example": {}
   },
@@ -270,9 +248,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "emoji"
-      ]
+      "required": ["emoji"]
     },
     "example": {}
   },
@@ -372,11 +348,7 @@
               "formatter": {
                 "default": "raw",
                 "type": "string",
-                "enum": [
-                  "raw",
-                  "strip",
-                  "line"
-                ]
+                "enum": ["raw", "strip", "line"]
               },
               "units": {
                 "type": "string"
@@ -390,10 +362,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "label",
-              "command"
-            ],
+            "required": ["label", "command"],
             "additionalProperties": false
           }
         },
@@ -410,9 +379,7 @@
           "maximum": 9007199254740991
         }
       },
-      "required": [
-        "values"
-      ],
+      "required": ["values"],
       "additionalProperties": false
     },
     "example": {}
@@ -439,10 +406,7 @@
               "minLength": 1
             }
           },
-          "required": [
-            "latitude",
-            "longitude"
-          ],
+          "required": ["latitude", "longitude"],
           "additionalProperties": false
         },
         "poll_interval_ms": {
@@ -454,10 +418,7 @@
         "units": {
           "default": "metric",
           "type": "string",
-          "enum": [
-            "metric",
-            "imperial"
-          ]
+          "enum": ["metric", "imperial"]
         }
       },
       "additionalProperties": false

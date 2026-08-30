@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const summaryConfigSchema = z
+export const configSchema = z
   .object({
     showCount: z.boolean().default(true),
     attentionOnly: z.boolean().default(false),
@@ -8,4 +8,4 @@ export const summaryConfigSchema = z
   })
   .strict()
 
-export type SummaryConfig = z.infer<typeof summaryConfigSchema>
+export type SummaryConfig = z.infer<typeof configSchema>

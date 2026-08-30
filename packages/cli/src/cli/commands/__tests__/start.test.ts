@@ -386,17 +386,6 @@ describe("start", () => {
     process.argv[1] = savedArgv1 ?? "/usr/bin/node"
   })
 
-  const awaitFork = async (): Promise<void> => {
-    // ponytail: killPortListeners runs before startInBackground inside
-    // start(), so we need to wait for that microtask chain to settle before
-    // reading mock.results. startInBackground returns synchronously after
-    // spawnDetached — no __triggerExit needed (the wrapper doesn't watch).
-    const { spawnDetached } = await import("../spawn-daemon")
-    await vi.waitFor(() => {
-      expect(spawnDetached).toHaveBeenCalledTimes(1)
-    })
-  }
-
   it("forks off: calls spawnDetached and writePid with the spawned pid", async () => {
     setHappyPath()
     const { spawnDetached } = await import("../spawn-daemon")
@@ -484,6 +473,8 @@ describe("start", () => {
       "--emulator",
       "--port",
       "52937",
+      "--config",
+      `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
       "--device-model",
       "mk2",
       "--http-port",
@@ -503,8 +494,13 @@ describe("start", () => {
       logger: silentLogger(),
     })
     const lastCall = vi.mocked(spawnDetached).mock.calls.at(-1)?.[0]
-    expect(lastCall?.args).toEqual(["start"])
-    // httpPort defaults to 3939; must NOT be forwarded.
+    // The resolved --config is always forwarded so the daemon reads the
+    // same file the CLI resolved; other defaults must NOT be forwarded.
+    expect(lastCall?.args).toEqual([
+      "start",
+      "--config",
+      `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+    ])
     expect(lastCall?.args).not.toContain("--http-port")
   })
 

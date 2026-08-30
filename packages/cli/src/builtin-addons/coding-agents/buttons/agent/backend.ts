@@ -3,7 +3,7 @@ import type {
   AddonButtonServiceContext,
   AddonButtonTypeService,
 } from "../../types/types.js"
-import { agentConfigSchema, type AgentConfig } from "./config.js"
+import { configSchema, type AgentConfig } from "./config.js"
 import { agentAtSlot } from "../../shared/snapshot.js"
 import type { AgentsSnapshot, ProviderId } from "../../shared/state.js"
 
@@ -58,7 +58,7 @@ const callDismiss = (ctx: AddonButtonServiceContext<AgentConfig>): void => {
 }
 
 export default {
-  configSchema: agentConfigSchema,
+  configSchema,
   gestureHandlers: ["tap", "hold"] as const,
   onMount: (_ctx: AddonButtonServiceContext<AgentConfig>): void => {},
   onTap: async (ctx: AddonButtonServiceContext<AgentConfig>): Promise<void> => {

@@ -294,7 +294,10 @@ const main = async () => {
       } else {
         const eff = await capture(browser, "main.png")
         console.log(`ok main deck=${eff?.id}`)
-        copyFileSync(resolve(outDir, "main.png"), resolve(outDir, "01-default.png"))
+        copyFileSync(
+          resolve(outDir, "main.png"),
+          resolve(outDir, "01-default.png"),
+        )
         await shutdown(proc)
       }
     }

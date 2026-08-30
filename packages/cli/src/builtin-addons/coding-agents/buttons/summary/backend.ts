@@ -5,7 +5,7 @@ import type {
 } from "../../types/types.js"
 
 import { AGENTS_DECK_BASE } from "../../shared/live-count.js"
-import { summaryConfigSchema, type SummaryConfig } from "./config.js"
+import { configSchema, type SummaryConfig } from "./config.js"
 
 interface CoreMethodsShape {
   navigateToDeck: (args: { id: string; addToHistory?: boolean }) => void
@@ -29,7 +29,7 @@ const deckTargetFor = (
 }
 
 export default {
-  configSchema: summaryConfigSchema,
+  configSchema,
   gestureHandlers: ["tap"] as const,
   onMount: (_ctx: AddonButtonServiceContext<SummaryConfig>): void => {},
   onTap: (ctx: AddonButtonServiceContext<SummaryConfig>): void => {

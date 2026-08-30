@@ -30,7 +30,6 @@ const isVariantDeclared = (variant: string): boolean => {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return true
   }
-  const probe = `var(--sireno-variant-${variant}-bg)`
   try {
     const resolved = window
       .getComputedStyle(document.documentElement)

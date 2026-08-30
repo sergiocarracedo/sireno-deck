@@ -1,8 +1,6 @@
 import type {
   AddonButtonTypeDef,
   AddonDeckDefinition,
-  AddonDeckFactory,
-  AddonGeneratedDeck,
   AddonManifestV1,
   LoadedTheme,
 } from "./api"

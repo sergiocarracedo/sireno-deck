@@ -35,7 +35,6 @@ export const createNullNotificationProvider = (
 export const createNotificationProvider = async (
   options: CreateNotificationProviderOptions,
 ): Promise<NotificationProvider> => {
-  const logger = options.logger.child({ component: "notification" })
   const platform = options.platform ?? process.platform
   if (platform === "linux") {
     const { createLinuxNotificationProvider } =

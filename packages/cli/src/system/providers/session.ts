@@ -52,7 +52,6 @@ export const createSessionProvider = async (
       stop: async () => {},
     }
   }
-  const logger = options.logger.child({ component: "session" })
   const platform = options.platform ?? process.platform
   if (platform === "linux") {
     // ponytail: let createLinuxSessionProvider self-own a dbus session bus when

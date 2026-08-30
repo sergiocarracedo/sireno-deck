@@ -405,7 +405,7 @@ const validateButtonConfigExport = (
   if (usesAddonButtonService) return null
 
   if (
-    !/import\s+\{\s*configSchema\s*}\s+from\s*["']\.\/config["']/.test(
+    !/import\s*\{[^}]*\bconfigSchema\b[^}]*\}\s*from\s*["']\.\/config(\.js)?["']/.test(
       backendSrc,
     )
   ) {

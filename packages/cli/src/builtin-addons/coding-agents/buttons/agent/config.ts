@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const agentConfigSchema = z
+export const configSchema = z
   .object({
     // ponytail: slot tiles are materialized once; which agent a slot shows
     // is resolved from the live snapshot (agentAtSlot). Explicit
@@ -10,4 +10,4 @@ export const agentConfigSchema = z
   })
   .strict()
 
-export type AgentConfig = z.infer<typeof agentConfigSchema>
+export type AgentConfig = z.infer<typeof configSchema>

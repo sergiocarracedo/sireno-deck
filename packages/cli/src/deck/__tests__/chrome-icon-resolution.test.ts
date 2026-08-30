@@ -1,4 +1,8 @@
 /** @vitest-environment node */
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
+
 import { describe, expect, it } from "vitest"
 
 import { buildResolverOptions, buildDeckConfigMessage } from "../deck-config"
@@ -12,7 +16,11 @@ import {
 describe("chrome button icon resolution (user config)", () => {
   it("resolves ./assets/chrome.svg on the main deck chrome button to asset://<id>", () => {
     clearAssets()
-    const configDir = "/works/opensource/sireno-deck-2"
+    // ponytail: the config dir must exist on disk — icon registration
+    // statSync's the resolved path, so a fabricated dir would be skipped.
+    const configDir = mkdtempSync(join(tmpdir(), "chrome-icon-test-"))
+    mkdirSync(join(configDir, "assets"))
+    writeFileSync(join(configDir, "assets", "chrome.svg"), "<svg/>")
     const resolverOptions = buildResolverOptions(
       new Map(),
       [configDir],

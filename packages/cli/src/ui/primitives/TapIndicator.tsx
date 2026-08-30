@@ -1,4 +1,3 @@
-import { useMemo } from "react"
 import { useThemeUiPresentation } from "../theme-presentation"
 import { cn } from "../utils/cn"
 import { Text, TextTone } from "./Text"
@@ -11,7 +10,6 @@ export type TapIndicatorProps = {
 }
 
 export const TapIndicator = (props: TapIndicatorProps) => {
-  const tapType = props.type || "tap"
   const themeUi = useThemeUiPresentation()
 
   if (themeUi?.primitives?.tapIndicator) {

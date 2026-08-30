@@ -22,7 +22,8 @@ const seedDefaultConfigMock = vi.fn(() => ({
   sourcePath: "/src.yml",
 }))
 
-vi.mock("@/system/setup-wizard", () => ({
+vi.mock("@/system/setup-wizard", async (importOriginal) => ({
+  ...(await importOriginal()),
   probeAll: probeAllMock,
   summarizeReport: summarizeReportMock,
   buildInstallPlan: buildInstallPlanMock,

@@ -684,7 +684,6 @@ export function Text(props: TextProps): ReactElement {
   const lineHeight = props.lineHeight ?? 1
   const weight = props.weight ?? "normal"
   const themeUi = useThemeUiPresentation()
-  const renderedChildren = renderTextChildren(props.text, lineHeight)
 
   if (themeUi?.primitives?.text) {
     return themeUi.primitives.text(

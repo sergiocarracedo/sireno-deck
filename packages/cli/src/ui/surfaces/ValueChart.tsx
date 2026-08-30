@@ -1,4 +1,4 @@
-import { useId, type CSSProperties, type ReactElement } from "react"
+import { type CSSProperties, type ReactElement } from "react"
 
 import { Icon } from "../primitives/Icon"
 import { useThemeUiPresentation } from "../theme-presentation"
@@ -131,7 +131,6 @@ export function ValueChart(props: ValueChartProps): ReactElement {
 }
 
 export function valueChartBase(props: ValueChartProps): ReactElement {
-  const instanceId = useId()
   if (props.series.length < 1 || props.series.length > 2) {
     throw new Error(
       `ValueChart supports 1-2 series. Received ${props.series.length}.`,

@@ -145,10 +145,13 @@ vi.mock("@/cli/commands/addon-registry", () => ({
   })),
 }))
 const setupWizardMock = {
-  probeAll: vi.fn(),
+  probeAllCached: vi.fn(),
   summarizeReport: vi.fn(),
 }
-vi.mock("@/system/setup-wizard", () => setupWizardMock)
+vi.mock("@/system/setup-wizard", async (importOriginal) => ({
+  ...(await importOriginal()),
+  ...setupWizardMock,
+}))
 const systemRequirementsMock = vi.fn(async () => undefined)
 vi.mock("../system-requirements", () => ({
   default: systemRequirementsMock,
@@ -171,9 +174,9 @@ vi.mock("@clack/prompts", () => ({
   tasks: vi.fn(),
 }))
 
-const probeAllMock = (
-  setupWizardMock as unknown as { probeAll: ReturnType<typeof vi.fn> }
-).probeAll
+const probeAllCachedMock = (
+  setupWizardMock as unknown as { probeAllCached: ReturnType<typeof vi.fn> }
+).probeAllCached
 const summarizeReportMock = (
   setupWizardMock as unknown as { summarizeReport: ReturnType<typeof vi.fn> }
 ).summarizeReport
@@ -393,7 +396,7 @@ const awaitFork = async (): Promise<void> => {
 }
 
 const setSummary = (summary: FakeSummary): void => {
-  probeAllMock.mockResolvedValue({} as never)
+  probeAllCachedMock.mockResolvedValue({} as never)
   summarizeReportMock.mockReturnValue(summary)
 }
 
@@ -512,7 +515,7 @@ describe("start first-run wizard hook", () => {
     summarizeReportMock
       .mockReturnValueOnce(capabilityMissingSummary())
       .mockReturnValueOnce(happySummary())
-    probeAllMock.mockResolvedValue({} as never)
+    probeAllCachedMock.mockResolvedValue({} as never)
     setTty(true)
     inquirerConfirmMock.mockResolvedValueOnce(true)
     const startPromise = start({
