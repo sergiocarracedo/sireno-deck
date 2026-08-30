@@ -180,6 +180,19 @@ function buildConfig(theme, deckYml, overlayTarget) {
   return `theme: ${theme}\n\n${addons}\n\nlogging:\n  level: warn\n\n${main}\n`
 }
 
+// Full repo config.yml with only the theme swapped — includes every demo
+// deck + addons; captures the rich main deck for the hero/themes.
+function buildMainConfig(theme) {
+  let t = theme
+  if (t.startsWith("./")) t = resolve(repoRoot, t)
+  const cfg = readFileSync(resolve(repoRoot, "config.yml"), "utf8").replace(
+    /^theme:.*$/m,
+    `theme: ${t}`,
+  )
+  if (!/^theme:/m.test(cfg)) cfg = `theme: ${t}\n` + cfg
+  return cfg
+}
+
 async function bootDaemon(cfg) {
   writeFileSync(resolve(repoRoot, ".sireno-capture.yml"), cfg)
   stopAll()
@@ -272,6 +285,19 @@ const main = async () => {
   })
   const results = []
   try {
+    // --- full main deck (default theme) -> main.png + 01-default alias ---
+    {
+      const { proc, up } = await bootWithRetry(buildMainConfig("default"))
+      if (!up) {
+        console.log("FAIL boot main")
+        await shutdown(proc)
+      } else {
+        const eff = await capture(browser, "main.png")
+        console.log(`ok main deck=${eff?.id}`)
+        copyFileSync(resolve(outDir, "main.png"), resolve(outDir, "01-default.png"))
+        await shutdown(proc)
+      }
+    }
     // --- web-snapshot + color + demo decks (default theme) ---
     for (const deckYml of [
       "web-snapshot-media.yml",
@@ -348,9 +374,7 @@ const main = async () => {
     }
     // --- themes ---
     for (const theme of THEMES) {
-      const { proc, up } = await bootWithRetry(
-        buildConfig(theme.theme, "web-snapshot-date-time.yml", null),
-      )
+      const { proc, up } = await bootWithRetry(buildMainConfig(theme.theme))
       if (!up) {
         console.log(`FAIL boot theme ${theme.id}`)
         await shutdown(proc)

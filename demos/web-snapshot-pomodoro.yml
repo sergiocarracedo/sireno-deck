@@ -1,6 +1,6 @@
 name: Pomodoro — Web Snapshot
 buttons:
-  - position: 5
+  - position: 7
     type: "pomodoro:pomodoro"
     config:
       durationSec: 1500

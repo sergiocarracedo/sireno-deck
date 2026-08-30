@@ -1,6 +1,6 @@
 name: Core — Web Snapshot
 buttons:
-  - position: 5
+  - position: 7
     type: "core:action"
     config:
       icon: icon://zap

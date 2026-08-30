@@ -1,6 +1,6 @@
 name: Value Display — Web Snapshot
 buttons:
-  - position: 5
+  - position: 7
     type: "value-display:display"
     config:
       values:

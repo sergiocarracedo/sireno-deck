@@ -1,4 +1,12 @@
 name: Emoji — Web Snapshot
 buttons:
-  - position: 5
+  - position: 6
+    type: "emoji-selector:category"
+    config:
+      category: "smileys"
+  - position: 7
     type: "emoji-selector:launcher"
+  - position: 8
+    type: "emoji-selector:emoji"
+    config:
+      emoji: "🔥"

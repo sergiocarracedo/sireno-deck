@@ -13,6 +13,7 @@ import Icon from "../../components/Icon.astro"
 import { getCollection, getEntry } from "astro:content"
 import { buttonTypeBlocks } from "../../lib/addon-config-examples"
 import AddonConfigExample from "../../components/AddonConfigExample.astro"
+import MiniCarousel from "../../components/MiniCarousel.astro"
 
 export async function getStaticPaths() {
   const addons = await getCollection("addons")
@@ -83,12 +84,8 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
           );
         }
         return (
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-            {shots.map((src: string) => (
-              <div class="rounded-xl overflow-hidden" style="border: 1px solid var(--color-border);">
-                <img src={src} alt={`${a.displayName} preview`} class="w-full block" />
-              </div>
-            ))}
+          <div class="mb-12 aspect-[16/9]">
+            <MiniCarousel images={shots} alt={`${a.displayName} preview`} />
           </div>
         );
       })()}

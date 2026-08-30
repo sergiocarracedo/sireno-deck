@@ -1,6 +1,6 @@
 name: System Status — Web Snapshot
 buttons:
-  - position: 5
+  - position: 7
     type: "system-status:system-status"
     config:
       pages:

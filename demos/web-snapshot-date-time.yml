@@ -1,6 +1,14 @@
 name: Date/Time — Web Snapshot
 buttons:
-  - position: 5
+  - position: 2
     type: "date-time:time"
     config:
       variant: big
+  - position: 6
+    type: "date-time:date"
+  - position: 8
+    type: "date-time:date-time"
+    config:
+      format: "DD/MM/YYYY HH:mm"
+  - position: 12
+    type: "date-time:analog-clock"

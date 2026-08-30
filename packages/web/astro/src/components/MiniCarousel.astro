@@ -1,0 +1,122 @@
+---
+/**
+ * MiniCarousel — shared image carousel with prev/next arrows, dots,
+ * autoplay, pause-on-hover. Used by FeatureCard (home features) and the
+ * addon registry detail gallery.
+ *
+ * `class` is appended to the outer wrapper so callers can bottom-align
+ * (e.g. `mt-auto`) or size it.
+ */
+interface Props {
+  images: string[]
+  alt?: string
+  uid?: string
+  class?: string
+}
+
+const { images, alt = "", uid: propUid, class: cls = "" } = Astro.props
+const uid = propUid ?? `mini-${Math.random().toString(36).slice(2, 8)}`
+const count = images.length
+---
+
+{
+  count > 1 && (
+    <div
+      class={`relative rounded-lg overflow-hidden group/carousel ${cls}`}
+      data-mini-carousel={uid}
+      style="border: 1px solid var(--color-border); aspect-ratio: 16 / 10;"
+    >
+      {images.map((src, i) => (
+        <img
+          src={src}
+          alt={alt}
+          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+          style={`opacity: ${i === 0 ? 1 : 0};`}
+          loading={i === 0 ? "eager" : "lazy"}
+        />
+      ))}
+
+      {/* prev / next */}
+      <button
+        type="button"
+        data-mini-prev
+        aria-label="Previous image"
+        class="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full grid place-items-center transition"
+        style="background: rgba(10,10,15,0.6); border: 1px solid var(--color-border); color: var(--color-fg);"
+      >
+        <span aria-hidden="true">←</span>
+      </button>
+      <button
+        type="button"
+        data-mini-next
+        aria-label="Next image"
+        class="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full grid place-items-center transition"
+        style="background: rgba(10,10,15,0.6); border: 1px solid var(--color-border); color: var(--color-fg);"
+      >
+        <span aria-hidden="true">→</span>
+      </button>
+
+      {/* dots */}
+      <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+        {images.map((_, i) => (
+          <span
+            class="h-1.5 rounded-full transition-all"
+            style={i === 0
+              ? "width: 16px; background: var(--color-accent);"
+              : "width: 6px; background: rgba(255,255,255,0.35);"}
+            data-mini-dot={i}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+<script is:inline define:vars={{ uid, count }}>
+  (() => {
+    const root = document.querySelector(`[data-mini-carousel="${uid}"]`)
+    if (!root) return
+    const imgs = root.querySelectorAll("img")
+    const dots = root.querySelectorAll("[data-mini-dot]")
+    const prev = root.querySelector("[data-mini-prev]")
+    const next = root.querySelector("[data-mini-next]")
+    let idx = 0
+    let timer = null
+    let paused = false
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches
+    if (prefersReduced) return
+    const show = (n) => {
+      idx = ((n % count) + count) % count
+      imgs.forEach((el, i) => {
+        el.style.opacity = i === idx ? "1" : "0"
+      })
+      dots.forEach((d, i) => {
+        d.style.width = i === idx ? "16px" : "6px"
+        d.style.background =
+          i === idx ? "var(--color-accent)" : "rgba(255,255,255,0.35)"
+      })
+    }
+    const schedule = () => {
+      if (timer !== null) clearTimeout(timer)
+      timer = setTimeout(() => {
+        if (!paused) show(idx + 1)
+        schedule()
+      }, 4000)
+    }
+    const onPrev = () => {
+      show(idx - 1)
+      schedule()
+    }
+    const onNext = () => {
+      show(idx + 1)
+      schedule()
+    }
+    if (prev) prev.addEventListener("click", onPrev)
+    if (next) next.addEventListener("click", onNext)
+    root.addEventListener("mouseenter", () => (paused = true))
+    root.addEventListener("mouseleave", () => (paused = false))
+    schedule()
+  })()
+</script>

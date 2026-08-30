@@ -2,10 +2,13 @@
 /**
  * FeatureCard — single card with icon, title, body, and a screenshot slot.
  *
- * `screenshot` = single image (legacy). `images` = carousel of captures
- * (auto-advancing crossfade, pause on hover, tiny dots). Uses Tailwind
- * + CSS vars; hover lifts and adds an accent top border.
+ * `screenshot` = single image (legacy). `images` = MiniCarousel (prev/next,
+ * dots, autoplay). Card is flex-col; the media block is pushed to the
+ * bottom (`mt-auto`) so all three card carousels align flush at the card
+ * bottom regardless of text length.
  */
+import MiniCarousel from "./MiniCarousel.astro"
+
 interface Props {
   icon: string
   title: string
@@ -29,11 +32,10 @@ const {
 } = Astro.props
 
 const accentColor = accent === "violet" ? "var(--color-accent-2)" : "var(--color-accent)"
-const uid = `fc-${Math.random().toString(36).slice(2, 8)}`
 ---
 
 <div
-  class="group relative overflow-hidden rounded-xl p-8 transition-all duration-300 hover:-translate-y-1"
+  class="group relative flex flex-col overflow-hidden rounded-xl p-8 transition-all duration-300 hover:-translate-y-1"
   style="background: var(--color-surface); border: 1px solid var(--color-border);"
 >
   <span
@@ -50,62 +52,12 @@ const uid = `fc-${Math.random().toString(36).slice(2, 8)}`
   <p class="text-sm leading-relaxed" style="color: var(--color-muted);">{body}</p>
   {
     images && images.length > 1 ? (
+      <MiniCarousel images={images} alt={imagesAlt} class="mt-auto pt-8" />
+    ) : screenshot ? (
       <div
-        class="relative mt-6 rounded-lg overflow-hidden group/carousel"
-        data-carousel={uid}
+        class="mt-auto pt-8 rounded-lg overflow-hidden"
         style="border: 1px solid var(--color-border); aspect-ratio: 16 / 10;"
       >
-        {images.map((src, i) => (
-          <img
-            src={src}
-            alt={imagesAlt}
-            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
-            style={`opacity: ${i === 0 ? 1 : 0};`}
-            loading={i === 0 ? "eager" : "lazy"}
-          />
-        ))}
-        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-          {images.map((_, i) => (
-            <span
-              class="h-1.5 rounded-full transition-all"
-              style={i === 0
-                ? "width: 16px; background: var(--color-accent);"
-                : "width: 6px; background: rgba(255,255,255,0.35);"}
-              data-dot={i}
-            />
-          ))}
-        </div>
-      </div>
-      <script is:inline define:vars={{ uid, count: images.length }}>
-        (() => {
-          const root = document.querySelector(`[data-carousel="${uid}"]`);
-          if (!root) return;
-          const imgs = root.querySelectorAll("img");
-          const dots = root.querySelectorAll("[data-dot]");
-          let idx = 0;
-          let timer = null;
-          let paused = false;
-          const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          if (prefersReduced) return;
-          const show = (n) => {
-            idx = (n + count) % count;
-            imgs.forEach((el, i) => (el.style.opacity = i === idx ? "1" : "0"));
-            dots.forEach((d, i) => {
-              d.style.width = i === idx ? "16px" : "6px";
-              d.style.background = i === idx ? "var(--color-accent)" : "rgba(255,255,255,0.35)";
-            });
-          };
-          const tick = () => {
-            if (!paused) show(idx + 1);
-            timer = setTimeout(tick, 3500);
-          };
-          timer = setTimeout(tick, 3500);
-          root.addEventListener("mouseenter", () => (paused = true));
-          root.addEventListener("mouseleave", () => (paused = false));
-        })();
-      </script>
-    ) : screenshot ? (
-      <div class="mt-6 rounded-lg overflow-hidden" style="border: 1px solid var(--color-border); aspect-ratio: 16 / 10;">
         <img src={screenshot} alt={screenshotAlt} class="w-full h-full object-cover" loading="lazy" />
       </div>
     ) : null

@@ -1,14 +1,14 @@
 name: Color — purple
 buttons:
-  - position: 5
+  - position: 2
     type: "media:player"
     buttonColor: purple
-  - position: 7
+  - position: 6
     type: "media:volume:down"
     buttonColor: purple
   - position: 8
     type: "media:volume:up"
     buttonColor: purple
-  - position: 9
+  - position: 12
     type: "media:mute"
     buttonColor: purple
