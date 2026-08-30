@@ -1,0 +1,32 @@
+packages/cli/src/builtin-addons/coding-agents/__tests__/deck.test.ts
+  s_9523a1e230f0e7::t_71342a8022b997 23,25,30-31,34,40-50
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_9523a1e230f0e7::t_f60aac231463e7 127-150
+packages/cli/src/builtin-addons/coding-agents/decks/agents.ts
+  s_9523a1e230f0e7::t_2303ea97140337 22-25,27
+packages/cli/frontend/src/components/Deck.tsx
+  s_9523a1e230f0e7::t_9845f4695c9294 462
+  s_9523a1e230f0e7::t_3b8a1886641f42 386-418
+packages/web/astro/src/content/buttonSchemas.json
+  s_9523a1e230f0e7::t_73b9fed4bec654 9,95,112,138,152,179,230,246,346,360,377,404,416
+packages/web/astro/src/design/tokens.generated.ts
+  s_9523a1e230f0e7::t_182ae1398e1f9c 6-8,10-14,18-21,23-33,39-42,45-48,51-54,57-60,63-66,69-73
+packages/web/scripts/capture-decks.mjs
+  s_9523a1e230f0e7::t_87d683866893c0 342-344
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ff978f07780f34459b6b8f3fe65c3d3d23f4face",
+  "prompts": {},
+  "sessions": {
+    "s_9523a1e230f0e7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb87bf784ffefGEv5K2HyNy4Lf",
+        "model": "z-ai/glm-5.3-flash"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
