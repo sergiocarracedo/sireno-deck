@@ -12,5 +12,6 @@
   },
   "preview": "/captures/15-neon-grids.png",
   "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/themes/neon-grids",
-  "order": 11
+  "order": 11,
+  "npm": "@sireno-deck/theme-neon-grids"
 }

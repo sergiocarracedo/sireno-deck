@@ -1,6 +1,6 @@
 {
   "displayName": "Emoji Selector",
-  "description": "Emoji picker with categories and favorites. Tap to launch, browse, and copy any unicode emoji to the clipboard.",
+  "description": "Emoji picker with categories and favorites. Tap to launch, browse category decks, and copy any unicode emoji to the clipboard.",
   "category": "official",
   "tags": ["emoji", "clipboard", "productivity"],
   "icon": "smile",
@@ -12,6 +12,9 @@
   "order": 5,
   "source": "cli",
   "featured": false,
-  "screenshots": ["/captures/web-snapshot-emoji.png"],
+  "screenshots": [
+    "/captures/web-snapshot-emoji.png",
+    "/captures/web-snapshot-emoji-category.png"
+  ],
   "screenshot": "/captures/web-snapshot-emoji.png"
 }

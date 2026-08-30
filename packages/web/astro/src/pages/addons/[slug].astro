@@ -14,6 +14,7 @@ import { getCollection, getEntry } from "astro:content"
 import { buttonTypeBlocks } from "../../lib/addon-config-examples"
 import AddonConfigExample from "../../components/AddonConfigExample.astro"
 import MiniCarousel from "../../components/MiniCarousel.astro"
+import CommandTabs from "../../components/CommandTabs.astro"
 
 export async function getStaticPaths() {
   const addons = await getCollection("addons")
@@ -96,8 +97,14 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
           <p class="text-xs font-semibold uppercase tracking-widest px-6 pt-5 pb-3" style="color: var(--color-accent-2);">
             Install
           </p>
-          <pre class="px-6 pb-2 text-sm font-mono overflow-x-auto" style="color: var(--color-fg);"><code># 1. add the npm package to your project
-pnpm add {a.npm}</code></pre>
+          <div class="px-6 pb-2">
+            <CommandTabs
+              pnpm={`pnpm add ${a.npm}`}
+              npm={`npm i ${a.npm}`}
+              yarn={`yarn add ${a.npm}`}
+              label={`Install ${a.displayName}`}
+            />
+          </div>
           <pre class="px-6 pb-2 text-sm font-mono overflow-x-auto" style="color: var(--color-fg);"><code># 2. reference it in config.yml
 addons:
   - "{a.npm}"</code></pre>

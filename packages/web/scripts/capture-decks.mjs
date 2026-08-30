@@ -309,7 +309,6 @@ const main = async () => {
       "web-snapshot-date-time.yml",
       "web-snapshot-system-status.yml",
       "web-snapshot-value-display.yml",
-      "web-snapshot-emoji.yml",
       "web-snapshot-pomodoro.yml",
       "web-snapshot-coding-agents.yml",
       ...COLOR_VARIANTS.map((c) => `${c}.yml`),
@@ -326,6 +325,184 @@ const main = async () => {
       const eff = await capture(browser, outName)
       console.log(`ok ${outName} deck=${eff?.id}`)
       await shutdown(proc)
+    }
+    // --- emoji selector: launcher (categories) deck + one category deck ---
+    {
+      const { proc, up } = await bootWithRetry(
+        buildConfig("default", null, "emoji-selector"),
+      )
+      if (!up) {
+        console.log("FAIL boot emoji decks")
+        await shutdown(proc)
+      } else {
+        const ctx = await browser.newContext({
+          viewport: { width: 1600, height: 1000 },
+          deviceScaleFactor: 2,
+        })
+        const page = await ctx.newPage()
+        await page.goto("http://127.0.0.1:5180/", {
+          waitUntil: "domcontentloaded",
+          timeout: 25000,
+        })
+        await page.waitForSelector('[data-deck-id="main"]', { timeout: 20000 })
+        await page.waitForTimeout(2000)
+        const tile = page
+          .locator('[data-button-type="core:change-deck"]')
+          .first()
+        if (await tile.count()) await tile.click()
+        await page
+          .waitForSelector(
+            '[data-deck-id="emoji-selector"],[data-deck-id="emoji-selector-p1"]',
+            { timeout: 10000 },
+          )
+          .catch(() => {})
+        await page.waitForTimeout(3000)
+        const launcherId =
+          (await page.locator('[data-deck-id="emoji-selector-p1"]').count()) > 0
+            ? "emoji-selector-p1"
+            : "emoji-selector"
+        await page
+          .locator(`[data-deck-id="${launcherId}"]`)
+          .screenshot({ path: resolve(outDir, "web-snapshot-emoji.png") })
+        console.log(`ok web-snapshot-emoji.png deck=${launcherId}`)
+        // Click the Smileys category tile (change-deck with label Smileys)
+        const smileys = page.locator("text=Smileys").first()
+        if (await smileys.count()) {
+          await smileys.click()
+          await page
+            .waitForSelector(
+              '[data-deck-id="emoji-selector-smileys"],[data-deck-id="emoji-selector-smileys-p1"]',
+              { timeout: 10000 },
+            )
+            .catch(() => {})
+          await page.waitForTimeout(3000)
+          const catId =
+            (await page
+              .locator('[data-deck-id="emoji-selector-smileys-p1"]')
+              .count()) > 0
+              ? "emoji-selector-smileys-p1"
+              : "emoji-selector-smileys"
+          await page.locator(`[data-deck-id="${catId}"]`).screenshot({
+            path: resolve(outDir, "web-snapshot-emoji-category.png"),
+          })
+          console.log(`ok web-snapshot-emoji-category.png deck=${catId}`)
+        } else {
+          console.warn("no Smileys tile found")
+        }
+        await ctx.close()
+        await shutdown(proc)
+      }
+    }
+    // --- system-status button-type + metric-count variants ---
+    const SS_VARIANTS = [
+      {
+        file: "web-snapshot-system-status-bars-1.png",
+        pages: [{ type: "bars", metrics: ["cpu"] }],
+      },
+      {
+        file: "web-snapshot-system-status-bars-2.png",
+        pages: [{ type: "bars", metrics: ["cpu", "ram"] }],
+      },
+      {
+        file: "web-snapshot-system-status-bars-3.png",
+        pages: [{ type: "bars", metrics: ["cpu", "ram", "disk"] }],
+      },
+      {
+        file: "web-snapshot-system-status-kpis-1.png",
+        pages: [{ type: "kpis", metrics: ["cpu"] }],
+      },
+      {
+        file: "web-snapshot-system-status-kpis-2.png",
+        pages: [{ type: "kpis", metrics: ["cpu", "ram"] }],
+      },
+      {
+        file: "web-snapshot-system-status-kpis-3.png",
+        pages: [{ type: "kpis", metrics: ["cpu", "ram", "disk"] }],
+      },
+      {
+        file: "web-snapshot-system-status-chart-1.png",
+        pages: [{ type: "chart", metrics: ["cpu"], windowSeconds: 60 }],
+      },
+      {
+        file: "web-snapshot-system-status-chart-2.png",
+        pages: [{ type: "chart", metrics: ["cpu", "ram"], windowSeconds: 60 }],
+      },
+    ]
+    for (const v of SS_VARIANTS) {
+      const metricsYaml = v.pages[0].metrics
+        .map((m) => `\n                - ${m}`)
+        .join("")
+      const inlineMain = `decks:
+  main:
+    name: Main
+    buttons:
+      - position: 7
+        type: "system-status:system-status"
+        config:
+          pages:
+            - type: ${v.pages[0].type}
+              metrics:${metricsYaml}
+`
+      const { proc, up } = await bootWithRetry(
+        `theme: default\n\nlogging:\n  level: warn\n\n${inlineMain}\n`,
+      )
+      if (!up) {
+        console.log(`FAIL boot ${v.file}`)
+        await shutdown(proc)
+        continue
+      }
+      const eff = await capture(browser, v.file)
+      console.log(`ok ${v.file} deck=${eff?.id}`)
+      await shutdown(proc)
+    }
+    // --- coding-agents agents deck (fake agents) ---
+    {
+      const { proc, up } = await bootWithRetry(
+        buildConfig("default", "web-snapshot-coding-agents.yml", null),
+      )
+      if (!up) {
+        console.log("FAIL boot coding-agents agents deck")
+        await shutdown(proc)
+      } else {
+        const ctx = await browser.newContext({
+          viewport: { width: 1600, height: 1000 },
+          deviceScaleFactor: 2,
+        })
+        const page = await ctx.newPage()
+        await page.goto("http://127.0.0.1:5180/", {
+          waitUntil: "domcontentloaded",
+          timeout: 25000,
+        })
+        await page.waitForSelector('[data-deck-id="main"]', { timeout: 20000 })
+        await page.waitForTimeout(2000)
+        // The summary tile navigates to coding-agents:agents(-p1) on tap
+        const summary = page
+          .locator('[data-button-type="coding-agents:summary"]')
+          .first()
+        if (await summary.count()) await summary.click()
+        await page
+          .waitForSelector('.grid[data-deck-id^="coding-agents:"]', {
+            timeout: 10000,
+          })
+          .catch(() => {})
+        await page.waitForTimeout(3000)
+        const agentsId = await page
+          .locator(".grid[data-deck-id]")
+          .first()
+          .getAttribute("data-deck-id")
+          .catch(() => "?")
+        if (agentsId && agentsId.startsWith("coding-agents:")) {
+          const safe = agentsId.replace(/:/g, "-")
+          await page
+            .locator(`[data-deck-id="${agentsId}"]`)
+            .screenshot({ path: resolve(outDir, `${safe}.png`) })
+          console.log(`ok ${safe}.png`)
+        } else {
+          console.warn(`FAIL agents deck: got "${agentsId}"`)
+        }
+        await ctx.close()
+        await shutdown(proc)
+      }
     }
     // --- overlay per-app decks ---
     for (const app of OVERLAY_APPS) {

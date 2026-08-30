@@ -10,6 +10,8 @@ tags: [installation, setup, quickstart]
 
 Get Sireno Deck running on your computer in minutes.
 
+import CommandTabs from "@site/components/CommandTabs.astro"
+
 ## Prerequisites
 
 - **Node.js** 20 or later
@@ -18,13 +20,14 @@ Get Sireno Deck running on your computer in minutes.
 
 ## Quick Install
 
-```bash
-# Install the CLI globally
-pnpm install -g @sirenodeck/cli
+Install the CLI globally with your package manager of choice — the choice is
+remembered across all command examples on this site:
 
-# Or use npx
-npx @sirenodeck/cli --help
-```
+<CommandTabs
+  pnpm="pnpm i -g @sirenodeck/cli"
+  npm="npm i -g @sirenodeck/cli"
+  yarn="yarn global add @sirenodeck/cli"
+/>
 
 ## From Source
 

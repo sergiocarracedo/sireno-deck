@@ -1,0 +1,99 @@
+---
+/**
+ * RemoteSection — landing section for --remote mode.
+ *
+ * The daemon serves a token-gated, deck-only emulator URL on your LAN.
+ * Scan the QR the CLI prints (illustrative QR here) and your phone becomes
+ * the deck — no Stream Deck hardware required. The deck mock sits inside a
+ * landscape phone frame.
+ */
+---
+
+<section id="remote" class="px-6 py-24" style="background: var(--color-surface);">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid lg:grid-cols-2 gap-14 items-center">
+      <div>
+        <p
+          class="font-mono text-xs font-semibold uppercase tracking-[0.25em] mb-4"
+          style="color: var(--color-accent);"
+        >
+          Remote mode
+        </p>
+        <h2 class="font-display text-4xl sm:text-5xl font-bold leading-[1.05] mb-6 text-fg">
+          Your deck,<br />in your pocket.
+        </h2>
+        <p class="text-lg leading-relaxed mb-6" style="color: var(--color-muted);">
+          No Stream Deck hardware required. Start the daemon with
+          <code class="font-mono text-sm px-1.5 py-0.5 rounded" style="background: var(--color-surface-raised);">--remote</code>
+          and it serves a token-gated, deck-only view on your LAN. Scan the QR
+          it prints and your phone becomes the deck.
+        </p>
+
+        <div
+          class="rounded-lg px-4 py-3 font-mono text-sm mb-6 overflow-x-auto"
+          style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-accent);"
+        >
+          sireno start --remote
+        </div>
+
+        <div class="flex items-start gap-3 mb-8">
+          <div class="flex-shrink-0 mt-1">
+            <i data-lucide="shield-check" class="w-4 h-4" style="color: var(--color-accent);"></i>
+          </div>
+          <p class="text-sm leading-relaxed" style="color: var(--color-muted);">
+            The URL is token-gated — only devices with the QR-scoped link can
+            connect. Buttons tap straight into the same runtime as hardware.
+          </p>
+        </div>
+
+        <a
+          href="/user/emulator-vs-hardware/"
+          class="inline-flex items-center gap-2 text-sm font-semibold transition-colors"
+          style="color: var(--color-accent);"
+        >
+          Connectivity &amp; remote docs
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+
+      <div class="flex items-center justify-center gap-8">
+        <!-- landscape phone frame with the deck inside -->
+        <div
+          class="relative rounded-[2rem] p-2"
+          style="background: var(--color-surface-raised); border: 1px solid var(--color-border); box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7); width: min(100%, 460px);"
+        >
+          <!-- side buttons (landscape) -->
+          <span class="absolute -left-[3px] top-1/4 w-[3px] h-8 rounded-l" style="background: var(--color-border);"></span>
+          <span class="absolute -left-[3px] top-1/2 w-[3px] h-8 rounded-l" style="background: var(--color-border);"></span>
+          <span class="absolute -right-[3px] top-1/3 w-[3px] h-10 rounded-r" style="background: var(--color-border);"></span>
+          <div class="rounded-[1.6rem] overflow-hidden" style="border: 1px solid var(--color-border);">
+            <img
+              src="/captures/main.png"
+              alt="Sireno Deck running on a phone in remote mode"
+              class="w-full block"
+              loading="lazy"
+            />
+          </div>
+          <!-- camera punch-hole (landscape: left edge) -->
+          <span
+            class="absolute top-1/2 -translate-y-1/2 left-4 w-2 h-2 rounded-full"
+            style="background: var(--color-bg); border: 1px solid var(--color-border);"
+          ></span>
+        </div>
+
+        <!-- QR -->
+        <div class="flex flex-col items-center gap-3 flex-shrink-0">
+          <div
+            class="rounded-xl p-3"
+            style="background: var(--color-bg); border: 1px solid var(--color-border);"
+          >
+            <img src="/qr-remote.svg" alt="QR code linking to the Sireno Deck remote emulator" class="w-24 h-24 block" loading="lazy" />
+          </div>
+          <p class="text-[0.6875rem] font-mono text-center max-w-[7rem]" style="color: var(--color-muted);">
+            scan at runtime for your deck URL
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -63,7 +63,19 @@ const stripDuplicateTitle = (sourceText) => {
   return out
 }
 
-const visit = (src, dst) => {
+/**
+ * Rewrite the `@site/components/` import marker to the correct relative
+ * path from each MDX file's location in src/content/docs/ (user/, developer/
+ * and reference/ are one level deeper than the marker's depth assumes).
+ * Docs source files in packages/cli/docs use the marker so they stay
+ * build-agnostic; only the synced copies are ever compiled.
+ */
+const rewriteSiteImports = (text, relDepth) => {
+  const rel = "../".repeat(relDepth) + "components/"
+  return text.replaceAll("@site/components/", rel)
+}
+
+const visit = (src, dst, relDepth = 2) => {
   for (const name of readdirSync(src)) {
     const s = join(src, name)
     const d = join(dst, name)
@@ -72,10 +84,14 @@ const visit = (src, dst) => {
     const st = statSync(s)
     if (st.isDirectory()) {
       mkdirSync(d, { recursive: true })
-      visit(s, d)
+      visit(s, d, relDepth + 1)
     } else if (st.isFile() && /\.(md|mdx)$/i.test(name)) {
       const text = readFileSync(s, "utf8")
-      writeFileSync(d, stripDuplicateTitle(text), "utf8")
+      writeFileSync(
+        d,
+        rewriteSiteImports(stripDuplicateTitle(text), relDepth),
+        "utf8",
+      )
     }
   }
 }

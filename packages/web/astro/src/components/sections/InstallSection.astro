@@ -1,56 +1,15 @@
 ---
 /**
- * InstallSection — CTA + quick install, split by OS.
+ * InstallSection — "Get started" with the real 4-step flow:
+ *   1. install the CLI globally (pnpm/npm/yarn CommandTabs)
+ *   2. `sirenodeck start` -> first-run onboarding generates the config
+ *   3. edit ~/.config/sireno-deck/config.yml (+ link to full docs)
+ *   4. add 3rd-party addons & themes from npm (+ link to /addons/)
  *
- * The recommended distribution per OS is shown in an OS tab switcher.
- * Packaged builds (Flathub / DMG / MSI) are the target distribution; until
- * they publish, the pnpm one-liner is the current path on every OS.
+ * Packaged builds (Flathub / DMG / MSI) are coming soon — shown as a muted
+ * line with no commands to avoid confusion.
  */
-
-const osTabs = [
-  {
-    id: "linux",
-    label: "Linux",
-    recommended: "flatpak install flathub dev.sireno-deck.SirenoDeck",
-    note: "Flathub package (recommended). Sandboxed, auto-updating.",
-    planned: true,
-  },
-  {
-    id: "macos",
-    label: "macOS",
-    recommended: "brew install --cask sirenodeck",
-    note: "Native DMG / Homebrew cask (recommended).",
-    planned: true,
-  },
-  {
-    id: "windows",
-    label: "Windows",
-    recommended: "winget install sireno-deck",
-    note: "MSI installer via winget (recommended).",
-    planned: true,
-  },
-]
-
-const steps = [
-  {
-    step: 1,
-    label: "Run",
-    code: "pnpm dlx sirenodeck start --emulator",
-    note: "Opens the emulator in your browser. No real hardware needed. Works on every OS today.",
-  },
-  {
-    step: 2,
-    label: "Configure",
-    code: "sireno config edit",
-    note: "Opens config.yml in your $EDITOR. Restart to apply changes.",
-  },
-  {
-    step: 3,
-    label: "Go",
-    code: "sireno start",
-    note: "Daemon starts. Press any button on the Stream Deck or emulator.",
-  },
-]
+import CommandTabs from "../CommandTabs.astro"
 ---
 
 <section
@@ -65,77 +24,96 @@ const steps = [
     <h2 class="font-display text-4xl sm:text-5xl font-bold mb-4 text-fg">
       Up in 60 seconds
     </h2>
-    <p class="text-lg mb-10" style="color: var(--color-muted);">
-      Pick your OS. Packaged builds are on the way — the pnpm one-liner works on every platform today.
+    <p class="text-lg mb-12" style="color: var(--color-muted);">
+      Requires Node 20+. Pick your package manager once — we remember it everywhere.
     </p>
 
-    {/* OS tab switcher */}
-    <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
-      {osTabs.map((tab) => (
-        <button
-          type="button"
-          data-os-tab={tab.id}
-          class="os-tab px-4 py-2 rounded-md text-sm font-medium transition-colors"
-          style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-muted);"
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
-
-    {osTabs.map((tab) => (
-      <div
-        data-os-panel={tab.id}
-        class="os-panel mb-8 hidden rounded-xl overflow-hidden text-left"
-        style="background: var(--color-bg); border: 1px solid var(--color-border);"
-      >
-        <div class="flex items-center gap-2 px-6 pt-5 pb-3">
-          <p class="text-sm font-semibold text-fg">Recommended · {tab.label}</p>
-          {tab.planned && (
-            <span class="text-[0.6875rem] font-mono px-2 py-0.5 rounded" style="background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);">
-              coming soon
-            </span>
-          )}
+    <div class="flex flex-col gap-8 text-left">
+      {/* 1. Install */}
+      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+        <div class="flex items-center gap-4 px-6 py-4">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--color-accent); color: var(--color-bg);">1</div>
+          <p class="text-sm font-semibold text-fg">Install the CLI</p>
         </div>
-        <div class="px-6">
-          <div class="rounded-md px-4 py-2.5 font-mono text-sm overflow-x-auto" style="background: var(--color-surface); color: var(--color-accent);">
-            {tab.recommended}
-          </div>
+        <div class="px-6 pb-5">
+          <CommandTabs
+            pnpm="pnpm i -g @sirenodeck/cli"
+            npm="npm i -g @sirenodeck/cli"
+            yarn="yarn global add @sirenodeck/cli"
+            label="Install the CLI"
+          />
         </div>
-        <div class="px-6 pt-3 pb-5 text-xs" style="color: var(--color-muted);">{tab.note}</div>
       </div>
-    ))}
 
-    {/* Current quick-start path */}
-    <div class="flex flex-col gap-4 text-left">
-      {
-        steps.map((s) => (
-          <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
-            <div class="flex items-center gap-4 px-6 py-4">
-              <div
-                class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                style="background: var(--color-accent); color: var(--color-bg);"
-              >
-                {s.step}
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold mb-2 text-fg">{s.label}</p>
-                <div class="rounded-md px-4 py-2.5 font-mono text-sm overflow-x-auto" style="background: var(--color-surface); color: var(--color-accent);">
-                  {s.code}
-                </div>
-              </div>
-            </div>
-            <div class="px-6 pb-4 text-xs" style="color: var(--color-muted);">
-              {s.note}
+      {/* 2. Onboard */}
+      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+        <div class="flex items-center gap-4 px-6 py-4">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--color-accent); color: var(--color-bg);">2</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-fg">Start the onboarding</p>
+            <div class="mt-2 rounded-md px-4 py-2.5 font-mono text-sm overflow-x-auto" style="background: var(--color-surface); color: var(--color-accent);">
+              sirenodeck start
             </div>
           </div>
-        ))
-      }
+        </div>
+        <div class="px-6 pb-4 text-xs" style="color: var(--color-muted);">
+          First run launches onboarding: pick your device (or the emulator), connect, done. A starter <code class="font-mono">config.yml</code> is generated for you.
+        </div>
+      </div>
+
+      {/* 3. Configure */}
+      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+        <div class="flex items-center gap-4 px-6 py-4">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--color-accent); color: var(--color-bg);">3</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-fg">Make it yours</p>
+            <div class="mt-2 rounded-md px-4 py-2.5 font-mono text-sm overflow-x-auto" style="background: var(--color-surface); color: var(--color-accent);">
+              ~/.config/sireno-deck/config.yml
+            </div>
+          </div>
+        </div>
+        <div class="px-6 pb-4 text-xs" style="color: var(--color-muted);">
+          Edit the generated config — decks, buttons, themes. Changes apply on save.
+          <a href="/user/configuration-files/" class="underline ml-1" style="color: var(--color-accent);">Full configuration reference</a>
+        </div>
+      </div>
+
+      {/* 4. 3rd-party addons & themes */}
+      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+        <div class="flex items-center gap-4 px-6 py-4">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--color-accent); color: var(--color-bg);">4</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-fg">Extend it</p>
+            <div class="mt-2">
+              <CommandTabs
+                pnpm="pnpm i -g @sirenodeck/addon-app-shortcuts"
+                npm="npm i -g @sirenodeck/addon-app-shortcuts"
+                yarn="yarn global add @sirenodeck/addon-app-shortcuts"
+                label="Install a 3rd-party addon"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="px-6 pb-4 text-xs" style="color: var(--color-muted);">
+          Then reference it in your config:
+          <code class="font-mono ml-1" style="color: var(--color-accent);">addons: ["@sirenodeck/addon-app-shortcuts"]</code>.
+          <a href="/addons/" class="underline ml-1" style="color: var(--color-accent);">Browse the addon registry</a>
+        </div>
+      </div>
     </div>
 
-    <div class="flex flex-wrap items-center justify-center gap-3 mt-12">
+    {/* Packaged builds — coming soon, no commands */}
+    <p class="text-xs mt-10" style="color: var(--color-muted);">
+      Packaged builds —
+      <span class="font-semibold" style="color: var(--color-fg);">Flathub</span> ·
+      <span class="font-semibold" style="color: var(--color-fg);">DMG</span> ·
+      <span class="font-semibold" style="color: var(--color-fg);">MSI</span>
+      — coming soon.
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
       <a
-        href="https://github.com/sergiocarracedo/sireno-deck"
+        href="https://github.com/sireno-deck/sireno-deck"
         target="_blank"
         rel="noopener noreferrer"
         class="px-6 py-3 rounded-lg text-sm font-semibold"
@@ -154,27 +132,3 @@ const steps = [
     </div>
   </div>
 </section>
-
-<script is:inline>
-  (() => {
-    const tabs = document.querySelectorAll("[data-os-tab]")
-    const panels = document.querySelectorAll("[data-os-panel]")
-    let current = "linux"
-
-    const activate = (id) => {
-      current = id
-      tabs.forEach((t) => {
-        const active = t.getAttribute("data-os-tab") === id
-        t.style.background = active ? "var(--color-surface-raised)" : "var(--color-surface)"
-        t.style.color = active ? "var(--color-fg)" : "var(--color-muted)"
-        t.style.borderColor = active ? "var(--color-accent)" : "var(--color-border)"
-      })
-      panels.forEach((p) => {
-        p.classList.toggle("hidden", p.getAttribute("data-os-panel") !== id)
-      })
-    }
-
-    tabs.forEach((t) => t.addEventListener("click", () => activate(t.getAttribute("data-os-tab") || "linux")))
-    activate(current)
-  })()
-</script>

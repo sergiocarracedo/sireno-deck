@@ -4,14 +4,19 @@
   "category": "official",
   "tags": ["system", "metrics", "monitoring"],
   "icon": "activity",
-  "buttonTypes": [
-    "system-status:bars",
-    "system-status:kpis",
-    "system-status:chart"
-  ],
+  "buttonTypes": ["system-status:system-status"],
   "order": 7,
   "source": "cli",
   "featured": true,
-  "screenshots": ["/captures/web-snapshot-system-status.png"],
-  "screenshot": "/captures/web-snapshot-system-status.png"
+  "screenshots": [
+    "/captures/web-snapshot-system-status-bars-1.png",
+    "/captures/web-snapshot-system-status-bars-2.png",
+    "/captures/web-snapshot-system-status-bars-3.png",
+    "/captures/web-snapshot-system-status-kpis-1.png",
+    "/captures/web-snapshot-system-status-kpis-2.png",
+    "/captures/web-snapshot-system-status-kpis-3.png",
+    "/captures/web-snapshot-system-status-chart-1.png",
+    "/captures/web-snapshot-system-status-chart-2.png"
+  ],
+  "screenshot": "/captures/web-snapshot-system-status-bars-1.png"
 }

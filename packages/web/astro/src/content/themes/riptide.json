@@ -12,5 +12,6 @@
   },
   "preview": "/captures/14-riptide.png",
   "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/themes/riptide",
-  "order": 10
+  "order": 10,
+  "npm": "@sireno-deck/theme-riptide"
 }

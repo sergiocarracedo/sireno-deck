@@ -11,6 +11,7 @@ import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
 import PaletteSwatches from "../../components/PaletteSwatches.astro"
 import Icon from "../../components/Icon.astro"
 import { getCollection, getEntry } from "astro:content"
+import CommandTabs from "../../components/CommandTabs.astro"
 
 export async function getStaticPaths() {
   const themes = await getCollection("themes")
@@ -106,7 +107,9 @@ const isOfficial = t.category === "official"
         <div class="rounded-xl p-6 flex flex-col gap-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
           <h2 class="font-display text-lg font-semibold mb-0">Usage</h2>
 
-          {isOfficial ? (
+          {/* Non-builtin themes (npm-installable) get the install tabs even when
+      official — e.g. riptide / neon-grids ship as separate packages. */}
+          {isOfficial && !t.npm ? (
             <>
               <p class="text-sm leading-relaxed -mt-3" style="color: var(--color-muted);">
                 Official theme from this repository. Reference it from your
@@ -124,10 +127,19 @@ const isOfficial = t.category === "official"
                   </a>
                 </p>
               )}
-              <p class="text-sm leading-relaxed -mt-3" style="color: var(--color-muted);">
-                Community theme. Point your config at its path or npm name:
+                            <p class="text-sm leading-relaxed -mt-3" style="color: var(--color-muted);">
+                Community theme. Install it, then reference it from your
+                <code class="font-mono text-xs px-1 py-0.5 rounded" style="background: var(--color-bg);">config.yml</code>:
               </p>
-              <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>{`theme: ./packages/themes/${themeId}\n\n# or npm package\ntheme: @sireno-deck/theme-${themeId}`}</code></pre>
+              {t.npm && (
+                <CommandTabs
+                  pnpm={`pnpm add -g ${t.npm}`}
+                  npm={`npm i -g ${t.npm}`}
+                  yarn={`yarn global add ${t.npm}`}
+                  label={`Install ${t.displayName}`}
+                />
+              )}
+              <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>{`theme: ${t.npm ?? `./packages/themes/${themeId}`}`}</code></pre>
               <p class="text-xs" style="color: var(--color-muted);">
                 Any string that isn't a registered theme or filesystem path is
                 resolved as an npm package — see

@@ -1,0 +1,129 @@
+---
+/**
+ * CommandTabs — package-manager tab switcher (pnpm | npm | yarn) with a
+ * command code block.
+ *
+ * The user's package-manager choice is persisted in localStorage
+ * (`sireno-pm`) and applied to every CommandTabs instance on the page
+ * (and across pages via the storage event). Default: pnpm.
+ *
+ * Works in .astro pages and in docs MDX (sync-cli-docs rewrites the
+ * `@site/components/` import marker to the correct relative path).
+ *
+ * Renders nothing when `pnpm` is not provided.
+ */
+interface Props {
+  pnpm?: string
+  npm?: string
+  yarn?: string
+  /** Accessible label for the tab group (e.g. "Install the CLI"). */
+  label?: string
+  class?: string
+}
+
+const { pnpm, npm, yarn, label = "Package manager", class: cls = "" } = Astro.props
+
+const cmds = [
+  { id: "pnpm", cmd: pnpm },
+  { id: "npm", cmd: npm },
+  { id: "yarn", cmd: yarn },
+].filter((c) => Boolean(c.cmd))
+
+const uid = `ct-${Math.random().toString(36).slice(2, 8)}`
+---
+
+{
+  cmds.length > 0 && (
+    <div class={`rounded-lg overflow-hidden ${cls}`} data-command-tabs={uid}>
+      <div
+        class="flex items-center gap-1 px-2 pt-2"
+        role="tablist"
+        aria-label={label}
+      >
+        {cmds.map((c, i) => (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={i === 0 ? "true" : "false"}
+            data-pm-tab={c.id}
+            class="px-3 py-1.5 rounded-t-md text-xs font-semibold font-mono transition-colors"
+            style={i === 0
+              ? "background: var(--color-surface-raised); color: var(--color-accent);"
+              : "background: transparent; color: var(--color-muted);"}
+          >
+            {c.id}
+          </button>
+        ))}
+      </div>
+      <div class="rounded-md rounded-tl-none px-4 py-3 overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+        {cmds.map((c, i) => (
+          <code
+            data-pm-cmd={c.id}
+            class="text-sm font-mono whitespace-pre"
+            style={`display: ${i === 0 ? "block" : "none"}; color: var(--color-accent);`}
+          >
+            {c.cmd}
+          </code>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+<script is:inline define:vars={{ uid, count: cmds.length }}>
+  (() => {
+    const root = document.querySelector(`[data-command-tabs="${uid}"]`)
+    if (!root) return
+    const KEY = "sireno-pm"
+    const PM_IDS = ["pnpm", "npm", "yarn"]
+    const tabs = root.querySelectorAll("[data-pm-tab]")
+    const blocks = root.querySelectorAll("[data-pm-cmd]")
+
+    const show = (pm) => {
+      let idx = PM_IDS.indexOf(pm)
+      if (idx === -1) idx = 0
+      tabs.forEach((t) => {
+        const active = t.getAttribute("data-pm-tab") === PM_IDS[idx]
+        t.setAttribute("aria-selected", active ? "true" : "false")
+        t.style.background = active
+          ? "var(--color-surface-raised)"
+          : "transparent"
+        t.style.color = active ? "var(--color-accent)" : "var(--color-muted)"
+      })
+      blocks.forEach((b) => {
+        b.style.display =
+          b.getAttribute("data-pm-cmd") === PM_IDS[idx] ? "block" : "none"
+      })
+    }
+
+    // restore the user's persisted choice (or the last one clicked on this
+    // page, shared across instances via the custom event)
+    const applyStored = () => {
+      try {
+        const stored = window.localStorage.getItem(KEY)
+        if (stored && PM_IDS.indexOf(stored) !== -1) show(stored)
+      } catch {}
+    }
+    applyStored()
+
+    tabs.forEach((t) => {
+      t.addEventListener("click", () => {
+        const pm = t.getAttribute("data-pm-tab")
+        show(pm)
+        try {
+          window.localStorage.setItem(KEY, pm)
+        } catch {}
+        window.dispatchEvent(
+          new CustomEvent("sireno-pm-change", { detail: pm }),
+        )
+      })
+    })
+    window.addEventListener("sireno-pm-change", (e) => {
+      const pm = e instanceof CustomEvent ? String(e.detail) : null
+      if (pm) show(pm)
+    })
+    window.addEventListener("storage", (e) => {
+      if (e.key === KEY && e.newValue) show(e.newValue)
+    })
+  })()
+</script>

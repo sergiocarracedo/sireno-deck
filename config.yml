@@ -129,6 +129,5 @@ decks:
   web-snapshot-date-time: !include demos/web-snapshot-date-time.yml
   web-snapshot-system-status: !include demos/web-snapshot-system-status.yml
   web-snapshot-value-display: !include demos/web-snapshot-value-display.yml
-  web-snapshot-emoji: !include demos/web-snapshot-emoji.yml
   web-snapshot-pomodoro: !include demos/web-snapshot-pomodoro.yml
   web-snapshot-coding-agents: !include demos/web-snapshot-coding-agents.yml
