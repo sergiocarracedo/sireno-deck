@@ -1,0 +1,68 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/backend.ts
+  s_c1cf7ce5b0c1a6::t_11cb67afd3b977 8
+  s_c1cf7ce5b0c1a6::t_1e3a228de87a78 32
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_c1cf7ce5b0c1a6::t_13f80b878226d7 177-179
+  s_c1cf7ce5b0c1a6::t_6b022280904edc 399,518
+  s_c1cf7ce5b0c1a6::t_cbfdcca10dff76 148,151-154
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/__tests__/config.test.ts
+  s_c1cf7ce5b0c1a6::t_41bebc1f93c8ae 3,7,15,23
+demos/web-snapshot-value-display.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 9
+packages/cli/src/cli/commands/__tests__/system-requirements.test.ts
+  s_c1cf7ce5b0c1a6::t_16a8ad0f1d3c5d 25-26
+demos/web-snapshot-system-status.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 10
+packages/cli/src/deck/__tests__/chrome-icon-resolution.test.ts
+  s_c1cf7ce5b0c1a6::t_64264771515822 2-5,19-23
+demos/web-snapshot-media.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 10
+demos/web-snapshot-coding-agents.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 10
+demos/web-snapshot-core.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 7
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_c1cf7ce5b0c1a6::t_57f7ad9b272f02 497-503
+  s_c1cf7ce5b0c1a6::t_a548b324380086 476-477
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/config.ts
+  s_c1cf7ce5b0c1a6::t_11cb67afd3b977 3,11
+packages/web/astro/src/content/buttonSchemas.json
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 9,100,117,143,157,184,235,251,351,365,382,409,421
+packages/web/scripts/capture-decks.mjs
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 297-300
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/config.ts
+  s_c1cf7ce5b0c1a6::t_11cb67afd3b977 3,13
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/backend.ts
+  s_c1cf7ce5b0c1a6::t_11cb67afd3b977 6
+  s_c1cf7ce5b0c1a6::t_1e3a228de87a78 61
+demos/web-snapshot-date-time.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 14
+demos/web-snapshot-emoji.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 12
+demos/web-snapshot-pomodoro.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 6
+packages/cli/src/cli/commands/addon-registry.ts
+  s_c1cf7ce5b0c1a6::t_24891495bb6bcd 408
+demos/web-snapshot-weather.yml
+  s_c1cf7ce5b0c1a6::t_c67f60864139f5 9
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_c1cf7ce5b0c1a6::t_1d44994a2e8a49 1
+packages/web/astro/src/design/tokens.generated.ts
+  s_c1cf7ce5b0c1a6::t_ebd028a826bfc7 6-8,10-14,18-21,23-33,39-42,45-48,51-54,57-60,63-66,69-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "25d5b0928266c7adec07f4be1999a395fca27623",
+  "prompts": {},
+  "sessions": {
+    "s_c1cf7ce5b0c1a6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fad422a2effeatvsZNVIBh86rw",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
