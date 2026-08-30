@@ -1,0 +1,35 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/frontend.tsx
+  s_0f23c3e31375c4::t_1f32f0b9a8e264 39
+  s_0f23c3e31375c4::t_65b02aaca5a8fd 75
+  s_0f23c3e31375c4::t_5da6ae06f97efc 115
+  s_0f23c3e31375c4::t_c22f424bf4dd62 188,194-218
+  s_0f23c3e31375c4::t_27e2dfc502d3d1 35-38,40-74,77-81,86,89,91,93-94,102-104
+  s_0f23c3e31375c4::t_f02c3ac79ef07f 76,82-85,87-88,90,92,95-101
+packages/cli/src/ui/ButtonFrame.tsx
+  s_0f23c3e31375c4::t_2b4ac724ff136e 106
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/config.ts
+  s_0f23c3e31375c4::t_a1cf2d5dac3520 7
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/__tests__/config.test.ts
+  s_0f23c3e31375c4::t_bc1de2097febc7 1-22,25
+  s_0f23c3e31375c4::t_c525b9e98491db 23-24
+  s_0f23c3e31375c4::t_1f32f0b9a8e264 26
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/__tests__/frontend.test.tsx
+  s_0f23c3e31375c4::t_1f32f0b9a8e264 38-40,66-68,71
+  s_0f23c3e31375c4::t_ecc8efcb9f3027 1-37,41-65,69-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "bc32fa27a2eaaab7b20e49cdbf0a97232925b6f2",
+  "prompts": {},
+  "sessions": {
+    "s_0f23c3e31375c4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fae01148dffeRQpXnxINcGNBVi",
+        "model": "z-ai/glm-5.3-flash"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
