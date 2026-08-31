@@ -323,6 +323,7 @@ const probeUdev = (
   platform: string,
   rulesPath: string,
   fileExists: (path: string) => boolean,
+  readFile: (path: string) => string | null,
   streamDeck: { connected: boolean; matched: ReadonlyArray<string> },
 ): UdevProbe => {
   if (platform !== "linux") {
@@ -333,8 +334,12 @@ const probeUdev = (
       matchedProductIds: [],
     }
   }
+  const contents = fileExists(rulesPath) ? readFile(rulesPath) : null
   return {
-    rulesInstalled: fileExists(rulesPath),
+    rulesInstalled:
+      contents !== null &&
+      contents.includes('SUBSYSTEM=="usb"') &&
+      contents.includes('ATTRS{idVendor}=="0fd9"'),
     rulesPath,
     streamDeckConnected: streamDeck.connected,
     matchedProductIds: streamDeck.matched,
@@ -382,7 +387,6 @@ export const probeAll = async (deps: ProbeDeps): Promise<SystemReport> => {
   }
 
   const streamDeck = detectStreamDeck([platform], lsusbSync)
-  void readFile
 
   const capabilities = {
     keyMacro: await probeKeyMacro(platform, executor, extraFsProbe),
@@ -391,7 +395,13 @@ export const probeAll = async (deps: ProbeDeps): Promise<SystemReport> => {
     activeApp: await probeActiveApp(platform, env, executor, extraFsProbe),
   } as const
 
-  const udev = probeUdev(platform, UDEV_RULES_PATH, fileExists, streamDeck)
+  const udev = probeUdev(
+    platform,
+    UDEV_RULES_PATH,
+    fileExists,
+    readFile,
+    streamDeck,
+  )
   const config = probeConfig(xdgConfigHome, fileExists)
 
   return {
