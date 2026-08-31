@@ -75,6 +75,12 @@ const rewriteSiteImports = (text, relDepth) => {
   return text.replaceAll("@site/components/", rel)
 }
 
+const rewriteSidebarOrder = (text) => {
+  const match = /^order:\s*(\d+)\s*$/m.exec(text)
+  if (!match) return text
+  return text.replace(match[0], `sidebar:\n  order: ${match[1]}`)
+}
+
 const visit = (src, dst, relDepth = 2) => {
   for (const name of readdirSync(src)) {
     const s = join(src, name)
@@ -89,7 +95,10 @@ const visit = (src, dst, relDepth = 2) => {
       const text = readFileSync(s, "utf8")
       writeFileSync(
         d,
-        rewriteSiteImports(stripDuplicateTitle(text), relDepth),
+        rewriteSiteImports(
+          rewriteSidebarOrder(stripDuplicateTitle(text)),
+          relDepth,
+        ),
         "utf8",
       )
     }

@@ -20,5 +20,15 @@
     "/captures/overlay-opencode.png",
     "/captures/overlay-claude-code.png",
     "/captures/overlay-google-meet.png"
+  ],
+  "decks": [
+    "app-shortcuts:vscode",
+    "app-shortcuts:chrome",
+    "app-shortcuts:slack",
+    "app-shortcuts:discord",
+    "app-shortcuts:teams",
+    "app-shortcuts:opencode",
+    "app-shortcuts:claude-code",
+    "app-shortcuts:google-meet"
   ]
 }

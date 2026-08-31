@@ -78,6 +78,7 @@ const uid = `ct-${Math.random().toString(36).slice(2, 8)}`
     const PM_IDS = ["pnpm", "npm", "yarn"]
     const tabs = root.querySelectorAll("[data-pm-tab]")
     const blocks = root.querySelectorAll("[data-pm-cmd]")
+    root.addEventListener("click", (event) => event.stopPropagation())
 
     const show = (pm) => {
       let idx = PM_IDS.indexOf(pm)

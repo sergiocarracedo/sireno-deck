@@ -53,46 +53,9 @@ import HeroShader from "../hero/HeroShader.astro"
       class="mx-auto max-w-3xl rounded-xl overflow-hidden relative aspect-video"
       style="background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-accent-glow);"
     >
-      <video id="hero-video-a" autoplay loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover block transition-opacity duration-700">
-        <source src="/video-default.webm" type="video/webm" />
-      </video>
-      <video id="hero-video-b" autoplay loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover block transition-opacity duration-700 opacity-0">
-        <source src="/video-light.webm" type="video/webm" />
+      <video autoplay loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover block" aria-label="Sireno Deck themes demo">
+        <source src="/video-hero.webm" type="video/webm" />
       </video>
     </div>
-
-    <script>
-      const sources = ["/video-default.webm", "/video-light.webm", "/video-riptide.webm", "/video-neon-grids.webm"];
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (!prefersReduced) {
-        const a = document.getElementById("hero-video-a") as HTMLVideoElement | null;
-        const b = document.getElementById("hero-video-b") as HTMLVideoElement | null;
-        if (a && b) {
-          let idx = 0;
-          let showingA = true;
-          // Preload all sources to avoid blank frames
-          sources.forEach((src, i) => {
-            if (i < 2) return;
-            const v = document.createElement("video");
-            v.src = src;
-            v.preload = "auto";
-          });
-          setInterval(() => {
-            idx = (idx + 1) % sources.length;
-            const nextSrc = sources[idx];
-            const active = showingA ? b : a;
-            const inactive = showingA ? a : b;
-            // Swap source on the hidden player, play, then crossfade
-            active.src = nextSrc;
-            active.load();
-            active.play().catch(() => {});
-            // Crossfade
-            active.style.opacity = "1";
-            inactive.style.opacity = "0";
-            showingA = !showingA;
-          }, 5000);
-        }
-      }
-    </script>
   </div>
 </section>

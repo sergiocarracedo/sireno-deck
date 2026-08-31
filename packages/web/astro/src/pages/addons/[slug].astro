@@ -13,6 +13,7 @@ import Icon from "../../components/Icon.astro"
 import { getCollection, getEntry } from "astro:content"
 import { buttonTypeBlocks } from "../../lib/addon-config-examples"
 import AddonConfigExample from "../../components/AddonConfigExample.astro"
+import AddonSchemaTable from "../../components/AddonSchemaTable.astro"
 import MiniCarousel from "../../components/MiniCarousel.astro"
 import CommandTabs from "../../components/CommandTabs.astro"
 
@@ -115,35 +116,36 @@ addons:
         </div>
       )}
 
-      <div class="grid lg:grid-cols-3 gap-6">
-        <div class={`rounded-xl p-6 ${hasTypes ? "lg:col-span-2" : "lg:col-span-3"}`} style="background: var(--color-surface); border: 1px solid var(--color-border);">
-          <h2 class="font-display text-lg font-semibold mb-4">Button types</h2>
-          {hasTypes ? (
-            <ul class="space-y-4">
-              {a.buttonTypes.map((bt: string) => (
-                <li>
-                  <code class="text-sm font-mono px-3 py-1.5 rounded inline-block" style="background: var(--color-bg); color: var(--color-accent); border: 1px solid var(--color-border);">
-                    {bt}
-                  </code>
-                  {(() => {
-                    const b = blockOf(bt)
-                    return b ? (
-                      <AddonConfigExample typeId={bt} body={b.body ?? ""} open={expandDetails} />
-                    ) : (
-                      <p class="text-xs mt-2" style="color: var(--color-muted);">No extra configuration required.</p>
-                    )
-                  })()}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p class="text-sm" style="color: var(--color-muted);">
-              This addon publishes its own deck and button set — see the package README for details.
-            </p>
-          )}
+      <div class="addon-tabs" data-tabs>
+        <div class="flex flex-wrap gap-2 mb-6" role="tablist" aria-label={`${a.displayName} documentation`}>
+          {[
+            ["overview", "Overview"],
+            ["buttons", "Button types"],
+            ["decks", "Decks"],
+          ].map(([id, label], index) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={index === 0 ? "true" : "false"}
+              aria-controls={`panel-${id}`}
+              id={`tab-${id}`}
+              data-tab={id}
+              class={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${index === 0 ? "active" : ""}`}
+              style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-muted);"
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
-        <div class="rounded-xl p-6 flex flex-col gap-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+        <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" data-panel="overview">
+          <div class="grid lg:grid-cols-3 gap-6">
+            <div class="rounded-xl p-6 lg:col-span-2" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+              <h2 class="font-display text-lg font-semibold mb-4">About this addon</h2>
+              <p class="text-sm leading-relaxed" style="color: var(--color-muted);">{a.description}</p>
+              {a.decks.length > 0 && <p class="mt-4 text-sm" style="color: var(--color-muted);">Publishes {a.decks.length} deck type{a.decks.length === 1 ? "" : "s"}.</p>}
+            </div>
+            <div class="rounded-xl p-6 flex flex-col gap-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
           <h2 class="font-display text-lg font-semibold mb-0">Links</h2>
           {isOfficial ? (
             <div class="flex flex-col gap-3">
@@ -201,8 +203,80 @@ addons:
           {!isOfficial && !a.npm && !a.repo && (
             <p class="text-sm" style="color: var(--color-muted);">Community package.</p>
           )}
-        </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="panel-buttons" role="tabpanel" aria-labelledby="tab-buttons" data-panel="buttons" hidden>
+          <div class="rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+            <h2 class="font-display text-lg font-semibold mb-4">Button types and configuration</h2>
+            {hasTypes ? (
+              <ul class="space-y-8">
+                {a.buttonTypes.map((bt: string) => (
+                  <li>
+                    <code class="text-sm font-mono px-3 py-1.5 rounded inline-block" style="background: var(--color-bg); color: var(--color-accent); border: 1px solid var(--color-border);">{bt}</code>
+                    <AddonSchemaTable typeId={bt} />
+                    {(() => {
+                      const b = blockOf(bt)
+                      return b ? <AddonConfigExample typeId={bt} body={b.body ?? ""} open={expandDetails} /> : null
+                    })()}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="text-sm" style="color: var(--color-muted);">This addon publishes decks without user-facing button types.</p>
+            )}
+          </div>
+        </section>
+
+        <section id="panel-decks" role="tabpanel" aria-labelledby="tab-decks" data-panel="decks" hidden>
+          <div class="rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+            <h2 class="font-display text-lg font-semibold mb-4">Decks</h2>
+            {a.decks.length > 0 ? (
+              <ul class="space-y-3">
+                {a.decks.map((deck: string) => (
+                  <li class="rounded-lg p-4" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+                    <code class="font-mono text-sm" style="color: var(--color-accent);">{deck}</code>
+                    <p class="mt-2 text-xs" style="color: var(--color-muted);">Use this deck id in a <code>core:change-deck</code> button or configure its generated deck through the addon settings.</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="text-sm" style="color: var(--color-muted);">This addon does not publish additional decks.</p>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   </section>
+  <script is:inline>
+    (() => {
+      const root = document.querySelector("[data-tabs]")
+      if (!root) return
+      const tabs = root.querySelectorAll("[data-tab]")
+      const panels = root.querySelectorAll("[data-panel]")
+      const select = (tab) => {
+        const id = tab.getAttribute("data-tab")
+        tabs.forEach((item) => {
+          const selected = item === tab
+          item.setAttribute("aria-selected", String(selected))
+          item.classList.toggle("active", selected)
+          item.style.background = selected ? "var(--color-surface-raised)" : "var(--color-surface)"
+          item.style.color = selected ? "var(--color-fg)" : "var(--color-muted)"
+          item.style.borderColor = selected ? "var(--color-accent)" : "var(--color-border)"
+        })
+        panels.forEach((panel) => { panel.hidden = panel.getAttribute("data-panel") !== id })
+      }
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => select(tab))
+        tab.addEventListener("keydown", (event) => {
+          if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return
+          event.preventDefault()
+          const next = (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length
+          tabs[next].focus()
+          select(tabs[next])
+        })
+      })
+    })()
+  </script>
 </Layout>

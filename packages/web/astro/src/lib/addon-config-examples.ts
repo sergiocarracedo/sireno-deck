@@ -18,6 +18,9 @@ export interface SchemaEntry {
 const allSchemas: Record<string, SchemaEntry> = {}
 Object.assign(allSchemas, buttonSchemasJson)
 
+export const configSchemaFor = (typeId: string): JsonObj | undefined =>
+  allSchemas[typeId]?.jsonSchema
+
 const q = (s: string): string =>
   /^[A-Za-z0-9_.\-/: ]+$/.test(s) ? s : `'${s.replace(/'/g, "''")}'`
 
@@ -104,4 +107,15 @@ export const buttonTypeBlocks = (buttonTypes: readonly string[]): TypeBlock[] =>
     }
     const lines = yamlLines(merged)
     return { typeId, body: lines.length > 0 ? lines.join("\n") : null }
+  })
+
+/** Compact config-schema summary for registry cards: typeId -> field names. */
+export const configSchemaFields = (
+  buttonTypes: readonly string[],
+): Array<{ typeId: string; fields: string[] | null }> =>
+  buttonTypes.map((typeId) => {
+    const s = allSchemas[typeId]
+    if (!s?.jsonSchema) return { typeId, fields: null }
+    const props = Object.keys(s.jsonSchema.properties ?? {})
+    return { typeId, fields: props.length > 0 ? props : null }
   })

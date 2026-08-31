@@ -12,5 +12,6 @@
     "/captures/web-snapshot-coding-agents.png",
     "/captures/coding-agents-agents-p1.png"
   ],
-  "screenshot": "/captures/web-snapshot-coding-agents.png"
+  "screenshot": "/captures/web-snapshot-coding-agents.png",
+  "decks": ["coding-agents:agents — live agent slots (paginated)"]
 }

@@ -16,5 +16,9 @@
     "/captures/web-snapshot-emoji.png",
     "/captures/web-snapshot-emoji-category.png"
   ],
-  "screenshot": "/captures/web-snapshot-emoji.png"
+  "screenshot": "/captures/web-snapshot-emoji.png",
+  "decks": [
+    "emoji-selector — launcher / categories",
+    "emoji-selector-<category> — one deck per category"
+  ]
 }

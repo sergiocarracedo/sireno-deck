@@ -27,6 +27,7 @@ export const collections = {
       tags: z.array(z.string()).default([]),
       icon: z.string().default("puzzle"),
       buttonTypes: z.array(z.string()).default([]),
+      decks: z.array(z.string()).default([]),
       npm: z.string().optional(),
       repo: z.string().optional(),
       screenshot: z.string().optional(),

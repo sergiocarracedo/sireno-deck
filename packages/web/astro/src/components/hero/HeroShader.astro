@@ -7,7 +7,7 @@
 import PaperShader from "./PaperShader"
 ---
 
-<div aria-hidden="true" class="absolute inset-0 -z-10 overflow-hidden">
+<div aria-hidden="true" class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
   <PaperShader client:only="react" />
   {/* Vignette so the headline keeps contrast over the moving canvas */}
   <div

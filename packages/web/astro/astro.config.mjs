@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite"
 import { resolve } from "node:path"
 
 export default defineConfig({
-  site: "https://sireno-deck.dev",
+  site: "https://sirenodeck.fyi",
   integrations: [
     react(),
     starlight({

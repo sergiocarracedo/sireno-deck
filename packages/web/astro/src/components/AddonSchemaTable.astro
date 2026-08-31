@@ -1,0 +1,56 @@
+---
+import { configSchemaFor } from "../lib/addon-config-examples"
+
+interface Props {
+  typeId: string
+}
+
+const { typeId } = Astro.props
+const schema = configSchemaFor(typeId)
+const properties = Object.entries(schema?.properties ?? {}) as Array<[
+  string,
+  Record<string, unknown>,
+]>
+const required = new Set((schema?.required ?? []) as string[])
+const displayValue = (value: unknown) => {
+  if (Array.isArray(value)) return value.join(" | ")
+  if (typeof value === "object" && value !== null) return JSON.stringify(value)
+  return String(value)
+}
+---
+
+{properties.length > 0 ? (
+  <div class="mt-4 overflow-x-auto rounded-lg" style="border: 1px solid var(--color-border);">
+    <table class="w-full text-left text-xs">
+      <caption class="sr-only">Configuration schema for {typeId}</caption>
+      <thead style="background: var(--color-bg); color: var(--color-muted);">
+        <tr>
+          <th scope="col" class="px-3 py-2 font-semibold">Field</th>
+          <th scope="col" class="px-3 py-2 font-semibold">Type</th>
+          <th scope="col" class="px-3 py-2 font-semibold">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {properties.map(([name, field]) => {
+          const enumValues = field.enum as unknown[] | undefined
+          const details = [
+            required.has(name) ? "required" : "optional",
+            field.default !== undefined ? `default: ${displayValue(field.default)}` : "",
+            enumValues ? `values: ${enumValues.map(displayValue).join(", ")}` : "",
+            field.minimum !== undefined ? `min: ${displayValue(field.minimum)}` : "",
+            field.maximum !== undefined ? `max: ${displayValue(field.maximum)}` : "",
+          ].filter(Boolean)
+          return (
+            <tr style="border-top: 1px solid var(--color-border);">
+              <th scope="row" class="px-3 py-2 align-top font-mono font-medium" style="color: var(--color-accent);">{name}</th>
+              <td class="px-3 py-2 align-top font-mono" style="color: var(--color-muted);">{String(field.type ?? "value")}</td>
+              <td class="px-3 py-2 align-top" style="color: var(--color-muted);">{details.join(" · ") || "No constraints"}</td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  </div>
+) : (
+  <p class="mt-3 text-xs" style="color: var(--color-muted);">No extra configuration is required.</p>
+)}

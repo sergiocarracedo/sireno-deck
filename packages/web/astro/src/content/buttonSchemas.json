@@ -326,6 +326,283 @@
     },
     "example": {}
   },
+  "system-status:system-status": {
+    "jsonSchema": {
+      "type": "object",
+      "properties": {
+        "pages": {
+          "minItems": 1,
+          "maxItems": 5,
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "bars"
+                  },
+                  "metrics": {
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "cpu",
+                            "ram",
+                            "swap",
+                            "disk",
+                            "battery",
+                            "temperature",
+                            "frequency",
+                            "load",
+                            "processes",
+                            "network",
+                            "uptime",
+                            "cpu-boost",
+                            "cpu-voltages",
+                            "disk-io",
+                            "fan-rpm",
+                            "gpu-temp",
+                            "gpu-usage",
+                            "network-read",
+                            "network-write"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "cpu",
+                                "ram",
+                                "swap",
+                                "disk",
+                                "battery",
+                                "temperature",
+                                "frequency",
+                                "load",
+                                "processes",
+                                "network",
+                                "uptime",
+                                "cpu-boost",
+                                "cpu-voltages",
+                                "disk-io",
+                                "fan-rpm",
+                                "gpu-temp",
+                                "gpu-usage",
+                                "network-read",
+                                "network-write"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "shortLabel": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 3
+                            }
+                          },
+                          "required": ["id"],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                },
+                "required": ["type", "metrics"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "kpis"
+                  },
+                  "metrics": {
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "cpu",
+                            "ram",
+                            "swap",
+                            "disk",
+                            "battery",
+                            "temperature",
+                            "frequency",
+                            "load",
+                            "processes",
+                            "network",
+                            "uptime",
+                            "cpu-boost",
+                            "cpu-voltages",
+                            "disk-io",
+                            "fan-rpm",
+                            "gpu-temp",
+                            "gpu-usage",
+                            "network-read",
+                            "network-write"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "cpu",
+                                "ram",
+                                "swap",
+                                "disk",
+                                "battery",
+                                "temperature",
+                                "frequency",
+                                "load",
+                                "processes",
+                                "network",
+                                "uptime",
+                                "cpu-boost",
+                                "cpu-voltages",
+                                "disk-io",
+                                "fan-rpm",
+                                "gpu-temp",
+                                "gpu-usage",
+                                "network-read",
+                                "network-write"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "shortLabel": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 3
+                            }
+                          },
+                          "required": ["id"],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                },
+                "required": ["type", "metrics"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "chart"
+                  },
+                  "metrics": {
+                    "minItems": 1,
+                    "maxItems": 2,
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "cpu",
+                            "ram",
+                            "swap",
+                            "disk",
+                            "battery",
+                            "temperature",
+                            "frequency",
+                            "load",
+                            "processes",
+                            "network",
+                            "uptime",
+                            "cpu-boost",
+                            "cpu-voltages",
+                            "disk-io",
+                            "fan-rpm",
+                            "gpu-temp",
+                            "gpu-usage",
+                            "network-read",
+                            "network-write"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "cpu",
+                                "ram",
+                                "swap",
+                                "disk",
+                                "battery",
+                                "temperature",
+                                "frequency",
+                                "load",
+                                "processes",
+                                "network",
+                                "uptime",
+                                "cpu-boost",
+                                "cpu-voltages",
+                                "disk-io",
+                                "fan-rpm",
+                                "gpu-temp",
+                                "gpu-usage",
+                                "network-read",
+                                "network-write"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "shortLabel": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 3
+                            }
+                          },
+                          "required": ["id"],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  },
+                  "windowSeconds": {
+                    "default": 60,
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 60
+                  }
+                },
+                "required": ["type", "metrics"],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "required": ["pages"],
+      "additionalProperties": false
+    },
+    "example": {}
+  },
   "value-display:display": {
     "jsonSchema": {
       "type": "object",

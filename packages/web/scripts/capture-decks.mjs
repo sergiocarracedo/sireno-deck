@@ -393,67 +393,19 @@ const main = async () => {
         await shutdown(proc)
       }
     }
-    // --- system-status button-type + metric-count variants ---
-    const SS_VARIANTS = [
-      {
-        file: "web-snapshot-system-status-bars-1.png",
-        pages: [{ type: "bars", metrics: ["cpu"] }],
-      },
-      {
-        file: "web-snapshot-system-status-bars-2.png",
-        pages: [{ type: "bars", metrics: ["cpu", "ram"] }],
-      },
-      {
-        file: "web-snapshot-system-status-bars-3.png",
-        pages: [{ type: "bars", metrics: ["cpu", "ram", "disk"] }],
-      },
-      {
-        file: "web-snapshot-system-status-kpis-1.png",
-        pages: [{ type: "kpis", metrics: ["cpu"] }],
-      },
-      {
-        file: "web-snapshot-system-status-kpis-2.png",
-        pages: [{ type: "kpis", metrics: ["cpu", "ram"] }],
-      },
-      {
-        file: "web-snapshot-system-status-kpis-3.png",
-        pages: [{ type: "kpis", metrics: ["cpu", "ram", "disk"] }],
-      },
-      {
-        file: "web-snapshot-system-status-chart-1.png",
-        pages: [{ type: "chart", metrics: ["cpu"], windowSeconds: 60 }],
-      },
-      {
-        file: "web-snapshot-system-status-chart-2.png",
-        pages: [{ type: "chart", metrics: ["cpu", "ram"], windowSeconds: 60 }],
-      },
-    ]
-    for (const v of SS_VARIANTS) {
-      const metricsYaml = v.pages[0].metrics
-        .map((m) => `\n                - ${m}`)
-        .join("")
-      const inlineMain = `decks:
-  main:
-    name: Main
-    buttons:
-      - position: 7
-        type: "system-status:system-status"
-        config:
-          pages:
-            - type: ${v.pages[0].type}
-              metrics:${metricsYaml}
-`
+    // --- system-status: ONE deck with all button-type variants ---
+    {
       const { proc, up } = await bootWithRetry(
-        `theme: default\n\nlogging:\n  level: warn\n\n${inlineMain}\n`,
+        buildConfig("default", "web-snapshot-system-status.yml", null),
       )
       if (!up) {
-        console.log(`FAIL boot ${v.file}`)
+        console.log("FAIL boot web-snapshot-system-status.png")
         await shutdown(proc)
-        continue
+      } else {
+        const eff = await capture(browser, "web-snapshot-system-status.png")
+        console.log(`ok web-snapshot-system-status.png deck=${eff?.id}`)
+        await shutdown(proc)
       }
-      const eff = await capture(browser, v.file)
-      console.log(`ok ${v.file} deck=${eff?.id}`)
-      await shutdown(proc)
     }
     // --- coding-agents agents deck (fake agents) ---
     {

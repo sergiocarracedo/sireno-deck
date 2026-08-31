@@ -173,7 +173,11 @@ const main = async () => {
     if (name === "system-status") {
       try {
         const mod = await import(`file://${join(addonRoot, "manifest.ts")}`)
-        for (const exp of ["systemStatusConfigSchema", "configSchema"]) {
+        for (const exp of [
+          "systemStatusConfigSchema",
+          "SystemStatusConfigSchema",
+          "configSchema",
+        ]) {
           if (mod[exp]) {
             const jsonSchema = z.toJSONSchema(mod[exp], {
               io: "input",
