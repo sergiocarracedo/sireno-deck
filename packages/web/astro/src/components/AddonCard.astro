@@ -2,17 +2,13 @@
 /**
  * AddonCard — single addon entry, used in /addons/ and the homepage.
  *
- * Shows the addon's first deck capture as a preview thumb, a compact
- * config-schema strip (field names per button type), the addon's
- * non-internal decks, and an install CommandTabs for npm-packaged addons.
- * Root is flex-col so grid rows stretch to equal height.
+ * Shows only the information needed to decide whether to open the addon:
+ * one preview image, identity, category, icon, tags, and a short description.
  *
  * Click navigates to /addons/[id]/.
  */
 import { getEntry } from "astro:content"
 import Icon from "./Icon.astro"
-import CommandTabs from "./CommandTabs.astro"
-import { configSchemaFields } from "../lib/addon-config-examples"
 
 interface Props {
   id: string
@@ -23,21 +19,24 @@ const entry = await getEntry("addons", id)
 if (!entry) throw new Error(`addon ${id} not found`)
 
 const data = entry.data as any
-const { displayName, description, category, tags, icon } = data
-const shots: string[] = data.screenshots ?? []
+const { displayName, description, category, source, tags, icon } = data
+const shots: string[] = data.screenshots?.length
+  ? data.screenshots
+  : data.screenshot
+    ? [data.screenshot]
+    : []
 const preview = shots[0]
-const npm: string | undefined = data.npm
-const decks: string[] = data.decks ?? []
-const isOfficial = category === "official"
-const schemas = configSchemaFields(data.buttonTypes ?? []).filter(
-  (s) => s.fields !== null,
-)
+const kind = source === "cli" ? "built-in" : category === "official" ? "official" : "community"
+const isCommunity = kind === "community"
+const teaserDescription =
+  description.length > 300 ? `${description.slice(0, 297)}...` : description
 ---
 
 <a
   href={`/addons/${id}/`}
   class="group flex flex-col rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
   style="background: var(--color-surface); border: 1px solid var(--color-border);"
+  data-reveal
 >
   {
     preview ? (
@@ -68,52 +67,20 @@ const schemas = configSchemaFields(data.buttonTypes ?? []).filter(
       <span
         class="text-[0.6875rem] font-mono px-2 py-0.5 rounded"
         style={
-          isOfficial
+           !isCommunity
             ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
             : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"
         }
       >
-        {isOfficial ? "official" : "community"}
+        {kind}
       </span>
     </div>
 
-    <p class="text-sm leading-relaxed mb-3" style="color: var(--color-muted);">{description}</p>
-
-    {
-      schemas.length > 0 && (
-        <div class="mb-3 flex flex-col gap-1.5">
-          {schemas.map((s) => (
-            <div class="text-[0.6875rem] leading-snug">
-              <code class="font-mono" style="color: var(--color-accent);">{s.typeId}</code>
-              <span style="color: var(--color-muted);">
-                {s.fields === null
-                  ? " — no config"
-                  : ` → ${s.fields.join(", ")}`}
-              </span>
-            </div>
-          ))}
-        </div>
-      )
-    }
-
-    {
-      decks.length > 0 && (
-        <div class="mb-3">
-          <p class="text-[0.6875rem] font-semibold uppercase tracking-widest mb-1" style="color: var(--color-muted);">
-            Decks
-          </p>
-          <ul class="list-none flex flex-col gap-0.5">
-            {decks.map((d) => (
-              <li class="text-[0.6875rem] font-mono" style="color: var(--color-muted);">◎ {d}</li>
-            ))}
-          </ul>
-        </div>
-      )
-    }
+    <p class="text-sm leading-relaxed mb-3" style="color: var(--color-muted);">{teaserDescription}</p>
 
     <div class="flex items-center justify-between pt-3 mt-auto" style="border-top: 1px solid var(--color-border);">
       <div class="flex flex-wrap gap-1.5">
-        {tags.slice(0, 3).map((t: string) => (
+        {tags.map((t: string) => (
           <span class="text-[0.6875rem] font-mono px-1.5 py-0.5 rounded" style="background: var(--color-surface-raised); color: var(--color-muted);">
             {t}
           </span>
@@ -124,15 +91,5 @@ const schemas = configSchemaFields(data.buttonTypes ?? []).filter(
       </span>
     </div>
 
-    {npm && (
-      <div class="mt-3">
-        <CommandTabs
-          pnpm={`pnpm add ${npm}`}
-          npm={`npm i ${npm}`}
-          yarn={`yarn add ${npm}`}
-          label={`Install ${displayName}`}
-        />
-      </div>
-    )}
   </div>
 </a>

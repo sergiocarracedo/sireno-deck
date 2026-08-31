@@ -87,6 +87,35 @@ describe("createRuntime", () => {
     )
   })
 
+  it("dispatches page navigation for buttons added by a deck rebuild", async () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
+    runtime.setDecks([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "agents-p1",
+        buttons: [
+          {
+            id: "page-nav-p1",
+            type: "core:page-nav",
+            position: 13,
+            config: {
+              currentPage: 1,
+              totalPages: 2,
+              prevDeckId: "agents-p1",
+              nextDeckId: "agents-p2",
+            },
+          },
+        ],
+      }),
+      makeDeck({ id: "agents-p2" }),
+    ])
+    runtime.navigateToDeck("agents-p1", { addToHistory: false })
+    await runtime.dispatchGesture("agents-p1:page-nav-p1", "tap")
+    expect(runtime.getActiveDeckId()).toBe("agents-p2")
+  })
+
   it("dispatchGesture dbl-tap calls onDblTap", async () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({

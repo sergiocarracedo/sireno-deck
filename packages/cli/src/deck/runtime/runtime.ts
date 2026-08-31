@@ -654,6 +654,22 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       const handlerKey = `${found.deckId}:${found.button.id}`
       const handler = handlers.get(handlerKey)
       if (handler === undefined) {
+        // Dynamic decks can be rebuilt after addon services mount. Pagination
+        // is declarative, so keep its navigation working for those new buttons.
+        if (found.button.type === "core:page-nav") {
+          const config = found.button.config
+          if (typeof config === "object" && config !== null) {
+            const target =
+              gesture === "tap"
+                ? (config as { nextDeckId?: unknown }).nextDeckId
+                : gesture === "hold"
+                  ? (config as { prevDeckId?: unknown }).prevDeckId
+                  : undefined
+            if (typeof target === "string") {
+              navigateToDeck(target, { addToHistory: false })
+            }
+          }
+        }
         return
       }
       const ctx: ButtonActionContext = {

@@ -26,7 +26,11 @@ const themeId = entry.id
 const isOfficial = t.category === "official"
 ---
 
-<Layout title={`${t.displayName} Theme — Sireno Deck`} description={t.description}>
+<Layout
+  title={`${t.displayName} Theme — Sireno Deck`}
+  description={t.description}
+  ogImage={t.preview}
+>
   <section class="relative px-6 pt-32 pb-16 overflow-hidden">
     <ShaderBackdrop variant="page" />
     <div class="relative max-w-5xl mx-auto">

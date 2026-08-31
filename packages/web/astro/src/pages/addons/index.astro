@@ -2,7 +2,7 @@
 /**
  * /addons/ — registry page.
  *
- * Two sections: Built-in Addons + Community Addons. Client-side filter
+ * Three sections: Built-in Addons, Official Addons, and Community Addons. Client-side filter
  * via data attributes (no JS framework; plain script in the layout).
  */
 import Layout from "../../layouts/Base.astro"
@@ -11,7 +11,8 @@ import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
 import { getCollection } from "astro:content"
 
 const addons = await getCollection("addons")
-const official = addons.filter((a) => a.data.category === "official").sort((a, b) => a.data.order - b.data.order)
+const builtIn = addons.filter((a) => a.data.source === "cli").sort((a, b) => a.data.order - b.data.order)
+const official = addons.filter((a) => a.data.source !== "cli" && a.data.category === "official").sort((a, b) => a.data.order - b.data.order)
 const community = addons.filter((a) => a.data.category === "community").sort((a, b) => a.data.order - b.data.order)
 const submitIssueUrl =
   "https://github.com/sergiocarracedo/sireno-deck/issues/new?assignees=&labels=addon&template=addon-submission.md&title=New%20Addon%3A%20%3Cyour-addon-name%3E"
@@ -55,7 +56,8 @@ const submitIssueUrl =
       <div class="flex flex-wrap gap-2">
         {[
           { id: "all", label: "All", icon: "grid-3x3" },
-          { id: "official", label: "Official", icon: "package-check" },
+           { id: "built-in", label: "Built-in", icon: "package" },
+           { id: "official", label: "Official", icon: "package-check" },
           { id: "community", label: "Community", icon: "users" },
         ].map((f, i) => (
           <button
@@ -73,7 +75,7 @@ const submitIssueUrl =
 
     <section class="mb-16">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="font-display text-2xl font-semibold">Official Addons</h2>
+         <h2 class="font-display text-2xl font-semibold">Built-in Addons</h2>
         <a
           href="https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/cli/src/builtin-addons"
           target="_blank"
@@ -86,8 +88,21 @@ const submitIssueUrl =
         </a>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+         {builtIn.map((a) => (
+           <div data-addon-card data-category="built-in" data-name={a.data.displayName.toLowerCase()}>
+            <AddonCard id={a.id} />
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="font-display text-2xl font-semibold">Official Addons</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {official.map((a) => (
-          <div data-addon-card data-category={a.data.category} data-name={a.data.displayName.toLowerCase()}>
+          <div data-addon-card data-category="official" data-name={a.data.displayName.toLowerCase()}>
             <AddonCard id={a.id} />
           </div>
         ))}

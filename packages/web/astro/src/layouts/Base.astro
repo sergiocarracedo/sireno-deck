@@ -13,6 +13,7 @@ interface Props {
   description?: string
   ogTitle?: string
   ogDescription?: string
+  ogImage?: string
 }
 
 const {
@@ -20,6 +21,7 @@ const {
   description = "Declarative control for your Elgato Stream Deck. Linux, macOS, Windows.",
   ogTitle = "Sireno Deck",
   ogDescription = "Buttons belong in your dotfiles.",
+  ogImage,
 } = Astro.props
 ---
 
@@ -36,7 +38,9 @@ const {
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={ogDescription} />
     <meta property="og:type" content="website" />
+    {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site).href} />}
     <meta name="theme-color" content="#0a0a0f" />
+    <script is:inline>document.documentElement.classList.add("js")</script>
     <!-- Lucide icon runtime, loaded once -->
     <script src="https://unpkg.com/lucide@latest" is:inline></script>
   </head>
@@ -59,6 +63,20 @@ const {
     <script is:inline>
       if (window.lucide && typeof window.lucide.createIcons === "function") {
         window.lucide.createIcons()
+      }
+
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const reveal = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue
+              entry.target.classList.add("is-visible")
+              reveal.unobserve(entry.target)
+            }
+          },
+          { rootMargin: "0px 0px -8%", threshold: 0.12 },
+        )
+        document.querySelectorAll("[data-reveal]").forEach((element) => reveal.observe(element))
       }
     </script>
   </body>

@@ -3,7 +3,7 @@ name: release
 on:
   push:
     tags:
-      - "@sirenodeck/*"
+      - "@sirenodeck/*-*"
 
 permissions:
   contents: read
@@ -23,29 +23,30 @@ jobs:
         run: |
           # Tag format: @sirenodeck/<component>-<version>
           # e.g. @sirenodeck/addon-pomodoro-0.1.0
-          PACKAGE="$TAG"
+          PACKAGE=''
           case "$TAG" in
             '@sirenodeck/cli-'*)
+               PACKAGE='@sirenodeck/cli'
               PATH='packages/cli'
               NEEDS_BUILD='true'
               ;;
             '@sirenodeck/addon-app-shortcuts-'*)
+               PACKAGE='@sirenodeck/addon-app-shortcuts'
               PATH='packages/addons/app-shortcuts'
               NEEDS_BUILD='true'
               ;;
-            '@sirenodeck/addon-coding-agents-'*)
-              PATH='packages/addons/coding-agents'
-              NEEDS_BUILD='true'
-              ;;
             '@sirenodeck/addon-pomodoro-'*)
+               PACKAGE='@sirenodeck/addon-pomodoro'
               PATH='packages/addons/pomodoro'
               NEEDS_BUILD='true'
               ;;
             '@sirenodeck/theme-neon-grids-'*)
+               PACKAGE='@sirenodeck/theme-neon-grids'
               PATH='packages/themes/neon-grids'
               NEEDS_BUILD='false'
               ;;
             '@sirenodeck/theme-riptide-'*)
+               PACKAGE='@sirenodeck/theme-riptide'
               PATH='packages/themes/riptide'
               NEEDS_BUILD='false'
               ;;

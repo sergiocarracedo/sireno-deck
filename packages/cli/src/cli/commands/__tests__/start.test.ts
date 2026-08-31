@@ -401,6 +401,25 @@ describe("start", () => {
     expect(writePidMock).toHaveBeenCalledWith(99_999)
   })
 
+  it("does not warn about the production frontend dist in dev mode", async () => {
+    setHappyPath()
+    const logger = silentLogger()
+    const warn = vi.spyOn(logger, "warn")
+
+    await start({
+      config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      logger,
+    })
+
+    expect(warn).not.toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining("frontend dist not found"),
+    )
+  })
+
   it("persists the resolved config path so service run can find it", async () => {
     setHappyPath()
     const { writeConfigPath } = await import("@/util/daemon")

@@ -140,6 +140,37 @@ describe("OpenCodeProvider", () => {
     expect(agents[0]?.status).toBe("waiting_for_human")
   })
 
+  it("does not report a completed tool from recent history as running", async () => {
+    const api = makeApi({
+      listSessions: async () => [makeSession()],
+      sessionStatus: async () => ({}),
+      sessionMessages: async () => [
+        {
+          info: { role: "assistant" },
+          parts: [
+            {
+              type: "tool",
+              callID: "call-1",
+              tool: "bash",
+              state: { status: "running" },
+            },
+          ],
+        },
+        {
+          info: { role: "user" },
+          parts: [{ type: "tool_result", callID: "call-1" }],
+        },
+        { info: { role: "assistant" }, finish: "stop", parts: [] },
+      ],
+    })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+    const agents = await p.fetchSnapshot(new AbortController().signal)
+    expect(agents[0]?.status).toBe("idle")
+  })
+
   it("treats a mid-stream turn (finish null, no parts) as running", async () => {
     const api = makeApi({
       listSessions: async () => [makeSession()],

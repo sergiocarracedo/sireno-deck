@@ -194,7 +194,7 @@ export function buttonFrameBase(props: ButtonFrameProps): ReactElement {
 
   return (
     <div
-      className={`${pressedClass}${holdingClass}flex h-full w-full items-center justify-center overflow-hidden rounded-2xl p-1 border-2 border-solid`}
+      className={`${pressedClass}${holdingClass}flex h-full w-full items-center justify-center overflow-hidden rounded-2xl p-1 border border-solid`}
       data-sireno-button-frame="true"
       data-variant={variant}
       data-button-type={buttonType}

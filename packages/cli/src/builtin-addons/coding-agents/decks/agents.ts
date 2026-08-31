@@ -34,7 +34,7 @@ export const createAgentsDecks = (
   return {
     [AGENTS_DECK_BASE]: {
       name: "Coding agents",
-      icon: "addon://coding-agents/assets/opencode-dark-square.svg",
+      icon: "icon://bot",
       buttons,
     },
   }

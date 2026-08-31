@@ -1,15 +1,17 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "commit-search-depth": 200,
+  "separate-pull-requests": true,
   "group-pull-request-title-pattern": "chore: release ${version}",
   "pull-request-title-pattern": "chore(${package}): release${version}",
   "packages": {
     "packages/cli": {
       "package-name": "@sirenodeck/cli",
+      "component": "@sirenodeck/cli",
       "release-type": "node",
-      "include-component-in-tag": false,
+      "include-component-in-tag": true,
       "include-v-in-tag": false,
-      "changelog-path": "packages/cli/CHANGELOG.md",
+      "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "prerelease": true,
@@ -17,46 +19,41 @@
     },
     "packages/addons/app-shortcuts": {
       "package-name": "@sirenodeck/addon-app-shortcuts",
+      "component": "@sirenodeck/addon-app-shortcuts",
       "release-type": "node",
-      "include-component-in-tag": false,
+      "include-component-in-tag": true,
       "include-v-in-tag": false,
-      "changelog-path": "packages/addons/app-shortcuts/CHANGELOG.md",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
-    },
-    "packages/addons/coding-agents": {
-      "package-name": "@sirenodeck/addon-coding-agents",
-      "release-type": "node",
-      "include-component-in-tag": false,
-      "include-v-in-tag": false,
-      "changelog-path": "packages/addons/coding-agents/CHANGELOG.md",
+      "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true
     },
     "packages/addons/pomodoro": {
       "package-name": "@sirenodeck/addon-pomodoro",
+      "component": "@sirenodeck/addon-pomodoro",
       "release-type": "node",
-      "include-component-in-tag": false,
+      "include-component-in-tag": true,
       "include-v-in-tag": false,
-      "changelog-path": "packages/addons/pomodoro/CHANGELOG.md",
+      "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true
     },
     "packages/themes/neon-grids": {
       "package-name": "@sirenodeck/theme-neon-grids",
+      "component": "@sirenodeck/theme-neon-grids",
       "release-type": "node",
-      "include-component-in-tag": false,
+      "include-component-in-tag": true,
       "include-v-in-tag": false,
-      "changelog-path": "packages/themes/neon-grids/CHANGELOG.md",
+      "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true
     },
     "packages/themes/riptide": {
       "package-name": "@sirenodeck/theme-riptide",
+      "component": "@sirenodeck/theme-riptide",
       "release-type": "node",
-      "include-component-in-tag": false,
+      "include-component-in-tag": true,
       "include-v-in-tag": false,
-      "changelog-path": "packages/themes/riptide/CHANGELOG.md",
+      "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true
     }

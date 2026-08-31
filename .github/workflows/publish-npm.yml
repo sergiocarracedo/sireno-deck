@@ -59,6 +59,9 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
+      - name: Update npm for Trusted Publishing
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -86,9 +89,10 @@ jobs:
         env:
           PACKAGE: ${{ inputs.package }}
           VERSION: ${{ steps.meta.outputs.version }}
+          DIST_TAG: ${{ steps.meta.outputs.dist_tag }}
         run: |
           for attempt in 1 2 3 4 5; do
-            PUBLISHED_VERSION=$(npm view "$PACKAGE" version)
+            PUBLISHED_VERSION=$(npm view "$PACKAGE@$VERSION" version)
             if [[ "$PUBLISHED_VERSION" == "$VERSION" ]]; then
               break
             fi
@@ -98,4 +102,9 @@ jobs:
             fi
             sleep 5
           done
+          PUBLISHED_TAG=$(npm view "$PACKAGE" "dist-tags.$DIST_TAG")
+          if [[ "$PUBLISHED_TAG" != "$VERSION" ]]; then
+            echo "expected npm $DIST_TAG tag $VERSION, got $PUBLISHED_TAG"
+            exit 1
+          fi
           npm view "$PACKAGE" dist-tags --json

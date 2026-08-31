@@ -485,10 +485,12 @@ const loadExternalAddonsIntoRegistry = async (
   })
   for (const issue of result.issues) {
     const payload = { source: issue.source, message: issue.message }
-    if (issue.level === "error") logger.error(payload, "addon load error")
+    const detail = `addon '${issue.source}': ${issue.message}`
+    if (issue.level === "error")
+      logger.error(payload, `addon load error — ${detail}`)
     else if (issue.level === "warning")
-      logger.warn(payload, "addon load warning")
-    else logger.info(payload, "addon load info")
+      logger.warn(payload, `addon load warning — ${detail}`)
+    else logger.info(payload, `addon load info — ${detail}`)
   }
   for (const loaded of result.addons) {
     try {

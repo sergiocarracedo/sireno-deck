@@ -601,7 +601,7 @@ const runInProcessSetup = async (
       )
       httpServer = null
     }
-  } else {
+  } else if (!isDevInvocation()) {
     logger.warn(
       { distDir },
       "daemon: frontend dist not found, skipping http server (run `pnpm build` first for the prod HTTP server)",

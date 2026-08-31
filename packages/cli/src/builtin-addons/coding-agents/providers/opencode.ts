@@ -32,6 +32,9 @@ type SessionStatusEntry = OpencodeSessionStatus & { attention?: boolean }
 
 interface MessagePart {
   readonly type?: string
+  readonly id?: string
+  readonly callID?: string
+  readonly tool_use_id?: string
   readonly tool?: string
   readonly state?: { readonly status?: string; readonly title?: string }
 }
@@ -155,22 +158,33 @@ const startsDataFrame = (chunk: Uint8Array): boolean =>
 // empty parts — that's still "running". Otherwise the turn has finished.
 const statusFromMessages = (
   messages: ReadonlyArray<MessageLike>,
-): AgentStatus => {
+): AgentStatus | null => {
+  const completedTools = new Set<string>()
+  for (const message of messages) {
+    for (const part of message.parts ?? []) {
+      if (part.type !== "tool_result") continue
+      const id = part.id ?? part.callID ?? part.tool_use_id
+      if (id !== undefined) completedTools.add(id)
+    }
+  }
+
   for (let i = messages.length - 1; i >= 0; i -= 1) {
     const m = messages[i]
     const parts = m?.parts ?? []
     for (const p of parts) {
       if (p?.type !== "tool") continue
+      const id = p.id ?? p.callID ?? p.tool_use_id
+      if (id !== undefined && completedTools.has(id)) continue
       const st = p.state?.status
       if (st === "pending") return "waiting_for_human"
       if (st === "running") return "running"
     }
   }
   const last = messages[messages.length - 1]
-  if (last === undefined) return "idle"
+  if (last === undefined) return null
   // ponytail: an in-flight turn streams with finish==null and empty parts —
   // that's still "running". A finished turn carries a real finish value.
-  if (last.finish === null || last.finish === undefined) return "running"
+  if (last.finish === null) return "running"
   return "idle"
 }
 
@@ -179,8 +193,8 @@ const statusFromMessages = (
 // whatever the status map reported (map status is authoritative when present).
 const combineStatus = (
   fromMap: AgentStatus,
-  fromMessages: AgentStatus,
-): AgentStatus => (fromMessages !== "idle" ? fromMessages : fromMap)
+  fromMessages: AgentStatus | null,
+): AgentStatus => fromMessages ?? fromMap
 
 export class OpenCodeProvider implements AgentProvider {
   readonly id = "opencode" as const

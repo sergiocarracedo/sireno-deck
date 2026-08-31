@@ -52,7 +52,7 @@ const registerOneIcon = (
         fullPath: resolved.fullPath,
         err: (err as Error).message,
       },
-      "icon file missing or unreadable",
+      `icon file missing or unreadable: '${icon}' resolved to '${resolved.fullPath}' — ${(err as Error).message}`,
     )
     return
   }

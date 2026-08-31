@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
   clearAssets,
@@ -83,6 +83,27 @@ describe("registerIconForDeck", () => {
       ),
     ).not.toThrow()
     expect(getUnsentAssets(new Set())).toHaveLength(0)
+  })
+
+  it("reports the configured icon, resolved path, and read error", () => {
+    const icon = "addon://demo/missing.svg"
+    const warn = vi.fn()
+
+    registerIconForDeck(
+      [{ config: { icon }, id: "0", type: "x" }],
+      { addonDirs: new Map([["demo", tmpDir]]) },
+      { warn } as never,
+    )
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        icon,
+        fullPath: join(tmpDir, "missing.svg"),
+      }),
+      expect.stringContaining(
+        `icon file missing or unreadable: '${icon}' resolved to '${join(tmpDir, "missing.svg")}'`,
+      ),
+    )
   })
 })
 

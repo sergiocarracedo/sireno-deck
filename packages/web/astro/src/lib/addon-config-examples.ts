@@ -38,7 +38,15 @@ const yamlLines = (obj: JsonObj, depth = 0): string[] =>
   Object.entries(obj).flatMap(([k, v]) => {
     const pad = "  ".repeat(depth)
     if (Array.isArray(v)) {
-      return v.map((x) => `${pad}- ${yamlScalar(x)}`)
+      return v.flatMap((x) => {
+        if (typeof x !== "object" || x === null) {
+          return [`${pad}- ${yamlScalar(x)}`]
+        }
+        const lines = yamlLines(x as JsonObj, depth)
+        return lines.map((line, index) =>
+          index === 0 ? `${pad}- ${line}` : `${pad}  ${line}`,
+        )
+      })
     }
     if (typeof v === "object" && v !== null) {
       const inner = yamlLines(v as JsonObj, depth + 1)

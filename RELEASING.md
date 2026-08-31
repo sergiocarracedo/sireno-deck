@@ -6,14 +6,14 @@ to ship each package to npm.
 
 ## Packages
 
-Six packages live under the [`@sirenodeck`](https://www.npmjs.com/org/sirenodeck)
-organization. Each one tracks its own version and ships independently.
+Five packages live under the [`@sirenodeck`](https://www.npmjs.com/org/sirenodeck)
+organization. Each one tracks its own version and ships independently. Release
+Please opens a separate release PR for each package with changes.
 
 | Package                           | Path                            | Builds before publish? |
 | --------------------------------- | ------------------------------- | ---------------------- |
 | `@sirenodeck/cli`                 | `packages/cli`                  | Yes (tsdown)           |
 | `@sirenodeck/addon-app-shortcuts` | `packages/addons/app-shortcuts` | Yes                    |
-| `@sirenodeck/addon-coding-agents` | `packages/addons/coding-agents` | Yes                    |
 | `@sirenodeck/addon-pomodoro`      | `packages/addons/pomodoro`      | Yes                    |
 | `@sirenodeck/theme-neon-grids`    | `packages/themes/neon-grids`    | No                     |
 | `@sirenodeck/theme-riptide`       | `packages/themes/riptide`       | No                     |
@@ -64,7 +64,7 @@ See [`.github/workflows/auto-merge-release-please.yml`](.github/workflows/auto-m
 
 ## One-time setup (npm Trusted Publishing)
 
-For each of the six packages listed above, the npm Trusted Publisher must be
+For each of the five packages listed above, the npm Trusted Publisher must be
 configured once at <https://www.npmjs.com/>:
 
 1. Open the package page (under the `@sirenodeck` org).
@@ -74,7 +74,7 @@ configured once at <https://www.npmjs.com/>:
 5. Workflow filename: `publish-npm.yml`.
 
 This enables `npm publish --provenance` via OIDC — no `NPM_TOKEN` secret to
-manage or leak. If any of the five packages is missing this configuration, the
+manage or leak. If any package is missing this configuration, the
 `publish` step will fail with `npm error EUNKNOWNPROVIDER` and link to the
 setup page.
 

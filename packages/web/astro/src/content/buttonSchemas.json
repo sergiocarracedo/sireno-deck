@@ -601,7 +601,14 @@
       "required": ["pages"],
       "additionalProperties": false
     },
-    "example": {}
+    "example": {
+      "pages": [
+        {
+          "type": "bars",
+          "metrics": ["cpu"]
+        }
+      ]
+    }
   },
   "value-display:display": {
     "jsonSchema": {

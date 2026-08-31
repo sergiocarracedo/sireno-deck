@@ -50,12 +50,14 @@ import HeroShader from "../hero/HeroShader.astro"
     </div>
 
     <div
-      class="mx-auto max-w-3xl rounded-xl overflow-hidden relative aspect-video"
-      style="background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-accent-glow);"
+      class="mx-auto max-w-3xl rounded-xl overflow-hidden p-5 relative"
+      style="background: #2e3540; border: 1px solid var(--color-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-accent-glow);"
     >
-      <video autoplay loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover block" aria-label="Sireno Deck themes demo">
-        <source src="/video-hero.webm" type="video/webm" />
-      </video>
+      <div class="relative aspect-video overflow-hidden rounded-md">
+        <video autoplay loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover block" aria-label="Sireno Deck themes demo">
+          <source src="/video-hero.webm" type="video/webm" />
+        </video>
+      </div>
     </div>
   </div>
 </section>

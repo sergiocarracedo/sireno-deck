@@ -28,9 +28,9 @@ import CommandTabs from "../CommandTabs.astro";
       Requires Node 20+. Pick your package manager once — we remember it everywhere.
     </p>
 
-    <div class="flex flex-col gap-8 text-left">
+    <div class="flex flex-col gap-8 text-left" data-reveal-group>
       {/* 1. Install */}
-      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);" data-reveal>
         <div class="flex items-center gap-4 px-6 py-4">
           <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--color-accent); color: var(--color-bg);">1</div>
           <p class="text-sm font-semibold text-fg">Install the CLI</p>
@@ -46,7 +46,7 @@ import CommandTabs from "../CommandTabs.astro";
       </div>
 
       {/* 2. Onboard */}
-      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);" data-reveal>
         <div class="flex items-center gap-4 px-6 py-4">
           <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--color-accent); color: var(--color-bg);">2</div>
           <div class="flex-1 min-w-0">
@@ -62,7 +62,7 @@ import CommandTabs from "../CommandTabs.astro";
       </div>
 
       {/* 3. Configure */}
-      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);" data-reveal>
         <div class="flex items-center gap-4 px-6 py-4">
           <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--color-accent); color: var(--color-bg);">3</div>
           <div class="flex-1 min-w-0">
@@ -79,7 +79,7 @@ import CommandTabs from "../CommandTabs.astro";
       </div>
 
       {/* 4. 3rd-party addons & themes */}
-      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+      <div class="rounded-xl overflow-hidden" style="background: var(--color-bg); border: 1px solid var(--color-border);" data-reveal>
         <div class="flex items-center gap-4 px-6 py-4">
           <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: var(--color-accent); color: var(--color-bg);">4</div>
           <div class="flex-1 min-w-0">

@@ -385,8 +385,7 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
     extras.length > 0 ? `${baseClass} ${extras}` : `${baseClass} bg-neutral-950`
 
   // ponytail: positions without a button render a faint outline (emulator /
-  // browser only, not the hardware screenshot). border-2 rounded matches the
-  // ButtonFrame language; opacity dims the border since there is no bg.
+  // browser only, not the hardware screenshot).
   const occupiedPositions = new Set(
     deck.buttons
       .map((b, idx) => resolvePosition(b, idx))
@@ -403,7 +402,7 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
           key={`empty-${position}`}
           data-empty-cell="true"
           aria-hidden="true"
-          className="rounded-2xl border-2 border-solid opacity-30"
+          className="rounded-2xl border border-solid opacity-30"
           style={{
             gridColumn: col,
             gridRow: row,

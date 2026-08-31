@@ -12,7 +12,7 @@
 import { useEffect, useState } from "react"
 import { MeshGradient } from "@paper-design/shaders-react"
 
-const COLORS = ["#0a0a0f", "#162447", "#0e1f33", "#3b2f6b", "#0e1f33"]
+const COLORS = ["#0a1220", "#164e63", "#123b5d", "#5b3c9f", "#0e7490"]
 
 const prefersReducedMotion = () => {
   if (typeof window === "undefined") return false
@@ -38,7 +38,7 @@ export const PaperShader = () => {
       distortion={0.85}
       swirl={0.18}
       grainMixer={0.0}
-      grainOverlay={0.05}
+      grainOverlay={0.1}
       speed={paused ? 0 : 0.45}
       style={{
         position: "absolute",

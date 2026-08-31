@@ -69,6 +69,18 @@ describe("log-reader", () => {
       })
     })
 
+    it("keeps diagnostic context embedded in the log message", () => {
+      writeLogLine({
+        level: 50,
+        time: 1,
+        msg: "addon load error — addon './demo': Entry file not found: /tmp/demo/index.js",
+      })
+
+      expect(readDaemonEventsSince(logPath(), 0)[0]?.message).toContain(
+        "addon './demo'",
+      )
+    })
+
     it("skips lines that don't parse to DaemonEvent", () => {
       appendFileSync(logPath(), "not json\n")
       writeLogLine({ level: 30, time: 1, msg: "ok" }) // info, skipped

@@ -125,7 +125,11 @@ System metrics display (bars, KPIs, charts).
 
 - `system-status:system-status`
 
-**Metrics available:** CPU, RAM, swap, disk, battery, temperature, network, and more.
+**Metrics available:**
+
+`battery`, `cpu`, `cpu-boost`, `cpu-voltages`, `disk`, `disk-io`, `fan-rpm`,
+`frequency`, `gpu-temp`, `gpu-usage`, `load`, `network`, `network-read`,
+`network-write`, `processes`, `ram`, `swap`, `temperature`, and `uptime`.
 
 **Configuration:**
 
@@ -133,12 +137,14 @@ System metrics display (bars, KPIs, charts).
 - position: 0
   type: "system-status:system-status"
   config:
-    metrics:
-      - id: cpu
-        label: CPU
-      - id: ram
-        label: RAM
-      - swap
+    pages:
+      - type: bars
+        metrics: [cpu, ram, disk]
+      - type: kpis
+        metrics: [temperature, uptime]
+      - type: chart
+        metrics: [cpu]
+        windowSeconds: 60
 ```
 
 ### value-display

@@ -187,7 +187,10 @@ const main = async () => {
             for (const key of Object.keys(typeMap).filter((k) =>
               k.startsWith("system-status:"),
             )) {
-              result[key] ??= { jsonSchema, example: {} }
+              result[key] ??= {
+                jsonSchema,
+                example: { pages: [{ type: "bars", metrics: ["cpu"] }] },
+              }
             }
           }
         }

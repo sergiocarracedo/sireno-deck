@@ -100,10 +100,11 @@ decks:
       - position: 0
         type: system-status:system-status
         config:
-          variant: bars
-          metrics:
-            - { metric: cpu_usage, label: CPU }
-            - { metric: memory_usage, label: RAM }
+          pages:
+            - type: bars
+              metrics: [cpu, ram, disk]
+            - type: kpis
+              metrics: [temperature, uptime]
 
       - position: 9
         type: core:change-deck
