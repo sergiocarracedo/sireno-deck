@@ -5,10 +5,12 @@ import { buildMediaAddonChecks } from "../checks"
 
 const fakeExecutor = (present: ReadonlyArray<string>): CommandExecutor => ({
   async run(command, args) {
-    if (command === "command" && args[0] === "-v" && args[1] !== undefined) {
+    if (command === "sh" && args[0] === "-c" && args[1] !== undefined) {
+      const target = args[1].match(/^command -v '(.+)'$/)?.[1]
+      if (target === undefined) return { exitCode: 1, stdout: "", stderr: "" }
       return {
-        exitCode: present.includes(args[1]) ? 0 : 1,
-        stdout: present.includes(args[1]) ? `/usr/bin/${args[1]}` : "",
+        exitCode: present.includes(target) ? 0 : 1,
+        stdout: present.includes(target) ? `/usr/bin/${target}` : "",
         stderr: "",
       }
     }

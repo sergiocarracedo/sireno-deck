@@ -268,10 +268,38 @@ describe("probeAll", () => {
       executor,
       extraFsProbe: noFsProbe,
       fileExists: fileExists,
-      readFile: () => null,
+      readFile: () => 'SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9"',
     })
     expect(report.udev.rulesInstalled).toBe(true)
     expect(report.udev.rulesPath).toBe("/etc/udev/rules.d/70-sirenodeck.rules")
+  })
+
+  it("does not mark udev rules missing when the canonical file exists", async () => {
+    const report = await probeAll({
+      platform: "linux",
+      homeDir: "/home/u",
+      xdgConfigHome: "/home/u/.config",
+      env: {},
+      executor: createExecutor([]),
+      extraFsProbe: noFsProbe,
+      fileExists: (path) => path === "/etc/udev/rules.d/70-sirenodeck.rules",
+      readFile: () => 'SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9"',
+    })
+    expect(report.udev.rulesInstalled).toBe(true)
+  })
+
+  it("marks an empty udev rules file as missing", async () => {
+    const report = await probeAll({
+      platform: "linux",
+      homeDir: "/home/u",
+      xdgConfigHome: "/home/u/.config",
+      env: {},
+      executor: createExecutor([]),
+      extraFsProbe: noFsProbe,
+      fileExists,
+      readFile: () => "",
+    })
+    expect(report.udev.rulesInstalled).toBe(false)
   })
 
   it("returns session 'unknown' when no display env is set", async () => {

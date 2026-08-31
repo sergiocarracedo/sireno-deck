@@ -10,7 +10,9 @@ const commandExists = async (
   executor: CommandExecutor,
   command: string,
 ): Promise<boolean> => {
-  const result = await executor.run("command", ["-v", command])
+  // `command` is a shell builtin, not an executable that execFile can spawn.
+  const quoted = `'${command.replaceAll(`'`, `'\\''`)}'`
+  const result = await executor.run("sh", ["-c", `command -v ${quoted}`])
   return result.exitCode === 0 && result.stdout.trim().length > 0
 }
 
