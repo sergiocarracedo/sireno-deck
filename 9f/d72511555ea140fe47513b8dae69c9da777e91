@@ -1,0 +1,19 @@
+.github/workflows/publish-npm.yml
+  s_6bcd96042d831d::t_d3b386fc203f0f 58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "9fd72511555ea140fe47513b8dae69c9da777e91",
+  "prompts": {},
+  "sessions": {
+    "s_6bcd96042d831d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa7665948ffeNauMHtV6hxI1ap",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
