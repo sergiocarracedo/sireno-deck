@@ -3,7 +3,7 @@
   "commit-search-depth": 200,
   "separate-pull-requests": true,
   "group-pull-request-title-pattern": "chore: release ${version}",
-  "pull-request-title-pattern": "chore(${package}): release${version}",
+  "pull-request-title-pattern": "chore(${component}): release ${version}",
   "packages": {
     "packages/cli": {
       "package-name": "@sirenodeck/cli",
