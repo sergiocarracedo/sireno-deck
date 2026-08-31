@@ -1,0 +1,60 @@
+packages/web/astro/public/CNAME
+  s_d64ea604b49289::t_e558719c274152 1
+packages/web/astro/src/content/addons/app-shortcuts.json
+  s_d64ea604b49289::t_e558719c274152 23-32
+packages/web/astro/src/content/buttonSchemas.json
+  s_d64ea604b49289::t_e558719c274152 329-412,414-419,421-496,498-503,505-580,582-593,595-600,602-605
+  s_d64ea604b49289::t_c062ada71aeb85 413,420,497,504,581,594,601
+packages/web/astro/astro.config.mjs
+  s_d64ea604b49289::t_e558719c274152 9
+.github/workflows/deploy-website.yml
+  s_d64ea604b49289::t_e558719c274152 1-63
+packages/web/astro/src/content/addons/emoji-selector.json
+  s_d64ea604b49289::t_e558719c274152 19-23
+packages/web/scripts/capture-decks.mjs
+  s_d64ea604b49289::t_e558719c274152 396-397,399,402-406
+packages/web/astro/src/components/ThemeCard.astro
+  s_d64ea604b49289::t_e558719c274152 2-3,22,25,66-76,104
+packages/web/scripts/extract-addon-schemas.mjs
+  s_d64ea604b49289::t_e558719c274152 176-180
+packages/web/astro/scripts/sync-cli-docs.mjs
+  s_d64ea604b49289::t_e558719c274152 78-83,98-101
+packages/web/astro/src/components/AddonCard.astro
+  s_d64ea604b49289::t_e558719c274152 5-8,14-15,25-27,29-30,32-34,80,82-114,116,126-136,138
+packages/web/astro/src/content.config.ts
+  s_d64ea604b49289::t_e558719c274152 30
+packages/web/astro/src/components/AddonSchemaTable.astro
+  s_d64ea604b49289::t_e558719c274152 1-56
+packages/web/astro/src/components/hero/HeroShader.astro
+  s_d64ea604b49289::t_e558719c274152 10,17
+packages/web/astro/src/content/addons/system-status.json
+  s_d64ea604b49289::t_e558719c274152 11-12
+packages/web/astro/src/components/sections/Hero.astro
+  s_d64ea604b49289::t_e558719c274152 56-57,61
+packages/web/astro/src/content/addons/coding-agents.json
+  s_d64ea604b49289::t_c062ada71aeb85 16
+  s_d64ea604b49289::t_e558719c274152 15
+packages/web/astro/src/components/CommandTabs.astro
+  s_d64ea604b49289::t_e558719c274152 81,130
+packages/web/astro/src/lib/addon-config-examples.ts
+  s_d64ea604b49289::t_e558719c274152 21-23,111-120
+  s_d64ea604b49289::t_e0d7ac40a75d18 121
+packages/web/astro/src/pages/addons/[slug].astro
+  s_d64ea604b49289::t_e558719c274152 16,119-138,141-148,206-248,252-282
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "7ca4b8474c6679e4d8c938e3db0b4590785017ec",
+  "prompts": {},
+  "sessions": {
+    "s_d64ea604b49289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa82dbacfffeT63f2soNKQnbxd",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
