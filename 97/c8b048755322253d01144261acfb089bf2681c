@@ -1,0 +1,21 @@
+.oxfmtrc.json
+  s_6bcd96042d831d::t_eb65c03478bb1d 3
+release-please-config.json
+  s_6bcd96042d831d::t_eb65c03478bb1d 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "97c8b048755322253d01144261acfb089bf2681c",
+  "prompts": {},
+  "sessions": {
+    "s_6bcd96042d831d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa7665948ffeNauMHtV6hxI1ap",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
