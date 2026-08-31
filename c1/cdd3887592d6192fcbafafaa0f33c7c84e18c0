@@ -1,0 +1,19 @@
+.github/workflows/deploy-website.yml
+  s_d64ea604b49289::t_d43e3fb4fbaf4c 40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c1cdd3887592d6192fcbafafaa0f33c7c84e18c0",
+  "prompts": {},
+  "sessions": {
+    "s_d64ea604b49289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa82dbacfffeT63f2soNKQnbxd",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
