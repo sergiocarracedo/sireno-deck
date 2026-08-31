@@ -1,0 +1,25 @@
+packages/web/astro/src/components/sections/Hero.astro
+  h_31bfcf89e26281 54
+  s_bd9884cb6cd99c::t_b4693f20eb93a4 9,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "7d3a99b7407f16899031d8f47d3651643457b606",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_bd9884cb6cd99c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa7974feafferQVHN1CKzG3dZp",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
