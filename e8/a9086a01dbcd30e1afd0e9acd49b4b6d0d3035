@@ -1,0 +1,27 @@
+packages/cli/src/system/setup-wizard/probe.ts
+  s_0d66ee04bd72b4::t_cdfdf45a52f992 326,337,339-342,398-404
+packages/cli/src/builtin-addons/media/__tests__/checks.test.ts
+  s_0d66ee04bd72b4::t_bbc433a8e9164b 8-10,12-13
+packages/cli/src/builtin-addons/media/checks.ts
+  s_0d66ee04bd72b4::t_bbc433a8e9164b 13-15
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_0d66ee04bd72b4::t_cdfdf45a52f992 271,289-302
+  s_0d66ee04bd72b4::t_bbc433a8e9164b 277-285,287-288,303-304
+  s_0d66ee04bd72b4::t_17d108a258a92f 286
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "e8a9086a01dbcd30e1afd0e9acd49b4b6d0d3035",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
