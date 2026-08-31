@@ -575,7 +575,7 @@ export const validateAndLoadConfig = async (
   const themeDir: string = resolveFrontendCwd()
   const cssContent: string = getCss()
   if (cssContent.length > 0) {
-    const cssDir = join(themeDir, ".sireno-deck")
+    const cssDir = join(themeDir, ".sirenodeck")
     if (!existsSync(cssDir)) mkdirSync(cssDir, { recursive: true })
     writeFileSync(join(cssDir, "theme.css"), cssContent, "utf8")
     copyThemeAssets(dirname(theme.manifestPath), cssDir)
@@ -1712,6 +1712,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         apiVersion: loaded.theme.apiVersion,
       },
       themeDir,
+      configPath: resolvePath(loadedConfig.configPath),
       logger,
       rebuildDecksForKeyCount: (keyCount: number) =>
         buildRuntime(

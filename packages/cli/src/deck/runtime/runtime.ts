@@ -612,7 +612,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       if (userAction !== undefined) {
         logger.info(
           { buttonId, gesture, action: userAction },
-          "[addon:sireno-deck] user action",
+          "[addon:sirenodeck] user action",
         )
         const capability = getRequiredCapability(userAction)
         if (capability !== null && !getMethods().checkRequirement(capability)) {
@@ -636,7 +636,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         } catch (err) {
           logger.error(
             { buttonId, gesture, err },
-            "[addon:sireno-deck] user action failed",
+            "[addon:sirenodeck] user action failed",
           )
           if (position >= 0) {
             getMethods().showTemporaryError(

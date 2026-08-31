@@ -12,12 +12,12 @@ export interface FindConfigOptions {
 }
 
 export const DEFAULT_CONFIG_FILENAME = "config.yml"
-export const XDG_CONFIG_SUBDIR = "sireno-deck"
+export const XDG_CONFIG_SUBDIR = "sirenodeck"
 
 const resolvePath_ = (p: string, cwd: string): string =>
   isAbsolute(p) ? p : resolvePath(cwd, p)
 
-// ponytail: precedence is cli arg → ~/.config/sireno-deck/config.yml →
+// ponytail: precedence is cli arg → ~/.config/sirenodeck/config.yml →
 // ./config.yml (run folder / cwd). Parent-directory walk removed: the run
 // folder is the canonical place for a project config, and silently walking
 // up makes a "missing config" failure look like a "found some other config"

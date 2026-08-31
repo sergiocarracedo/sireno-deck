@@ -186,7 +186,7 @@ export const buildAddonsRegistryModule = (
 
 export const readThemeCss = (themeDir: string | undefined): string => {
   if (!themeDir) return ""
-  const cssPath = join(themeDir, ".sireno-deck", "theme.css")
+  const cssPath = join(themeDir, ".sirenodeck", "theme.css")
   try {
     return readFileSync(cssPath, "utf8")
   } catch {
@@ -309,7 +309,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
   let themeCss = readThemeCss(themeDir)
 
   return {
-    name: "sireno-deck",
+    name: "sirenodeck",
     resolveId: (id) => {
       if (id === TOKEN_VIRTUAL_ID) return TOKEN_RESOLVED_ID
       if (id === ADDONS_VIRTUAL_ID) return ADDONS_RESOLVED_ID
@@ -330,7 +330,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
     },
     configResolved: (config) => {
       const root = config.root ?? process.cwd()
-      const dir = join(root, ".sireno-deck")
+      const dir = join(root, ".sirenodeck")
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
       writeNodeDepStubs(dir)
       if (themeCss.length === 0) return
@@ -364,7 +364,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       // via our `config` return makes Vite attribute the deprecation
       // warnings to this plugin.
       const root = config.root ?? process.cwd()
-      const dir = join(root, ".sireno-deck")
+      const dir = join(root, ".sirenodeck")
       const alias = (config.resolve?.alias ?? []) as Array<{
         find: string | RegExp
         replacement: string
@@ -383,7 +383,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       ]
       if (themeCss.length > 0) {
         extra.push({
-          find: /^sireno-deck-theme$/,
+          find: /^sirenodeck-theme$/,
           replacement: join(dir, "theme.css"),
         })
       }
@@ -446,6 +446,37 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
           }
           res.statusCode = 403
           res.end("token required")
+        })
+      }
+
+      const configPath = process.env["SIRENO_CONFIG_PATH"]
+      if (configPath !== undefined && configPath.length > 0) {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url?.split("?", 1)[0]
+          if (url === "/api/config-path") {
+            const body = JSON.stringify({ path: configPath })
+            res.writeHead(200, {
+              "content-type": "application/json; charset=utf-8",
+              "content-length": Buffer.byteLength(body),
+            })
+            res.end(body)
+            return
+          }
+          if (url !== "/api/config" && url !== "/api/config/") {
+            next()
+            return
+          }
+          try {
+            const text = readFileSync(configPath, "utf8")
+            res.writeHead(200, {
+              "content-type": "text/plain; charset=utf-8",
+              "content-length": Buffer.byteLength(text),
+            })
+            res.end(text)
+          } catch {
+            res.writeHead(404, { "content-type": "text/plain; charset=utf-8" })
+            res.end("Config not available")
+          }
         })
       }
 
@@ -529,7 +560,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       // THEME_VIRTUAL_ID module so the browser gets the new CSS via
       // vite's HMR without a full reload.
       if (themeDir) {
-        const stagedCss = join(themeDir, ".sireno-deck", "theme.css")
+        const stagedCss = join(themeDir, ".sirenodeck", "theme.css")
         if (existsSync(stagedCss)) {
           server.watcher.add(stagedCss)
           server.watcher.on("change", (file) => {
@@ -586,7 +617,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         const cleared = __SIRENO_RUN_ADDON_CLEANUPS__(addon.name)
         if (cleared > 0) {
           server.config.logger.info(
-            `[sireno-deck] cleared ${cleared} cleanup(s) for addon "${addon.name}" before HMR of ${normalizedFile}`,
+            `[sirenodeck] cleared ${cleared} cleanup(s) for addon "${addon.name}" before HMR of ${normalizedFile}`,
           )
         }
         totalCleanups += cleared

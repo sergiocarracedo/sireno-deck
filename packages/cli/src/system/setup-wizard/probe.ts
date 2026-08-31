@@ -345,7 +345,7 @@ const probeConfig = (
   xdgConfigHome: string,
   fileExists: (path: string) => boolean,
 ): ConfigProbe => {
-  const path = `${xdgConfigHome}/sireno-deck/config.yml`
+  const path = `${xdgConfigHome}/sirenodeck/config.yml`
   return { exists: fileExists(path), path }
 }
 

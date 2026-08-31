@@ -24,7 +24,7 @@ const silentLogger = () => ({
   level: "silent" as const,
 })
 
-const TEST_CACHE = join(tmpdir(), `sireno-deck-loader-test-${process.pid}`)
+const TEST_CACHE = join(tmpdir(), `sirenodeck-loader-test-${process.pid}`)
 
 const writeFakePackage = (
   packageName: string,

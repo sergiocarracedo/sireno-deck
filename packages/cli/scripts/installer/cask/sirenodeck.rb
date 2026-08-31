@@ -4,10 +4,10 @@ cask "io.sireno.sirenodeck" do
   version "VERSION"
   sha256 "SHA256"
 
-  url "https://github.com/sireno-deck/sireno-deck/releases/download/v#{version}/sireno-deck-#{version}-macos-x64.dmg"
+  url "https://github.com/sireno-deck/sireno-deck/releases/download/v#{version}/sirenodeck-#{version}-macos-x64.dmg"
   name "SirenoDeck"
   desc "Config-driven Stream Deck controller"
-  homepage "https://github.com/sireno-deck/sireno-deck"
+  homepage "https://github.com/sergiocarracedo/sireno-deck"
 
   app "SirenoDeck.app"
 

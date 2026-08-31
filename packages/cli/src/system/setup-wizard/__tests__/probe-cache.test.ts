@@ -21,7 +21,7 @@ vi.mock("../probe", () => ({
       streamDeckConnected: false,
       matchedProductIds: [],
     },
-    config: { exists: true, path: "/home/test/.config/sireno-deck/config.yml" },
+    config: { exists: true, path: "/home/test/.config/sirenodeck/config.yml" },
   })),
 }))
 

@@ -4,26 +4,48 @@ set -euo pipefail
 OUTPUT="${1:-demos/video-default.webm}"
 RAW="${OUTPUT%.webm}-raw.webm"
 URL="${URL:-http://localhost:52938/?deckOnly=1}"
+LIGHT_URL="${2:-${LIGHT_URL:-}}"
 
 dir=$(dirname "$OUTPUT")
 mkdir -p "$dir"
 
-echo "=== Open emulator ==="
-agent-browser close 2>/dev/null || true
-agent-browser open "$URL"
-agent-browser wait --load networkidle
-sleep 5
+capture_theme() {
+  local capture_url="$1"
+  local output="$2"
+  local raw="${output%.webm}-raw.webm"
 
-echo "=== Get deck bounds ==="
-CROP=$(agent-browser eval "var d=document.querySelector('.overflow-hidden.rounded-xl');var r=d.getBoundingClientRect();Math.round(r.width)+':'+Math.round(r.height)+':'+Math.round(r.x)+':'+Math.round(r.y)" 2>&1 | tail -1 | tr -d '"')
-echo "     crop=$CROP"
+  echo "=== Open emulator: $capture_url ==="
+  agent-browser close 2>/dev/null || true
+  agent-browser open "$capture_url"
+  agent-browser wait --load networkidle
 
-echo "=== Record ==="
-agent-browser record start "$RAW"
-sleep 2
+  echo "=== Wait for populated deck ==="
+  for _ in $(seq 1 60); do
+    ready=$(agent-browser eval '(() => {
+      const frame = document.querySelector("[data-testid=deck-frame]");
+      const status = document.querySelector("[data-testid=iframe-status]");
+      return frame && frame.querySelectorAll("[data-testid^=deck-key-]").length >= 15 &&
+        (!status || status.getAttribute("data-status") === "loaded") ? "ready" : "waiting";
+    })()' 2>/dev/null | tr -d '"' | tail -1)
+    [[ "$ready" == "ready" ]] && break
+    sleep 1
+  done
+  [[ "$ready" == "ready" ]] || { echo "Deck never became ready" >&2; return 1; }
 
-echo "=== Sequence ==="
-agent-browser eval '
+  echo "=== Get deck bounds ==="
+  CROP=$(agent-browser eval '(() => {
+    const d = document.querySelector("[data-testid=deck-frame]");
+    const r = d.getBoundingClientRect();
+    return [r.width, r.height, r.x, r.y].map(Math.round).join(":");
+  })()' 2>&1 | tail -1 | tr -d '"')
+  echo "     crop=$CROP"
+
+  echo "=== Record ==="
+  agent-browser record start "$raw"
+  sleep 2
+
+  echo "=== Sequence ==="
+  agent-browser eval '
 (function () {
   function tap(k) {
     var el = document.querySelector("[data-testid=\"deck-key-"+k+"\"]");
@@ -84,13 +106,26 @@ agent-browser eval '
   setTimeout(function(){ tap(14); }, D); D+=500;
   setTimeout(function(){ tap(7); }, D); D+=2500;
 
-  "done"
-})()
-' 2>&1 | tail -1
+    "done"
+  })()
+  ' 2>&1 | tail -1
 
-sleep 40
+  sleep 40
 
-echo "=== Crop: $CROP ==="
-agent-browser record stop
-ffmpeg -y -i "$RAW" -vf "crop=$CROP" -c:v libvpx-vp9 -crf 30 -b:v 0 "$OUTPUT" 2>/dev/null && rm -f "$RAW"
-ls -lh "$OUTPUT"
+  echo "=== Crop: $CROP ==="
+  agent-browser record stop
+  ffmpeg -y -i "$raw" -vf "crop=$CROP" -c:v libvpx-vp9 -crf 30 -b:v 0 "$output" 2>/dev/null && rm -f "$raw"
+  ls -lh "$output"
+}
+
+capture_theme "$URL" "$OUTPUT"
+
+if [[ -n "$LIGHT_URL" ]]; then
+  LIGHT_OUTPUT="${OUTPUT%.webm}-light.webm"
+  capture_theme "$LIGHT_URL" "$LIGHT_OUTPUT"
+  echo "=== Join default and light captures ==="
+  ffmpeg -y -i "$OUTPUT" -i "$LIGHT_OUTPUT" -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0[v]" -map "[v]" -c:v libvpx-vp9 -crf 30 -b:v 0 "$OUTPUT.tmp.webm" 2>/dev/null
+  mv "$OUTPUT.tmp.webm" "$OUTPUT"
+  rm -f "$LIGHT_OUTPUT"
+  ls -lh "$OUTPUT"
+fi

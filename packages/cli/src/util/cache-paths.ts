@@ -4,7 +4,7 @@ import { homedir, tmpdir } from "node:os"
 import { join } from "node:path"
 import { platform } from "node:process"
 
-const CACHE_NAME = "sireno-deck"
+const CACHE_NAME = "sirenodeck"
 
 const defaultCacheDir = (): string => {
   const xdgCache = process.env["XDG_CACHE_HOME"]

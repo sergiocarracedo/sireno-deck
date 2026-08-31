@@ -66,7 +66,7 @@ export class AddonRegistry {
         toStrip.push("onHold")
       if (toStrip.length > 0) {
         console.warn(
-          `[sireno-deck] addon "${name}" button "${buttonType}" declares [${toStrip.join(", ")}] ` +
+          `[sirenodeck] addon "${name}" button "${buttonType}" declares [${toStrip.join(", ")}] ` +
             `but not in gestureHandlers (default-deny). Stripping undeclared handlers. ` +
             `Add gestureHandlers: [${toStrip.map((h) => `'${h.replace("on", "").toLowerCase()}'`).join(", ")}] to silence this.`,
         )

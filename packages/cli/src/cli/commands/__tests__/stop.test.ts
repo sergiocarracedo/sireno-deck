@@ -11,7 +11,7 @@ import { stop } from "../stop"
 
 const silentLogger = () => createLogger({ level: "silent" })
 
-const TEST_DIR = join(tmpdir(), `sireno-deck-stop-test-${process.pid}`)
+const TEST_DIR = join(tmpdir(), `sirenodeck-stop-test-${process.pid}`)
 
 beforeEach(() => {
   if (existsSync(TEST_DIR)) rmSync(TEST_DIR, { recursive: true, force: true })
@@ -52,10 +52,10 @@ const waitForExit = (pid: number, timeoutMs = 6_000): Promise<boolean> => {
 }
 
 const writeDaemonFiles = (pid: number, childPids: number[]): void => {
-  writeFileSync(join(TEST_DIR, "sireno-deck.pid"), `${pid}\n`, "utf8")
-  writeFileSync(join(TEST_DIR, "sireno-deck.token"), "test-token\n", "utf8")
+  writeFileSync(join(TEST_DIR, "sirenodeck.pid"), `${pid}\n`, "utf8")
+  writeFileSync(join(TEST_DIR, "sirenodeck.token"), "test-token\n", "utf8")
   writeFileSync(
-    join(TEST_DIR, "sireno-deck.children.json"),
+    join(TEST_DIR, "sirenodeck.children.json"),
     JSON.stringify({ pids: childPids }),
     "utf8",
   )
@@ -64,13 +64,13 @@ const writeDaemonFiles = (pid: number, childPids: number[]): void => {
 describe("stop", () => {
   it("returns silently when no daemon is running", async () => {
     await stop({ logger: silentLogger() })
-    expect(existsSync(join(TEST_DIR, "sireno-deck.pid"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck.pid"))).toBe(false)
   })
 
   it("removes stale pid file and reports no running daemon", async () => {
-    writeFileSync(join(TEST_DIR, "sireno-deck.pid"), "999999\n", "utf8")
+    writeFileSync(join(TEST_DIR, "sirenodeck.pid"), "999999\n", "utf8")
     await stop({ logger: silentLogger() })
-    expect(existsSync(join(TEST_DIR, "sireno-deck.pid"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck.pid"))).toBe(false)
   })
 
   it("kills a real running daemon with its children", async () => {
@@ -84,9 +84,9 @@ describe("stop", () => {
     expect(await waitForExit(child1.pid!)).toBe(true)
     expect(await waitForExit(child2.pid!)).toBe(true)
     expect(await waitForExit(daemon.pid!)).toBe(true)
-    expect(existsSync(join(TEST_DIR, "sireno-deck.pid"))).toBe(false)
-    expect(existsSync(join(TEST_DIR, "sireno-deck.token"))).toBe(false)
-    expect(existsSync(join(TEST_DIR, "sireno-deck.children.json"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck.pid"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck.token"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck.children.json"))).toBe(false)
   })
 
   it("kills children even when the daemon pid is stale", async () => {
@@ -96,7 +96,7 @@ describe("stop", () => {
     await stop({ logger: silentLogger() })
 
     expect(await waitForExit(child.pid!)).toBe(true)
-    expect(existsSync(join(TEST_DIR, "sireno-deck.children.json"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck.children.json"))).toBe(false)
   })
 
   it("removes files when no children are tracked", async () => {
@@ -106,7 +106,7 @@ describe("stop", () => {
     await stop({ logger: silentLogger() })
 
     expect(await waitForExit(daemon.pid!)).toBe(true)
-    expect(existsSync(join(TEST_DIR, "sireno-deck.pid"))).toBe(false)
-    expect(existsSync(join(TEST_DIR, "sireno-deck.token"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck.pid"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck.token"))).toBe(false)
   })
 })

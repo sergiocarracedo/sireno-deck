@@ -37,7 +37,7 @@ pnpm install
 
 ### First run
 
-The daemon writes a default `config.yml` to `$XDG_CONFIG_HOME/sireno-deck/config.yml` on first start, then walks you through the device model and addon catalog.
+The daemon writes a default `config.yml` to `$XDG_CONFIG_HOME/sirenodeck/config.yml` on first start, then walks you through the device model and addon catalog.
 
 ```bash
 # Start the emulator (browser auto-opens at http://127.0.0.1:52938)
@@ -65,7 +65,7 @@ sirenodeck reload   [--logs]            # in-place reload via SIGUSR1
 sirenodeck logs     [--follow] [--lines <N>]
 ```
 
-`start` daemonizes (writes PID + token under `$XDG_RUNTIME_DIR/sireno-deck/`); the foreground recipe for development is `pnpm run dev start` (wraps `tsx watch`, ignoring `frontend/**` so Vite keeps running).
+`start` daemonizes (writes PID + token under `$XDG_RUNTIME_DIR/sirenodeck/`); the foreground recipe for development is `pnpm run dev start` (wraps `tsx watch`, ignoring `frontend/**` so Vite keeps running).
 
 ### `config.yml` example
 
@@ -171,7 +171,7 @@ Every button gets its own WS handshake. The frontend reads `deck-config` and per
 
 ## For addon authors
 
-Each addon packages as npm with `sirenodeck.json` manifest at version `1`. The loader installs it to `~/.cache/sireno-deck/node_modules/` on first run. See [`packages/cli/src/addon/api.ts`](packages/cli/src/addon/api.ts) for the API and [`docs/architecture/boundaries.md`](docs/architecture/boundaries.md) for what crosses each seam.
+Each addon packages as npm with `sirenodeck.json` manifest at version `1`. The loader installs it to `~/.cache/sirenodeck/node_modules/` on first run. See [`packages/cli/src/addon/api.ts`](packages/cli/src/addon/api.ts) for the API and [`docs/architecture/boundaries.md`](docs/architecture/boundaries.md) for what crosses each seam.
 
 ## License
 

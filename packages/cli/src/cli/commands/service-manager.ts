@@ -18,7 +18,7 @@ export interface InvokeManagerOptions {
   readonly logger: Logger
 }
 
-const DAEMON_NAME = "sireno-deck"
+const DAEMON_NAME = "sirenodeck"
 
 const systemctl = (userLevel: boolean, args: ReadonlyArray<string>): void => {
   const cmd = userLevel ? "systemctl" : "systemctl"

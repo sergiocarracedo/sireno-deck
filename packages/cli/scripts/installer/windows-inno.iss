@@ -1,4 +1,4 @@
-; Inno Setup script for sireno-deck. Compile with ISCC.exe (CI installs via chocolatey).
+; Inno Setup script for sirenodeck. Compile with ISCC.exe (CI installs via chocolatey).
 ; Requires the staged tree at dist/staging/sireno-windows-x64/sireno (installer:prepare).
 #ifndef VERSION
   #define VERSION "0.1.0"
@@ -23,7 +23,7 @@ DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 UninstallDisplayIcon={app}\sirenodeck.cmd
 OutputDir={#OutDir}
-OutputBaseFilename=sireno-deck-{#VERSION}-windows-{#ARCH}
+OutputBaseFilename=sirenodeck-{#VERSION}-windows-{#ARCH}
 Compression=lzma2
 SolidCompression=yes
 ArchitecturesAllowed=x64compatible

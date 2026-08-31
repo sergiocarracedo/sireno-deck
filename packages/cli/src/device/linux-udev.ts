@@ -1,4 +1,4 @@
-export const UDEV_RULES = `# sireno-deck — Elgato Stream Deck udev rules
+export const UDEV_RULES = `# sirenodeck — Elgato Stream Deck udev rules
 # Grants current user access to Elgato USB devices without sudo.
 
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0060", TAG+="uaccess"
@@ -21,7 +21,7 @@ export class UdevPermissionError extends Error {
 export const formatInstallInstructions = (): string =>
   `Stream Deck udev rules not installed. To install:
 
-  sudo tee /etc/udev/rules.d/70-sireno-deck.rules > /dev/null <<'EOF'
+  sudo tee /etc/udev/rules.d/70-sirenodeck.rules > /dev/null <<'EOF'
 ${UDEV_RULES.trimEnd()}
 EOF
   sudo udevadm control --reload-rules && sudo udevadm trigger

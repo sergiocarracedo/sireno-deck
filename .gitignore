@@ -21,9 +21,9 @@ packages/cli/src/themes/light/index.js
 /runtime/
 *.pid
 
-packages/cli/frontend/.sireno-deck/
-packages/cli/emulator/.sireno-deck/
-.sireno-deck/
+packages/cli/frontend/.sirenodeck/
+packages/cli/emulator/.sirenodeck/
+.sirenodeck/
 
 packages/cli/src/themes/*/theme.generated.css
 packages/cli/src/themes/*/theme.generated.css

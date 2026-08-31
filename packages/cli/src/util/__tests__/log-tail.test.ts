@@ -12,7 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { tailFile, tailLogs } from "../log-tail"
 
-const TEST_DIR = join(tmpdir(), `sireno-deck-logtail-${process.pid}`)
+const TEST_DIR = join(tmpdir(), `sirenodeck-logtail-${process.pid}`)
 
 describe("tailFile", () => {
   beforeEach(() => {

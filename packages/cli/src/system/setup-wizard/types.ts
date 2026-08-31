@@ -93,4 +93,4 @@ export interface SystemReportSummary {
   readonly lines: ReadonlyArray<string>
 }
 
-export const UDEV_RULES_PATH = "/etc/udev/rules.d/70-sireno-deck.rules"
+export const UDEV_RULES_PATH = "/etc/udev/rules.d/70-sirenodeck.rules"

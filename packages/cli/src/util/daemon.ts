@@ -78,7 +78,7 @@ export interface RuntimeFlags {
   noAutoOpen?: boolean
 }
 
-const DAEMON_NAME = "sireno-deck"
+const DAEMON_NAME = "sirenodeck"
 
 const defaultRuntimeDir = (): string => {
   const xdg = process.env["XDG_RUNTIME_DIR"]
@@ -94,7 +94,7 @@ const defaultRuntimeDir = (): string => {
       // branch only runs on linux; the runtime check satisfies the type.
       const uid = typeof getuid === "function" ? getuid() : null
       return uid !== null
-        ? join(tmpdir(), `sireno-deck-${uid}`)
+        ? join(tmpdir(), `sirenodeck-${uid}`)
         : join(tmpdir(), DAEMON_NAME)
     }
   }
@@ -259,7 +259,7 @@ export const removePidFile = (paths = resolveDaemonPaths()): void => {
 export const SENTINEL_ENV_VAR = "SIRENO_DAEMON_SENTINEL"
 
 export const generateSentinel = (pid: number): string =>
-  `sireno-deck-${pid}-${randomBytes(8).toString("hex")}`
+  `sirenodeck-${pid}-${randomBytes(8).toString("hex")}`
 
 const readCmdline = (pid: number): string | null => {
   try {

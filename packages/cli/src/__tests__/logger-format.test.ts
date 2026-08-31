@@ -88,7 +88,7 @@ describe("default human format renders inline context", () => {
     expect(stripped).toContain("deckId: main")
     expect(stripped).toContain("position: 11")
     expect(stripped).toContain("gesture: tap")
-    expect(stripped).not.toContain("sireno-deck")
+    expect(stripped).not.toContain("sirenodeck")
     expect(stripped).not.toContain("INFO ")
     expect(stripped).not.toContain("WARN ")
   })

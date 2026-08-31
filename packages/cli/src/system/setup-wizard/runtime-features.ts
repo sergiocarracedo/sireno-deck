@@ -20,7 +20,7 @@ const truncate = (s: string): string =>
 export const probeMediaAccess = async (): Promise<RuntimeFeatureProbe> => {
   const cached =
     process.env["PLAYWRIGHT_BROWSERS_PATH"] ??
-    join(homedir(), ".cache", "sireno-deck", "playwright")
+    join(homedir(), ".cache", "sirenodeck", "playwright")
   if (!existsSync(cached)) {
     return { available: false, reason: truncate("chromium not installed") }
   }

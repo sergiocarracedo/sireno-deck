@@ -83,7 +83,7 @@ const okSummary = (): FakeSummary => ({
   missingCapabilities: [],
   udevMissing: false,
   configMissing: false,
-  configPath: "/home/x/.config/sireno-deck/config.yml",
+  configPath: "/home/x/.config/sirenodeck/config.yml",
   streamDeckConnected: false,
   lines: [
     "Platform: linux (X11)",
@@ -152,7 +152,7 @@ const setReport = (summary: FakeSummary): void => {
     capabilities,
     udev: {
       rulesInstalled: !summary.udevMissing,
-      rulesPath: "/etc/udev/rules.d/70-sireno-deck.rules",
+      rulesPath: "/etc/udev/rules.d/70-sirenodeck.rules",
       streamDeckConnected: summary.streamDeckConnected,
       matchedProductIds: [],
     },

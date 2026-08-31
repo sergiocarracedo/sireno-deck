@@ -62,7 +62,7 @@ const launcher = join(tree, "sirenodeck")
 writeFileSync(
   launcher,
   `#!/bin/sh
-# sireno-deck launcher — prefers the bundled Node runtime, falls back to PATH
+# sirenodeck launcher — prefers the bundled Node runtime, falls back to PATH
 # (brew/deb/rpm installs ship node via the package manager).
 root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 if [ -x "$root/node/bin/node" ]; then

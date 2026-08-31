@@ -228,6 +228,7 @@ export class RealOutputClient implements OutputClient {
             wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
             logger,
             themeDir: opts.themeDir,
+            configPath: opts.configPath,
             ...(opts.onChildPid !== undefined
               ? { onPid: opts.onChildPid }
               : {}),

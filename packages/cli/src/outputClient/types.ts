@@ -27,6 +27,7 @@ export interface InitOptions {
   readonly decks: ReadonlyArray<RuntimeDeck>
   readonly theme: { name: string; apiVersion: number }
   readonly themeDir: string
+  readonly configPath?: string
   readonly logger: pino.Logger
   readonly frontendUrl?: string
   readonly port?: number

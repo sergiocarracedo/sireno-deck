@@ -274,7 +274,7 @@ supervisor calls `onChildCrash` on the runtime, which resolves the pipeline's
 daemon via `spawnDetached` (`packages/cli/src/cli/commands/spawn-daemon.ts`)
 and returns. The wrapper exits cleanly; subsequent `pnpm dev status | stop
 | restart | reload | logs` work from any shell via the pid file at
-`$XDG_RUNTIME_DIR/sireno-deck/`. The forked daemon's `argv[1]` is
+`$XDG_RUNTIME_DIR/sirenodeck/`. The forked daemon's `argv[1]` is
 `bin/sirenodeck.js` — the same entry point the systemd-installed daemon
 uses. If the daemon crashes in dev, the daemon stays dead; the operator
 runs `pnpm dev restart` to recover. Production's auto-restart comes from

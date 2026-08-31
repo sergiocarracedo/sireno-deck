@@ -79,7 +79,7 @@ describe("status", () => {
   it("reports not running when pid file is missing", async () => {
     readPidMock.mockReturnValue(null)
     await status({ logger: mockLogger })
-    expect(introMock).toHaveBeenCalledWith("sireno-deck status")
+    expect(introMock).toHaveBeenCalledWith("sirenodeck status")
     expect(logMock.error).toHaveBeenCalledWith("Daemon is not running")
     expect(cancelMock).toHaveBeenCalledWith(
       expect.stringContaining("No daemon"),
@@ -90,7 +90,7 @@ describe("status", () => {
     readPidMock.mockReturnValue(99999999)
     isRunningMock.mockReturnValue(false)
     await status({ logger: mockLogger })
-    expect(introMock).toHaveBeenCalledWith("sireno-deck status")
+    expect(introMock).toHaveBeenCalledWith("sirenodeck status")
     expect(logMock.warn).toHaveBeenCalledWith(
       expect.stringContaining("stale pid file"),
     )
@@ -123,12 +123,12 @@ describe("status", () => {
     })
     readChildrenMock.mockReturnValue({ pids: [100, 200, 300] } as any)
     readConfigPathMock.mockReturnValue(
-      "/home/test/.config/sireno-deck/config.yml",
+      "/home/test/.config/sirenodeck/config.yml",
     )
 
     await status({ logger: mockLogger })
 
-    expect(introMock).toHaveBeenCalledWith("sireno-deck status")
+    expect(introMock).toHaveBeenCalledWith("sirenodeck status")
     expect(logMock.info).toHaveBeenCalledWith(
       expect.stringContaining("running for"),
     )

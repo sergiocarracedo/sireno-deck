@@ -35,12 +35,12 @@ describe("device-config", () => {
       xdgConfigHome: dir,
       config: { serial: "X", path: "/p", model: "M" },
     })
-    expect(existsSync(join(dir, "sireno-deck/device.json.tmp"))).toBe(false)
+    expect(existsSync(join(dir, "sirenodeck/device.json.tmp"))).toBe(false)
   })
 
   it("corrupt JSON returns null", () => {
-    const path = join(dir, "sireno-deck/device.json")
-    require("node:fs").mkdirSync(join(dir, "sireno-deck"), { recursive: true })
+    const path = join(dir, "sirenodeck/device.json")
+    require("node:fs").mkdirSync(join(dir, "sirenodeck"), { recursive: true })
     require("node:fs").writeFileSync(path, "{not json", "utf8")
     expect(loadDeviceConfig({ xdgConfigHome: dir })).toBeNull()
   })

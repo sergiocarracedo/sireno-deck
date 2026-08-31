@@ -114,7 +114,7 @@ export default defineConfig({
         replacement: resolve(__dirname, "../src") + "$1",
       },
       {
-        find: /^sireno-deck\/react$/,
+        find: /^sirenodeck\/react$/,
         replacement: resolve(__dirname, "../src/api/react/index"),
       },
     ],

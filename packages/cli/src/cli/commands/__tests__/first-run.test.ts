@@ -62,11 +62,11 @@ vi.mock("@/util/daemon", () => ({
   isRunning: vi.fn(() => false),
   resolveDaemonPaths: vi.fn(() => ({
     runtimeDir: "/run/user/0",
-    pidFile: "/run/user/0/sireno-deck.pid",
-    tokenFile: "/run/user/0/sireno-deck.token",
-    childrenFile: "/run/user/0/sireno-deck.children.json",
-    configPathFile: "/run/user/0/sireno-deck.config",
-    flagsFile: "/run/user/0/sireno-deck.flags.json",
+    pidFile: "/run/user/0/sirenodeck.pid",
+    tokenFile: "/run/user/0/sirenodeck.token",
+    childrenFile: "/run/user/0/sirenodeck.children.json",
+    configPathFile: "/run/user/0/sirenodeck.config",
+    flagsFile: "/run/user/0/sirenodeck.flags.json",
   })),
   generateToken: vi.fn(() => "test-token"),
   generateSentinel: vi.fn(() => "test-sentinel"),
@@ -355,7 +355,7 @@ const happySummary = (): FakeSummary => ({
   missingCapabilities: [],
   udevMissing: false,
   configMissing: false,
-  configPath: "/home/x/.config/sireno-deck/config.yml",
+  configPath: "/home/x/.config/sirenodeck/config.yml",
   streamDeckConnected: false,
   lines: ["ok"],
 })
@@ -367,7 +367,7 @@ const configMissingSummary = (): FakeSummary => ({
   missingCapabilities: [],
   udevMissing: false,
   configMissing: true,
-  configPath: "/home/x/.config/sireno-deck/config.yml",
+  configPath: "/home/x/.config/sirenodeck/config.yml",
   streamDeckConnected: false,
   lines: ["config missing"],
 })
@@ -379,7 +379,7 @@ const capabilityMissingSummary = (): FakeSummary => ({
   missingCapabilities: ["keyMacro"],
   udevMissing: false,
   configMissing: false,
-  configPath: "/home/x/.config/sireno-deck/config.yml",
+  configPath: "/home/x/.config/sirenodeck/config.yml",
   streamDeckConnected: false,
   lines: ["keyMacro missing"],
 })
@@ -416,7 +416,7 @@ describe("start first-run wizard hook", () => {
     savedArgv1 = process.argv[1]
     savedExitCode = process.exitCode
     savedIsTTY = process.stdin.isTTY
-    process.argv[1] = "/tmp/sireno-deck/src/cli/main.ts"
+    process.argv[1] = "/tmp/sirenodeck/src/cli/main.ts"
     process.exitCode = 0
     setHappyPath()
   })

@@ -333,7 +333,7 @@ const runUdevStep = async (
 ): Promise<InstallStepResult> => {
   if (!yesBatched) {
     const shouldRun = await confirm({
-      message: `Install udev rules to ${process.platform === "linux" ? "/etc/udev/rules.d/70-sireno-deck.rules" : "system location"}?`,
+      message: `Install udev rules to ${process.platform === "linux" ? "/etc/udev/rules.d/70-sirenodeck.rules" : "system location"}?`,
       initialValue: false,
     })
     if (isCancel(shouldRun) || !shouldRun) return "skipped"
@@ -358,7 +358,7 @@ const runUdevStep = async (
   // pipe, so `tee` inherits a closed pipe and reads EOF (writes nothing). The
   // heredoc is embedded in the command string — the child doesn't need stdin.
   // `SIRENO_UDEV_EOF` is unique enough to not collide with UDEV_RULES content.
-  const writeCmd = `cat > /etc/udev/rules.d/70-sireno-deck.rules <<'SIRENO_UDEV_EOF'\n${UDEV_RULES}SIRENO_UDEV_EOF`
+  const writeCmd = `cat > /etc/udev/rules.d/70-sirenodeck.rules <<'SIRENO_UDEV_EOF'\n${UDEV_RULES}SIRENO_UDEV_EOF`
   const w = await runWithSudo({
     command: "sh",
     args: ["-c", writeCmd],
@@ -375,7 +375,7 @@ const runUdevStep = async (
   // confidence signal short of running `udevadm test`, but the verify step
   // below catches the rare case where sudo+cwd/permissions landed the file in
   // the wrong place (e.g. EPERM on the parent dir).
-  const written = readFileSync("/etc/udev/rules.d/70-sireno-deck.rules", "utf8")
+  const written = readFileSync("/etc/udev/rules.d/70-sirenodeck.rules", "utf8")
   if (!written.includes("ATTRS{idVendor}")) {
     write.stop("udev write failed: file is empty or incomplete")
     logger.warn(
@@ -467,7 +467,7 @@ export const systemRequirements = async (
   })
 
   probe.stop("Probe complete")
-  intro("sireno-deck — system requirements")
+  intro("sirenodeck — system requirements")
   printProbeSummary(report)
 
   const summary = summarizeReport(report)

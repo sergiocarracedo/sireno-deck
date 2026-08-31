@@ -22,7 +22,7 @@ import {
   writeToken,
 } from "../daemon"
 
-const TEST_DIR = join(tmpdir(), `sireno-deck-daemon-test-${process.pid}`)
+const TEST_DIR = join(tmpdir(), `sirenodeck-daemon-test-${process.pid}`)
 
 const removeAll = (dir: string): void => {
   const { rmSync } = require("node:fs") as typeof import("node:fs")
@@ -44,9 +44,9 @@ describe("resolveDaemonPaths", () => {
   it("returns all three runtime files", () => {
     const paths = resolveDaemonPaths()
     expect(paths.runtimeDir).toBe(TEST_DIR)
-    expect(paths.pidFile).toBe(join(TEST_DIR, "sireno-deck.pid"))
-    expect(paths.tokenFile).toBe(join(TEST_DIR, "sireno-deck.token"))
-    expect(paths.childrenFile).toBe(join(TEST_DIR, "sireno-deck.children.json"))
+    expect(paths.pidFile).toBe(join(TEST_DIR, "sirenodeck.pid"))
+    expect(paths.tokenFile).toBe(join(TEST_DIR, "sirenodeck.token"))
+    expect(paths.childrenFile).toBe(join(TEST_DIR, "sirenodeck.children.json"))
   })
 })
 
@@ -75,7 +75,7 @@ describe("writeToken / readToken", () => {
     if (process.platform === "win32") return
     const token = generateToken()
     writeToken(token)
-    const stat = statSync(join(TEST_DIR, "sireno-deck.token"))
+    const stat = statSync(join(TEST_DIR, "sirenodeck.token"))
     const mode = stat.mode & 0o777
     expect(mode).toBe(0o600)
   })
@@ -85,7 +85,7 @@ describe("writeToken / readToken", () => {
   })
 
   it("returns null when file is empty", () => {
-    const path = join(TEST_DIR, "sireno-deck.token")
+    const path = join(TEST_DIR, "sirenodeck.token")
     const { writeFileSync } = require("node:fs") as typeof import("node:fs")
     writeFileSync(path, "", "utf8")
     expect(readToken()).toBeNull()
@@ -110,21 +110,21 @@ describe("writeChildren / readChildren", () => {
   })
 
   it("returns null when file is malformed JSON", () => {
-    const path = join(TEST_DIR, "sireno-deck.children.json")
+    const path = join(TEST_DIR, "sirenodeck.children.json")
     const { writeFileSync } = require("node:fs") as typeof import("node:fs")
     writeFileSync(path, "not json", "utf8")
     expect(readChildren()).toBeNull()
   })
 
   it("returns null when file has wrong shape", () => {
-    const path = join(TEST_DIR, "sireno-deck.children.json")
+    const path = join(TEST_DIR, "sirenodeck.children.json")
     const { writeFileSync } = require("node:fs") as typeof import("node:fs")
     writeFileSync(path, JSON.stringify({ foo: "bar" }), "utf8")
     expect(readChildren()).toBeNull()
   })
 
   it("does not have strict file mode (operational metadata)", () => {
-    const path = join(TEST_DIR, "sireno-deck.children.json")
+    const path = join(TEST_DIR, "sirenodeck.children.json")
     writeChildren({ pids: [1] })
     expect(existsSync(path)).toBe(true)
     expect(readFileSync(path, "utf8")).toContain('"pids"')
@@ -141,9 +141,9 @@ describe("writeToken overwrites", () => {
   it("does not affect chmod of existing file", () => {
     if (process.platform === "win32") return
     writeToken("first-token")
-    chmodSync(join(TEST_DIR, "sireno-deck.token"), 0o644)
+    chmodSync(join(TEST_DIR, "sirenodeck.token"), 0o644)
     writeToken("second-token")
-    const stat = statSync(join(TEST_DIR, "sireno-deck.token"))
+    const stat = statSync(join(TEST_DIR, "sirenodeck.token"))
     const mode = stat.mode & 0o777
     expect(mode).toBe(0o600)
   })
@@ -167,7 +167,7 @@ describe("terminateChildren", () => {
 })
 
 describe("acquireStartLock / removeStartLock", () => {
-  const lockPath = (): string => join(TEST_DIR, "sireno-deck.pid.lock")
+  const lockPath = (): string => join(TEST_DIR, "sirenodeck.pid.lock")
 
   const { writeFileSync } = require("node:fs") as typeof import("node:fs")
 

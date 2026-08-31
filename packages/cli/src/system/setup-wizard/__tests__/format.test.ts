@@ -46,11 +46,11 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
   },
   udev: {
     rulesInstalled: false,
-    rulesPath: "/etc/udev/rules.d/70-sireno-deck.rules",
+    rulesPath: "/etc/udev/rules.d/70-sirenodeck.rules",
     streamDeckConnected: false,
     matchedProductIds: [],
   },
-  config: { exists: false, path: "/home/u/.config/sireno-deck/config.yml" },
+  config: { exists: false, path: "/home/u/.config/sirenodeck/config.yml" },
   ...overrides,
 })
 
@@ -61,7 +61,7 @@ describe("summarizeReport", () => {
     expect(summary.missingCapabilities).toEqual(["clipboard"])
     expect(summary.udevMissing).toBe(true)
     expect(summary.configMissing).toBe(true)
-    expect(summary.configPath).toBe("/home/u/.config/sireno-deck/config.yml")
+    expect(summary.configPath).toBe("/home/u/.config/sirenodeck/config.yml")
     expect(summary.session).toBe("wayland")
     expect(summary.packageManager).toBe("apt")
   })
@@ -119,7 +119,7 @@ describe("summarizeReport", () => {
         },
         config: {
           exists: true,
-          path: "/home/u/.config/sireno-deck/config.yml",
+          path: "/home/u/.config/sirenodeck/config.yml",
         },
       }),
     )
@@ -197,10 +197,10 @@ describe("formatStepInstructions", () => {
       packages: [],
       sudo: true,
       manualOnly: false,
-      manualInstructions: "sudo tee /etc/udev/rules.d/70-sireno-deck.rules",
+      manualInstructions: "sudo tee /etc/udev/rules.d/70-sirenodeck.rules",
     }
     expect(formatStepInstructions(step)).toBe(
-      "sudo tee /etc/udev/rules.d/70-sireno-deck.rules",
+      "sudo tee /etc/udev/rules.d/70-sirenodeck.rules",
     )
   })
 

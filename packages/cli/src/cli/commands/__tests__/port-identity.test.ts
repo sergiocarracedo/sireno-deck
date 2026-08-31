@@ -36,14 +36,14 @@ describe("isOurDaemon", () => {
     vi.restoreAllMocks()
   })
 
-  it("returns true when comm is 'sirenodeck:dm' and cmdline mentions sireno-deck", () => {
+  it("returns true when comm is 'sirenodeck:dm' and cmdline mentions sirenodeck", () => {
     // /proc/<pid>/comm is NUL-terminated; /proc/<pid>/cmdline is NUL-separated.
     // The mock returns realistic bytes (NUL terminator/separator).
     setProc("/proc/12345/comm", "sirenodeck:dm\u0000")
     readFileSyncMock.mockImplementation((p: unknown) => {
       if (p === "/proc/12345/comm") return "sirenodeck:dm\u0000"
       if (p === "/proc/12345/cmdline")
-        return "node\u0000bin/sireno-deck.js\u0000start\u0000--emulator\u0000"
+        return "node\u0000bin/sirenodeck.js\u0000start\u0000--emulator\u0000"
       throw new Error(`ENOENT: ${String(p)}`)
     })
     expect(isOurDaemon(12345)).toBe(true)
@@ -63,7 +63,7 @@ describe("isOurDaemon", () => {
     expect(isOurDaemon(12345)).toBe(false)
   })
 
-  it("returns false when comm matches but cmdline doesn't mention sireno-deck", () => {
+  it("returns false when comm matches but cmdline doesn't mention sirenodeck", () => {
     // ponytail: identity gate must require BOTH comm + cmdline match. A
     // hypothetical supervisor that renames any process to "sirenodeck:dm"
     // would otherwise pass this check and get reaped.

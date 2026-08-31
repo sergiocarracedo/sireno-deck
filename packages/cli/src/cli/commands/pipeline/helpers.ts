@@ -25,7 +25,7 @@ export interface ResolveConfigPathResult {
   readonly source: ConfigSource
 }
 
-// ponytail: precedence is cli arg → ~/.config/sireno-deck/config.yml →
+// ponytail: precedence is cli arg → ~/.config/sirenodeck/config.yml →
 // ./config.yml (run folder). The cli arg is validated eagerly so the
 // failure mode is obvious at startup; the other two come from
 // findConfigPath which walks XDG first, then the run folder.
@@ -36,7 +36,7 @@ export const resolveConfigPath = (
     if (!existsSync(options.config)) {
       throw new Error(
         `Config file not found: ${options.config}\n` +
-          `  Fix: pass a valid --config path, or remove --config to let sireno-deck auto-discover config.yml.`,
+          `  Fix: pass a valid --config path, or remove --config to let sirenodeck auto-discover config.yml.`,
       )
     }
     return { path: options.config, source: "cli" }
@@ -65,7 +65,7 @@ export const resolveConfigPath = (
   if (found === null) {
     throw new Error(
       `Could not find config.yml.\n` +
-        `  Fix: pass --config <path>, create ./config.yml in the current directory, or create ~/.config/sireno-deck/config.yml.\n` +
+        `  Fix: pass --config <path>, create ./config.yml in the current directory, or create ~/.config/sirenodeck/config.yml.\n` +
         `  Looked in: ${xdgPath} and ${cwdPath}.`,
     )
   }

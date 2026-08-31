@@ -25,7 +25,7 @@ describe("package constants", () => {
 })
 
 describe("logger", () => {
-  it("creates a logger with the sireno-deck name", () => {
+  it("creates a logger with the sirenodeck name", () => {
     const logger = createLogger()
     expect(logger).toBeDefined()
     expect(typeof logger.info).toBe("function")
@@ -41,7 +41,7 @@ describe("daemon pid file", () => {
   it("resolves daemon paths to a writable directory", () => {
     const paths = resolveDaemonPaths()
     expect(paths.runtimeDir).toBeTruthy()
-    expect(paths.pidFile).toMatch(/sireno-deck\.pid$/)
+    expect(paths.pidFile).toMatch(/sirenodeck\.pid$/)
   })
 
   it("writes and reads a pid", () => {

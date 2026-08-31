@@ -50,11 +50,11 @@ mkdir -p "$out_dir"
 create-dmg \
   --volname "SirenoDeck" \
   --app-drop-link 400 120 \
-  "$out_dir/sireno-deck-$version-$platform-$arch.dmg" \
+  "$out_dir/sirenodeck-$version-$platform-$arch.dmg" \
   "$app"
 
-sha="$(shasum -a 256 "$out_dir/sireno-deck-$version-$platform-$arch.dmg" | awk '{print $1}')"
+sha="$(shasum -a 256 "$out_dir/sirenodeck-$version-$platform-$arch.dmg" | awk '{print $1}')"
 sed -e "s/VERSION/$version/" -e "s/SHA256/$sha/" \
-  "$here/cask/sireno-deck.rb" >"$out_dir/sireno-deck.rb"
+  "$here/cask/sirenodeck.rb" >"$out_dir/sirenodeck.rb"
 
-echo "built $out_dir/sireno-deck-$version-$platform-$arch.dmg (+ cask $out_dir/sireno-deck.rb)"
+echo "built $out_dir/sirenodeck-$version-$platform-$arch.dmg (+ cask $out_dir/sirenodeck.rb)"

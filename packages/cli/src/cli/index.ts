@@ -77,7 +77,7 @@ export const buildLogger = (
 
 const startCommand: CommandModule<object, StartArgs> = {
   command: "start",
-  describe: "Start the sireno-deck daemon",
+  describe: "Start the sirenodeck daemon",
   builder: (yargs) =>
     yargs
       .option("config", { type: "string", description: "Path to config.yml" })
@@ -220,7 +220,7 @@ const startCommand: CommandModule<object, StartArgs> = {
 
 const stopCommand: CommandModule<object, StopArgs> = {
   command: "stop",
-  describe: "Stop the running sireno-deck daemon",
+  describe: "Stop the running sirenodeck daemon",
   handler: async (argv) => {
     const logger = buildLogger(argv)
     const options: StopOptions = { logger }
@@ -230,7 +230,7 @@ const stopCommand: CommandModule<object, StopArgs> = {
 
 const statusCommand: CommandModule<object, StatusArgs> = {
   command: "status",
-  describe: "Check sireno-deck daemon status",
+  describe: "Check sirenodeck daemon status",
   builder: (yargs) =>
     yargs.option("show-token", {
       type: "boolean",
@@ -259,7 +259,7 @@ const reloadCommand: CommandModule<object, ReloadArgs> = {
 
 const restartCommand: CommandModule<object, RestartArgs> = {
   command: "restart",
-  describe: "Restart the sireno-deck daemon",
+  describe: "Restart the sirenodeck daemon",
   handler: async (argv) => {
     const logger = buildLogger(argv)
     const options: RestartOptions = { logger }

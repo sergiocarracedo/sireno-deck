@@ -53,6 +53,7 @@ interface ViteSpawnOptions {
   wsUrl?: string
   frontendUrl?: string
   themeDir?: string
+  configPath?: string
   host?: string
   requireToken?: string
   childLabel: "frontend vite" | "emulator vite"
@@ -71,6 +72,7 @@ const spawnViteAndWaitForReady = (
     wsUrl,
     frontendUrl,
     themeDir,
+    configPath,
     host,
     requireToken,
     childLabel,
@@ -92,6 +94,9 @@ const spawnViteAndWaitForReady = (
     }
     if (themeDir !== undefined) {
       env["SIRENO_THEME_DIR"] = themeDir
+    }
+    if (configPath !== undefined) {
+      env["SIRENO_CONFIG_PATH"] = configPath
     }
     if (host !== undefined) {
       env["SIRENO_VITE_HOST"] = host
@@ -205,6 +210,7 @@ export const spawnFrontendVite = (options: {
   logger: pino.Logger
   wsUrl?: string
   themeDir?: string
+  configPath?: string
   host?: string
   requireToken?: string
   onPid?: (pid: number) => void
@@ -224,6 +230,7 @@ export const spawnEmulatorVite = (options: {
   logger: pino.Logger
   wsUrl?: string
   frontendUrl?: string
+  configPath?: string
   host?: string
   requireToken?: string
   onPid?: (pid: number) => void
@@ -264,7 +271,7 @@ export const ensureDefaultThemeEnv = (frontendCwd: string): void => {
     uiOverridesPath: null,
   })
   process.env["SIRENO_THEME_DIR"] = frontendCwd
-  const cssDir = join(frontendCwd, ".sireno-deck")
+  const cssDir = join(frontendCwd, ".sirenodeck")
   if (!existsSync(cssDir)) mkdirSync(cssDir, { recursive: true })
   const manifest = readAndValidateManifest(manifestPath, defaultSpec.name)
   const cssContent = buildThemeCssFromManifest(manifest, defaultSpec.dir)

@@ -12,24 +12,24 @@ describe("buildExternalAddonDirs", () => {
     const dirs = buildExternalAddonDirs(
       [
         {
-          src: "/works/opensource/sireno-deck-addons/chrome-overlay",
+          src: "/works/opensource/sirenodeck-addons/chrome-overlay",
           config: { decks: { shortcuts: { autoShow: false } } },
         },
       ],
-      "/works/opensource/sireno-deck-2/config.yml",
+      "/works/opensource/sirenodeck-2/config.yml",
     )
     expect(dirs.get("chrome-overlay")).toBe(
-      "/works/opensource/sireno-deck-addons/chrome-overlay",
+      "/works/opensource/sirenodeck-addons/chrome-overlay",
     )
   })
 
   it("registers string-form entries directly", () => {
     const dirs = buildExternalAddonDirs(
-      ["/works/opensource/sireno-deck-addons/opencode-overlay"],
-      "/works/opensource/sireno-deck-2/config.yml",
+      ["/works/opensource/sirenodeck-addons/opencode-overlay"],
+      "/works/opensource/sirenodeck-2/config.yml",
     )
     expect(dirs.get("opencode-overlay")).toBe(
-      "/works/opensource/sireno-deck-addons/opencode-overlay",
+      "/works/opensource/sirenodeck-addons/opencode-overlay",
     )
   })
 
@@ -44,7 +44,7 @@ describe("buildExternalAddonDirs", () => {
   it("resolves relative paths against the config directory", () => {
     const dirs = buildExternalAddonDirs(
       ["../local-addons/foo-overlay"],
-      "/works/opensource/sireno-deck-2/config.yml",
+      "/works/opensource/sirenodeck-2/config.yml",
     )
     expect(dirs.get("foo-overlay")).toBe(
       "/works/opensource/local-addons/foo-overlay",

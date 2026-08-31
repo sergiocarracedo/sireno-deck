@@ -15,7 +15,7 @@ export const isInstalledBuild = (): boolean =>
 
 const configDir = (): string => {
   const xdg = process.env["XDG_CONFIG_HOME"] ?? join(homedir(), ".config")
-  return join(xdg, "sireno-deck")
+  return join(xdg, "sirenodeck")
 }
 
 const flagPath = (): string => join(configDir(), "first-run.json")
@@ -23,7 +23,7 @@ const flagPath = (): string => join(configDir(), "first-run.json")
 const playrightBrowsersPath = (): string => {
   const cached =
     process.env["PLAYWRIGHT_BROWSERS_PATH"] ??
-    join(homedir(), ".cache", "sireno-deck", "playwright")
+    join(homedir(), ".cache", "sirenodeck", "playwright")
   process.env["PLAYWRIGHT_BROWSERS_PATH"] = cached
   return cached
 }
@@ -41,7 +41,7 @@ const chromiumInstalled = (browsersPath: string): boolean => {
 
 /**
  * Download the headless chromium build without npm by shelling out to the
- * bundled playwright CLI. Browsers land in ~/.cache/sireno-deck/playwright/
+ * bundled playwright CLI. Browsers land in ~/.cache/sirenodeck/playwright/
  * (PLAYWRIGHT_BROWSERS_PATH) and the env var stays set for the child daemon,
  * so `browser-renderer` finds them at runtime.
  */

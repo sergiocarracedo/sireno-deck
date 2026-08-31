@@ -38,12 +38,12 @@ export const SidePanel = ({
       <div className="flex items-center gap-3 border-b border-neutral-800 px-4 py-4">
         <img
           src={logoUrl}
-          alt="sireno-deck logo"
+          alt="sirenodeck logo"
           className="h-9 w-9 shrink-0 rounded"
         />
         <div className="min-w-0">
           <div className="truncate font-mono text-sm font-semibold text-neutral-100">
-            sireno-deck
+            sirenodeck
           </div>
           <div className="font-mono text-[10px] uppercase tracking-widest text-neutral-500">
             emulator

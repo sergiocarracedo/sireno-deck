@@ -318,7 +318,7 @@ export const reapStaleDaemon = async (
     } else {
       logger.warn(
         { pid, port: wsPort },
-        "start: WS port held by a non-sireno-deck daemon — leaving it alone",
+        "start: WS port held by a non-sirenodeck daemon — leaving it alone",
       )
     }
   }
@@ -335,7 +335,7 @@ const killPortListeners = async (
       if (!isOurViteChild(pid)) {
         logger.warn(
           { pid, port },
-          "start: port in use by a process that is NOT a sireno-deck child — leaving it alone",
+          "start: port in use by a process that is NOT a sirenodeck child — leaving it alone",
         )
         continue
       }
@@ -349,7 +349,7 @@ const killPortListeners = async (
       if (!isOrphan(pid, daemonPid)) {
         logger.warn(
           { pid, port },
-          "start: port in use by a live (non-orphan) sireno-deck vite — leaving it alone",
+          "start: port in use by a live (non-orphan) sirenodeck vite — leaving it alone",
         )
         continue
       }
@@ -357,7 +357,7 @@ const killPortListeners = async (
         process.kill(pid, "SIGTERM")
         logger.warn(
           { pid, port },
-          "start: killed orphan sireno-deck vite bound to daemon port",
+          "start: killed orphan sirenodeck vite bound to daemon port",
         )
       } catch {
         // already dead
@@ -436,7 +436,7 @@ const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
   // `restart` / in-place edits keep the same config the session launched
   // with, but a user (or tooling) that passes --config clearly wants THAT
   // file — honoring the cache over an explicit arg silently swapped in the
-  // user's ~/.config/sireno-deck/config.yml instead (the bug that made
+  // user's ~/.config/sirenodeck/config.yml instead (the bug that made
   // --config appear to "do nothing").
   if (options.config !== undefined) {
     if (!existsSync(options.config)) {
@@ -868,7 +868,7 @@ const start = async (options: StartOptions): Promise<void> => {
   // the WS port (52937), reap it before spawning. The pid file is stale-
   // prone (SIGKILL'd daemons leave it behind; crashed preflight daemons
   // never wrote one). Identity check uses /proc/<pid>/comm === "sirenodeck:dm"
-  // cross-checked with the sireno-deck cmdline fingerprint, so unrelated
+  // cross-checked with the sirenodeck cmdline fingerprint, so unrelated
   // processes holding 52937 (a Discord voice call, an `nc -l`, the user's
   // own server) get left alone. The WS port is the load-bearing one —
   // EADDRINUSE there causes the daemon's runPipeline to fail before the

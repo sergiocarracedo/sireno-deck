@@ -66,11 +66,11 @@ vi.mock("@/util/daemon", async () => {
     removeChildrenFile: vi.fn(),
     resolveDaemonPaths: vi.fn(() => ({
       runtimeDir: "/run/user/0",
-      pidFile: "/run/user/0/sireno-deck.pid",
-      tokenFile: "/run/user/0/sireno-deck.token",
-      childrenFile: "/run/user/0/sireno-deck.children.json",
-      configPathFile: "/run/user/0/sireno-deck.config",
-      flagsFile: "/run/user/0/sireno-deck.flags.json",
+      pidFile: "/run/user/0/sirenodeck.pid",
+      tokenFile: "/run/user/0/sirenodeck.token",
+      childrenFile: "/run/user/0/sirenodeck.children.json",
+      configPathFile: "/run/user/0/sirenodeck.config",
+      flagsFile: "/run/user/0/sirenodeck.flags.json",
     })),
   }
 })
@@ -107,7 +107,7 @@ const silentLogger = (): pino.Logger =>
   }) as unknown as pino.Logger
 
 const setDevArgv = (): void => {
-  process.argv[1] = "/tmp/sireno-deck/src/cli/main.ts"
+  process.argv[1] = "/tmp/sirenodeck/src/cli/main.ts"
 }
 const setProdArgv = (): void => {
   process.argv[1] = "/usr/local/bin/sirenodeck"

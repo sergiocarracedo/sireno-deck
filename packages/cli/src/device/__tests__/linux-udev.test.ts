@@ -16,7 +16,7 @@ describe("linux-udev", () => {
 
   it("formatInstallInstructions mentions the udev rules path", () => {
     const text = formatInstallInstructions()
-    expect(text).toContain("/etc/udev/rules.d/70-sireno-deck.rules")
+    expect(text).toContain("/etc/udev/rules.d/70-sirenodeck.rules")
     expect(text).toContain("udevadm")
   })
 

@@ -294,7 +294,7 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
   const wantRaw = json || isServiceMode() || !process.stdout.isTTY
 
   const loggerOptions: LoggerOptions = {
-    name: "sireno-deck",
+    name: "sirenodeck",
     level: level ?? (verbose ? "debug" : "info"),
     serializers: {
       err: errorSerializer,

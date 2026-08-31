@@ -10,7 +10,7 @@ import { join } from "node:path"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const TEST_DIR = join(tmpdir(), `sireno-deck-logreader-${process.pid}`)
+const TEST_DIR = join(tmpdir(), `sirenodeck-logreader-${process.pid}`)
 
 vi.mock("../daemon", () => ({
   resolveDaemonPaths: () => ({ runtimeDir: TEST_DIR }),

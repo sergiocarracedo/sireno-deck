@@ -10,14 +10,14 @@ export interface InstallOptions {
   readonly system?: boolean
 }
 
-const DAEMON_NAME = "sireno-deck"
+const DAEMON_NAME = "sirenodeck"
 const SERVICE_NAME = `${DAEMON_NAME}.service`
 
 // ponytail: ExecStart calls `start` — no flags. The systemd-started process
 // detects `INVOCATION_ID` and runs in-process, reading config + flags from
 // runtimeDir. Keeps the unit stable; config changes don't require reinstall.
 const getExecStart = (): string => {
-  const binPath = process.argv[1] ?? `sireno-deck`
+  const binPath = process.argv[1] ?? `sirenodeck`
   return `${binPath} start`
 }
 

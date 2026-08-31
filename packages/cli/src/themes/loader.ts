@@ -129,7 +129,7 @@ export function buildThemeCssFromManifest(
   return buildThemeCss(manifest, stylesheetContents)
 }
 
-// ponytail: theme.css is emitted into the vite frontend's `.sireno-deck/`
+// ponytail: theme.css is emitted into the vite frontend's `.sirenodeck/`
 // dir, but its `url('./assets/...')` font/asset paths are relative to THAT
 // file — so the theme's assets/ must be copied next to it or every font 404s.
 export function copyThemeAssets(themeDir: string, cssDir: string): void {

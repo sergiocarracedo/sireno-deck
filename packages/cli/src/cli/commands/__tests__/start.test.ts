@@ -69,11 +69,11 @@ vi.mock("@/util/daemon", () => ({
   isRunning: vi.fn(() => false),
   resolveDaemonPaths: vi.fn(() => ({
     runtimeDir: "/run/user/0",
-    pidFile: "/run/user/0/sireno-deck.pid",
-    tokenFile: "/run/user/0/sireno-deck.token",
-    childrenFile: "/run/user/0/sireno-deck.children.json",
-    configPathFile: "/run/user/0/sireno-deck.config",
-    flagsFile: "/run/user/0/sireno-deck.flags.json",
+    pidFile: "/run/user/0/sirenodeck.pid",
+    tokenFile: "/run/user/0/sirenodeck.token",
+    childrenFile: "/run/user/0/sirenodeck.children.json",
+    configPathFile: "/run/user/0/sirenodeck.config",
+    flagsFile: "/run/user/0/sirenodeck.flags.json",
   })),
   generateToken: vi.fn(() => "test-token"),
   generateSentinel: vi.fn(() => "test-sentinel"),
@@ -379,7 +379,7 @@ describe("start", () => {
     vi.clearAllMocks()
     savedArgv1 = process.argv[1]
     // Simulate dev invocation (argv[1] is .ts) so forkOffDev path runs.
-    process.argv[1] = "/tmp/sireno-deck/src/cli/main.ts"
+    process.argv[1] = "/tmp/sirenodeck/src/cli/main.ts"
   })
   afterEach(() => {
     vi.restoreAllMocks()

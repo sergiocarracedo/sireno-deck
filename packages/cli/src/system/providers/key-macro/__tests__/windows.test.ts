@@ -24,7 +24,7 @@ const silentLogger = (): pino.Logger => {
   } as unknown as pino.Logger
 }
 
-const CACHE_DIR = join(tmpdir(), "sireno-deck", "key-macro-windows")
+const CACHE_DIR = join(tmpdir(), "sirenodeck", "key-macro-windows")
 const HELPER_DLL = join(CACHE_DIR, "sirenokey-input.dll")
 
 const ensureHelperDll = (): void => {

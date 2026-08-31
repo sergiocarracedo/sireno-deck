@@ -23,7 +23,7 @@ flatpak-builder \
 mkdir -p "$out_dir"
 flatpak build-bundle \
   "$out_dir/repo" \
-  "$out_dir/sireno-deck-$version-$platform-$arch.flatpak" \
+  "$out_dir/sirenodeck-$version-$platform-$arch.flatpak" \
   io.sireno.SirenoDeck
 
-echo "built $out_dir/sireno-deck-$version-$platform-$arch.flatpak"
+echo "built $out_dir/sirenodeck-$version-$platform-$arch.flatpak"

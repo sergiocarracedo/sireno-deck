@@ -1,7 +1,7 @@
-# sireno-deck — bundled default config
+# sirenodeck — bundled default config
 # This is the same config shipped at the project root. The `!include` directives
 # reference paths relative to the project root (e.g. ./demos/...). When placed
-# at ~/.config/sireno-deck/config.yml those include paths will not resolve —
+# at ~/.config/sirenodeck/config.yml those include paths will not resolve —
 # remove the demo `!include` lines or point them at absolute paths to your own
 # deck files. The `main` deck works without includes.
 theme: default

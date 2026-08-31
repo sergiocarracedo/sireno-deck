@@ -84,7 +84,7 @@ describe("createLogger format selection", () => {
       expect(parsed["msg"]).toBe("hello")
       expect(parsed["level"]).toBe(30)
       expect(typeof parsed["time"]).toBe("number")
-      expect(parsed["name"]).toBe("sireno-deck")
+      expect(parsed["name"]).toBe("sirenodeck")
     } finally {
       process.stdout.write = origWrite
     }

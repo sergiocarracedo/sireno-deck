@@ -8,7 +8,7 @@ import {
   uiOverrides,
 } from "virtual:sireno/themes/manifest"
 
-import { ChannelRegistry } from "sireno-deck/react"
+import { ChannelRegistry } from "sirenodeck/react"
 import { ThemeProvider, type ThemeContextValue } from "@/themes/index"
 import {
   AssetCacheProvider,

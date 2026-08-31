@@ -37,9 +37,9 @@ if [ "$type" = "deb" ]; then
     -v "$version" \
     -a "$arch" \
     --prefix / \
-    --deb-maintainer "Sireno Deck <sireno-deck@users.noreply.github.com>" \
+    --deb-maintainer "Sireno Deck <sirenodeck@users.noreply.github.com>" \
     --deb-compression xz \
-    --package "$out_dir/sireno-deck-$version-$platform-$arch.deb" \
+    --package "$out_dir/sirenodeck-$version-$platform-$arch.deb" \
     .
 else
   fpm -s dir -t rpm \
@@ -48,8 +48,8 @@ else
     -v "$version" \
     -a "$arch" \
     --prefix / \
-    --package "$out_dir/sireno-deck-$version-$platform-$arch.rpm" \
+    --package "$out_dir/sirenodeck-$version-$platform-$arch.rpm" \
     .
 fi
 
-echo "built $out_dir/sireno-deck-$version-$platform-$arch.$type"
+echo "built $out_dir/sirenodeck-$version-$platform-$arch.$type"

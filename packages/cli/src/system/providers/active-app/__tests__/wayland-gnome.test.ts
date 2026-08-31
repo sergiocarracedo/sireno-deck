@@ -125,7 +125,7 @@ describe("createWaylandGnomeProvider", () => {
   it("populates windowTitle when FocusTitle is available", async () => {
     const { bus } = makeBus(
       async () => "Google-chrome",
-      async () => "GitHub - sireno-deck-2",
+      async () => "GitHub - sirenodeck-2",
     )
     const provider = await createWaylandGnomeProvider({
       dbus: bus,
@@ -136,7 +136,7 @@ describe("createWaylandGnomeProvider", () => {
     const snap = await provider.getActive()
     expect(snap).toEqual({
       name: "Google-chrome",
-      windowTitle: "GitHub - sireno-deck-2",
+      windowTitle: "GitHub - sirenodeck-2",
       processId: null,
     })
     await provider.stop()
@@ -148,7 +148,7 @@ describe("createWaylandGnomeProvider", () => {
       async () => "Google-chrome",
       async () => {
         titleCall += 1
-        if (titleCall === 1) return "GitHub - sireno-deck-2"
+        if (titleCall === 1) return "GitHub - sirenodeck-2"
         return "Pull Requests · anomalyco/opencode"
       },
     )
@@ -164,7 +164,7 @@ describe("createWaylandGnomeProvider", () => {
     const titles = handler.mock.calls
       .map((c) => (c[0] as { windowTitle: string | null } | null)?.windowTitle)
       .filter((t): t is string => typeof t === "string")
-    expect(titles).toContain("GitHub - sireno-deck-2")
+    expect(titles).toContain("GitHub - sirenodeck-2")
     expect(titles).toContain("Pull Requests · anomalyco/opencode")
     await provider.stop()
   })

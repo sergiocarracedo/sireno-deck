@@ -397,17 +397,17 @@ describe("findConfigPath", () => {
     )
   })
 
-  it("falls back to $XDG_CONFIG_HOME/sireno-deck/config.yml", () => {
+  it("falls back to $XDG_CONFIG_HOME/sirenodeck/config.yml", () => {
     const xdg = makeTempDir()
     const dir = makeTempDir()
-    mkdirSync(join(xdg, "sireno-deck"), { recursive: true })
+    mkdirSync(join(xdg, "sirenodeck"), { recursive: true })
     writeFileSync(
-      join(xdg, "sireno-deck", DEFAULT_CONFIG_FILENAME),
+      join(xdg, "sirenodeck", DEFAULT_CONFIG_FILENAME),
       "decks:\n  main:\n    buttons: []\n",
     )
     expect(
       findConfigPath({ cwd: dir, homeDir: "/tmp", xdgConfigHome: xdg }),
-    ).toBe(join(xdg, "sireno-deck", DEFAULT_CONFIG_FILENAME))
+    ).toBe(join(xdg, "sirenodeck", DEFAULT_CONFIG_FILENAME))
   })
 
   it("returns null when nothing is found", () => {
@@ -431,9 +431,9 @@ describe("findConfigPath", () => {
   it("prefers XDG over cwd when both exist", () => {
     const xdg = makeTempDir()
     const dir = makeTempDir()
-    mkdirSync(join(xdg, "sireno-deck"), { recursive: true })
+    mkdirSync(join(xdg, "sirenodeck"), { recursive: true })
     writeFileSync(
-      join(xdg, "sireno-deck", DEFAULT_CONFIG_FILENAME),
+      join(xdg, "sirenodeck", DEFAULT_CONFIG_FILENAME),
       "decks:\n  main:\n    buttons: []\n",
     )
     writeFileSync(
@@ -442,7 +442,7 @@ describe("findConfigPath", () => {
     )
     expect(
       findConfigPath({ cwd: dir, homeDir: "/tmp", xdgConfigHome: xdg }),
-    ).toBe(join(xdg, "sireno-deck", DEFAULT_CONFIG_FILENAME))
+    ).toBe(join(xdg, "sirenodeck", DEFAULT_CONFIG_FILENAME))
   })
 
   it("returns null at the filesystem root when nothing matches", () => {

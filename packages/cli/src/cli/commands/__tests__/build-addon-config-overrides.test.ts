@@ -12,14 +12,14 @@ describe("buildAddonConfigOverrides", () => {
     // override silently never reached the addon-deck materialize step.
     const entries = [
       {
-        src: "/works/opensource/sireno-deck-addons/vscode-overlay",
+        src: "/works/opensource/sirenodeck-addons/vscode-overlay",
         config: {
           decks: { shortcuts: { autoShow: false, config: { extra: true } } },
         },
       },
     ]
     const addonSpecToName = new Map([
-      ["/works/opensource/sireno-deck-addons/vscode-overlay", "vscode-overlay"],
+      ["/works/opensource/sirenodeck-addons/vscode-overlay", "vscode-overlay"],
     ])
     const overrides = buildAddonConfigOverrides(
       entries,
@@ -28,7 +28,7 @@ describe("buildAddonConfigOverrides", () => {
     )
     expect(overrides.has("vscode-overlay")).toBe(true)
     expect(
-      overrides.has("/works/opensource/sireno-deck-addons/vscode-overlay"),
+      overrides.has("/works/opensource/sirenodeck-addons/vscode-overlay"),
     ).toBe(false)
     const vscode = overrides.get("vscode-overlay")!
     expect(vscode.perDeck.get("shortcuts")?.autoShow).toBe(false)

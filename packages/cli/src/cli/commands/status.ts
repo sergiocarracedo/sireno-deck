@@ -46,7 +46,7 @@ export const status = async ({
   const pid = readPid(paths)
 
   if (pid === null) {
-    intro("sireno-deck status")
+    intro("sirenodeck status")
     log.error("Daemon is not running")
     cancel("✗ No daemon process found")
     return
@@ -60,7 +60,7 @@ export const status = async ({
   const childPids = childrenState?.pids ?? []
   const configPath = readConfigPath(paths)
 
-  intro("sireno-deck status")
+  intro("sirenodeck status")
 
   if (alive) {
     const startedAt = state?.startedAt ?? null

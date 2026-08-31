@@ -46,7 +46,7 @@ const warnUnknownVariant = (variant: string): void => {
   if (warnedVariants.has(variant)) return
   warnedVariants.add(variant)
   console.warn(
-    `[sireno-deck] ButtonFrame: unknown variant "${variant}", falling back to "default". Add this variant to your theme's manifest.`,
+    `[sirenodeck] ButtonFrame: unknown variant "${variant}", falling back to "default". Add this variant to your theme's manifest.`,
   )
 }
 

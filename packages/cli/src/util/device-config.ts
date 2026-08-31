@@ -23,7 +23,7 @@ export interface SaveDeviceConfigOptions extends LoadDeviceConfigOptions {
 }
 
 const configPathFor = (xdgConfigHome: string): string =>
-  `${xdgConfigHome}/sireno-deck/device.json`
+  `${xdgConfigHome}/sirenodeck/device.json`
 
 export const loadDeviceConfig = (
   options: LoadDeviceConfigOptions,

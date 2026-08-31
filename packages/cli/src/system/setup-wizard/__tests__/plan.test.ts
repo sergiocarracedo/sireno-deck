@@ -41,11 +41,11 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
   },
   udev: {
     rulesInstalled: false,
-    rulesPath: "/etc/udev/rules.d/70-sireno-deck.rules",
+    rulesPath: "/etc/udev/rules.d/70-sirenodeck.rules",
     streamDeckConnected: false,
     matchedProductIds: [],
   },
-  config: { exists: false, path: "/home/u/.config/sireno-deck/config.yml" },
+  config: { exists: false, path: "/home/u/.config/sirenodeck/config.yml" },
   ...overrides,
 })
 
@@ -127,7 +127,7 @@ describe("buildInstallPlan", () => {
     const step = plan.find((s) => s.id === "udev:rules")
     expect(step?.sudo).toBe(true)
     expect(step?.manualInstructions).toContain(
-      "/etc/udev/rules.d/70-sireno-deck.rules",
+      "/etc/udev/rules.d/70-sirenodeck.rules",
     )
   })
 
@@ -210,7 +210,7 @@ describe("needsConfigSeed", () => {
         baseReport({
           config: {
             exists: true,
-            path: "/home/u/.config/sireno-deck/config.yml",
+            path: "/home/u/.config/sirenodeck/config.yml",
           },
         }),
       ),

@@ -59,7 +59,7 @@ export const readProcPpid = (pid: number): number | null => {
 // we could kill a Discord, a browser, an IDE, or a `vite dev` the user
 // deliberately started for a different project. Two checks:
 //
-//   1. cmdline (`/proc/<pid>/cmdline`) must reference a sireno-deck vite
+//   1. cmdline (`/proc/<pid>/cmdline`) must reference a sirenodeck vite
 //      config — the frontend (packages/cli/frontend/vite.config.ts) or the
 //      emulator (packages/cli/emulator/vite.config.ts). The host string
 //      can be vendored, fork-installed, or extracted into a shared repo
@@ -92,7 +92,7 @@ export const isOurViteChild = (pid: number): boolean => {
 
 export const cmdlineMentionsCliRoot = (cmdline: string): boolean => {
   // Be a bit safer than just "vite.config.ts": the path must trace back
-  // to a sireno-deck checkout. We recognize the canonical
+  // to a sirenodeck checkout. We recognize the canonical
   // /packages/cli/{frontend,emulator}/vite.config.ts layout.
   return /\/packages\/cli\/(frontend|emulator)\/vite\.config\.ts\b/.test(
     cmdline,

@@ -7,7 +7,7 @@ import { join } from "node:path"
 // below runs at module eval, before every test body and before the first
 // onLoad call that persists state.
 process.env["XDG_STATE_HOME"] = mkdtempSync(
-  join(tmpdir(), "sireno-deck-addon-test-"),
+  join(tmpdir(), "sirenodeck-addon-test-"),
 )
 
 import { globalService, POLLER_INTERVAL_MS } from "../global/backend"

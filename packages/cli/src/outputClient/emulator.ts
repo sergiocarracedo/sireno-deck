@@ -141,6 +141,7 @@ export class EmulatorOutputClient implements OutputClient {
                 readyTimeoutMs: DEFAULT_TIMEOUT_MS,
                 logger,
                 wsUrl: opts.bridge.url,
+                configPath: opts.configPath,
                 host,
                 ...(requireToken !== undefined ? { requireToken } : {}),
                 ...(opts.onChildPid !== undefined
@@ -167,6 +168,7 @@ export class EmulatorOutputClient implements OutputClient {
           readyTimeoutMs: DEFAULT_TIMEOUT_MS,
           logger,
           wsUrl: opts.bridge.url,
+          configPath: opts.configPath,
           host,
           frontendUrl:
             opts.frontendUrl ?? `http://127.0.0.1:${DEFAULT_FRONTEND_PORT}`,

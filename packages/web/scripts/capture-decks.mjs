@@ -31,7 +31,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(here, "..", "..", "..")
 const outDir = resolve(repoRoot, "packages/web/astro/public/captures")
 mkdirSync(outDir, { recursive: true })
-const stateDir = `${process.env.HOME}/.local/state/sireno-deck`
+const stateDir = `${process.env.HOME}/.local/state/sirenodeck`
 
 const { chromium } = createRequire(
   resolve(repoRoot, "packages/cli/package.json"),
@@ -134,11 +134,11 @@ const stopAll = () => {
     } catch {}
   }
   for (const f of [
-    "sireno-deck.config",
-    "sireno-deck.flags.json",
-    "sireno-deck.pid",
-    "sireno-deck.token",
-    "sireno-deck.children.json",
+    "sirenodeck.config",
+    "sirenodeck.flags.json",
+    "sirenodeck.pid",
+    "sirenodeck.token",
+    "sirenodeck.children.json",
   ]) {
     try {
       execSync(`rm -f ${stateDir}/${f}`, { timeout: 2000 })

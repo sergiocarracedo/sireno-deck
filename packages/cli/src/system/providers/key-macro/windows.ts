@@ -16,7 +16,7 @@ export interface WindowsKeyMacroDeps {
   readonly timeoutMs?: number
 }
 
-const CACHE_DIR = join(tmpdir(), "sireno-deck", "key-macro-windows")
+const CACHE_DIR = join(tmpdir(), "sirenodeck", "key-macro-windows")
 const HELPER_DLL = join(CACHE_DIR, "sirenokey-input.dll")
 const HELPER_SRC_HASH = join(CACHE_DIR, "sirenokey-input.dll.src.sha256")
 

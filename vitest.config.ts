@@ -14,7 +14,7 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./packages/cli/src", import.meta.url)),
       "@sirenodeck/cli": resolve(here, "packages/cli/src/index.ts"),
       "@sirenodeck/cli/": resolve(here, "packages/cli/src/") + "/",
-      "sireno-deck/react": resolve(here, "packages/cli/src/api/react/index.ts"),
+      "sirenodeck/react": resolve(here, "packages/cli/src/api/react/index.ts"),
       "virtual:sireno/token": fileURLToPath(
         new URL(
           "./packages/cli/frontend/src/__mocks__/token.ts",

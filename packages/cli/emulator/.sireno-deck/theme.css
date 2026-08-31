@@ -1,0 +1,276 @@
+@source "/works/opensource/sireno-deck/packages/cli/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck/packages/addons/pomodoro/src/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck/packages/cli/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck/packages/addons/pomodoro/src/**/*.{ts,tsx}";
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 100;
+  src: url("./assets/static/IBMPlexSans-Thin.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 300;
+  src: url("./assets/static/IBMPlexSans-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: italic;
+  font-weight: 300 italic;
+  src: url("./assets/static/IBMPlexSans-LightItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 300;
+  src: url("./assets/IBM_Plex_Mono/IBMPlexMono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  src: url("./assets/IBM_Plex_Mono/IBMPlexMono-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf") format("truetype");
+}
+
+:root {
+  --sireno-color-bg: #2e3540;
+  --sireno-color-frame: #53738b;
+  --sireno-color-fg: #eef2f7;
+  --sireno-color-foreground-contrast: #333;
+  --sireno-color-primary: #7dd3fc;
+  --sireno-color-accent: #c3f5ff;
+  --sireno-color-muted: #b8bfc8;
+  --sireno-color-success: #34d399;
+  --sireno-color-danger: #ffb4ab;
+  --sireno-font-main-family: "IBM Plex Sans";
+  --sireno-font-main-size: 12px;
+  --sireno-font-main-weight: 100;
+  --sireno-font-main-tracking: 0px;
+  --sireno-font-aux-family: "IBM Plex Sans";
+  --sireno-font-aux-size: 8px;
+  --sireno-font-aux-weight: 300;
+  --sireno-font-aux-tracking: 1.2px;
+  --sireno-font-mono-family: "IBM Plex Mono";
+  --sireno-font-mono-size: 10px;
+  --sireno-font-mono-weight: 300;
+  --sireno-font-mono-tracking: 0.4px;
+  --sireno-variant-default-bg: #2e3540;
+  --sireno-variant-default-border: #53738b;
+  --sireno-variant-default-fg: #eef2f7;
+  --sireno-variant-default-glow: 0 0 0 transparent;
+  --sireno-variant-default-primary: #7dd3fc;
+  --sireno-variant-default-accent: #c3f5ff;
+  --sireno-variant-default-fg: #eef2f7;
+  --sireno-variant-default-foreground-contrast: #333;
+  --sireno-variant-default-success: #34d399;
+  --sireno-variant-default-danger: #ffb4ab;
+  --sireno-variant-default-muted: #b8bfc8;
+  --sireno-variant-error-bg: #ffb4ab26;
+  --sireno-variant-error-border: #ffb4ab73;
+  --sireno-variant-error-fg: #ffb4ab;
+  --sireno-variant-error-glow: 0 0 0 transparent;
+  --sireno-variant-error-primary: #ffb4ab;
+  --sireno-variant-error-accent: #ffb4ab;
+  --sireno-variant-error-fg: #eef2f7;
+  --sireno-variant-error-foreground-contrast: #333;
+  --sireno-variant-error-success: #34d399;
+  --sireno-variant-error-danger: #ffb4ab;
+  --sireno-variant-error-muted: #ffb4ab;
+  --sireno-variant-blue-bg: #7dd3fc26;
+  --sireno-variant-blue-border: #7dd3fc73;
+  --sireno-variant-blue-fg: #eef2f7;
+  --sireno-variant-blue-glow: 0 0 0 transparent;
+  --sireno-variant-blue-primary: #7dd3fc;
+  --sireno-variant-blue-accent: #c3f5ff;
+  --sireno-variant-blue-fg: #eef2f7;
+  --sireno-variant-blue-foreground-contrast: #333;
+  --sireno-variant-blue-success: #34d399;
+  --sireno-variant-blue-danger: #ffb4ab;
+  --sireno-variant-blue-muted: #b8bfc8;
+  --sireno-variant-green-bg: #34d39926;
+  --sireno-variant-green-border: #34d39973;
+  --sireno-variant-green-fg: #eef2f7;
+  --sireno-variant-green-glow: 0 0 0 transparent;
+  --sireno-variant-green-primary: #34d399;
+  --sireno-variant-green-accent: #059669;
+  --sireno-variant-green-fg: #eef2f7;
+  --sireno-variant-green-foreground-contrast: #333;
+  --sireno-variant-green-success: #34d399;
+  --sireno-variant-green-danger: #ffb4ab;
+  --sireno-variant-green-muted: #b8bfc8;
+  --sireno-variant-purple-bg: #c084fc26;
+  --sireno-variant-purple-border: #c084fc73;
+  --sireno-variant-purple-fg: #eef2f7;
+  --sireno-variant-purple-glow: 0 0 0 transparent;
+  --sireno-variant-purple-primary: #c084fc;
+  --sireno-variant-purple-accent: #a855f7;
+  --sireno-variant-purple-fg: #eef2f7;
+  --sireno-variant-purple-foreground-contrast: #333;
+  --sireno-variant-purple-success: #34d399;
+  --sireno-variant-purple-danger: #ffb4ab;
+  --sireno-variant-purple-muted: #b8bfc8;
+  --sireno-variant-cyan-bg: #22d3ee26;
+  --sireno-variant-cyan-border: #22d3ee73;
+  --sireno-variant-cyan-fg: #eef2f7;
+  --sireno-variant-cyan-glow: 0 0 0 transparent;
+  --sireno-variant-cyan-primary: #22d3ee;
+  --sireno-variant-cyan-accent: #06b6d4;
+  --sireno-variant-cyan-fg: #eef2f7;
+  --sireno-variant-cyan-foreground-contrast: #333;
+  --sireno-variant-cyan-success: #34d399;
+  --sireno-variant-cyan-danger: #ffb4ab;
+  --sireno-variant-cyan-muted: #b8bfc8;
+  --sireno-variant-magenta-bg: #e879f926;
+  --sireno-variant-magenta-border: #e879f973;
+  --sireno-variant-magenta-fg: #eef2f7;
+  --sireno-variant-magenta-glow: 0 0 0 transparent;
+  --sireno-variant-magenta-primary: #e879f9;
+  --sireno-variant-magenta-accent: #d946ef;
+  --sireno-variant-magenta-fg: #eef2f7;
+  --sireno-variant-magenta-foreground-contrast: #333;
+  --sireno-variant-magenta-success: #34d399;
+  --sireno-variant-magenta-danger: #ffb4ab;
+  --sireno-variant-magenta-muted: #b8bfc8;
+  --sireno-variant-amber-bg: #fbbf2426;
+  --sireno-variant-amber-border: #fbbf2473;
+  --sireno-variant-amber-fg: #eef2f7;
+  --sireno-variant-amber-glow: 0 0 0 transparent;
+  --sireno-variant-amber-primary: #fbbf24;
+  --sireno-variant-amber-accent: #f59e0b;
+  --sireno-variant-amber-fg: #eef2f7;
+  --sireno-variant-amber-foreground-contrast: #333;
+  --sireno-variant-amber-success: #34d399;
+  --sireno-variant-amber-danger: #ffb4ab;
+  --sireno-variant-amber-muted: #b8bfc8;
+  --sireno-variant-lime-bg: #a3e63526;
+  --sireno-variant-lime-border: #a3e63573;
+  --sireno-variant-lime-fg: #eef2f7;
+  --sireno-variant-lime-glow: 0 0 0 transparent;
+  --sireno-variant-lime-primary: #a3e635;
+  --sireno-variant-lime-accent: #84cc16;
+  --sireno-variant-lime-fg: #eef2f7;
+  --sireno-variant-lime-foreground-contrast: #333;
+  --sireno-variant-lime-success: #34d399;
+  --sireno-variant-lime-danger: #ffb4ab;
+  --sireno-variant-lime-muted: #b8bfc8;
+  --sireno-glow-sm: 0 0 4px transparent;
+  --sireno-glow-md: 0 0 12px transparent;
+  --sireno-glow-lg: 0 0 24px transparent;
+  --sireno-shadow-soft: 0 1px 2px transparent;
+  --sireno-shadow-hard: 0 4px 12px transparent;
+  --sireno-blur-sm: 4px;
+  --sireno-blur-md: 10px;
+  --sireno-pressed-glow: var(--sireno-glow-md);
+  --sireno-held-glow: var(--sireno-glow-lg);
+}
+
+@layer theme-override {
+  .sireno-default-chip[data-sireno-ui-chip="true"] {
+    background: color-mix(
+      in oklab,
+      var(--sireno-color-background) 78%,
+      transparent
+    );
+    box-shadow: inset 0 1px 0 color-mix(in oklab, white 18%, transparent);
+  }
+
+  .sireno-default-icon[data-sireno-ui-icon="true"] {
+    filter: drop-shadow(
+      0 1px 2px
+        color-mix(in oklab, var(--sireno-color-background) 68%, transparent)
+    );
+  }
+
+  .sireno-default-text[data-sireno-ui-text="true"] {
+    text-shadow: 0 1px 0
+      color-mix(in oklab, var(--sireno-color-background) 55%, transparent);
+  }
+
+  @keyframes tap-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+
+  @keyframes hold-fill {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .sireno-tap {
+    animation: tap-pulse 150ms ease-out;
+  }
+
+  .sireno-holding {
+    position: relative;
+  }
+
+  .sireno-holding::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Default pressed / holding glow — every theme gets this for free. Themes
+ * can override by re-declaring the same selectors under @layer
+ * theme-override (which has higher cascade precedence than utility classes).
+ */
+  [data-sireno-button-frame="true"][data-pressed="true"] {
+    box-shadow: var(--sireno-pressed-glow);
+  }
+
+  [data-sireno-button-frame="true"][data-holding="true"] {
+    box-shadow: var(--sireno-held-glow);
+  }
+
+  .sireno-text-fit-shrink {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .sireno-text-fit-multiline {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: var(--sireno-text-lines, 1);
+  }
+}
+
+@theme {
+  --color-bg: #2e3540;
+  --color-frame: #53738b;
+  --color-fg: #eef2f7;
+  --color-foreground-contrast: #333;
+  --color-primary: #7dd3fc;
+  --color-accent: #c3f5ff;
+  --color-muted: #b8bfc8;
+  --color-success: #34d399;
+  --color-danger: #ffb4ab;
+  --font-main: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-aux: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-sans-serif, system-ui, sans-serif;
+}

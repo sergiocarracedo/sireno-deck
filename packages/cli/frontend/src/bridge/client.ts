@@ -1,4 +1,4 @@
-import { ChannelRegistry } from "sireno-deck/react"
+import { ChannelRegistry } from "sirenodeck/react"
 import {
   helloMessageSchema,
   wsMessageSchema,

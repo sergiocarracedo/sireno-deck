@@ -10,7 +10,7 @@ import { startHttpServer } from "../http-server"
 
 const silentLogger = () => createLogger({ level: "silent" })
 
-const TEST_DIR = join(tmpdir(), `sireno-deck-http-test-${process.pid}`)
+const TEST_DIR = join(tmpdir(), `sirenodeck-http-test-${process.pid}`)
 
 const writeIndexHtml = (content: string): void => {
   writeFileSync(join(TEST_DIR, "index.html"), content, "utf8")

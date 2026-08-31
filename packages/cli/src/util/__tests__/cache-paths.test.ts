@@ -10,7 +10,7 @@ import {
   resolveAddonCacheDir,
 } from "../cache-paths"
 
-const TEST_DIR = join(tmpdir(), `sireno-deck-cache-paths-${process.pid}`)
+const TEST_DIR = join(tmpdir(), `sirenodeck-cache-paths-${process.pid}`)
 
 beforeEach(() => {
   if (existsSync(TEST_DIR)) rmSync(TEST_DIR, { recursive: true, force: true })
@@ -28,12 +28,12 @@ afterEach(() => {
 describe("resolveAddonCacheDir", () => {
   it("uses $XDG_CACHE_HOME on linux when set", () => {
     const dir = resolveAddonCacheDir()
-    expect(dir).toBe(join(TEST_DIR, "sireno-deck"))
+    expect(dir).toBe(join(TEST_DIR, "sirenodeck"))
     expect(existsSync(dir)).toBe(true)
   })
 
   it("creates the directory if it does not exist", () => {
-    expect(existsSync(join(TEST_DIR, "sireno-deck"))).toBe(false)
+    expect(existsSync(join(TEST_DIR, "sirenodeck"))).toBe(false)
     const dir = resolveAddonCacheDir()
     expect(existsSync(dir)).toBe(true)
   })
@@ -41,7 +41,7 @@ describe("resolveAddonCacheDir", () => {
 
 describe("addonNpmRoot", () => {
   it("returns <cacheDir>/node_modules", () => {
-    expect(addonNpmRoot()).toBe(join(TEST_DIR, "sireno-deck", "node_modules"))
+    expect(addonNpmRoot()).toBe(join(TEST_DIR, "sirenodeck", "node_modules"))
   })
 
   it("respects an explicit cacheDir argument", () => {
@@ -52,13 +52,13 @@ describe("addonNpmRoot", () => {
 describe("addonNpmInstallPath", () => {
   it("returns <cacheDir>/node_modules/<name>", () => {
     expect(addonNpmInstallPath("my-addon")).toBe(
-      join(TEST_DIR, "sireno-deck", "node_modules", "my-addon"),
+      join(TEST_DIR, "sirenodeck", "node_modules", "my-addon"),
     )
   })
 
   it("supports scoped packages", () => {
     expect(addonNpmInstallPath("@scope/my-addon")).toBe(
-      join(TEST_DIR, "sireno-deck", "node_modules", "@scope", "my-addon"),
+      join(TEST_DIR, "sirenodeck", "node_modules", "@scope", "my-addon"),
     )
   })
 })

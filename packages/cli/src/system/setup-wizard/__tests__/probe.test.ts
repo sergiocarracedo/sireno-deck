@@ -28,7 +28,7 @@ const createExecutor = (
 })
 
 const fileExists = (path: string): boolean =>
-  path === "/etc/udev/rules.d/70-sireno-deck.rules"
+  path === "/etc/udev/rules.d/70-sirenodeck.rules"
 
 describe("probeAll", () => {
   it("reports keyMacro available on Linux when ydotool is present", async () => {
@@ -225,7 +225,7 @@ describe("probeAll", () => {
       readFile: () => null,
     })
     expect(report.config.exists).toBe(false)
-    expect(report.config.path).toBe("/home/u/.config/sireno-deck/config.yml")
+    expect(report.config.path).toBe("/home/u/.config/sirenodeck/config.yml")
   })
 
   it("detects package manager apt when /usr/bin/apt-get is present", async () => {
@@ -271,7 +271,7 @@ describe("probeAll", () => {
       readFile: () => null,
     })
     expect(report.udev.rulesInstalled).toBe(true)
-    expect(report.udev.rulesPath).toBe("/etc/udev/rules.d/70-sireno-deck.rules")
+    expect(report.udev.rulesPath).toBe("/etc/udev/rules.d/70-sirenodeck.rules")
   })
 
   it("returns session 'unknown' when no display env is set", async () => {

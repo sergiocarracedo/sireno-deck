@@ -63,7 +63,7 @@ describe("addon:// icon resolution", () => {
     expect(() => registerDeckIcon(deck, resolverOptions)).not.toThrow()
     expect(
       getAssetByPath(
-        "/works/opensource/sireno-deck-addons/chrome-overlay/assets/chrome.svg",
+        "/works/opensource/sirenodeck-addons/chrome-overlay/assets/chrome.svg",
       ),
     ).toBeUndefined()
   })
