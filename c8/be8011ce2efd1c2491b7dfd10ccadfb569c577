@@ -1,0 +1,151 @@
+.github/workflows/publish-npm.yml
+  s_6bcd96042d831d::t_e6af9429a79bbe 62-63
+  s_6bcd96042d831d::t_76fbc54f9f10a1 92,95,105-109
+  s_6bcd96042d831d::t_1025ee449de45e 64
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_bd9884cb6cd99c::t_92d5ff96b39273 103-111
+  s_bd9884cb6cd99c::t_54679892c9f7da 101-102,112,117-118
+  s_bd9884cb6cd99c::t_26b582a23323c2 119-121
+release-please-config.json
+  s_6bcd96042d831d::t_ad4fc70fb97957 4,10,12,14,22,24,26,32,34,36,42,44,46,52,54,56
+packages/cli/docs/user/builtin-addons.mdx
+  s_6bcd96042d831d::t_b9b4d310268434 128-132,140-147
+packages/web/astro/src/layouts/Base.astro
+  s_bd9884cb6cd99c::t_0e036cd52682dd 16,24,41
+  s_d64ea604b49289::t_4151efcaffb2ae 43,67-80,83
+packages/cli/src/cli/commands/start.ts
+  s_b95d60148d6c17::t_82a6d4c9be800e 604
+packages/web/astro/src/pages/addons/[slug].astro
+  s_b95d60148d6c17::t_cd0313ea2ec3ef 5-6,99,101-104,106-108,112,114,116,119,185,187,236,238,253-256,258-284
+  s_b95d60148d6c17::t_5bed50758854eb 105
+  s_6bcd96042d831d::t_7deaf63081dd3b 28,125,257
+  s_b95d60148d6c17::t_d120816f0227ce 194,221-222
+  s_6bcd96042d831d::t_e38997747568b7 27,29,62,66,178
+  s_bd9884cb6cd99c::t_0e036cd52682dd 40-44
+  s_b95d60148d6c17::t_c84790bdda5f3d 195-220
+RELEASING.md
+  s_6bcd96042d831d::t_51e5eada4150bb 67,77
+  s_6bcd96042d831d::t_412961e95ece39 9-11
+packages/web/astro/src/lib/addon-config-examples.ts
+  s_b95d60148d6c17::t_d120816f0227ce 41-49
+packages/web/astro/src/styles/global.css
+  s_b95d60148d6c17::t_01202fa3f99141 76
+  s_d64ea604b49289::t_4151efcaffb2ae 71-75,77-91
+  s_6bcd96042d831d::t_77aafabb709c2a 92-93
+packages/web/astro/src/components/AddonCard.astro
+  s_d64ea604b49289::t_08de48b2076719 39
+  s_b95d60148d6c17::t_01202fa3f99141 23-27,83
+  s_6bcd96042d831d::t_e38997747568b7 22,29-30,70,75
+  s_b95d60148d6c17::t_ba69b80d7f450c 5-6,31-32,79
+packages/web/astro/src/components/sections/InstallSection.astro
+  s_d64ea604b49289::t_08de48b2076719 31,33,49,65,82,134
+packages/cli/src/deck/runtime/runtime.ts
+  s_bd9884cb6cd99c::t_922506a16a1ea2 657-672
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_bd9884cb6cd99c::t_922506a16a1ea2 161,184,196-197
+  s_bd9884cb6cd99c::t_54679892c9f7da 35-37,162-170,176-177,187
+packages/cli/src/core/icon-asset-registry.ts
+  s_b95d60148d6c17::t_82a6d4c9be800e 55
+.github/workflows/release-please.yml
+  s_6bcd96042d831d::t_aac3b9c818f726 16,19
+packages/cli/src/builtin-addons/coding-agents/decks/agents.ts
+  s_bd9884cb6cd99c::t_54679892c9f7da 37
+packages/web/astro/src/components/ThemeCard.astro
+  s_d64ea604b49289::t_08de48b2076719 33
+packages/cli/src/util/__tests__/log-reader.test.ts
+  s_b95d60148d6c17::t_03295132a5617c 72-83
+packages/web/astro/src/pages/index.astro
+  s_bd9884cb6cd99c::t_0e036cd52682dd 16,26
+packages/web/astro/src/components/hero/HeroShader.astro
+  s_d64ea604b49289::t_4151efcaffb2ae 15
+packages/cli/src/core/__tests__/icon-asset-registry.test.ts
+  s_b95d60148d6c17::t_03295132a5617c 5,87-106
+  s_b95d60148d6c17::t_9721508846292d 107
+packages/cli/docs/user/decks-and-buttons.mdx
+  s_6bcd96042d831d::t_8949ce26516dc4 99
+packages/cli/src/cli/commands/run.ts
+  s_b95d60148d6c17::t_82a6d4c9be800e 488,492-493
+  s_b95d60148d6c17::t_22c08c2192d3ff 489-490
+packages/web/astro/src/pages/themes/[slug].astro
+  s_bd9884cb6cd99c::t_0e036cd52682dd 29-33,158
+packages/web/astro/src/components/sections/FeaturesSection.astro
+  s_d64ea604b49289::t_4151efcaffb2ae 60,64
+packages/web/astro/src/components/SectionHeader.astro
+  s_d64ea604b49289::t_4151efcaffb2ae 42,66
+packages/web/scripts/extract-addon-schemas.mjs
+  s_b95d60148d6c17::t_d120816f0227ce 190-193
+packages/web/astro/src/components/FeatureCard.astro
+  s_d64ea604b49289::t_4151efcaffb2ae 40,66
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_bd9884cb6cd99c::t_72296e4b888eac 90-118
+.github/workflows/release.yml
+  s_6bcd96042d831d::t_e6af9429a79bbe 26
+  s_6bcd96042d831d::t_d7f3ee2d6babe5 6,29,34,39,44,49
+packages/cli/src/ui/ButtonFrame.tsx
+  s_bd9884cb6cd99c::t_90626d2a5a9f11 197
+packages/web/astro/src/components/hero/PaperShader.tsx
+  s_d64ea604b49289::t_4151efcaffb2ae 15,41
+packages/web/astro/src/components/sections/Hero.astro
+  s_bd9884cb6cd99c::t_54679892c9f7da 53-54,56-60
+packages/web/astro/src/components/sections/RemoteSection.astro
+  s_d64ea604b49289::t_4151efcaffb2ae 15,59,71,99
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-provider.test.ts
+  s_bd9884cb6cd99c::t_9e239d960612b8 143-173
+README.md
+  s_6bcd96042d831d::t_b9b4d310268434 103-107
+packages/web/astro/src/pages/addons/index.astro
+  s_6bcd96042d831d::t_e38997747568b7 5,14-15,59-60,78,90-102,105,203
+packages/cli/frontend/src/components/Deck.tsx
+  s_bd9884cb6cd99c::t_90626d2a5a9f11 388,405
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_b95d60148d6c17::t_11108ab8e2fd31 404-422
+packages/cli/src/builtin-addons/system-status/README.md
+  s_6bcd96042d831d::t_3865d1eb313be6 67-70
+  s_6bcd96042d831d::t_5ee7033c9115ed 75-78,80-81
+  s_6bcd96042d831d::t_440866cc91416a 112-120
+  s_6bcd96042d831d::t_8949ce26516dc4 23-32,43-47
+  s_6bcd96042d831d::t_be621ab1727e45 65-66,71-74,79,82-85
+  s_6bcd96042d831d::t_b9b4d310268434 14-15,38,40-41,51-55,121-132
+packages/web/astro/src/content/buttonSchemas.json
+  s_6bcd96042d831d::t_d01b852fc6b2a8 604-611
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c8be8011ce2efd1c2491b7dfd10ccadfb569c577",
+  "prompts": {},
+  "sessions": {
+    "s_6bcd96042d831d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa7665948ffeNauMHtV6hxI1ap",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_b95d60148d6c17": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa80129ceffesELLE0904tL7cd",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_bd9884cb6cd99c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa7974feafferQVHN1CKzG3dZp",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_d64ea604b49289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa82dbacfffeT63f2soNKQnbxd",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
