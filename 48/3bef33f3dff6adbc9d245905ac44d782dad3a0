@@ -1,0 +1,260 @@
+packages/cli/config/default-config.yml
+  s_8ed4a093c0ccec::t_fbf74400524130 1,4
+packages/cli/src/util/daemon.ts
+  s_8ed4a093c0ccec::t_a870bb7930b6dc 97
+  s_8ed4a093c0ccec::t_f749f23f19601b 81,262
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 19
+packages/cli/src/util/__tests__/logger.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 87
+packages/cli/src/__tests__/cli.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 28,44
+packages/cli/src/util/__tests__/log-reader.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 13
+packages/cli/src/util/__tests__/log-tail.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 15
+packages/cli/src/cli/__tests__/http-server.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 13
+docs/installation.mdx
+  h_31bfcf89e26281 12
+packages/cli/src/deck/runtime/runtime.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 615,639
+packages/cli/src/__tests__/config.test.ts
+  s_8ed4a093c0ccec::t_7b9a7d52dc876f 400,403,405,410,434,436,445
+demos/web-snapshot-system-status.yml
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 67
+  s_56d884d1e62fa5::t_09b1bd906fdcdb 3-33,42,47-63
+  s_d64ea604b49289::t_51386dcc618b2d 43-46,64-66
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 274
+  s_56d884d1e62fa5::t_ec0c299cfa319e 56,75,98-100,213,233
+packages/cli/src/cli/commands/pipeline/helpers.ts
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 28
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 39,68
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 25,47-49,78,88,113,120,127,144,146,170
+packages/cli/src/__tests__/logger-format.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 91
+packages/cli/src/system/providers/key-macro/__tests__/windows.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 27
+packages/web/astro/src/components/sections/InstallSection.astro
+  h_31bfcf89e26281 12,116
+packages/cli/README.md
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 7-8
+  s_8ed4a093c0ccec::t_d3880716a5f362 1,9-15
+packages/cli/scripts/installer/_shared/fpm-pack.sh
+  s_8ed4a093c0ccec::t_b49e22ba2e6585 40,42,51,55
+packages/cli/src/cli/commands/__tests__/restart.test.ts
+  s_8ed4a093c0ccec::t_a870bb7930b6dc 69-73,110
+packages/cli/src/cli/commands/__tests__/system-requirements.test.ts
+  s_8ed4a093c0ccec::t_a870bb7930b6dc 86,155
+packages/cli/src/cli/commands/__tests__/port-identity.test.ts
+  s_8ed4a093c0ccec::t_fbf74400524130 39,46,66
+packages/cli/frontend/src/bridge/__tests__/client.test.ts
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 3
+packages/cli/src/outputClient/types.ts
+  s_56d884d1e62fa5::t_88147b5d3907fb 30
+packages/cli/src/cli/index.ts
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 80,223,233,262
+vitest.config.ts
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 17
+packages/cli/src/outputClient/emulator.ts
+  s_56d884d1e62fa5::t_ec0c299cfa319e 144,171
+packages/cli/src/system/setup-wizard/types.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 96
+packages/cli/src/util/cache-paths.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 7
+packages/cli/src/cli/first-run.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 18,26,44
+.gitignore
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 24-26
+packages/cli/src/addon/__tests__/loader.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 27
+packages/cli/src/system/setup-wizard/__tests__/format.test.ts
+  s_8ed4a093c0ccec::t_7b9a7d52dc876f 49,53,64,122,203
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 200
+packages/cli/src/system/setup-wizard/probe.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 348
+packages/cli/frontend/src/index.css
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 2
+packages/cli/scripts/installer/windows-inno.iss
+  s_8ed4a093c0ccec::t_b49e22ba2e6585 1,26
+packages/cli/scripts/installer/flatpak/io.sireno.SirenoDeck.json
+  s_8ed4a093c0ccec::t_b49e22ba2e6585 21
+packages/cli/src/outputClient/real.ts
+  s_56d884d1e62fa5::t_ec0c299cfa319e 231
+packages/cli/scripts/installer/_shared/prepare-runtime-tree.mjs
+  s_8ed4a093c0ccec::t_b49e22ba2e6585 65
+packages/cli/src/deck/__tests__/addon-icon-resolution.test.ts
+  s_8ed4a093c0ccec::t_229b90603cb5cb 66
+packages/cli/emulator/.sireno-deck/theme.css
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 1-276
+demos/capture-deck-video.sh
+  s_d64ea604b49289::t_3c888f7b4d05ab 7,12-15,17-20,22-33,35-48,109-119,121,123-131
+packages/cli/src/themes/loader.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 132
+packages/cli/src/builtin-addons/coding-agents/global/backend.ts
+  s_8ed4a093c0ccec::t_229b90603cb5cb 302,311,320
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_8ed4a093c0ccec::t_7b9a7d52dc876f 65-67
+  s_8ed4a093c0ccec::t_fbf74400524130 68-69,358,370,382,419
+packages/cli/src/cli/commands/__tests__/build-external-addon-dirs.test.ts
+  s_8ed4a093c0ccec::t_229b90603cb5cb 15,19,22,28-29,32,47
+packages/web/scripts/capture-decks.mjs
+  s_8ed4a093c0ccec::t_d3880716a5f362 34,137-141
+packages/cli/src/util/device-config.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 26
+packages/cli/src/addon/registry.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 69
+packages/cli/src/util/__tests__/cache-paths.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 13,31,36,44,55,61
+packages/cli/src/cli/commands/__tests__/build-addon-config-overrides.test.ts
+  s_8ed4a093c0ccec::t_229b90603cb5cb 15,22,31
+packages/cli/frontend/.sireno-deck/theme.css
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 1-272
+packages/cli/src/cli/commands/port-identity.ts
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 62
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 95
+packages/cli/scripts/installer/linux-flatpak.sh
+  s_8ed4a093c0ccec::t_b49e22ba2e6585 26,29
+packages/cli/src/system/setup-wizard/__tests__/plan.test.ts
+  s_8ed4a093c0ccec::t_7b9a7d52dc876f 44,48,130,213
+packages/cli/src/device/linux-udev.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 1,24
+packages/cli/src/system/setup-wizard/runtime-features.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 23
+packages/cli/frontend/src/App.tsx
+  s_8ed4a093c0ccec::t_a870bb7930b6dc 11
+packages/cli/src/system/providers/active-app/__tests__/wayland-gnome.test.ts
+  s_8ed4a093c0ccec::t_229b90603cb5cb 128,139,151,167
+packages/cli/scripts/installer/cask/sirenodeck.rb
+  s_8ed4a093c0ccec::t_b49e22ba2e6585 7,10
+packages/cli/emulator/index.html
+  s_8ed4a093c0ccec::t_d3880716a5f362 6
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_8ed4a093c0ccec::t_7b9a7d52dc876f 31,228,274
+packages/cli/src/cli/commands/__tests__/stop.test.ts
+  s_8ed4a093c0ccec::t_a870bb7930b6dc 14,55-56,58,67,71,73,87-89,99,109-110
+packages/cli/src/cli/commands/start.ts
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 321,338,352,439,871
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 360
+README.md
+  s_8ed4a093c0ccec::t_d3880716a5f362 40,68,174
+packages/cli/src/system/setup-wizard/__tests__/probe-cache.test.ts
+  s_8ed4a093c0ccec::t_7b9a7d52dc876f 24
+packages/cli/scripts/installer/windows-winget/sirenodeck.yaml
+  s_8ed4a093c0ccec::t_b49e22ba2e6585 1,4,7,14
+packages/cli/src/ui/ButtonFrame.tsx
+  s_8ed4a093c0ccec::t_f749f23f19601b 49
+packages/cli/frontend/src/bridge/client.ts
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 1
+packages/cli/src/cli/commands/run.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 578
+  s_56d884d1e62fa5::t_fb65fcaa950c30 1715
+packages/cli/src/cli/commands/service/install.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 13,20
+packages/cli/src/cli/commands/status.ts
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 63
+  s_8ed4a093c0ccec::t_f749f23f19601b 49
+packages/cli/src/cli/commands/service-manager.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 21
+packages/cli/src/cli/commands/system-requirements.ts
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 336,361,378,470
+ARCHITECTURE.md
+  s_8ed4a093c0ccec::t_808a1e52a2e494 277
+packages/cli/src/builtin-addons/coding-agents/__tests__/backend.test.ts
+  s_8ed4a093c0ccec::t_a870bb7930b6dc 10
+packages/cli/src/vite/virtual-modules.ts
+  s_56d884d1e62fa5::t_eb82df4cc1935c 452-479
+  s_8ed4a093c0ccec::t_f749f23f19601b 189,312,333,367,386,620
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 563
+  s_56d884d1e62fa5::t_6360ffca4e8104 480-482
+packages/cli/emulator/src/SidePanel.tsx
+  s_8ed4a093c0ccec::t_fbf74400524130 41,46
+packages/cli/frontend/vite.config.ts
+  s_8ed4a093c0ccec::t_5a0a1ef8a3899e 117
+packages/cli/scripts/installer/macos.sh
+  s_8ed4a093c0ccec::t_b49e22ba2e6585 53,56,58,60
+packages/cli/frontend/index.html
+  s_8ed4a093c0ccec::t_d3880716a5f362 5
+packages/cli/src/cli/commands/__tests__/status.test.ts
+  s_8ed4a093c0ccec::t_7b9a7d52dc876f 82,93,126,131
+packages/cli/src/util/logger.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 297
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_8ed4a093c0ccec::t_a870bb7930b6dc 382
+  s_8ed4a093c0ccec::t_dfa02c94a8ef30 72-76
+packages/cli/src/util/__tests__/device-config.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 38,42-43
+packages/cli/src/config/discovery.ts
+  s_8ed4a093c0ccec::t_f749f23f19601b 15,20
+packages/cli/src/device/__tests__/linux-udev.test.ts
+  s_8ed4a093c0ccec::t_ed1562c3c4983b 19
+packages/cli/emulator/.sireno-deck/node-dep-stubs/-opencode-ai-sdk.js
+  s_d64ea604b49289::t_25a3d6970cfd88 1-6
+packages/cli/emulator/.sireno-deck/node-dep-stubs/chokidar.js
+  s_d64ea604b49289::t_2ac5c4cb14c184 1-6
+packages/cli/emulator/.sireno-deck/node-dep-stubs/execa.js
+  s_d64ea604b49289::t_af92c6217fc5a5 1-6
+packages/cli/emulator/.sireno-deck/node-dep-stubs/node-fs-promises.js
+  s_d64ea604b49289::t_ad1fa322bf1a47 1-8
+packages/cli/emulator/.sireno-deck/node-dep-stubs/node-path.js
+  s_d64ea604b49289::t_41361950528fa1 1-6
+packages/cli/frontend/.sireno-deck/assets/Bitcount_Single/OFL.txt
+  s_56d884d1e62fa5::t_23a1191406b795 1-93
+packages/cli/frontend/.sireno-deck/assets/IBMPlexSans/OFL.txt
+  s_56d884d1e62fa5::t_3502df3a7c857b 1-93
+packages/cli/frontend/.sireno-deck/assets/IBM_Plex_Mono/OFL.txt
+  s_d64ea604b49289::t_f05d195c2363a5 1-93
+packages/cli/frontend/.sireno-deck/assets/OFL.txt
+  s_d64ea604b49289::t_e4f637404de7ae 1-93
+packages/cli/frontend/.sireno-deck/assets/README.txt
+  s_d64ea604b49289::t_80c219a8415de5 1-106
+packages/cli/frontend/.sireno-deck/node-dep-stubs/-opencode-ai-sdk.js
+  s_d64ea604b49289::t_5ea53e03b17bf3 1-6
+packages/cli/frontend/.sireno-deck/node-dep-stubs/chokidar.js
+  s_d64ea604b49289::t_aabd6b18d20d9d 1-6
+packages/cli/frontend/.sireno-deck/node-dep-stubs/execa.js
+  s_d64ea604b49289::t_1d8da46904b83c 1-6
+packages/cli/frontend/.sireno-deck/node-dep-stubs/node-fs-promises.js
+  s_d64ea604b49289::t_6d9b44d3a409bb 1-8
+packages/cli/frontend/.sireno-deck/node-dep-stubs/node-path.js
+  s_d64ea604b49289::t_7e3702921c1938 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "483bef33f3dff6adbc9d245905ac44d782dad3a0",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_56d884d1e62fa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd69d909ffe3B8bl4PxoUSkhI",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": null
+    },
+    "s_8ed4a093c0ccec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa8106af8ffeJ5G0PV5nP8IO6O",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_d64ea604b49289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa82dbacfffeT63f2soNKQnbxd",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
