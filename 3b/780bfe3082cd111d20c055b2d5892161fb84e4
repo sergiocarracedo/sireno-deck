@@ -1,0 +1,35 @@
+packages/cli/src/cli/__tests__/coding-agents-onboarding.test.ts
+  s_0d66ee04bd72b4::t_e1f5548a5f5109 32-35,41,49
+  s_0d66ee04bd72b4::t_83a4f406cd37c3 42-46,51-53
+  s_0d66ee04bd72b4::t_98cf450d03b3fe 2-18,20-31,36-40,47-48,50,54-55
+  s_0d66ee04bd72b4::t_be12f930c39954 1,19
+packages/cli/src/cli/coding-agents-onboarding.ts
+  s_0d66ee04bd72b4::t_09215725ca6eb8 7,51,53
+  s_0d66ee04bd72b4::t_eea178a081683b 10,13-14,17-20,47,49,54,56-66,68-76,80-81,88-89,91-96,173-180,182
+  s_0d66ee04bd72b4::t_ef371dbfa0ec4b 43-46,48,50,55,67,77-79,82-87,90
+  s_0d66ee04bd72b4::t_0b110a76900eea 153-156
+  s_0d66ee04bd72b4::t_96a933b1daa02c 15
+  s_0d66ee04bd72b4::t_8c61234fc483f4 52
+  s_0d66ee04bd72b4::t_0b82169628330f 16
+  s_0d66ee04bd72b4::t_21624a934006ec 97
+packages/cli/package.json
+  s_0d66ee04bd72b4::t_ae30a29f3eaf6a 102
+pnpm-lock.yaml
+  s_0d66ee04bd72b4::t_bb4d316a813106 88-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "3b780bfe3082cd111d20c055b2d5892161fb84e4",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
