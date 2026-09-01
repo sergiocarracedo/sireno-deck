@@ -30,14 +30,14 @@ import type pino from "pino"
 
 export interface DaemonPaths {
   // XDG_RUNTIME_DIR — tmpfs in Linux user scope; vanishes on reboot.
-  // pidFile + tokenFile MUST live here: token rotates per daemon start
+  // pidFile identifies the current daemon process.
   // and child PIDs are re-spawned on every boot, so neither is worth
   // persisting. childrenFile is XDG_RUNTIME_DIR too — the SPA/vite/playwright
   // children re-derive on boot anyway, so the file's value across reboots
   // is post-crash child tracking only.
   runtimeDir: string
   pidFile: string
-  tokenFile: string
+  controlSocket: string
   childrenFile: string
   // XDG_STATE_HOME — persistent. Survives reboot. Holds the bits the
   // daemon needs to hand the same live experience back to the user on
@@ -145,7 +145,7 @@ export const resolveDaemonPaths = (): DaemonPaths => {
   return {
     runtimeDir,
     pidFile: join(runtimeDir, `${DAEMON_NAME}.pid`),
-    tokenFile: join(runtimeDir, `${DAEMON_NAME}.token`),
+    controlSocket: join(runtimeDir, `${DAEMON_NAME}.sock`),
     childrenFile: join(runtimeDir, `${DAEMON_NAME}.children.json`),
     // ponytail: restart-survival — files that have to outlive a reboot
     // live under dataDir (XDG_STATE_HOME). runtime-state.json is the live
@@ -298,23 +298,6 @@ export const isRunning = (pid: number): boolean => {
 
 export const generateToken = (): string => randomBytes(32).toString("base64url")
 
-export const readToken = (paths = resolveDaemonPaths()): string | null => {
-  if (!existsSync(paths.tokenFile)) return null
-  const raw = readFileSync(paths.tokenFile, "utf8").trim()
-  return raw.length > 0 ? raw : null
-}
-
-export const writeToken = (
-  token: string,
-  paths = resolveDaemonPaths(),
-): void => {
-  writeAtomic(paths.tokenFile, `${token}\n`, 0o600)
-}
-
-export const removeTokenFile = (paths = resolveDaemonPaths()): void => {
-  if (existsSync(paths.tokenFile)) unlinkSync(paths.tokenFile)
-}
-
 export interface ChildrenState {
   pids: number[]
 }
@@ -413,7 +396,6 @@ export interface RuntimeState {
   readonly emulatorUrl: string
   readonly wsUrl: string
   readonly frontendUrl: string
-  readonly token: string
   readonly lanHost: string
   readonly addresses: ReadonlyArray<string>
   readonly emulatorMode: boolean
@@ -445,7 +427,6 @@ export const readRuntimeState = (
       typeof (parsed as RuntimeState).emulatorUrl === "string" &&
       typeof (parsed as RuntimeState).wsUrl === "string" &&
       typeof (parsed as RuntimeState).frontendUrl === "string" &&
-      typeof (parsed as RuntimeState).token === "string" &&
       typeof (parsed as RuntimeState).lanHost === "string" &&
       Array.isArray((parsed as RuntimeState).addresses) &&
       typeof (parsed as RuntimeState).emulatorMode === "boolean" &&
@@ -456,7 +437,6 @@ export const readRuntimeState = (
         emulatorUrl: p.emulatorUrl,
         wsUrl: p.wsUrl,
         frontendUrl: p.frontendUrl,
-        token: p.token,
         lanHost: p.lanHost,
         addresses: p.addresses,
         emulatorMode: p.emulatorMode,

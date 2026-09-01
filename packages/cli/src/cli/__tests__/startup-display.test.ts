@@ -52,7 +52,6 @@ describe("waitForRuntimeState", () => {
       emulatorUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
-      token: "abc123",
       lanHost: "192.168.1.10",
       addresses: ["192.168.1.10"],
       emulatorMode: true,
@@ -62,7 +61,6 @@ describe("waitForRuntimeState", () => {
     const result = await waitForRuntimeState(2_000)
     expect(result).not.toBeNull()
     expect(result!.emulatorUrl).toBe("http://127.0.0.1:52938")
-    expect(result!.token).toBe("abc123")
   })
 })
 
@@ -133,7 +131,6 @@ describe("printDaemonUrl", () => {
     emulatorUrl: "http://127.0.0.1:52938",
     wsUrl: "ws://127.0.0.1:52937",
     frontendUrl: "http://127.0.0.1:5180",
-    token: "tok123",
     lanHost: "192.168.1.10",
     addresses: [] as string[],
     emulatorMode: true,
@@ -145,7 +142,7 @@ describe("printDaemonUrl", () => {
 
   it("prints the local URL", async () => {
     const output = vi.fn()
-    await printDaemonUrl(makeState(), output)
+    await printDaemonUrl(makeState(), "tok123", output)
     const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).toContain("127.0.0.1")
     expect(text).toContain("token=tok123")

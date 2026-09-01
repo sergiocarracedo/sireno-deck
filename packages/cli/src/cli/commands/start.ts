@@ -24,12 +24,10 @@ import {
   pruneStaleChildren,
   readConfigPath,
   readPid,
-  readToken,
   removeChildrenFile,
   removePidFile,
   removeRuntimeStateFile,
   removeStartLock,
-  removeTokenFile,
   resolveDaemonPaths,
   SENTINEL_ENV_VAR,
   terminateChildren,
@@ -37,11 +35,11 @@ import {
   writeConfigPath,
   writeFlags,
   writePid,
-  writeToken,
   type RuntimeFlags,
 } from "@/util/daemon"
 
 import { startHttpServer, type RunningHttpServer } from "../http-server"
+import { removeDaemonControl, startDaemonControl } from "@/util/daemon-control"
 import { tailLogs } from "@/util/log-tail"
 import {
   builtinDir,
@@ -426,7 +424,7 @@ const stopExisting = async (
   }
   await terminateChildren({ logger, timeoutMs: 2_000 })
   removePidFile()
-  removeTokenFile()
+  removeDaemonControl(resolveDaemonPaths())
   removeRuntimeStateFile()
   removeChildrenFile()
   removeStartLock()
@@ -550,8 +548,8 @@ const runInProcessSetup = async (
 
   writePid(process.pid)
   const token = generateToken()
-  writeToken(token)
-  runOptions.token = token
+  const daemonPaths = resolveDaemonPaths()
+  const control = await startDaemonControl(token, daemonPaths, logger)
   const sentinel = generateSentinel(process.pid)
   process.env[SENTINEL_ENV_VAR] = sentinel
   process.env["SIRENO_TOKEN"] = token
@@ -565,7 +563,7 @@ const runInProcessSetup = async (
       httpServer = await startHttpServer({
         port: runtimeFlags.httpPort,
         distDir,
-        getToken: () => readToken(),
+        getToken: () => token,
         logger,
         getConfigContent: () => {
           try {
@@ -623,6 +621,8 @@ const runInProcessSetup = async (
           logger.warn({ err }, "daemon: http server stop failed")
         }
       }
+      await new Promise<void>((resolve) => control.close(() => resolve()))
+      removeDaemonControl(daemonPaths)
       // ponytail: kill tracked children (frontend vite, emulator vite, ...)
       // BEFORE removing the children file. Without this, when the daemon
       // exits cleanly the children outlive it as init-adopted orphans, keep
@@ -632,7 +632,7 @@ const runInProcessSetup = async (
       // and is awaited so the operation completes before process.exit.
       await terminateChildren({ logger, timeoutMs: 3_000 })
       removePidFile()
-      removeTokenFile()
+      removeDaemonControl(resolveDaemonPaths())
       removeRuntimeStateFile()
       removeChildrenFile()
       removeStartLock()
@@ -901,7 +901,7 @@ const start = async (options: StartOptions): Promise<void> => {
     }
     await stopExisting(existing, logger)
     removePidFile()
-    removeTokenFile()
+    removeDaemonControl(resolveDaemonPaths())
     removeRuntimeStateFile()
     removeChildrenFile()
     removeStartLock()
@@ -922,7 +922,7 @@ const start = async (options: StartOptions): Promise<void> => {
     pruneStaleChildren(undefined, logger)
     if (existing !== null) {
       removePidFile()
-      removeTokenFile()
+      removeDaemonControl(resolveDaemonPaths())
       removeRuntimeStateFile()
       removeChildrenFile()
       removeStartLock()

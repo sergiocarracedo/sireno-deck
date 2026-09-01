@@ -83,7 +83,6 @@ import {
 } from "@/outputClient"
 import type { AddonInventoryEntry } from "@/api/protocol-internal"
 import { loadDeviceConfig } from "@/util/device-config"
-import { readToken } from "@/util/daemon"
 import { materializeAddonDecks } from "./addon-decks"
 import {
   collectBuiltinAddonRegistry,
@@ -142,7 +141,6 @@ export interface RunOptions {
   readonly onChildren?: (pids: ReadonlyArray<number>) => void
   readonly onAddonsUpdate?: (addons: ReadonlyArray<ScannedAddon>) => void
   readonly logger: pino.Logger
-  token?: string
 }
 
 export interface SetupAddonServicesOptions {
@@ -1502,7 +1500,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       port: 52937,
       host: bridgeHost,
       ...(lanHost !== undefined ? { lanHost } : {}),
-      expectedToken: readToken() ?? "",
+      expectedToken: process.env["SIRENO_TOKEN"] ?? "",
     })
 
     // ponytail: register external addon dirs (from config's `addons:` list) so

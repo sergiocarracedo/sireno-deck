@@ -23,7 +23,12 @@ import {
   type DaemonEvent,
   type DaemonLogSnapshot,
 } from "@/util/log-reader"
-import { readRuntimeState, type RuntimeState } from "@/util/daemon"
+import {
+  readRuntimeState,
+  resolveDaemonPaths,
+  type RuntimeState,
+} from "@/util/daemon"
+import { requestDaemonToken } from "@/util/daemon-control"
 
 import { buildStandardProbeDeps } from "./probe-deps"
 
@@ -290,45 +295,48 @@ export const printDaemonEvents = (events: ReadonlyArray<DaemonEvent>): void => {
 // For real (hardware) mode we print the frontend URL.
 export const printDaemonUrl = async (
   state: RuntimeState,
+  tokenOrOutput: string | ((text: string) => void) = "",
   output: (text: string) => void = (text) => process.stdout.write(text),
 ): Promise<void> => {
+  const token = typeof tokenOrOutput === "string" ? tokenOrOutput : ""
+  const write = typeof tokenOrOutput === "function" ? tokenOrOutput : output
   if (state.emulatorMode) {
     const port = state.emulatorUrl.split(":").pop() ?? ""
     const buildUrl = (host: string, deckOnly: boolean): string => {
       const params = new URLSearchParams()
-      if (state.token.length > 0) params.set("token", state.token)
+      if (token.length > 0) params.set("token", token)
       if (deckOnly) params.set("deckOnly", "1")
       return `http://${host}:${port}?${params.toString()}`
     }
     const localUrl = buildUrl("127.0.0.1", false)
-    output(`\n  Emulator:  ${localUrl}\n`)
+    write(`\n  Emulator:  ${localUrl}\n`)
     if (state.remote && state.addresses.length > 0) {
       const isTty = Boolean(process.stdout.isTTY)
       if (isTty) {
-        output("\n  Emulator (LAN):\n")
+        write("\n  Emulator (LAN):\n")
         for (const addr of state.addresses) {
           const url = buildUrl(addr, true)
           const qr = await qrcode.toString(url, {
             type: "terminal",
             small: true,
           })
-          output(`\n${qr}  ${url}\n`)
+          write(`\n${qr}  ${url}\n`)
         }
       } else {
         for (const addr of state.addresses) {
-          output(`  ${addr}: ${buildUrl(addr, false)}\n`)
+          write(`  ${addr}: ${buildUrl(addr, false)}\n`)
         }
       }
     }
-    output("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
+    write("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
   } else {
     const url = state.frontendUrl
     const withToken =
-      state.token.length > 0
-        ? `${url}${url.includes("?") ? "&" : "?"}token=${state.token}`
+      token.length > 0
+        ? `${url}${url.includes("?") ? "&" : "?"}token=${token}`
         : url
-    output(`\n  Frontend:  ${withToken}\n`)
-    output("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
+    write(`\n  Frontend:  ${withToken}\n`)
+    write("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
   }
 }
 
@@ -339,6 +347,7 @@ export const printDaemonUrl = async (
 // loudly if the daemon didn't come up, not silently exit 0.
 export interface StartOutcome {
   readonly state: RuntimeState | null
+  readonly token: string | null
   readonly events: ReadonlyArray<DaemonEvent>
   readonly tcpReady: boolean
   readonly runtimeReady: boolean
@@ -370,7 +379,10 @@ export const waitForFullStart = async (
     options.logPath,
     options.logSnapshot,
   )
-  return { state, events, tcpReady, runtimeReady }
+  const token = runtimeReady
+    ? await requestDaemonToken(resolveDaemonPaths())
+    : null
+  return { state, token, events, tcpReady, runtimeReady }
 }
 
 // ponytail: per-addon requirement check results, surfaced inline next

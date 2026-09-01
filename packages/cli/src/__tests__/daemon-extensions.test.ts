@@ -21,7 +21,7 @@ const testDir = join(tmpdir(), `daemon-test-${Date.now()}`)
 const testPaths = {
   runtimeDir: testDir,
   pidFile: join(testDir, "test.pid"),
-  tokenFile: join(testDir, "test.token"),
+  controlSocket: join(testDir, "test.sock"),
   childrenFile: join(testDir, "test.children.json"),
   dataDir: testDir,
   configPathFile: join(testDir, "test.config"),

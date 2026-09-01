@@ -25,7 +25,7 @@ packages/cli/
     cli/                     # yargs CLI surface
       main.ts                # argv parser + handler dispatch
       index.ts               # command registry
-      http-server.ts         # prod HTTP server (per-request WS token injection)
+      http-server.ts         # prod HTTP server (in-memory WS token injection)
       commands/
         run.ts               # foreground dev runner
         start.ts             # detached daemon

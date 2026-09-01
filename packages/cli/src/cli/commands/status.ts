@@ -7,7 +7,6 @@ import {
   readFlags,
   readPid,
   readRuntimeState,
-  readToken,
   resolveDaemonPaths,
 } from "@/util/daemon"
 import { listDevices } from "@/device"
@@ -16,7 +15,6 @@ import { cancel, intro, log, outro } from "@/cli/prompt"
 
 export interface StatusOptions {
   logger: pino.Logger
-  showToken?: boolean
 }
 
 const formatUptime = (ms: number): string => {
@@ -30,16 +28,7 @@ const formatUptime = (ms: number): string => {
   return `${seconds}s`
 }
 
-const appendToken = (url: string, token: string | null): string => {
-  if (token === null || token.length === 0) return url
-  const sep = url.includes("?") ? "&" : "?"
-  return `${url}${sep}token=${token}`
-}
-
-export const status = async ({
-  logger,
-  showToken = false,
-}: StatusOptions): Promise<void> => {
+export const status = async ({ logger }: StatusOptions): Promise<void> => {
   void logger // kept for callers that want pino logs out-of-band
 
   const paths = resolveDaemonPaths()
@@ -53,7 +42,6 @@ export const status = async ({
   }
 
   const alive = isRunning(pid)
-  const token = readToken(paths)
   const flags = readFlags(paths)
   const state = alive ? readRuntimeState(paths) : null
   const childrenState = readChildren(paths)
@@ -107,19 +95,12 @@ export const status = async ({
   }
 
   if (alive && state !== null) {
-    const frontendUrl = showToken
-      ? appendToken(state.frontendUrl, token)
-      : state.frontendUrl
+    const frontendUrl = state.frontendUrl
     log.info(`Frontend URL : ${frontendUrl}`)
     log.info(`Bridge URL   : ${state.wsUrl}`)
     if (state.emulatorMode) {
-      const emulatorUrl = showToken
-        ? appendToken(state.emulatorUrl, token)
-        : state.emulatorUrl
+      const emulatorUrl = state.emulatorUrl
       log.info(`Emulator URL : ${emulatorUrl}`)
-    }
-    if (token !== null && !showToken) {
-      log.info("Tip: run with --show-token to reveal the auth token.")
     }
     outro("✓ Status snapshot")
   } else {

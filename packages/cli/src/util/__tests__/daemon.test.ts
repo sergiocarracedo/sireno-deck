@@ -1,10 +1,4 @@
-import {
-  chmodSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  statSync,
-} from "node:fs"
+import { existsSync, mkdirSync, readFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
@@ -14,12 +8,10 @@ import {
   acquireStartLock,
   generateToken,
   readChildren,
-  readToken,
   removeStartLock,
   resolveDaemonPaths,
   terminateChildren,
   writeChildren,
-  writeToken,
 } from "../daemon"
 
 const TEST_DIR = join(tmpdir(), `sirenodeck-daemon-test-${process.pid}`)
@@ -45,7 +37,7 @@ describe("resolveDaemonPaths", () => {
     const paths = resolveDaemonPaths()
     expect(paths.runtimeDir).toBe(TEST_DIR)
     expect(paths.pidFile).toBe(join(TEST_DIR, "sirenodeck.pid"))
-    expect(paths.tokenFile).toBe(join(TEST_DIR, "sirenodeck.token"))
+    expect(paths.controlSocket).toBe(join(TEST_DIR, "sirenodeck.sock"))
     expect(paths.childrenFile).toBe(join(TEST_DIR, "sirenodeck.children.json"))
   })
 })
@@ -61,34 +53,6 @@ describe("generateToken", () => {
     const a = generateToken()
     const b = generateToken()
     expect(a).not.toBe(b)
-  })
-})
-
-describe("writeToken / readToken", () => {
-  it("round-trips a token", () => {
-    const token = generateToken()
-    writeToken(token)
-    expect(readToken()).toBe(token)
-  })
-
-  it("writes with mode 0600", () => {
-    if (process.platform === "win32") return
-    const token = generateToken()
-    writeToken(token)
-    const stat = statSync(join(TEST_DIR, "sirenodeck.token"))
-    const mode = stat.mode & 0o777
-    expect(mode).toBe(0o600)
-  })
-
-  it("returns null when file is missing", () => {
-    expect(readToken()).toBeNull()
-  })
-
-  it("returns null when file is empty", () => {
-    const path = join(TEST_DIR, "sirenodeck.token")
-    const { writeFileSync } = require("node:fs") as typeof import("node:fs")
-    writeFileSync(path, "", "utf8")
-    expect(readToken()).toBeNull()
   })
 })
 
@@ -128,24 +92,6 @@ describe("writeChildren / readChildren", () => {
     writeChildren({ pids: [1] })
     expect(existsSync(path)).toBe(true)
     expect(readFileSync(path, "utf8")).toContain('"pids"')
-  })
-})
-
-describe("writeToken overwrites", () => {
-  it("a second writeToken replaces the first", () => {
-    writeToken("first-token")
-    writeToken("second-token")
-    expect(readToken()).toBe("second-token")
-  })
-
-  it("does not affect chmod of existing file", () => {
-    if (process.platform === "win32") return
-    writeToken("first-token")
-    chmodSync(join(TEST_DIR, "sirenodeck.token"), 0o644)
-    writeToken("second-token")
-    const stat = statSync(join(TEST_DIR, "sirenodeck.token"))
-    const mode = stat.mode & 0o777
-    expect(mode).toBe(0o600)
   })
 })
 
