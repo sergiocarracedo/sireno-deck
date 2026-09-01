@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs"
+import { readFileSync, realpathSync } from "node:fs"
 import { dirname, isAbsolute, resolve as resolvePath } from "node:path"
 
 export class IncludeResolutionError extends Error {
@@ -16,6 +16,29 @@ export class IncludeResolutionError extends Error {
 
 const INCLUDE_RE = /^(\s*)(.*?)\s*!include\s+(\S+)(.*)$/
 
+const resolveIncludePath = (
+  pathStr: string,
+  definingFilePath: string,
+): string => {
+  const rootDir = resolvePath(dirname(definingFilePath))
+  const normalizedRoot = rootDir.endsWith("/") ? rootDir : `${rootDir}/`
+  const includePath = isAbsolute(pathStr)
+    ? pathStr
+    : resolvePath(dirname(definingFilePath), pathStr)
+  if (!includePath.startsWith(normalizedRoot)) {
+    throw new IncludeResolutionError(
+      `!include path escapes config directory: ${includePath} (from ${definingFilePath})`,
+      [
+        {
+          message: `path traversal blocked: ${pathStr}`,
+          path: definingFilePath,
+        },
+      ],
+    )
+  }
+  return includePath
+}
+
 const processLine = (
   line: string,
   definingFilePath: string,
@@ -32,25 +55,8 @@ const processLine = (
       [{ message: "empty path after !include", path: definingFilePath }],
     )
   }
-  const rootDir = resolvePath(dirname(definingFilePath))
-  const normalizedRoot = rootDir.endsWith("/") ? rootDir : `${rootDir}/`
-  const includePath = isAbsolute(pathStr)
-    ? pathStr
-    : resolvePath(dirname(definingFilePath), pathStr)
-  // ponytail: !include must stay within the defining file's directory —
-  // resolvePath(..) silently walks out of it, and absolute paths read any
-  // file on the box. Pin both forms to the config dir.
-  if (!includePath.startsWith(normalizedRoot)) {
-    throw new IncludeResolutionError(
-      `!include path escapes config directory: ${includePath} (from ${definingFilePath})`,
-      [
-        {
-          message: `path traversal blocked: ${pathStr}`,
-          path: definingFilePath,
-        },
-      ],
-    )
-  }
+  // ponytail: !include must stay within the defining file's directory.
+  const includePath = resolveIncludePath(pathStr, definingFilePath)
   if (visited.has(includePath)) {
     const cycle = [...visited, includePath].join(" -> ")
     throw new IncludeResolutionError(`Circular include detected: ${cycle}`, [
@@ -106,3 +112,32 @@ export const resolveIncludes = (
   text: string,
   definingFilePath: string,
 ): string => inlineIncludes(text, definingFilePath, new Set([definingFilePath]))
+
+const discoverFromFile = (filePath: string, visited: Set<string>): string[] => {
+  const canonicalPath = realpathSync(filePath)
+  if (visited.has(canonicalPath)) {
+    throw new IncludeResolutionError(
+      `Circular include detected: ${canonicalPath}`,
+    )
+  }
+  const next = new Set(visited)
+  next.add(canonicalPath)
+  const sources = [canonicalPath]
+  for (const line of readFileSync(canonicalPath, "utf8").split("\n")) {
+    const match = line.match(INCLUDE_RE)
+    if (match === null) continue
+    const pathStr = match[3]
+    if (pathStr === undefined || pathStr.length === 0) {
+      throw new IncludeResolutionError(
+        `Empty !include path at ${canonicalPath}`,
+      )
+    }
+    const includePath = resolveIncludePath(pathStr, canonicalPath)
+    sources.push(...discoverFromFile(includePath, next))
+  }
+  return [...new Set(sources)]
+}
+
+/** Returns the canonical files reachable through !include, including root. */
+export const discoverIncludeGraph = (rootPath: string): string[] =>
+  discoverFromFile(rootPath, new Set())

@@ -1,5 +1,5 @@
 import { exec } from "node:child_process"
-import { existsSync, mkdirSync, writeFileSync } from "node:fs"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { homedir, networkInterfaces } from "node:os"
 import {
   basename,
@@ -75,6 +75,11 @@ import {
 import { getHostContext } from "@/deck/host-context"
 import { StatePublisher } from "@/render/state-publisher"
 import { startWsBridge, type WsBridge } from "@/render/ws-bridge"
+import { createConfigMutationService } from "@/config/mutation"
+import {
+  createEditorMessageHandler,
+  type EditorMessageHandler,
+} from "@/render/editor-handler"
 
 import {
   selectOutputClient,
@@ -1456,6 +1461,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   let unregisterReload: (() => void) | null = null
   let unsubscribeLockMode: (() => void) | null = null
   let removeServiceLogListener: (() => void) | null = null
+  let editorMutationService: ReturnType<
+    typeof createConfigMutationService
+  > | null = null
+  let editorHandler: EditorMessageHandler | null = null
 
   try {
     // Validate config first so a broken YAML exits before we ever touch
@@ -1838,11 +1847,16 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     // respawns) into `trackedPids` and reported it via `options.onChildren`,
     // so the children file stays complete without this second write.
 
-    // Hot-reload: watch the YAML config for changes. Deck-only changes
+    editorMutationService = createConfigMutationService({
+      configPath: loadedConfig.configPath,
+    })
+
+    // Hot-reload: watch the YAML config and its included sources for changes.
+    // Deck-only changes
     // rebuild the runtime deck set in-place and rebroadcast deck-config;
     // anything else (theme, addons, lock, logging) tears down Vite and
     // re-initialises the output client with the new theme.
-    configWatcher = new ConfigWatcher([loadedConfig.configPath], {
+    configWatcher = new ConfigWatcher(editorMutationService.sources(), {
       onChange: () => {
         void handleConfigChange()
       },
@@ -1905,6 +1919,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           )
           bridge!.broadcast(msg)
           currentLoadedConfig = nextLoaded
+          editorHandler?.invalidate()
           logger.info(
             {
               deckId: msg.deckId,
@@ -1926,6 +1941,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           "config change outside decks — broadcasting iframe-reload",
         )
         currentLoadedConfig = nextLoaded
+        editorHandler?.invalidate()
         bridge!.broadcast({ type: "iframe-reload" })
       } catch (err) {
         logger.warn(
@@ -1934,6 +1950,27 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         )
       }
     }
+
+    editorHandler = createEditorMessageHandler({
+      mutationService: editorMutationService,
+      getState: () => ({
+        config: currentLoadedConfig.config,
+        sources: editorMutationService!.sources(),
+        sourceContents: Object.fromEntries(
+          editorMutationService!
+            .sources()
+            .map((source) => [source, readFileSync(source, "utf8")]),
+        ),
+        themes: currentLoadedConfig.registry.listThemes().map((theme) => ({
+          name: theme.name,
+          active: theme.name === currentLoadedConfig.theme.name,
+        })),
+      }),
+      onChanged: handleConfigChange,
+      broadcast: (message) => bridge!.broadcast(message),
+    })
+    bridge.onMessage(editorHandler.onMessage)
+    bridge.onConnection(editorHandler.onConnection)
     await configWatcher.start({ ignoreInitial: true })
 
     let resolveDone: () => void = () => undefined

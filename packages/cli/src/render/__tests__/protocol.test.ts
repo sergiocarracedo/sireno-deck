@@ -9,6 +9,9 @@ import {
   methodCallMessageSchema,
   setDeviceMessageSchema,
   wsMessageSchema,
+  editorMutationMessageSchema,
+  editorStateMessageSchema,
+  editorUndoMessageSchema,
 } from "../protocol"
 
 describe("ws protocol v1", () => {
@@ -101,5 +104,45 @@ describe("ws protocol v1", () => {
         deviceId: "",
       }).success,
     ).toBe(false)
+  })
+
+  it("accepts strict editor root-button mutations and undo", () => {
+    expect(
+      editorMutationMessageSchema.safeParse({
+        type: "editor-mutate",
+        requestId: "r1",
+        revision: 0,
+        mutation: { kind: "delete", deckId: "main", index: 0 },
+      }).success,
+    ).toBe(true)
+    expect(
+      editorMutationMessageSchema.safeParse({
+        type: "editor-mutate",
+        requestId: "r1",
+        revision: 0,
+        mutation: { kind: "delete", deckId: "main", index: 0, extra: true },
+      }).success,
+    ).toBe(false)
+    expect(
+      editorUndoMessageSchema.safeParse({
+        type: "editor-undo",
+        requestId: "r2",
+        revision: 0,
+      }).success,
+    ).toBe(true)
+  })
+
+  it("editor state requires serializable revision metadata", () => {
+    expect(
+      editorStateMessageSchema.safeParse({
+        type: "editor-state",
+        revision: 1,
+        config: { decks: {} },
+        sources: ["/tmp/config.yml"],
+        sourceContents: {},
+        themes: [],
+        canUndo: false,
+      }).success,
+    ).toBe(true)
   })
 })

@@ -19,6 +19,7 @@ export interface DeckFrameProps {
     position: number
     gesture: "tap" | "dbl-tap" | "hold"
   }) => void
+  readonly onDropPosition?: (position: number, event: React.DragEvent) => void
   // ponytail: lets the parent trigger `iframe.contentWindow.location.reload()`
   // on `iframe-reload` WS messages without giving the parent a real DOM ref
   // (which would force React to re-render and discard internal state).
@@ -31,6 +32,7 @@ export const DeckFrame = ({
   deckId,
   token = "",
   onGesture,
+  onDropPosition,
   onIframeRef,
 }: DeckFrameProps): React.ReactElement => {
   const { columns, keyCount } = device
@@ -210,6 +212,16 @@ export const DeckFrame = ({
               onMouseLeave={(e) => {
                 if (e.buttons === 1) handleUp(i)
               }}
+              onDragOver={
+                onDropPosition === undefined
+                  ? undefined
+                  : (event) => event.preventDefault()
+              }
+              onDrop={
+                onDropPosition === undefined
+                  ? undefined
+                  : (event) => onDropPosition(i, event)
+              }
               className={[
                 "rounded-lg border",
                 "bg-gradient-to-br from-black/40 via-black/20 to-white/5",

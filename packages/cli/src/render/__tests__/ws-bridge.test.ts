@@ -6,6 +6,7 @@ import {
   buttonActionMessageSchema,
   helloAckMessageSchema,
   stateMessageSchema,
+  editorMutationMessageSchema,
 } from "../protocol"
 import { startWsBridge, type WsBridge } from "../ws-bridge"
 
@@ -159,6 +160,29 @@ describe("ws bridge", () => {
     })
     const msg = await handler
     expect((msg as { type: string }).type).toBe("button-action")
+  })
+
+  it("onMessage receives editor mutations after handshake", async () => {
+    bridge = await startWsBridge({ expectedToken: "" })
+    const received = new Promise<unknown>((resolve) => {
+      bridge!.onMessage((message) => resolve(message))
+      openClient(bridge!.port).then((s) => {
+        s.send(
+          JSON.stringify(
+            editorMutationMessageSchema.parse({
+              type: "editor-mutate",
+              requestId: "r1",
+              revision: 0,
+              mutation: { kind: "delete", deckId: "main", index: 0 },
+            }),
+          ),
+        )
+      })
+    })
+    await expect(received).resolves.toMatchObject({
+      type: "editor-mutate",
+      requestId: "r1",
+    })
   })
 
   it("onConnection fires after hello", async () => {

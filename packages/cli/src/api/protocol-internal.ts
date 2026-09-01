@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { ButtonDefSchema } from "@/config/schemas"
+
 export const PROTOCOL_VERSION = 1
 
 export const gestureKindSchema = z.enum(["tap", "dbl-tap", "hold"])
@@ -245,6 +247,103 @@ export const iframeReloadMessageSchema = baseServerMessage
   })
   .strict()
 
+const rootButtonMutationSchema = z.discriminatedUnion("kind", [
+  z
+    .object({
+      kind: z.literal("add"),
+      deckId: z.string().min(1),
+      button: ButtonDefSchema,
+      index: z.number().int().nonnegative().optional(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("update"),
+      deckId: z.string().min(1),
+      index: z.number().int().nonnegative(),
+      button: ButtonDefSchema,
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("delete"),
+      deckId: z.string().min(1),
+      index: z.number().int().nonnegative(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("reorder"),
+      deckId: z.string().min(1),
+      from: z.number().int().nonnegative(),
+      to: z.number().int().nonnegative(),
+    })
+    .strict(),
+  z.object({ kind: z.literal("set-theme"), theme: z.string().min(1) }).strict(),
+  z
+    .object({
+      kind: z.literal("set-addon-deck-override"),
+      addonIndex: z.number().int().nonnegative(),
+      deckId: z.string().min(1),
+      override: z.record(z.string(), z.unknown()).nullable(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("edit-source"),
+      path: z.string().min(1),
+      content: z.string(),
+    })
+    .strict(),
+])
+
+export const editorStateRequestMessageSchema = baseClientMessage
+  .extend({
+    type: z.literal("editor-state-request"),
+  })
+  .strict()
+
+export const editorStateMessageSchema = baseServerMessage
+  .extend({
+    type: z.literal("editor-state"),
+    revision: z.number().int().nonnegative(),
+    config: z.unknown(),
+    sources: z.array(z.string()),
+    sourceContents: z.record(z.string(), z.string()),
+    themes: z.array(
+      z.object({ name: z.string(), active: z.boolean().optional() }).strict(),
+    ),
+    canUndo: z.boolean(),
+  })
+  .strict()
+
+export const editorMutationMessageSchema = baseClientMessage
+  .extend({
+    type: z.literal("editor-mutate"),
+    requestId: z.string().min(1),
+    revision: z.number().int().nonnegative(),
+    mutation: rootButtonMutationSchema,
+  })
+  .strict()
+
+export const editorUndoMessageSchema = baseClientMessage
+  .extend({
+    type: z.literal("editor-undo"),
+    requestId: z.string().min(1),
+    revision: z.number().int().nonnegative(),
+  })
+  .strict()
+
+export const editorMutationResultMessageSchema = baseServerMessage
+  .extend({
+    type: z.literal("editor-mutation-result"),
+    requestId: z.string().min(1),
+    ok: z.boolean(),
+    revision: z.number().int().nonnegative(),
+    error: z.string().optional(),
+  })
+  .strict()
+
 // ponytail: ships the addon inventory the emulator's Addons tab renders.
 // Replaces a separate HTTP `/api/addons` fetch on the start-mode daemon
 // (port 3939) that isn't bound in `--emulator` mode — the emulator only
@@ -316,6 +415,11 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   assetsMessageSchema,
   subscribeChannelsMessageSchema,
   iframeReloadMessageSchema,
+  editorStateRequestMessageSchema,
+  editorStateMessageSchema,
+  editorMutationMessageSchema,
+  editorUndoMessageSchema,
+  editorMutationResultMessageSchema,
   addonsInventoryMessageSchema,
   deckTreeMessageSchema,
 ])
@@ -343,6 +447,13 @@ export type SubscribeChannelsMessage = z.infer<
   typeof subscribeChannelsMessageSchema
 >
 export type IframeReloadMessage = z.infer<typeof iframeReloadMessageSchema>
+export type RootButtonMutation = z.infer<typeof rootButtonMutationSchema>
+export type EditorStateMessage = z.infer<typeof editorStateMessageSchema>
+export type EditorMutationMessage = z.infer<typeof editorMutationMessageSchema>
+export type EditorUndoMessage = z.infer<typeof editorUndoMessageSchema>
+export type EditorMutationResultMessage = z.infer<
+  typeof editorMutationResultMessageSchema
+>
 export type AddonsInventoryMessage = z.infer<
   typeof addonsInventoryMessageSchema
 >

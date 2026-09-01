@@ -16,6 +16,11 @@ export {
   dismissOverlayMessageSchema,
   assetsMessageSchema,
   subscribeChannelsMessageSchema,
+  editorStateRequestMessageSchema,
+  editorStateMessageSchema,
+  editorMutationMessageSchema,
+  editorUndoMessageSchema,
+  editorMutationResultMessageSchema,
   wsMessageSchema,
   PROTOCOL_VERSION,
 } from "../api/protocol-internal"
@@ -37,5 +42,10 @@ export type {
   DismissOverlayMessage,
   AssetsMessage,
   SubscribeChannelsMessage,
+  RootButtonMutation,
+  EditorStateMessage,
+  EditorMutationMessage,
+  EditorUndoMessage,
+  EditorMutationResultMessage,
   WsMessage,
 } from "../api/protocol-internal"

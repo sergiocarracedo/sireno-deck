@@ -14,6 +14,10 @@ export {
   dismissOverlayMessageSchema,
   wsMessageSchema,
   subscribeChannelsMessageSchema,
+  editorStateMessageSchema,
+  editorMutationMessageSchema,
+  editorUndoMessageSchema,
+  editorMutationResultMessageSchema,
   PROTOCOL_VERSION,
 } from "./protocol-internal"
 
@@ -33,5 +37,10 @@ export type {
   DismissOverlayMessage,
   WsMessage,
   SubscribeChannelsMessage,
+  EditorStateMessage,
+  EditorMutationMessage,
+  EditorUndoMessage,
+  EditorMutationResultMessage,
+  RootButtonMutation,
 } from "./protocol-internal"
 export { resolveAddonAssetSrc, ADDON_ASSET_URL_PREFIX } from "./asset-url"

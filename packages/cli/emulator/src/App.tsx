@@ -21,6 +21,7 @@ import { ServiceLogsPage } from "./pages/ServiceLogsPage"
 import { AddonsPage, type AddonInventory } from "./pages/AddonsPage"
 import { ConfigPage } from "./pages/ConfigPage"
 import { DecksPage } from "./pages/DecksPage"
+import { EditorPage, type EditorState } from "./pages/EditorPage"
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
   "ws://127.0.0.1:52937") as string
@@ -72,6 +73,7 @@ const SECTIONS = [
   "addons",
   "decks",
   "config",
+  "editor",
 ] as const
 
 const isValidSection = (s: string | null): s is (typeof SECTIONS)[number] =>
@@ -113,6 +115,12 @@ export const App = ({
     rootId: string
     decks: unknown[]
   } | null>(null)
+  const [editorState, setEditorState] = useState<EditorState | null>(null)
+  const [editorResult, setEditorResult] = useState<{
+    requestId: string
+    ok: boolean
+    error?: string
+  } | null>(null)
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(() =>
     initialDeviceModel !== undefined && isKnownDeviceModel(initialDeviceModel)
       ? getDeviceModel(initialDeviceModel)
@@ -133,6 +141,11 @@ export const App = ({
     clientRef.current = createWsClient({
       url: wsUrl,
       ...(token !== "" ? { token } : {}),
+      onOpen: () => {
+        clientRef.current?.send(
+          JSON.stringify({ type: "editor-state-request" }),
+        )
+      },
       onStatus: (status) => {
         const previous = lastStatusRef.current
         lastStatusRef.current = status
@@ -207,6 +220,46 @@ export const App = ({
           if (typeof m.rootId === "string" && Array.isArray(m.decks)) {
             setDeckTree({ rootId: m.rootId, decks: m.decks })
           }
+        }
+        if (
+          m.type === "editor-state" &&
+          typeof m.revision === "number" &&
+          Array.isArray(m.sources)
+        ) {
+          setEditorState({
+            revision: m.revision,
+            config: m.config,
+            sources: m.sources.filter(
+              (source): source is string => typeof source === "string",
+            ),
+            sourceContents:
+              m.sourceContents !== null && typeof m.sourceContents === "object"
+                ? Object.fromEntries(
+                    Object.entries(m.sourceContents).filter(
+                      (entry): entry is [string, string] =>
+                        typeof entry[0] === "string" &&
+                        typeof entry[1] === "string",
+                    ),
+                  )
+                : {},
+            themes: Array.isArray(m.themes)
+              ? m.themes.filter(
+                  (theme): theme is { name: string; active?: boolean } =>
+                    typeof theme?.name === "string",
+                )
+              : [],
+            canUndo: m.canUndo === true,
+          })
+        }
+        if (
+          m.type === "editor-mutation-result" &&
+          typeof m.requestId === "string"
+        ) {
+          setEditorResult({
+            requestId: m.requestId,
+            ok: m.ok === true,
+            ...(typeof m.error === "string" ? { error: m.error } : {}),
+          })
         }
         if (typeof m.type === "string" && m.type.endsWith("error")) {
           setLastError(String(m.type))
@@ -306,6 +359,19 @@ export const App = ({
       return <AddonsPage addonInventory={addonInventory} />
     if (activeSection === "decks") return <DecksPage deckTree={deckTree} />
     if (activeSection === "config") return <ConfigPage />
+    if (activeSection === "editor")
+      return (
+        <EditorPage
+          wsClient={clientRef.current}
+          state={editorState}
+          result={editorResult}
+          addonInventory={addonInventory}
+          frontendUrl={ENV_FRONTEND_URL}
+          device={deviceModel}
+          token={token}
+          themes={editorState?.themes}
+        />
+      )
     return null
   }
 
@@ -350,6 +416,7 @@ export const App = ({
       activeSection={activeSection}
       onSelect={onSelect}
       hideSidebar={deckOnly}
+      wsClient={clientRef.current}
       content={
         <>
           {deckOnly ? (
