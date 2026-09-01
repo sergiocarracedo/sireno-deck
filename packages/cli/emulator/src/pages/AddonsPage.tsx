@@ -13,7 +13,7 @@ interface ButtonTypeInfo {
   internal: boolean
 }
 
-interface AddonInfo {
+export interface AddonInfo {
   name: string
   path: string
   internal: boolean
@@ -23,7 +23,7 @@ interface AddonInfo {
   decks: DeckInfo[]
 }
 
-interface AddonInventory {
+export interface AddonInventory {
   addons: AddonInfo[]
 }
 

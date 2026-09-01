@@ -2,7 +2,7 @@ import type { RawButtonEntry, RawConfig, RawDeckDef } from "./schemas"
 
 const buttonKey = (entry: RawButtonEntry, idx: number): string => {
   if (typeof entry === "string") return `s:${idx}:${entry}`
-  return `o:${idx}:${entry.type}:${entry.position ?? -1}`
+  return `o:${idx}:${JSON.stringify(entry)}`
 }
 
 const sameButtons = (a: RawDeckDef, b: RawDeckDef): boolean => {

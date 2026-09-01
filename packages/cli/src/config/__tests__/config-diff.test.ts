@@ -58,6 +58,21 @@ describe("decksChanged", () => {
     expect(decksChanged(prev, next)).toBe(true)
   })
 
+  it("returns true when a button config changes", () => {
+    const prev = baseConfig()
+    const next = baseConfig({
+      decks: {
+        main: {
+          buttons: [
+            { type: "core:action", config: { command: "y" } },
+            prev.decks.main!.buttons[1]!,
+          ],
+        },
+      },
+    })
+    expect(decksChanged(prev, next)).toBe(true)
+  })
+
   it("returns true when a button position changes", () => {
     const prev = baseConfig({
       decks: {

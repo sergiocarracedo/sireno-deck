@@ -10,6 +10,7 @@ const SECTIONS = [
   { path: "addons", label: "Addons" },
   { path: "decks", label: "Decks" },
   { path: "config", label: "Config" },
+  { path: "editor", label: "Editor" },
 ] as const
 
 export interface SidePanelProps {
