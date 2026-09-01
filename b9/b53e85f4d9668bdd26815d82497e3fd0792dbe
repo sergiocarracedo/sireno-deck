@@ -1,0 +1,19 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/frontend.tsx
+  s_0d66ee04bd72b4::t_1c378682529526 136,222,224
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "b9b53e85f4d9668bdd26815d82497e3fd0792dbe",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
