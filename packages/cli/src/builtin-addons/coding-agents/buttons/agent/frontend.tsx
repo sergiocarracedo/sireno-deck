@@ -42,17 +42,17 @@ interface SnapshotLike {
 const TILE_COLOR: Record<string, string> = {
   idle: "transparent",
   running: "var(--sireno-color-primary)",
-  waiting: "var(--sireno-color-accent)",
-  waiting_for_human: "var(--sireno-color-danger)",
+  waiting: "var(--sireno-variant-amber-primary, #fbbf24)",
+  waiting_for_human: "var(--sireno-variant-amber-primary, #fbbf24)",
   error: "var(--sireno-color-danger)",
   compacting: "var(--sireno-color-primary)",
 }
 
 const DOT_COLOR: Record<string, string> = {
-  idle: "var(--sireno-color-muted)",
+  idle: "var(--sireno-color-foreground)",
   running: "var(--sireno-color-primary)",
-  waiting: "var(--sireno-color-accent)",
-  waiting_for_human: "var(--sireno-color-danger)",
+  waiting: "var(--sireno-variant-amber-primary, #fbbf24)",
+  waiting_for_human: "var(--sireno-variant-amber-primary, #fbbf24)",
   error: "var(--sireno-color-danger)",
   compacting: "var(--sireno-color-primary)",
 }
@@ -94,11 +94,11 @@ const AgentFrontend = (props: AddonFrontendButtonProps<AgentConfig>) => {
     <div className="relative flex h-full w-full flex-col justify-between p-1">
       {tileColor !== "transparent" && (
         <div
-          className="pointer-events-none absolute inset-0 rounded-xl"
+          className="pointer-events-none absolute -inset-[5px] z-0 rounded-2xl"
           style={{ backgroundColor: tileColor, opacity: 0.32 }}
         />
       )}
-      <div className="relative grid min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] grid-rows-[auto_repeat(3,minmax(0,1fr))] items-center gap-x-1 py-1">
+      <div className="relative z-10 grid min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] grid-rows-[auto_repeat(3,minmax(0,1fr))] items-center gap-x-1 py-1">
         {iconSource !== undefined ? (
           <span>
             <Icon source={iconSource} size={18} />

@@ -116,20 +116,24 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
   const hasSessions = all.length > 0
 
   const statusRows: Array<{ color: string; label: string; count: number }> = [
-    { color: "var(--sireno-color-muted)", label: "idle", count: count("idle") },
     {
-      color: "var(--sireno-color-success)",
+      color: "var(--sireno-color-foreground)",
+      label: "idle",
+      count: count("idle"),
+    },
+    {
+      color: "var(--sireno-color-primary)",
       label: "running",
       count: count("running"),
     },
     {
-      color: "var(--sireno-color-accent)",
+      color: "var(--sireno-variant-amber-primary, #fbbf24)",
       label: "waiting",
       count: count("waiting"),
     },
     {
       color: "var(--sireno-color-danger)",
-      label: "needs approval",
+      label: "approval",
       count: count("waiting_for_human"),
     },
     {
@@ -221,10 +225,10 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
                   className="flex items-center gap-1 leading-none"
                 >
                   <span
-                    className="inline-block h-2.5 w-2.5 rounded-full"
+                    className="inline-block h-3 w-3 shrink-0 aspect-square rounded-full"
                     style={{ backgroundColor: b.color }}
                   />
-                  <span className="text-[10px] font-semibold tabular-nums">
+                  <span className="whitespace-nowrap text-[11px] font-semibold tabular-nums">
                     {b.count} {b.label}
                   </span>
                 </div>
