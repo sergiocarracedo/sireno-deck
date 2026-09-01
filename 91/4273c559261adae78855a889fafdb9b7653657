@@ -1,0 +1,149 @@
+packages/cli/emulator/src/pages/EditorPage.tsx
+  s_1e4bd27dd13fcc::t_f8c039121056ad 15-19,43,81,380-402
+  s_5152dbc7eeb818::t_73b66b9f4553dd 1-2,5,8-9,14,20-23,26-38,44-50,72,83-87,95-100,103-105,108-109,112,114-119,127-131,140-144,147,169-170,176-179,188-194,202-205,215-225,230,262,709-713
+  s_1e4bd27dd13fcc::t_91042404d45478 24,88-89,206-210,415-416,423-425,427,458-459
+  s_1e4bd27dd13fcc::t_f0819eb5b9f7f5 25
+  s_1e4bd27dd13fcc::t_2866ff4a9734b2 327-329,348-374,649-651,666-669
+  s_1e4bd27dd13fcc::t_c8db58476d7f7e 497-500
+  s_5152dbc7eeb818::t_5549a14d13a53a 542-547,549-568
+  s_6276a4df62e01e::t_dae4380b1bb32a 3-4,6-7,10-13,39-42,51-71,73-80,82,113,148-168,171-175,266-267,282-285,287,291,300,326,330-334,339-342,346-347,375-376,405-407,487,491-492,588-589,612-613,617
+  s_5152dbc7eeb818::t_6b5ad640fea4e7 101-102,110-111,120-126,132-139,145-146,180-187,195-201,226-229,231-261,263-265,279-281,286,288-290,408-414,422,426,460-486,493-496,501-541,548,569-587,618-626,674-708
+  s_1e4bd27dd13fcc::t_da3a160d705409 106-107,417-421,428-457
+  s_6276a4df62e01e::t_19f1d52c7c3f31 605-611
+  s_6276a4df62e01e::t_1cca6426d40bdc 268-278,292-299,301-325,335-338,343-345,377-379,403-404,488-490,590-604,614-616
+  s_1e4bd27dd13fcc::t_d5ab446a6a6e3a 90-94,211-214,627-648,652-665,670-673
+packages/cli/src/render/__tests__/protocol.test.ts
+  s_1e4bd27dd13fcc::t_b2cc3aa33fdb9a 142
+  s_1e4bd27dd13fcc::t_a76c730d01bc22 143
+  s_6f6ffcbd5d400e::t_8f6e53991baced 12-14,108-141,144-147
+packages/cli/emulator/src/SidePanel.tsx
+  s_5152dbc7eeb818::t_73b66b9f4553dd 13
+packages/cli/src/config/__tests__/mutation.test.ts
+  s_64e683fb88d309::t_862fdd71003de9 1-6,8-10,13-14,18-28,40-50,54-56,66-72,83,117
+  s_1e4bd27dd13fcc::t_35552a1ec17291 84-116
+  s_64e683fb88d309::t_646cfee0330d0e 79-82
+  s_64e683fb88d309::t_94bd2264d8db81 7,11-12,15-17,29-39,51-53,73-78
+  s_1e4bd27dd13fcc::t_4b3a21d5ae7135 57-65
+packages/cli/src/config/mutation.ts
+  s_1e4bd27dd13fcc::t_91042404d45478 50,153-155,159-160
+  s_1e4bd27dd13fcc::t_07cf1dc90d3ae1 238-246
+  s_1e4bd27dd13fcc::t_70dfa189213557 171-173
+  s_1e4bd27dd13fcc::t_6f57044613da3d 20-25,39,164-166,170,174-181,183-184,202,207-208,213-215,223-224,232-234,272-274
+  s_64e683fb88d309::t_384d17a41ea8a5 8
+  s_1e4bd27dd13fcc::t_fb470289b8b8a5 33-38,167-169,203-206,209-212,216-222,225-231
+  s_64e683fb88d309::t_862fdd71003de9 1-7,9-18,26-31,40-49,51-57,60-92,96-109,114-130,134-137,139-152,161-163,185-187,191,196,259-264,269,279-281
+  s_1e4bd27dd13fcc::t_a0ced1b27b845d 138,182,270-271
+  s_1e4bd27dd13fcc::t_da3a160d705409 156-158
+  s_64e683fb88d309::t_94bd2264d8db81 19,58-59,93-95,110-113,131-133,188-190
+  s_64e683fb88d309::t_646cfee0330d0e 268,275
+  s_64e683fb88d309::t_35f858faff7a57 192-195,265-267,276-278
+  s_1e4bd27dd13fcc::t_f8c039121056ad 32,197-201,235-237,247-258
+packages/cli/emulator/src/App.tsx
+  s_5152dbc7eeb818::t_05231affa6288f 24,76,118-123,224-230,252-263,362-367,373-374,419
+  s_5152dbc7eeb818::t_6b5ad640fea4e7 145-147
+  s_1e4bd27dd13fcc::t_da3a160d705409 232-244
+  s_6276a4df62e01e::t_dae4380b1bb32a 368-371
+  s_1e4bd27dd13fcc::t_f0819eb5b9f7f5 372
+  s_5152dbc7eeb818::t_ce0bd03ba1ca13 144,148
+  s_1e4bd27dd13fcc::t_48c365bb4bc0ff 231,245-251
+packages/cli/src/render/protocol.ts
+  s_6f6ffcbd5d400e::t_872bcb1169b748 19-23,45-49
+packages/cli/src/config/include-resolver.ts
+  s_64e683fb88d309::t_862fdd71003de9 1,19-20,22,39-59,115-118,122-130,134-143
+  s_64e683fb88d309::t_94bd2264d8db81 119-121,131-133
+packages/cli/src/config/__tests__/config-diff.test.ts
+  s_6f6ffcbd5d400e::t_b1f1fe854c9048 61-75
+packages/cli/src/config/config-diff.ts
+  s_6f6ffcbd5d400e::t_8f6e53991baced 5
+packages/cli/emulator/src/DeckFrame.tsx
+  s_6276a4df62e01e::t_19f1d52c7c3f31 22,35,215-224
+packages/cli/src/api/index.ts
+  s_1e4bd27dd13fcc::t_e3b90d080d2534 17-20,40-44
+packages/cli/src/render/__tests__/editor-handler.test.ts
+  s_1e4bd27dd13fcc::t_3418ced8e98dec 70,91
+  s_6f6ffcbd5d400e::t_8f6e53991baced 1-20,22-34,41-69,71-74,81-90,92-99
+  s_1e4bd27dd13fcc::t_3a4442ad29f97a 35-37,39-40
+  s_1e4bd27dd13fcc::t_b2cc3aa33fdb9a 21,38,75-80
+packages/cli/emulator/src/pages/AddonsPage.tsx
+  s_6276a4df62e01e::t_dae4380b1bb32a 16,26
+packages/cli/src/api/protocol-internal.ts
+  s_1e4bd27dd13fcc::t_91042404d45478 312
+  s_6f6ffcbd5d400e::t_872bcb1169b748 3-4,250-281,298-311,316-346,418-422,450-456
+  s_1e4bd27dd13fcc::t_f0819eb5b9f7f5 313-315
+  s_1e4bd27dd13fcc::t_b25541e5047a8d 283-297
+  s_1e4bd27dd13fcc::t_07cf1dc90d3ae1 282
+packages/cli/src/cli/commands/run.ts
+  s_1e4bd27dd13fcc::t_da3a160d705409 1960-1962
+  s_6f6ffcbd5d400e::t_8f6e53991baced 78,1464-1466,1953,1955-1958,1968-1973
+  s_1e4bd27dd13fcc::t_f0819eb5b9f7f5 1964-1967
+  s_1e4bd27dd13fcc::t_2bc59980077150 1850-1855,1859
+  s_1e4bd27dd13fcc::t_a5d8822eea63cb 79-82,1467,1922,1944,1954
+  s_1e4bd27dd13fcc::t_91042404d45478 2,1959,1963
+packages/cli/src/render/editor-handler.ts
+  s_1e4bd27dd13fcc::t_f8c039121056ad 77-78
+  s_1e4bd27dd13fcc::t_a5d8822eea63cb 28,125-128
+  s_6f6ffcbd5d400e::t_872bcb1169b748 1-14,19-27,29-34,36-72,97,104-124,129-132
+  s_6f6ffcbd5d400e::t_38cf52dbcb877d 15-18
+  s_1e4bd27dd13fcc::t_e3b90d080d2534 35,73-76,79-96,98-103
+packages/cli/emulator/src/__tests__/EditorPage.test.tsx
+  s_5152dbc7eeb818::t_6b5ad640fea4e7 59-61,73-79,85-87
+  s_5152dbc7eeb818::t_30b6fb83ce1a18 1-4,7-8,10-37,52-58,62-72,80-84,88-99,149-150
+  s_6276a4df62e01e::t_7610be533fca6b 5-6,9,38-51,100-102,111,119-120,125,129-148
+  s_6276a4df62e01e::t_1cca6426d40bdc 103-110,112-118,121-124,126-128
+packages/cli/src/config/index.ts
+  s_64e683fb88d309::t_862fdd71003de9 6
+  s_64e683fb88d309::t_646cfee0330d0e 4
+docs/plans/2026-09-01-visual-config-editor-plan.md
+  s_1e4bd27dd13fcc::t_0c39c700e2d205 1-139
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_6f6ffcbd5d400e::t_b1f1fe854c9048 9,165-185
+  s_6f6ffcbd5d400e::t_f91440b7a1b373 186-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "914273c559261adae78855a889fafdb9b7653657",
+  "prompts": {},
+  "sessions": {
+    "s_1e4bd27dd13fcc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa3ab64aeffeh0Z0l7eY22eY83",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_5152dbc7eeb818": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa2c74f5bffeEXseP84ToXKWWo",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_6276a4df62e01e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa2c0edf4ffeIu1lai0UcwwOWr",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_64e683fb88d309": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa2d15c3effemru1wQ41jfhLzD",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_6f6ffcbd5d400e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa2cba2fdffePZdn6ssKrVhDt3",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
