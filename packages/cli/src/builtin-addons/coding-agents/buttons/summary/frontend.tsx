@@ -30,7 +30,7 @@ interface SnapshotLike {
 // ponytail: inline keyframes — Tailwind's utility classes cover layout but
 // not a custom pulse. Defined once, referenced via `animation`.
 const BLINK_CSS =
-  "@keyframes sirenoCaBlink{0%,100%{background-color:transparent}50%{background-color:var(--sireno-color-accent)}}"
+  "@keyframes sirenoCaBlink{0%,100%{background-color:transparent;color:var(--sireno-color-foreground)}50%{background-color:var(--sireno-color-accent);color:var(--sireno-color-background)}}"
 
 // ponytail: matrix rain is pure CSS — strips translate down the column on
 // the compositor (no JS loop), and the character/geometry values are fixed at
@@ -115,16 +115,33 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
   const fallingLetters = props.config?.fallingLetters !== false
   const hasSessions = all.length > 0
 
-  // ponytail: statuses with a count render as a colored ball + number row.
-  // Danger covers both waiting_for_human and error; accent for stalled/waiting;
-  // success for running. Only non-zero statuses are shown.
-  const balls: Array<{ color: string; count: number }> = [
+  const statusRows: Array<{ color: string; label: string; count: number }> = [
+    { color: "var(--sireno-color-muted)", label: "idle", count: count("idle") },
+    {
+      color: "var(--sireno-color-success)",
+      label: "running",
+      count: count("running"),
+    },
+    {
+      color: "var(--sireno-color-accent)",
+      label: "waiting",
+      count: count("waiting"),
+    },
     {
       color: "var(--sireno-color-danger)",
-      count: count("waiting_for_human") + count("error"),
+      label: "needs approval",
+      count: count("waiting_for_human"),
     },
-    { color: "var(--sireno-color-accent)", count: count("waiting") },
-    { color: "var(--sireno-color-success)", count: count("running") },
+    {
+      color: "var(--sireno-color-danger)",
+      label: "error",
+      count: count("error"),
+    },
+    {
+      color: "var(--sireno-color-primary)",
+      label: "compacting",
+      count: count("compacting"),
+    },
   ].filter((b) => b.count > 0)
 
   // --- blink on change ---------------------------------------------------
@@ -196,16 +213,19 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
       <div className="relative flex h-full w-full flex-col items-center justify-center gap-1">
         <span className="text-sm font-bold leading-tight">Agents</span>
         {showCount &&
-          (balls.length > 0 ? (
+          (statusRows.length > 0 ? (
             <div className="flex flex-col gap-0.5">
-              {balls.map((b, i) => (
-                <div key={i} className="flex items-center gap-1 leading-none">
+              {statusRows.map((b) => (
+                <div
+                  key={b.label}
+                  className="flex items-center gap-1 leading-none"
+                >
                   <span
                     className="inline-block h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: b.color }}
                   />
-                  <span className="text-[11px] font-semibold tabular-nums">
-                    {b.count}
+                  <span className="text-[10px] font-semibold tabular-nums">
+                    {b.count} {b.label}
                   </span>
                 </div>
               ))}

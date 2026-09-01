@@ -68,4 +68,37 @@ describe("coding-agents:summary matrix rain", () => {
     )
     expect(after).toEqual(before)
   })
+
+  it("shows idle agents in the status summary", () => {
+    holder.data = {
+      byProvider: {
+        opencode: [{ status: "idle" }, { status: "idle" }, { status: "idle" }],
+      },
+    }
+
+    const { container } = renderSummary({})
+
+    expect(container.textContent).toContain("3 idle")
+  })
+
+  it("uses a contrasting text color during the highlight", () => {
+    const { container, rerender } = renderSummary({})
+    holder.data = {
+      byProvider: { opencode: [{ sessionId: "one", status: "running" }] },
+    }
+    rerender(
+      <SummaryFrontend
+        config={{} as SummaryConfig}
+        state={null}
+        addonName="coding-agents"
+        buttonType="coding-agents:summary"
+        buttonId="0"
+        gesture={null}
+      />,
+    )
+
+    expect(container.querySelector("style")?.textContent).toContain(
+      "color:var(--sireno-color-background)",
+    )
+  })
 })
