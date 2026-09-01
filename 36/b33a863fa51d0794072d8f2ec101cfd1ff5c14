@@ -1,0 +1,24 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_0d66ee04bd72b4::t_83723ed841e33d 97,101
+  s_0d66ee04bd72b4::t_84e1fce29cd39b 45-46,54-55
+  s_0d66ee04bd72b4::t_12345e8f181f15 52
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/frontend.tsx
+  s_0d66ee04bd72b4::t_83723ed841e33d 130,136,228,231
+  s_0d66ee04bd72b4::t_12345e8f181f15 120-125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "36b33a863fa51d0794072d8f2ec101cfd1ff5c14",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
