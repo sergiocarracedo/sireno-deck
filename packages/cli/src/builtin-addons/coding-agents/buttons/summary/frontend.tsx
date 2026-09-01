@@ -117,7 +117,7 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
 
   const statusRows: Array<{ color: string; label: string; count: number }> = [
     {
-      color: "var(--sireno-color-foreground)",
+      color: "var(--sireno-variant-default-muted, #9ca3af)",
       label: "idle",
       count: count("idle"),
     },
