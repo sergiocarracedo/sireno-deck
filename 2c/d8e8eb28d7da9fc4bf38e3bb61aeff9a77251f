@@ -1,0 +1,23 @@
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-instances.test.ts
+  s_0d66ee04bd72b4::t_1aec20c73f708c 55-75
+packages/cli/src/builtin-addons/coding-agents/providers/opencode-instances.ts
+  s_0d66ee04bd72b4::t_1aec20c73f708c 34-47,55,62
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_0d66ee04bd72b4::t_2817e72ce3cbb3 101,103-105,108,113,116,118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "2cd8e8eb28d7da9fc4bf38e3bb61aeff9a77251f",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
