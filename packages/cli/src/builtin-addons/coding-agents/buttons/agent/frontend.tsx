@@ -49,7 +49,7 @@ const TILE_COLOR: Record<string, string> = {
 }
 
 const DOT_COLOR: Record<string, string> = {
-  idle: "var(--sireno-color-foreground)",
+  idle: "var(--sireno-color-muted)",
   running: "var(--sireno-color-primary)",
   waiting: "var(--sireno-variant-amber-primary, #fbbf24)",
   waiting_for_human: "var(--sireno-variant-amber-primary, #fbbf24)",
