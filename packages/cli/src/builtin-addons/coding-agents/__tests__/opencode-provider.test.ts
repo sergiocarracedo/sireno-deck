@@ -1,6 +1,7 @@
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { OpenCodeProvider, type OpencodeHttpApi } from "../providers/opencode"
+import * as instances from "../providers/opencode-instances"
 
 const makeSession = (overrides: Record<string, unknown> = {}) => ({
   id: "abc",
@@ -27,7 +28,25 @@ const makeApi = (overrides: ApiOverrides = {}): OpencodeHttpApi => ({
   ...overrides,
 })
 
+const mockActiveInstance = (
+  status: "idle" | "running" | "waiting" | "waiting_for_human",
+) =>
+  vi.spyOn(instances, "readOpenCodeInstances").mockResolvedValue([
+    {
+      instanceId: "opencode:123",
+      pid: 123,
+      cwd: "/tmp/project",
+      sessionId: "abc",
+      status,
+      updatedAt: Date.now(),
+    },
+  ])
+
 describe("OpenCodeProvider", () => {
+  beforeEach(() => {
+    mockActiveInstance("running")
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
   })
@@ -46,6 +65,7 @@ describe("OpenCodeProvider", () => {
   })
 
   it("fetchSnapshot marks idle when no status entry", async () => {
+    mockActiveInstance("idle")
     const api = makeApi({
       listSessions: async () => [makeSession()],
       sessionStatus: async () => ({}),
@@ -59,6 +79,7 @@ describe("OpenCodeProvider", () => {
   })
 
   it("fetchSnapshot maps retry status to waiting", async () => {
+    mockActiveInstance("waiting")
     const api = makeApi({
       listSessions: async () => [makeSession()],
       sessionStatus: async () => ({
@@ -74,6 +95,7 @@ describe("OpenCodeProvider", () => {
   })
 
   it("attention:true in status map overrides to waiting_for_human", async () => {
+    mockActiveInstance("waiting_for_human")
     const api = makeApi({
       listSessions: async () => [makeSession()],
       sessionStatus: async () => ({
@@ -89,6 +111,7 @@ describe("OpenCodeProvider", () => {
   })
 
   it("filters out sessions updated outside the recency window", async () => {
+    vi.spyOn(instances, "readOpenCodeInstances").mockResolvedValue([])
     const old = makeSession({
       id: "old",
       time: { updated: Date.now() - 48 * 60 * 60 * 1000, created: 1 },
@@ -100,6 +123,35 @@ describe("OpenCodeProvider", () => {
     })
     const agents = await p.fetchSnapshot(new AbortController().signal)
     expect(agents).toHaveLength(0)
+  })
+
+  it("returns only plugin-reported active instances", async () => {
+    vi.spyOn(instances, "readOpenCodeInstances").mockResolvedValue([
+      {
+        instanceId: "opencode:123",
+        pid: 123,
+        cwd: "/tmp/project",
+        sessionId: "abc",
+        status: "waiting_for_human",
+        updatedAt: Date.now(),
+      },
+    ])
+    const api = makeApi({
+      listSessions: async () => [
+        makeSession({ id: "abc" }),
+        makeSession({ id: "unrelated" }),
+      ],
+    })
+    const provider = new OpenCodeProvider({
+      baseUrl: "http://x",
+      apiFactory: () => api,
+    })
+
+    const agents = await provider.fetchSnapshot(new AbortController().signal)
+
+    expect(agents).toHaveLength(1)
+    expect(agents[0]?.sessionId).toBe("abc")
+    expect(agents[0]?.status).toBe("waiting_for_human")
   })
 
   it("derives running from a message tool part state running", async () => {
@@ -122,6 +174,7 @@ describe("OpenCodeProvider", () => {
   })
 
   it("derives waiting_for_human from a pending tool part", async () => {
+    mockActiveInstance("waiting_for_human")
     const api = makeApi({
       listSessions: async () => [makeSession()],
       sessionStatus: async () => ({}),
@@ -141,6 +194,7 @@ describe("OpenCodeProvider", () => {
   })
 
   it("does not report a completed tool from recent history as running", async () => {
+    mockActiveInstance("idle")
     const api = makeApi({
       listSessions: async () => [makeSession()],
       sessionStatus: async () => ({}),
@@ -189,6 +243,7 @@ describe("OpenCodeProvider", () => {
   })
 
   it("treats an empty message list as idle", async () => {
+    mockActiveInstance("idle")
     const api = makeApi({
       listSessions: async () => [makeSession()],
       sessionStatus: async () => ({}),

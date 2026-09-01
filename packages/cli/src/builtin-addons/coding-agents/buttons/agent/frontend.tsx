@@ -41,7 +41,7 @@ interface SnapshotLike {
 // idle stays transparent so stale sessions read as quiet.
 const TILE_COLOR: Record<string, string> = {
   idle: "transparent",
-  running: "var(--sireno-color-success)",
+  running: "var(--sireno-color-primary)",
   waiting: "var(--sireno-color-accent)",
   waiting_for_human: "var(--sireno-color-danger)",
   error: "var(--sireno-color-danger)",
@@ -50,7 +50,7 @@ const TILE_COLOR: Record<string, string> = {
 
 const DOT_COLOR: Record<string, string> = {
   idle: "var(--sireno-color-muted)",
-  running: "var(--sireno-color-success)",
+  running: "var(--sireno-color-primary)",
   waiting: "var(--sireno-color-accent)",
   waiting_for_human: "var(--sireno-color-danger)",
   error: "var(--sireno-color-danger)",
@@ -98,26 +98,25 @@ const AgentFrontend = (props: AddonFrontendButtonProps<AgentConfig>) => {
           style={{ backgroundColor: tileColor, opacity: 0.32 }}
         />
       )}
-      <div className="relative flex items-center justify-between gap-1.5">
-        <div className="flex items-center gap-1.5">
-          {iconSource !== undefined ? (
-            <Icon source={iconSource} size={16} />
-          ) : (
-            <span
-              className="mt-[2px] inline-block h-2.5 w-2.5 shrink-0 rounded-full"
-              style={{ backgroundColor: dotColorVar }}
-              aria-label={status}
-            />
-          )}
-        </div>
-        {cost !== null && (
-          <span className="text-[10px] font-medium opacity-80">{cost}</span>
+      <div className="relative flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1 py-1">
+        {iconSource !== undefined ? (
+          <Icon source={iconSource} size={18} />
+        ) : (
+          <span
+            className="inline-block h-3 w-3 shrink-0 rounded-full"
+            style={{ backgroundColor: dotColorVar }}
+            aria-label={status}
+          />
         )}
-      </div>
-      <div className="relative min-h-0 flex-1 py-1">
-        <span className="line-clamp-3 text-sm font-semibold leading-snug">
+        <span className="min-w-0 flex-1 break-words text-base font-semibold leading-tight">
           {title || <span className="opacity-40">empty</span>}
         </span>
+        <span className="text-xs font-medium uppercase opacity-80">
+          {status}
+        </span>
+        {cost !== null && (
+          <span className="text-xs font-medium opacity-80">{cost}</span>
+        )}
       </div>
     </div>
   )

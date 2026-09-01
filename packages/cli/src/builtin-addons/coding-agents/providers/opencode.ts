@@ -232,14 +232,10 @@ export class OpenCodeProvider implements AgentProvider {
         .sort((a, b) => (b.time?.updated ?? 0) - (a.time?.updated ?? 0))
       const agents = await this.#withMessages(recent, statusMap, signal)
       const instances = await readOpenCodeInstances()
-      if (instances.length === 0) return agents
-
-      const represented = new Set<string>()
-      const instanceAgents = instances.map((instance) => {
+      return instances.map((instance) => {
         const session = instance.sessionId
           ? agents.find((agent) => agent.sessionId === instance.sessionId)
           : undefined
-        if (session) represented.add(session.sessionId)
         return session === undefined
           ? toInstanceAgent(instance)
           : {
@@ -251,10 +247,6 @@ export class OpenCodeProvider implements AgentProvider {
               updatedAt: instance.updatedAt,
             }
       })
-      return [
-        ...instanceAgents,
-        ...agents.filter((agent) => !represented.has(agent.sessionId)),
-      ]
     } catch (err) {
       if (signal.aborted) return []
       console.warn(

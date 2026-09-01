@@ -6,7 +6,7 @@ import { confirm, isCancel, note } from "@/cli/prompt"
 import { loadConfig } from "@/config/loader"
 
 const PLUGIN_FILE = "sirenodeck-agent-state.js"
-const PLUGIN_MARKER = "SIRENODECK_INTEGRATION_ID=coding-agents"
+const PLUGIN_MARKER = "SIRENODECK_INTEGRATION_ID=coding-agents-v2"
 
 const pluginDir = (): string =>
   join(
@@ -64,7 +64,7 @@ export const SirenoDeckAgentStatePlugin = async () => ({
     const sessionID = p.sessionID;
     switch (event?.type) {
       case "session.status":
-        write(p.status?.type === "idle" ? "idle" : p.status?.type === "retry" ? "waiting" : "working", sessionID);
+        write(p.status?.type === "idle" ? "idle" : p.status?.type === "retry" ? "waiting" : "running", sessionID);
         break;
       case "session.idle": write("idle", sessionID); break;
       case "permission.asked":
