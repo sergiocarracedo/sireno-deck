@@ -1,0 +1,56 @@
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 145
+packages/cli/src/__tests__/daemon-extensions.test.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 24
+packages/cli/src/cli/commands/start.ts
+  s_0d66ee04bd72b4::t_666543a3ee2269 566
+  s_0d66ee04bd72b4::t_246007a31415a7 42
+  s_0d66ee04bd72b4::t_08127603d435bc 427,635,925
+  s_0d66ee04bd72b4::t_1f142473f25294 551-552
+  s_0d66ee04bd72b4::t_e0ffe9bc813a35 624-625
+  s_0d66ee04bd72b4::t_058566e1173cec 904
+packages/cli/src/cli/commands/__tests__/status.test.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 162,183,186,189
+packages/cli/src/cli/commands/stop.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 14,94
+packages/cli/src/cli/commands/__tests__/restart.test.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 69
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 66
+packages/cli/src/cli/index.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 50,183,243
+packages/cli/src/cli/startup-display.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 26-31,298,301-302,307,312,316,323,327,331,335-336,338-339,350,382-385
+packages/cli/src/cli/commands/run.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 1503
+packages/cli/src/util/daemon.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 33,40,148
+README.md
+  s_0d66ee04bd72b4::t_f1c6119ba82157 68
+packages/cli/README.md
+  s_0d66ee04bd72b4::t_f1c6119ba82157 28
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 14-15,75
+packages/cli/src/util/daemon-control.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 1-70
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 1,40
+packages/cli/src/cli/commands/status.ts
+  s_0d66ee04bd72b4::t_f1c6119ba82157 31,98,102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "2f91a75fa9332eb67d3b05796cb5f63a174f7748",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
