@@ -13,7 +13,6 @@ import { buttonTypeBlocks } from "../../lib/addon-config-examples"
 import AddonConfigExample from "../../components/AddonConfigExample.astro"
 import AddonSchemaTable from "../../components/AddonSchemaTable.astro"
 import MiniCarousel from "../../components/MiniCarousel.astro"
-import CommandTabs from "../../components/CommandTabs.astro"
 
 export async function getStaticPaths() {
   const addons = await getCollection("addons")
@@ -261,19 +260,14 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
               </p>
             ) : a.npm ? (
               <>
-                <div class="px-6 pb-2">
-                  <CommandTabs
-                    pnpm={`pnpm add ${a.npm}`}
-                    npm={`npm i ${a.npm}`}
-                    yarn={`yarn add ${a.npm}`}
-                    label={`Install ${a.displayName}`}
-                  />
-                </div>
+                <pre class="mx-6 mb-2 rounded-md px-4 py-3 text-sm font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border);"><code>sirenodeck install {a.npm}</code></pre>
                 <pre class="px-6 pb-2 text-sm font-mono overflow-x-auto" style="color: var(--color-fg);"><code># reference it in config.yml
 addons:
   - "{a.npm}"</code></pre>
                 <p class="px-6 pb-5 text-xs" style="color: var(--color-muted);">
-                  Full path or npm name both work in the addons list. See
+                   The CLI detects pnpm, npm, or Yarn automatically. Use
+                   <code class="font-mono">sirenodeck install --global {a.npm}</code>
+                   when you prefer a global package. See
                   <a href="/user/configuration-files/" class="underline">configuration docs</a>.
                 </p>
               </>

@@ -2,14 +2,11 @@ import { existsSync, readFileSync } from "node:fs"
 import { resolve as resolvePath, join } from "node:path"
 import { pathToFileURL } from "node:url"
 
-import { execa } from "execa"
-
-import { addonNpmInstallPath } from "@/util/cache-paths"
+import { addonNpmRoot } from "@/util/cache-paths"
 
 import type {
   AddonJsonManifest,
   AddonLoadIssue,
-  AddonManifest,
   AddonManifestV1,
   LoadedTheme,
 } from "./api"
@@ -28,6 +25,8 @@ export interface LoadAddonsOptions {
   homeDir: string
   currentApiVersion: number
   cacheDir?: string
+  projectDir?: string
+  globalPackageRoots?: ReadonlyArray<string>
 }
 
 export interface ResolvedExternalAddon {
@@ -285,51 +284,11 @@ const readInstalledPackageJson = (
   return { name, version, apiVersion }
 }
 
-export interface InstallNpmAddonResult {
-  ok: boolean
-  error?: string
-}
-
-export const installNpmAddon = async (
-  specifier: string,
-  cacheDir: string,
-  issues: AddonLoadIssue[],
-): Promise<InstallNpmAddonResult> => {
-  try {
-    const hasLockfile = existsSync(join(cacheDir, "package-lock.json"))
-    await execa(
-      "npm",
-      hasLockfile
-        ? ["ci", "--prefix", cacheDir, "--silent", "--no-audit", "--no-fund"]
-        : [
-            "install",
-            specifier,
-            "--prefix",
-            cacheDir,
-            "--save-exact",
-            "--no-save",
-            "--silent",
-            "--no-audit",
-            "--no-fund",
-            "--no-package-lock",
-          ],
-      { timeout: 60_000 },
-    )
-    return { ok: true }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    recordIssue(issues, {
-      level: "error",
-      source: specifier,
-      message: `npm install failed: ${message}`,
-    })
-    return { ok: false, error: message }
-  }
-}
-
 const loadNpmAddon = async (
   source: string,
   cacheDir: string,
+  projectDir: string | undefined,
+  globalPackageRoots: ReadonlyArray<string>,
   issues: AddonLoadIssue[],
   currentApi: number,
 ): Promise<ResolvedExternalAddon | null> => {
@@ -343,27 +302,32 @@ const loadNpmAddon = async (
     return null
   }
 
-  const installPath = addonNpmInstallPath(parsed.packageName, cacheDir)
-  let pkg = readInstalledPackageJson(installPath)
+  const roots = [
+    ...(projectDir !== undefined ? [join(projectDir, "node_modules")] : []),
+    ...globalPackageRoots,
+    addonNpmRoot(cacheDir),
+  ]
+  const installPath = roots
+    .map((root) => join(root, parsed.packageName))
+    .find((path) => {
+      const pkg = readInstalledPackageJson(path)
+      return (
+        pkg !== null &&
+        (parsed.version === null || pkg.version === parsed.version)
+      )
+    })
+  const pkg =
+    installPath === undefined ? null : readInstalledPackageJson(installPath)
 
-  if (
-    pkg === null ||
-    (parsed.version !== null && pkg.version !== parsed.version)
-  ) {
-    const installResult = await installNpmAddon(source, cacheDir, issues)
-    if (!installResult.ok) return null
-    pkg = readInstalledPackageJson(installPath)
-  }
-
-  if (pkg === null) {
+  if (installPath === undefined) {
     recordIssue(issues, {
       level: "error",
       source,
-      message: `Could not read package.json at ${installPath} after install`,
+      message: `Package '${source}' is not installed. Run 'sirenodeck install ${source}'.`,
     })
     return null
   }
-
+  if (pkg === null) return null
   const json = readJsonManifest(installPath)
   if (json === null) {
     recordIssue(issues, {
@@ -397,6 +361,8 @@ export const loadAddons = async ({
   homeDir,
   currentApiVersion,
   cacheDir,
+  projectDir,
+  globalPackageRoots = [],
 }: LoadAddonsOptions): Promise<LoadAddonsResult> => {
   const issues: AddonLoadIssue[] = []
   const addons: ResolvedExternalAddon[] = []
@@ -426,6 +392,8 @@ export const loadAddons = async ({
       const loaded = await loadNpmAddon(
         entry.source,
         cacheDir,
+        projectDir,
+        entry.global ? globalPackageRoots : [],
         issues,
         currentApiVersion,
       )

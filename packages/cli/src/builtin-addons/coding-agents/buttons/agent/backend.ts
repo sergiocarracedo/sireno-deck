@@ -5,6 +5,7 @@ import type {
 } from "../../types/types.js"
 import { configSchema, type AgentConfig } from "./config.js"
 import { agentAtSlot } from "../../shared/snapshot.js"
+import { agentKey } from "../../shared/state.js"
 import type { AgentsSnapshot, ProviderId } from "../../shared/state.js"
 
 const shq = (value: string): string => `'${value.replaceAll(`'`, `'\\''`)}'`
@@ -18,6 +19,7 @@ const runFocus = async (
   ctx: AddonButtonServiceContext<AgentConfig>,
   agent: { providerId: ProviderId; sessionId: string; directory?: string },
 ): Promise<void> => {
+  if (agent.sessionId.startsWith("instance:")) return
   const dir = agent.directory
   const prefix = dir && dir.length > 0 ? `cd ${shq(dir)} && ` : ""
   const resume =
@@ -53,7 +55,10 @@ const resolveSlotAgent = (
 const callDismiss = (ctx: AddonButtonServiceContext<AgentConfig>): void => {
   const dismiss = methodsFor(ctx)["coding-agents:dismissAttention"]
   if (typeof dismiss === "function") {
-    ;(dismiss as (a: string) => unknown)(ctx.buttonId)
+    const agent = resolveSlotAgent(ctx)
+    if (agent) {
+      ;(dismiss as (a: string) => unknown)(agentKey(agent))
+    }
   }
 }
 

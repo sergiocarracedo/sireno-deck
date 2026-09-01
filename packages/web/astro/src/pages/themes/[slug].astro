@@ -11,7 +11,6 @@ import ShaderBackdrop from "../../components/ShaderBackdrop.astro"
 import PaletteSwatches from "../../components/PaletteSwatches.astro"
 import Icon from "../../components/Icon.astro"
 import { getCollection, getEntry } from "astro:content"
-import CommandTabs from "../../components/CommandTabs.astro"
 
 export async function getStaticPaths() {
   const themes = await getCollection("themes")
@@ -136,12 +135,7 @@ const isOfficial = t.category === "official"
                 <code class="font-mono text-xs px-1 py-0.5 rounded" style="background: var(--color-bg);">config.yml</code>:
               </p>
               {t.npm && (
-                <CommandTabs
-                  pnpm={`pnpm add -g ${t.npm}`}
-                  npm={`npm i -g ${t.npm}`}
-                  yarn={`yarn global add ${t.npm}`}
-                  label={`Install ${t.displayName}`}
-                />
+                <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>sirenodeck install --global {t.npm}</code></pre>
               )}
               <pre class="rounded-md p-3 text-xs font-mono overflow-x-auto" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-fg);"><code>{`theme: ${t.npm ?? `./packages/themes/${themeId}`}`}</code></pre>
               <p class="text-xs" style="color: var(--color-muted);">

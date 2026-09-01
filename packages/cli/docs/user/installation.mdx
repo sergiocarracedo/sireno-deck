@@ -10,24 +10,21 @@ tags: [installation, setup, quickstart]
 
 Get Sireno Deck running on your computer in minutes.
 
-import CommandTabs from "@site/components/CommandTabs.astro"
-
 ## Prerequisites
 
 - **Node.js** 20 or later
-- **pnpm** 8 or later (or npm/yarn)
+- **pnpm**, npm, or Yarn (pnpm is preferred for addon and theme installs)
 - A Stream Deck device (optional — emulator available for testing)
 
 ## Quick Install
 
-Install the CLI globally with your package manager of choice — the choice is
-remembered across all command examples on this site:
+Install the CLI globally:
 
-<CommandTabs
-  pnpm="pnpm i -g @sirenodeck/cli"
-  npm="npm i -g @sirenodeck/cli"
-  yarn="yarn global add @sirenodeck/cli"
-/>
+```bash
+pnpm i -g @sirenodeck/cli
+```
+
+The addon installer checks for pnpm, npm, or Yarn and prefers pnpm.
 
 ## From Source
 

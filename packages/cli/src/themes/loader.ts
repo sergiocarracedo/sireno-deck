@@ -234,6 +234,7 @@ export function loadThemeFromPath(
 
 export type ResolveThemeOptions = {
   theme: ThemeEntry | undefined
+  packageRoots?: ReadonlyArray<string>
 }
 
 export interface ResolveThemeResult {
@@ -259,12 +260,19 @@ function isPathLike(s: string): boolean {
  * Resolve an npm package name to its installed directory via Node's
  * resolver. Returns null when the package isn't found.
  */
-function resolvePackagePath(name: string): string | null {
+function resolvePackagePath(
+  name: string,
+  packageRoots: ReadonlyArray<string> = [],
+): string | null {
   try {
     const require = createRequire(import.meta.url)
     const pkgJsonPath = require.resolve(`${name}/package.json`)
     return dirname(pkgJsonPath)
   } catch {
+    for (const root of packageRoots) {
+      const candidate = join(root, name)
+      if (existsSync(join(candidate, "package.json"))) return candidate
+    }
     return null
   }
 }
@@ -287,6 +295,7 @@ const resolveBuiltinTheme = (
 const resolveStringTheme = (
   entry: string,
   registry: AddonRegistry,
+  packageRoots: ReadonlyArray<string>,
 ): ResolveThemeResult => {
   // 1. Registered theme name (built-in auto-discovery or a previously
   //    loaded theme). Use getTheme (returns undefined when missing);
@@ -303,7 +312,7 @@ const resolveStringTheme = (
 
   // 3. npm package — resolve to the installed package directory and load
   //    the theme files inside it.
-  const packagePath = resolvePackagePath(entry)
+  const packagePath = resolvePackagePath(entry, packageRoots)
   if (packagePath !== null) {
     return loadThemeFromPath(registry, packagePath)
   }
@@ -322,5 +331,13 @@ export const resolveActiveTheme = (
     const theme = registry.resolveActiveTheme(undefined)
     return resolveBuiltinTheme(registry, theme)
   }
-  return resolveStringTheme(themeEntry, registry)
+  if (typeof themeEntry === "object") {
+    const resolved = resolvePackagePath(themeEntry.src, options.packageRoots)
+    if (resolved === null)
+      throw new Error(
+        `Theme '${themeEntry.src}' is not installed. Run 'sirenodeck install ${themeEntry.src}'.`,
+      )
+    return loadThemeFromPath(registry, resolved)
+  }
+  return resolveStringTheme(themeEntry, registry, options.packageRoots ?? [])
 }

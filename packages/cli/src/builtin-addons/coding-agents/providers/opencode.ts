@@ -9,6 +9,10 @@ import {
   type OpencodeEvent,
   type OpencodeSessionStatus,
 } from "../shared/opencode-status.js"
+import {
+  readOpenCodeInstances,
+  type OpenCodeInstance,
+} from "./opencode-instances.js"
 
 // ponytail: "live" window — only sessions updated within this are surfaced.
 const RECENT_WINDOW_MS = 6 * 60 * 60 * 1000
@@ -227,7 +231,30 @@ export class OpenCodeProvider implements AgentProvider {
         .filter((s) => (s.time?.updated ?? 0) >= now - this.#recentWindowMs)
         .sort((a, b) => (b.time?.updated ?? 0) - (a.time?.updated ?? 0))
       const agents = await this.#withMessages(recent, statusMap, signal)
-      return agents
+      const instances = await readOpenCodeInstances()
+      if (instances.length === 0) return agents
+
+      const represented = new Set<string>()
+      const instanceAgents = instances.map((instance) => {
+        const session = instance.sessionId
+          ? agents.find((agent) => agent.sessionId === instance.sessionId)
+          : undefined
+        if (session) represented.add(session.sessionId)
+        return session === undefined
+          ? toInstanceAgent(instance)
+          : {
+              ...session,
+              instanceId: instance.instanceId,
+              pid: instance.pid,
+              status: instance.status,
+              directory: instance.cwd,
+              updatedAt: instance.updatedAt,
+            }
+      })
+      return [
+        ...instanceAgents,
+        ...agents.filter((agent) => !represented.has(agent.sessionId)),
+      ]
     } catch (err) {
       if (signal.aborted) return []
       console.warn(
@@ -358,4 +385,16 @@ const toAgent = (
     : {}),
   ...(s.time?.created !== undefined ? { createdAt: s.time.created } : {}),
   updatedAt: s.time?.updated ?? s.time?.created ?? 0,
+})
+
+const toInstanceAgent = (instance: OpenCodeInstance): Agent => ({
+  sessionId: instance.sessionId ?? `instance:${instance.instanceId}`,
+  instanceId: instance.instanceId,
+  pid: instance.pid,
+  providerId: "opencode",
+  title: "OpenCode",
+  status: instance.status,
+  directory: instance.cwd,
+  updatedAt: instance.updatedAt,
+  createdAt: instance.updatedAt,
 })

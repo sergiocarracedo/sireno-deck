@@ -38,6 +38,7 @@ import {
   spinner,
 } from "@/cli/prompt"
 import { collectBuiltinAddonChecks, runAddonChecks } from "@/addon/check-runner"
+import { onboardCodingAgents } from "@/cli/coding-agents-onboarding"
 
 const execFileAsync = promisify(execFile)
 
@@ -105,6 +106,7 @@ export interface SystemRequirementsOptions {
   readonly homeDir?: string
   readonly xdgConfigHome?: string
   readonly logger: pino.Logger
+  readonly configPath?: string
 }
 
 const SESSION_LABEL: Readonly<Record<string, string>> = {
@@ -495,6 +497,11 @@ export const systemRequirements = async (
     }
   }
 
+  await onboardCodingAgents(options.configPath ?? report.config.path, {
+    nonInteractive,
+    ...(options.yes === true ? { yes: true } : {}),
+  })
+
   if (nonInteractive) {
     if (summary.ok) {
       log.success("All requirements present.")
@@ -622,6 +629,10 @@ export const systemRequirementsCommand: CommandModule<
         default: false,
         description:
           "Print a summary and exit non-zero if anything is missing (no prompts)",
+      })
+      .option("config", {
+        type: "string",
+        description: "Config file used to detect enabled builtin addons",
       }),
   handler: async (argv) => {
     const { createLogger } = await import("@/util/logger")
@@ -630,6 +641,7 @@ export const systemRequirementsCommand: CommandModule<
       logger,
       ...(argv.yes === true ? { yes: true } : {}),
       ...(argv.nonInteractive === true ? { nonInteractive: true } : {}),
+      ...(argv.config !== undefined ? { configPath: argv.config } : {}),
     }
     try {
       await systemRequirements(options)

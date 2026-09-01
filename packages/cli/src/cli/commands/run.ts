@@ -52,6 +52,10 @@ import {
 } from "@/system/requirements"
 import { copyThemeAssets, resolveActiveTheme } from "@/themes/loader"
 import { resolveAddonCacheDir } from "@/util/cache-paths"
+import { globalPackageRoot } from "../package-manager"
+import { installPackage } from "./install"
+import { isNpmAddonSpec } from "@/addon/spec"
+import { confirm } from "@/cli/prompt"
 
 import { createActionExecutor } from "@/action/executor"
 import {
@@ -463,6 +467,7 @@ const loadExternalAddonsIntoRegistry = async (
   configDir: string,
   homeDir: string,
   logger: RunOptions["logger"],
+  configPath: string,
 ): Promise<{
   specToName: Map<string, string>
   nameToEntryPath: Map<string, string>
@@ -476,13 +481,55 @@ const loadExternalAddonsIntoRegistry = async (
   const nameToEntryPath = new Map<string, string>()
   const entries = config.addons ?? []
   if (entries.length === 0) return { specToName, nameToEntryPath }
-  const result = await loadAddons({
+  const globalRoots = ["pnpm", "npm", "yarn"].flatMap((manager) => {
+    const root = globalPackageRoot(manager as "pnpm" | "npm" | "yarn")
+    return root === null ? [] : [root]
+  })
+  let result = await loadAddons({
     entries,
     configDir,
     homeDir,
     currentApiVersion: SIRENO_ADDON_API_VERSION,
     cacheDir: resolveAddonCacheDir(),
+    projectDir: configDir,
+    globalPackageRoots: globalRoots,
   })
+  const missing = result.issues
+    .filter((issue) => issue.message.includes("is not installed"))
+    .map((issue) => issue.source)
+  if (missing.length > 0 && process.stdin.isTTY) {
+    for (const source of missing) {
+      const entry = entries.find(
+        (candidate) =>
+          (typeof candidate === "string" ? candidate : candidate.src) ===
+          source,
+      )
+      if (
+        await confirm({
+          message: `Addon '${source}' is not installed. Install it now?`,
+          initialValue: true,
+        })
+      ) {
+        await installPackage({
+          config: configPath,
+          packageName: source,
+          ...(typeof entry !== "string" && entry?.global === true
+            ? { global: true }
+            : {}),
+          configure: false,
+        })
+      }
+    }
+    result = await loadAddons({
+      entries,
+      configDir,
+      homeDir,
+      currentApiVersion: SIRENO_ADDON_API_VERSION,
+      cacheDir: resolveAddonCacheDir(),
+      projectDir: configDir,
+      globalPackageRoots: globalRoots,
+    })
+  }
   for (const issue of result.issues) {
     const payload = { source: issue.source, message: issue.message }
     const detail = `addon '${issue.source}': ${issue.message}`
@@ -534,6 +581,7 @@ export const validateAndLoadConfig = async (
       dirname(configPath),
       options.homeDir ?? homedir(),
       options.logger,
+      configPath,
     )
   // ponytail: dump every deck type the registry holds so the operator can
   // see at startup which addons registered and which got silently skipped.
@@ -562,7 +610,11 @@ export const validateAndLoadConfig = async (
       `Config validation failed:\n${formatFullIssues(structuralErrors)}`,
     )
   }
-  const { theme, getCss } = resolveActiveTheme(registry, {
+  const globalRoots = ["pnpm", "npm", "yarn"].flatMap((manager) => {
+    const root = globalPackageRoot(manager as "pnpm" | "npm" | "yarn")
+    return root === null ? [] : [root]
+  })
+  const themeOptions = {
     // ponytail: theme paths in config.yml are relative to the config file's
     // directory, not to process.cwd(). `loadThemeFromPath` resolves via
     // `path.resolve(themePath)`, which uses cwd — and the dev wrapper sets
@@ -570,10 +622,42 @@ export const validateAndLoadConfig = async (
     // works regardless of where the daemon is launched from.
     theme:
       config.theme !== undefined &&
+      typeof config.theme === "string" &&
       (config.theme.startsWith("./") || config.theme.startsWith("../"))
         ? resolvePath(dirname(configPath), config.theme)
         : config.theme,
-  })
+    packageRoots: [join(dirname(configPath), "node_modules"), ...globalRoots],
+  }
+  let resolvedTheme: ReturnType<typeof resolveActiveTheme>
+  try {
+    resolvedTheme = resolveActiveTheme(registry, themeOptions)
+  } catch (error) {
+    const source =
+      config.theme === undefined
+        ? null
+        : typeof config.theme === "string"
+          ? config.theme
+          : config.theme.src
+    if (source === null || !isNpmAddonSpec(source) || !process.stdin.isTTY)
+      throw error
+    if (
+      !(await confirm({
+        message: `Theme '${source}' is not installed. Install it now?`,
+        initialValue: true,
+      }))
+    )
+      throw error
+    await installPackage({
+      config: configPath,
+      packageName: source,
+      ...(typeof config.theme === "object" && config.theme.global === true
+        ? { global: true }
+        : {}),
+      configure: false,
+    })
+    resolvedTheme = resolveActiveTheme(registry, themeOptions)
+  }
+  const { theme, getCss } = resolvedTheme
   const themeDir: string = resolveFrontendCwd()
   const cssContent: string = getCss()
   if (cssContent.length > 0) {

@@ -61,11 +61,13 @@ describe("normalizeAddonEntry", () => {
       enabled: true,
       source: "core",
       isLocal: false,
+      global: false,
     })
     expect(normalizeAddonEntry("./local")).toEqual({
       enabled: true,
       source: "./local",
       isLocal: true,
+      global: false,
     })
   })
 
@@ -74,11 +76,13 @@ describe("normalizeAddonEntry", () => {
       enabled: true,
       source: "./x",
       isLocal: true,
+      global: false,
     })
     expect(normalizeAddonEntry({ src: "core", enabled: false })).toEqual({
       enabled: false,
       source: "core",
       isLocal: false,
+      global: false,
     })
   })
 })

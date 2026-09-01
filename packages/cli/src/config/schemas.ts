@@ -142,6 +142,7 @@ export const AddonEntrySchema = z.union([
     .object({
       src: z.string().min(1),
       enabled: z.boolean().optional(),
+      global: z.boolean().optional(),
       config: AddonConfigSchema.optional(),
     })
     .strict(),
@@ -164,7 +165,10 @@ export const LockSchema = z
   .strict()
   .optional()
 
-export const ThemeEntrySchema = z.string().min(1)
+export const ThemeEntrySchema = z.union([
+  z.string().min(1),
+  z.object({ src: z.string().min(1), global: z.boolean().optional() }).strict(),
+])
 
 export const RawConfigSchema = z
   .object({

@@ -25,6 +25,8 @@ import {
   type StartOutcome,
 } from "./startup-display"
 import { runBuiltinAddonChecks } from "@/addon/check-runner"
+import { installPackage, type InstallOptions } from "./commands/install"
+import type { PackageManager } from "./package-manager"
 
 export interface GlobalOptions {
   verbose?: boolean
@@ -58,6 +60,13 @@ interface ReloadArgs extends GlobalOptions {
 }
 interface RestartArgs extends GlobalOptions {
   logs?: boolean
+}
+
+interface InstallArgs extends GlobalOptions {
+  packageName: string
+  config?: string
+  global?: boolean
+  packageManager?: PackageManager
 }
 
 export const buildLogger = (
@@ -267,6 +276,35 @@ const restartCommand: CommandModule<object, RestartArgs> = {
   },
 }
 
+const installCommand: CommandModule<object, InstallArgs> = {
+  command: "install <packageName>",
+  describe: "Install and configure an addon or theme",
+  builder: (yargs) =>
+    yargs
+      .positional("packageName", {
+        type: "string",
+        demandOption: true,
+        description: "npm package name",
+      })
+      .option("config", { type: "string", description: "Path to config.yml" })
+      .option("global", {
+        type: "boolean",
+        default: false,
+        description: "Install globally",
+      })
+      .option("package-manager", { choices: ["pnpm", "npm", "yarn"] as const }),
+  handler: async (argv) => {
+    await installPackage({
+      packageName: argv.packageName,
+      ...(argv.config !== undefined ? { config: argv.config } : {}),
+      ...(argv.global === true ? { global: true } : {}),
+      ...(argv.packageManager !== undefined
+        ? { packageManager: argv.packageManager }
+        : {}),
+    } satisfies InstallOptions)
+  },
+}
+
 export const buildCli = async (): Promise<{
   scriptName: string
   commands: CommandModule<object, GlobalOptions>[]
@@ -282,6 +320,7 @@ export const buildCli = async (): Promise<{
       reloadCommand,
       logsCommand as CommandModule<object, GlobalOptions>,
       systemRequirementsCommand as CommandModule<object, GlobalOptions>,
+      installCommand as CommandModule<object, GlobalOptions>,
     ],
     packageName: PACKAGE_NAME,
   }

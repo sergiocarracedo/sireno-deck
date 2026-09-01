@@ -98,6 +98,17 @@ For an out-of-band release (e.g. recovery from a failed auto-merge):
 2. Run the **Publish to npm** workflow via **Actions → publish-npm →
    Run workflow**, providing the package name and path.
 
+## Homebrew tap
+
+CLI releases automatically update `sergiocarracedo/homebrew-tap` with a
+formula sourced from the published npm tarball. Configure a fine-grained
+`HOMEBREW_TAP_TOKEN` secret with Contents write access to that repository.
+Users install it with:
+
+```sh
+brew install sergiocarracedo/tap/sirenodeck
+```
+
 ## Adding a new package
 
 1. Create the package under the matching `packages/*` directory with a

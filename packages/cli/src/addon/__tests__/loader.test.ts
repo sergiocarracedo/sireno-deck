@@ -127,14 +127,9 @@ describe("loadAddons — npm path", () => {
     expect(vi.mocked(execa)).not.toHaveBeenCalled()
   })
 
-  it("calls npm install when the package is not cached", async () => {
-    vi.mocked(execa).mockImplementation((async () => {
-      writeFakePackage("uncached-addon", SIRENO_ADDON_API_VERSION, false)
-      return {} as never
-    }) as never)
-
+  it("reports an npm addon that is not installed", async () => {
     const loadAddons = await loader()
-    await loadAddons({
+    const result = await loadAddons({
       entries: ["uncached-addon"],
       configDir: "/tmp",
       homeDir: "/tmp",
@@ -142,17 +137,13 @@ describe("loadAddons — npm path", () => {
       cacheDir: TEST_CACHE,
     })
 
-    expect(vi.mocked(execa)).toHaveBeenCalledTimes(1)
-    const args = vi.mocked(execa).mock.calls[0]?.[1] as string[] | undefined
-    expect(args?.[0]).toBe("install")
-    expect(args).toContain("uncached-addon")
-    expect(args).toContain("--prefix")
-    expect(args).toContain(TEST_CACHE)
-    expect(args).toContain("--no-save")
+    expect(
+      result.issues.some((issue) => /not installed/.test(issue.message)),
+    ).toBe(true)
+    expect(vi.mocked(execa)).not.toHaveBeenCalled()
   })
 
-  it("records an error and continues when npm install fails", async () => {
-    vi.mocked(execa).mockRejectedValue(new Error("network unreachable"))
+  it("records an error and continues when an npm addon is unavailable", async () => {
     const loadAddons = await loader()
     const result = await loadAddons({
       entries: ["broken-addon"],
@@ -162,9 +153,9 @@ describe("loadAddons — npm path", () => {
       cacheDir: TEST_CACHE,
     })
     expect(result.addons).toHaveLength(0)
-    expect(
-      result.issues.some((i) => /npm install failed/.test(i.message)),
-    ).toBe(true)
+    expect(result.issues.some((i) => /not installed/.test(i.message))).toBe(
+      true,
+    )
   })
 
   it("records error for npm specifier when cacheDir is missing", async () => {

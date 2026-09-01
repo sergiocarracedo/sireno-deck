@@ -70,3 +70,36 @@ jobs:
     permissions:
       contents: read
       id-token: write
+
+  homebrew:
+    name: Update Homebrew tap
+    needs: [detect, publish]
+    if: needs.detect.outputs.package == '@sirenodeck/cli'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Render formula
+        run: |
+          VERSION="${GITHUB_REF_NAME##*-}"
+          URL="https://registry.npmjs.org/@sirenodeck/cli/-/cli-${VERSION}.tgz"
+          SHA256=$(curl --fail --location "$URL" | sha256sum | cut -d' ' -f1)
+          sed -e "s/VERSION/${VERSION}/g" -e "s/SHA256/${SHA256}/g" \
+            packages/cli/scripts/installer/formula/sirenodeck.rb > sirenodeck.rb
+      - name: Checkout Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: sergiocarracedo/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+      - name: Publish formula
+        run: |
+          mkdir -p homebrew-tap/Formula
+          cp sirenodeck.rb homebrew-tap/Formula/sirenodeck.rb
+          git -C homebrew-tap config user.name "github-actions[bot]"
+          git -C homebrew-tap config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C homebrew-tap add Formula/sirenodeck.rb
+          git -C homebrew-tap diff --cached --quiet || git -C homebrew-tap commit -m "Update sirenodeck formula"
+          git -C homebrew-tap push

@@ -65,6 +65,8 @@ addons:
   # OR with config:
   - src: "my-addon"
     enabled: true
+    # Set global: true when the package was installed globally.
+    global: true
     config:
       defaults:
         autoShow: false
@@ -85,6 +87,11 @@ lock:
 ```yaml
 # Use built-in theme
 theme: "default"
+
+# OR use an installed global theme
+theme:
+  src: "my-theme"
+  global: true
 
 # OR use local theme
 theme:

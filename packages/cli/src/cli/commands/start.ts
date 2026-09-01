@@ -59,6 +59,7 @@ import {
 } from "@/system/setup-wizard"
 import { systemRequirements } from "./system-requirements"
 import { buildStandardProbeDeps } from "@/cli/probe-deps"
+import { onboardCodingAgents } from "@/cli/coding-agents-onboarding"
 
 export interface StartOptions {
   readonly config?: string
@@ -825,6 +826,7 @@ const runFirstRunCheckIfNeeded = async (
 
   await systemRequirements({
     logger,
+    configPath: resolveConfigPath(options).path,
     ...(options.homeDir !== undefined ? { homeDir: options.homeDir } : {}),
     ...(options.xdgConfigHome !== undefined
       ? { xdgConfigHome: options.xdgConfigHome }
@@ -863,6 +865,8 @@ const start = async (options: StartOptions): Promise<void> => {
   }
 
   await runFirstRunCheckIfNeeded(options, logger)
+
+  await onboardCodingAgents(resolveConfigPath(options).path)
 
   // ponytail: if a previous-session `sirenodeck:dm` daemon is still bound to
   // the WS port (52937), reap it before spawning. The pid file is stale-

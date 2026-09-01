@@ -24,6 +24,19 @@ By default, the CLI only logs errors. Use `--dev-mode` for normal operational ou
 
 ## Commands
 
+### install
+
+Install an npm addon or theme and configure it in `config.yml`.
+
+```bash
+sirenodeck install <package>
+sirenodeck install --global <package>
+```
+
+The command checks for pnpm, npm, or Yarn, preferring pnpm. Use `--global` to
+keep the package in the package manager's global installation and mark the
+config reference accordingly.
+
 ### run
 
 Run in foreground for development.

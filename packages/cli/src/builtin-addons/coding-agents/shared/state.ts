@@ -10,6 +10,8 @@ export type ProviderId = "opencode" | "claude-code"
 
 export interface Agent {
   readonly sessionId: string
+  readonly instanceId?: string
+  readonly pid?: number
   readonly providerId: ProviderId
   readonly title: string
   readonly status: AgentStatus
@@ -39,8 +41,9 @@ export const KNOWN_PROVIDERS: readonly ProviderId[] = [
 export const notifiableStatus = (s: AgentStatus): boolean =>
   s === "waiting_for_human" || s === "error"
 
-export const agentKey = (a: Pick<Agent, "providerId" | "sessionId">): string =>
-  `${a.providerId}:${a.sessionId}`
+export const agentKey = (
+  a: Pick<Agent, "providerId" | "sessionId" | "instanceId">,
+): string => `${a.providerId}:${a.instanceId ?? a.sessionId}`
 
 export const EMPTY_SNAPSHOT: AgentsSnapshot = {
   byProvider: { opencode: [], "claude-code": [] },

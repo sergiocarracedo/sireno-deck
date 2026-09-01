@@ -35,22 +35,25 @@ export interface NormalizeAddonEntry {
   enabled: boolean
   source: string
   isLocal: boolean
+  global: boolean
 }
 
 export const normalizeAddonEntry = (
-  entry: string | { src: string; enabled?: boolean },
+  entry: string | { src: string; enabled?: boolean; global?: boolean },
 ): NormalizeAddonEntry => {
   if (typeof entry === "string") {
     return {
       enabled: true,
       source: entry,
       isLocal: isLocalAddonSpec(entry),
+      global: false,
     }
   }
   return {
     enabled: entry.enabled ?? true,
     source: entry.src,
     isLocal: isLocalAddonSpec(entry.src),
+    global: entry.global ?? false,
   }
 }
 
