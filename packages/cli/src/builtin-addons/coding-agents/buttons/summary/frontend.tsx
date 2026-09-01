@@ -133,7 +133,7 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
     },
     {
       color: "var(--sireno-color-danger)",
-      label: "approval",
+      label: "waiting",
       count: count("waiting_for_human"),
     },
     {
@@ -219,9 +219,9 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
         {showCount &&
           (statusRows.length > 0 ? (
             <div className="flex flex-col gap-0.5">
-              {statusRows.map((b) => (
+              {statusRows.map((b, i) => (
                 <div
-                  key={b.label}
+                  key={`${b.label}-${i}`}
                   className="flex items-center gap-1 leading-none"
                 >
                   <span
