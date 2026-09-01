@@ -98,25 +98,25 @@ const AgentFrontend = (props: AddonFrontendButtonProps<AgentConfig>) => {
           style={{ backgroundColor: tileColor, opacity: 0.32 }}
         />
       )}
-      <div className="relative flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1 py-1">
+      <div className="relative grid min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] grid-rows-[1fr_auto] items-center gap-x-1 py-1">
         {iconSource !== undefined ? (
-          <Icon source={iconSource} size={18} />
+          <span className="row-span-2">
+            <Icon source={iconSource} size={18} />
+          </span>
         ) : (
           <span
-            className="inline-block h-3 w-3 shrink-0 rounded-full"
+            className="row-span-2 inline-block h-3 w-3 shrink-0 rounded-full"
             style={{ backgroundColor: dotColorVar }}
             aria-label={status}
           />
         )}
-        <span className="min-w-0 flex-1 break-words text-base font-semibold leading-tight">
+        <span className="min-w-0 truncate text-sm font-semibold leading-tight">
           {title || <span className="opacity-40">empty</span>}
         </span>
-        <span className="text-xs font-medium uppercase opacity-80">
+        <span className="min-w-0 truncate text-[10px] font-medium uppercase opacity-80">
           {status}
+          {cost !== null && ` ${cost}`}
         </span>
-        {cost !== null && (
-          <span className="text-xs font-medium opacity-80">{cost}</span>
-        )}
       </div>
     </div>
   )

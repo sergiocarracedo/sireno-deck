@@ -52,4 +52,25 @@ describe("readOpenCodeInstances", () => {
     ])
     await rm(stateHome, { recursive: true, force: true })
   })
+
+  it("maps OpenCode's working state to running", async () => {
+    const stateHome = join(tmpdir(), `sirenodeck-working-${process.pid}`)
+    process.env["XDG_STATE_HOME"] = stateHome
+    const dir = opencodeInstanceDir()
+    await mkdir(dir, { recursive: true })
+    await writeFile(
+      join(dir, "opencode-working.json"),
+      JSON.stringify({
+        pid: process.pid,
+        cwd: "/tmp/project",
+        state: "working",
+        updatedAt: Date.now(),
+      }),
+    )
+
+    await expect(readOpenCodeInstances()).resolves.toEqual([
+      expect.objectContaining({ status: "running" }),
+    ])
+    await rm(stateHome, { recursive: true, force: true })
+  })
 })

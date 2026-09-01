@@ -31,13 +31,20 @@ const processIsAlive = (pid: number): boolean => {
   }
 }
 
-const isStatus = (value: unknown): value is AgentStatus =>
-  value === "idle" ||
-  value === "running" ||
-  value === "waiting" ||
-  value === "waiting_for_human" ||
-  value === "error" ||
-  value === "compacting"
+const parseStatus = (value: unknown): AgentStatus | null => {
+  if (value === "working") return "running"
+  if (
+    value === "idle" ||
+    value === "running" ||
+    value === "waiting" ||
+    value === "waiting_for_human" ||
+    value === "error" ||
+    value === "compacting"
+  ) {
+    return value
+  }
+  return null
+}
 
 const parseLease = (raw: string): OpenCodeInstance | null => {
   try {
@@ -45,14 +52,14 @@ const parseLease = (raw: string): OpenCodeInstance | null => {
     const pid = value["pid"]
     const updatedAt = value["updatedAt"]
     const cwd = value["cwd"]
-    const status = value["state"]
+    const status = parseStatus(value["state"])
     if (
       typeof pid !== "number" ||
       !Number.isInteger(pid) ||
       pid <= 0 ||
       typeof updatedAt !== "number" ||
       typeof cwd !== "string" ||
-      !isStatus(status) ||
+      status === null ||
       Date.now() - updatedAt > LEASE_MAX_AGE_MS ||
       !processIsAlive(pid)
     ) {
