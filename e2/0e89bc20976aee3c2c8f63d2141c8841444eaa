@@ -1,0 +1,135 @@
+packages/cli/src/cli/index.ts
+  s_7057e1b0ae930f::t_caacef823ecc26 28-29,65-71,279-283,289,295-300,304-307,323
+  s_7057e1b0ae930f::t_f74ba9e290b181 284-288,290-294,301-303
+packages/cli/src/builtin-addons/coding-agents/shared/state.ts
+  s_e1462a6c6f714c::t_bdf1ce6038e79e 46
+  s_e1462a6c6f714c::t_b65a7c00c9f8b1 44-45
+  s_e1462a6c6f714c::t_6ff8e98202e6d8 13-14
+packages/cli/src/cli/commands/install.ts
+  s_7057e1b0ae930f::t_3fce607cc87166 124
+  s_7057e1b0ae930f::t_c7cb1593468aba 108,113,115,123
+  s_7057e1b0ae930f::t_a73f675574277f 45
+  s_7057e1b0ae930f::t_e51fbf8bf187aa 8,43
+  s_7057e1b0ae930f::t_affacb43fdb8a7 3-7,16-23,25-26,30-36,40-42,44,54-55,63,70,72,77-78,93-95,99-102,118,122,125-128
+  s_7057e1b0ae930f::t_5ee1ee1193420c 24,71
+  s_7057e1b0ae930f::t_ff193d6e255398 1-2,114,116-117
+  s_7057e1b0ae930f::t_f74ba9e290b181 9-15,27-29,37-39,46-53,56-62,64-69,73-76,79-92,96-98,103-107,109-112,119-121
+packages/cli/src/config/schemas.ts
+  s_7057e1b0ae930f::t_caacef823ecc26 145,168-171
+packages/cli/src/cli/commands/start.ts
+  s_e1462a6c6f714c::t_0a78e542aab336 62,869
+  s_e1462a6c6f714c::t_1a6d9e9f2da954 829
+  s_e1462a6c6f714c::t_871f888746eea3 870
+packages/cli/src/addon/__tests__/loader.test.ts
+  s_7057e1b0ae930f::t_950aab22271134 130,132,143,146
+  s_7057e1b0ae930f::t_f74ba9e290b181 140-142,156-158
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_e1462a6c6f714c::t_7c8b626ced985a 234-257,389-399
+  s_e1462a6c6f714c::t_bdf1ce6038e79e 12-15
+  s_e1462a6c6f714c::t_c4e6de25dd2d0a 400
+packages/cli/src/themes/loader.ts
+  s_7057e1b0ae930f::t_dba69b0beeb25b 237,272-275,298,315,334-335,340-342
+  s_0d66ee04bd72b4::t_9590605646a91c 263-266,336-339
+packages/cli/src/cli/commands/system-requirements.ts
+  s_e1462a6c6f714c::t_1a6d9e9f2da954 633-635,644
+  s_e1462a6c6f714c::t_0cf997bcb57637 501-503
+  s_e1462a6c6f714c::t_0a78e542aab336 41,109
+  s_e1462a6c6f714c::t_c413f783a4cca3 632
+  s_e1462a6c6f714c::t_0ec515dbd8bae6 500
+  s_e1462a6c6f714c::t_00f740d193cb5a 504
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/backend.ts
+  s_e1462a6c6f714c::t_61dcb78a92801e 8,58-61
+  s_e1462a6c6f714c::t_7b931543545801 22
+packages/cli/src/builtin-addons/coding-agents/providers/opencode-instances.ts
+  s_e1462a6c6f714c::t_6ff8e98202e6d8 1-101
+packages/cli/docs/reference/cli-commands.mdx
+  s_7057e1b0ae930f::t_366b67d6d3af69 27-39
+packages/web/astro/src/pages/addons/[slug].astro
+  s_7057e1b0ae930f::t_735c9a7711337f 263,268-270
+packages/cli/src/addon/spec.ts
+  s_7057e1b0ae930f::t_caacef823ecc26 38,42,49,56
+packages/cli/scripts/installer/formula/sirenodeck.rb
+  s_7057e1b0ae930f::t_1e8e2128dc4a7b 1-19
+packages/cli/src/cli/__tests__/package-manager.test.ts
+  s_7057e1b0ae930f::t_28e0fd58cc2545 1-21
+RELEASING.md
+  s_7057e1b0ae930f::t_cfbe414ca2672d 101-111
+packages/cli/src/cli/coding-agents-onboarding.ts
+  s_e1462a6c6f714c::t_1a6d9e9f2da954 94
+  s_e1462a6c6f714c::t_ef1f8cd731f38c 66-68
+  s_e1462a6c6f714c::t_7f1592ebb6a6c9 2-22,24-40,42,44-48,51,54,58,60-65,69-77,80-84,89-93,95-104,112,117-118
+  s_e1462a6c6f714c::t_a52e6867afb21e 1,23
+  s_e1462a6c6f714c::t_0a561457fcd4b8 49-50,52-53,56,78
+  s_e1462a6c6f714c::t_bdf1ce6038e79e 85-88
+  s_e1462a6c6f714c::t_f9155cfccce8b5 105-111,113-116
+  s_e1462a6c6f714c::t_51276ea9080fff 41,43,55,57,79
+  s_e1462a6c6f714c::t_de0d60f6246e8c 59
+packages/cli/src/addon/loader.ts
+  s_7057e1b0ae930f::t_3fce607cc87166 28-29,290-291,305-307,309-313,318,364-365,395-396
+  s_7057e1b0ae930f::t_f74ba9e290b181 314-317,319-320
+  s_7057e1b0ae930f::t_c7cb1593468aba 5
+  s_7057e1b0ae930f::t_a3150b64f7b8c0 330
+  s_7057e1b0ae930f::t_5ee1ee1193420c 308,322,326
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-instances.test.ts
+  s_e1462a6c6f714c::t_37ac90aadb8c38 1-6,11-55
+  s_e1462a6c6f714c::t_bdf1ce6038e79e 7-10
+packages/cli/src/cli/package-manager.ts
+  s_7057e1b0ae930f::t_affacb43fdb8a7 1-33,37-39,45-71
+  s_7057e1b0ae930f::t_f74ba9e290b181 34-36,41-42
+  s_7057e1b0ae930f::t_a73f675574277f 40,43-44
+packages/cli/docs/user/installation.mdx
+  s_7057e1b0ae930f::t_366b67d6d3af69 16,21-25,27
+docs/installation.mdx
+  s_7057e1b0ae930f::t_366b67d6d3af69 9-17
+packages/cli/docs/user/configuration-files.mdx
+  s_7057e1b0ae930f::t_366b67d6d3af69 68-69,91-94
+  s_7057e1b0ae930f::t_0e3f26318571bd 95
+packages/cli/src/cli/commands/run.ts
+  s_7057e1b0ae930f::t_0116f840b59e2f 484-487,495
+  s_7057e1b0ae930f::t_5ee1ee1193420c 55-58,494
+  s_7057e1b0ae930f::t_14f0449158b8ec 613-616
+  s_7057e1b0ae930f::t_fb297d011356d4 617,630-634,650-652,656-660
+  s_7057e1b0ae930f::t_f74ba9e290b181 502-505,507-512,516-518,625,629,635-649,653-655
+  s_7057e1b0ae930f::t_26b91350342147 470,488,497-501,506,513-515,519-532,584
+packages/web/astro/src/components/CommandTabs.astro
+  s_7057e1b0ae930f::t_735c9a7711337f 3
+.github/workflows/release.yml
+  s_7057e1b0ae930f::t_1e8e2128dc4a7b 73-98,100-105
+  s_7057e1b0ae930f::t_cfbe414ca2672d 99
+packages/cli/src/__tests__/addon.test.ts
+  s_7057e1b0ae930f::t_a86be46ed0309f 64,70,79,85
+packages/web/astro/src/pages/themes/[slug].astro
+  s_7057e1b0ae930f::t_735c9a7711337f 138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "e20e89bc20976aee3c2c8f63d2141c8841444eaa",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_7057e1b0ae930f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa3a8fabcffewKn5y403wgh207",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_e1462a6c6f714c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa6b53091ffea3XkHdPvhNeXgf",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
