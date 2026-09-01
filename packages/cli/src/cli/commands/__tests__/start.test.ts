@@ -11,6 +11,8 @@ import { writeFileSync, mkdtempSync } from "node:fs"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 
+const CONTROL_SOCKET = join(tmpdir(), `sirenodeck-start-${process.pid}.sock`)
+
 vi.mock("@/config/loader", () => ({
   loadConfig: vi.fn(),
 }))
@@ -70,17 +72,14 @@ vi.mock("@/util/daemon", () => ({
   resolveDaemonPaths: vi.fn(() => ({
     runtimeDir: "/run/user/0",
     pidFile: "/run/user/0/sirenodeck.pid",
-    tokenFile: "/run/user/0/sirenodeck.token",
+    controlSocket: CONTROL_SOCKET,
     childrenFile: "/run/user/0/sirenodeck.children.json",
     configPathFile: "/run/user/0/sirenodeck.config",
     flagsFile: "/run/user/0/sirenodeck.flags.json",
   })),
   generateToken: vi.fn(() => "test-token"),
   generateSentinel: vi.fn(() => "test-sentinel"),
-  readToken: vi.fn(() => null),
   readConfigPath: vi.fn(() => null),
-  writeToken: vi.fn(),
-  removeTokenFile: vi.fn(),
   removeRuntimeStateFile: vi.fn(),
   readChildren: vi.fn(() => null),
   writeChildren: vi.fn(),

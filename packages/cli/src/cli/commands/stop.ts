@@ -9,9 +9,9 @@ import {
   removeChildrenFile,
   removePidFile,
   removeRuntimeStateFile,
-  removeTokenFile,
   resolveDaemonPaths,
 } from "@/util/daemon"
+import { removeDaemonControl } from "@/util/daemon-control"
 import {
   readDaemonEventsFromSnapshot,
   snapshotDaemonLog,
@@ -91,7 +91,7 @@ export const stop = async ({ logger }: StopOptions): Promise<void> => {
   const portFree = await waitForPortFree(DEFAULT_PORT)
 
   removePidFile()
-  removeTokenFile()
+  removeDaemonControl(resolveDaemonPaths())
   removeRuntimeStateFile()
   removeChildrenFile()
 

@@ -53,7 +53,6 @@ const waitForExit = (pid: number, timeoutMs = 6_000): Promise<boolean> => {
 
 const writeDaemonFiles = (pid: number, childPids: number[]): void => {
   writeFileSync(join(TEST_DIR, "sirenodeck.pid"), `${pid}\n`, "utf8")
-  writeFileSync(join(TEST_DIR, "sirenodeck.token"), "test-token\n", "utf8")
   writeFileSync(
     join(TEST_DIR, "sirenodeck.children.json"),
     JSON.stringify({ pids: childPids }),
@@ -85,7 +84,6 @@ describe("stop", () => {
     expect(await waitForExit(child2.pid!)).toBe(true)
     expect(await waitForExit(daemon.pid!)).toBe(true)
     expect(existsSync(join(TEST_DIR, "sirenodeck.pid"))).toBe(false)
-    expect(existsSync(join(TEST_DIR, "sirenodeck.token"))).toBe(false)
     expect(existsSync(join(TEST_DIR, "sirenodeck.children.json"))).toBe(false)
   })
 
@@ -107,6 +105,5 @@ describe("stop", () => {
 
     expect(await waitForExit(daemon.pid!)).toBe(true)
     expect(existsSync(join(TEST_DIR, "sirenodeck.pid"))).toBe(false)
-    expect(existsSync(join(TEST_DIR, "sirenodeck.token"))).toBe(false)
   })
 })

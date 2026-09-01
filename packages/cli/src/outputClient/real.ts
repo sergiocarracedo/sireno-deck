@@ -256,12 +256,10 @@ export class RealOutputClient implements OutputClient {
     const frontendVitePid = frontendSupervisor?.process.pid ?? 0
     const childPids = frontendVitePid > 0 ? [frontendVitePid] : []
 
-    const token = process.env["SIRENO_TOKEN"] ?? ""
     const state: RuntimeState = {
       emulatorUrl: frontendUrl,
       wsUrl: opts.bridge.url,
       frontendUrl,
-      token,
       lanHost: opts.lanHost ?? "127.0.0.1",
       addresses: opts.lanAddresses ?? [],
       emulatorMode: false,

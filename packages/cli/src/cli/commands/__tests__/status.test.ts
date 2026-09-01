@@ -7,7 +7,6 @@ const {
   cancelMock,
   readPidMock,
   isRunningMock,
-  readTokenMock,
   readFlagsMock,
   readRuntimeStateMock,
   readChildrenMock,
@@ -20,7 +19,6 @@ const {
   cancelMock: vi.fn(),
   readPidMock: vi.fn(),
   isRunningMock: vi.fn(),
-  readTokenMock: vi.fn(),
   readFlagsMock: vi.fn(),
   readRuntimeStateMock: vi.fn(),
   readChildrenMock: vi.fn(),
@@ -38,7 +36,6 @@ vi.mock("@/cli/prompt", () => ({
 vi.mock("@/util/daemon", () => ({
   readPid: (...args: unknown[]) => readPidMock(...args),
   isRunning: (...args: unknown[]) => isRunningMock(...args),
-  readToken: (...args: unknown[]) => readTokenMock(...args),
   readFlags: (...args: unknown[]) => readFlagsMock(...args),
   readRuntimeState: (...args: unknown[]) => readRuntimeStateMock(...args),
   readChildren: (...args: unknown[]) => readChildrenMock(...args),
@@ -63,7 +60,6 @@ beforeEach(() => {
   vi.clearAllMocks()
   readPidMock.mockReturnValue(null)
   isRunningMock.mockReturnValue(false)
-  readTokenMock.mockReturnValue(null)
   readFlagsMock.mockReturnValue(null)
   readRuntimeStateMock.mockReturnValue(null)
   readChildrenMock.mockReturnValue(null)
@@ -103,7 +99,6 @@ describe("status", () => {
     const pid = process.pid
     readPidMock.mockReturnValue(pid)
     isRunningMock.mockReturnValue(true)
-    readTokenMock.mockReturnValue("abcdefghijklmnopqrstuv")
     readFlagsMock.mockReturnValue({
       emulator: true,
       httpPort: 3939,
@@ -113,7 +108,6 @@ describe("status", () => {
       emulatorUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
-      token: "tok",
       lanHost: "127.0.0.1",
       addresses: [],
       emulatorMode: true,
@@ -162,18 +156,13 @@ describe("status", () => {
     expect(logMock.info).not.toHaveBeenCalledWith(
       expect.stringContaining("Token:"),
     )
-    // Tip is emitted because token exists and showToken is false
-    expect(logMock.info).toHaveBeenCalledWith(
-      expect.stringContaining("--show-token"),
-    )
     expect(outroMock).toHaveBeenCalledWith("✓ Status snapshot")
   })
 
-  it("includes token in URLs when showToken is true and omits the tip", async () => {
+  it("never includes tokens in URLs", async () => {
     const pid = process.pid
     readPidMock.mockReturnValue(pid)
     isRunningMock.mockReturnValue(true)
-    readTokenMock.mockReturnValue("abcdefghijklmnopqrstuv")
     readFlagsMock.mockReturnValue({
       emulator: true,
       httpPort: 3939,
@@ -183,7 +172,6 @@ describe("status", () => {
       emulatorUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
-      token: "tok",
       lanHost: "127.0.0.1",
       addresses: [],
       emulatorMode: true,
@@ -192,16 +180,13 @@ describe("status", () => {
       theme: "default",
     })
 
-    await status({ logger: mockLogger, showToken: true })
+    await status({ logger: mockLogger })
 
     expect(logMock.info).toHaveBeenCalledWith(
-      "Frontend URL : http://127.0.0.1:5180?token=abcdefghijklmnopqrstuv",
+      "Frontend URL : http://127.0.0.1:5180",
     )
     expect(logMock.info).toHaveBeenCalledWith(
-      "Emulator URL : http://127.0.0.1:52938?token=abcdefghijklmnopqrstuv",
-    )
-    expect(logMock.info).not.toHaveBeenCalledWith(
-      expect.stringContaining("--show-token"),
+      "Emulator URL : http://127.0.0.1:52938",
     )
     expect(outroMock).toHaveBeenCalledWith("✓ Status snapshot")
   })
@@ -215,7 +200,6 @@ describe("status", () => {
       emulatorUrl: "",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
-      token: "tok",
       lanHost: "127.0.0.1",
       addresses: [],
       emulatorMode: false,
@@ -254,7 +238,6 @@ describe("status", () => {
       emulatorUrl: "",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
-      token: "tok",
       lanHost: "127.0.0.1",
       addresses: [],
       emulatorMode: false,
@@ -280,7 +263,6 @@ describe("status", () => {
       emulatorUrl: "",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
-      token: "tok",
       lanHost: "127.0.0.1",
       addresses: [],
       emulatorMode: false,
@@ -301,13 +283,11 @@ describe("status", () => {
     const pid = process.pid
     readPidMock.mockReturnValue(pid)
     isRunningMock.mockReturnValue(true)
-    readTokenMock.mockReturnValue(null)
     readFlagsMock.mockReturnValue({ emulator: true, httpPort: 3939 })
     readRuntimeStateMock.mockReturnValue({
       emulatorUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
-      token: "",
       lanHost: "127.0.0.1",
       addresses: [],
       emulatorMode: true,
@@ -320,9 +300,6 @@ describe("status", () => {
 
     expect(logMock.info).toHaveBeenCalledWith(
       "Frontend URL : http://127.0.0.1:5180",
-    )
-    expect(logMock.info).not.toHaveBeenCalledWith(
-      expect.stringContaining("--show-token"),
     )
   })
 
@@ -345,7 +322,6 @@ describe("status", () => {
       emulatorUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
-      token: "tok",
       lanHost: "127.0.0.1",
       addresses: [],
       emulatorMode: true,

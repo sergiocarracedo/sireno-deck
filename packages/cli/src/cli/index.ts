@@ -45,9 +45,7 @@ interface StartArgs extends GlobalOptions {
   autoopen?: boolean
 }
 
-interface StatusArgs extends GlobalOptions {
-  showToken?: boolean
-}
+interface StatusArgs extends GlobalOptions {}
 interface StopArgs extends GlobalOptions {}
 interface LogsArgs extends GlobalOptions {
   follow?: boolean
@@ -173,7 +171,7 @@ const startCommand: CommandModule<object, StartArgs> = {
       printDaemonEvents(outcome.events)
 
       if (outcome.runtimeReady && outcome.state !== null) {
-        await printDaemonUrl(outcome.state)
+        await printDaemonUrl(outcome.state, outcome.token ?? "")
         // ponytail: per-addon requirement checks (playerctl for media, etc.).
         // Never blocks the daemon — failing checks are surfaced as warnings so
         // the operator can act on them without digging into the log.
@@ -231,18 +229,9 @@ const stopCommand: CommandModule<object, StopArgs> = {
 const statusCommand: CommandModule<object, StatusArgs> = {
   command: "status",
   describe: "Check sirenodeck daemon status",
-  builder: (yargs) =>
-    yargs.option("show-token", {
-      type: "boolean",
-      default: false,
-      description: "Include the auth token in the Frontend URL line",
-    }),
   handler: async (argv) => {
     const logger = buildLogger(argv)
-    const options: StatusOptions = {
-      logger,
-      showToken: argv.showToken === true,
-    }
+    const options: StatusOptions = { logger }
     await status(options)
   },
 }

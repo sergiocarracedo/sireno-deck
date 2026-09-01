@@ -65,7 +65,7 @@ sirenodeck reload   [--logs]            # in-place reload via SIGUSR1
 sirenodeck logs     [--follow] [--lines <N>]
 ```
 
-`start` daemonizes (writes PID + token under `$XDG_RUNTIME_DIR/sirenodeck/`); the foreground recipe for development is `pnpm run dev start` (wraps `tsx watch`, ignoring `frontend/**` so Vite keeps running).
+`start` daemonizes (writes a PID under `$XDG_RUNTIME_DIR/sirenodeck/`; authentication tokens remain in daemon memory); the foreground recipe for development is `pnpm run dev start` (wraps `tsx watch`, ignoring `frontend/**` so Vite keeps running).
 
 ### `config.yml` example
 
