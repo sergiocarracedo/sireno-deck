@@ -1,0 +1,61 @@
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_0d66ee04bd72b4::t_9c88735fd60ef7 145
+packages/cli/src/util/daemon-control.ts
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 1-16,18-20,22-70
+  s_0d66ee04bd72b4::t_0cc15aeeb982e1 17
+  s_0d66ee04bd72b4::t_1dcad427177b0f 21
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_0d66ee04bd72b4::t_6a9c126b57447b 40
+  s_0d66ee04bd72b4::t_34008216fb4069 1
+packages/cli/src/cli/commands/start.ts
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 59,553-554,565,624
+  s_0d66ee04bd72b4::t_c1315f710dc94d 426,623,899,920
+packages/cli/src/cli/commands/__tests__/status.test.ts
+  s_0d66ee04bd72b4::t_8de5df9e1b0f8b 162,183,186,189
+packages/cli/src/util/daemon.ts
+  s_0d66ee04bd72b4::t_78c4e87557e06e 33
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 40,148
+packages/cli/src/cli/commands/run.ts
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 1419
+README.md
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 68
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_0d66ee04bd72b4::t_a9cae86923edc0 14-15,75
+packages/cli/README.md
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 28
+packages/cli/src/cli/startup-display.ts
+  s_0d66ee04bd72b4::t_34008216fb4069 26-30,307
+  s_0d66ee04bd72b4::t_784726b8908650 31,335-336,350,382-385
+  s_0d66ee04bd72b4::t_1190fd39362215 298,301-302,312,316,323,327,331,338-339
+packages/cli/src/__tests__/daemon-extensions.test.ts
+  s_0d66ee04bd72b4::t_1dcad427177b0f 24
+packages/cli/src/cli/index.ts
+  s_0d66ee04bd72b4::t_784726b8908650 174
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 234
+  s_0d66ee04bd72b4::t_b63fa118ade10e 48
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_0d66ee04bd72b4::t_34008216fb4069 66
+packages/cli/src/cli/commands/status.ts
+  s_0d66ee04bd72b4::t_34008216fb4069 31
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 98,102
+packages/cli/src/cli/commands/stop.ts
+  s_0d66ee04bd72b4::t_87be2b4f0a3c5f 14,94
+packages/cli/src/cli/commands/__tests__/restart.test.ts
+  s_0d66ee04bd72b4::t_34008216fb4069 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ad3733be7c9c3ac521f9e13cf812e5bba564b040",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
