@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-provider.test.ts
+  s_0d66ee04bd72b4::t_4793ac73c355bb 31-33,82
+  s_0d66ee04bd72b4::t_8694eca0a68b0a 1,4,46,48-49,114,128-155
+  s_0d66ee04bd72b4::t_4a724a2d2deb7a 34-44,47,68,98,177,197,246
+  s_0d66ee04bd72b4::t_f7223e898d3b33 156
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_0d66ee04bd72b4::t_d80cc9f79ef2b7 44,53,101-109,111,117-119
+  s_0d66ee04bd72b4::t_7248a700103a14 114-116
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_0d66ee04bd72b4::t_d80cc9f79ef2b7 235
+packages/cli/src/cli/coding-agents-onboarding.ts
+  s_0d66ee04bd72b4::t_d80cc9f79ef2b7 9,67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "3e613b80d2d6110969d344e2849c04d5520760d0",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
