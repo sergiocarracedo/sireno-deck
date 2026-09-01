@@ -4,18 +4,20 @@ import { join } from "node:path"
 
 import { confirm, isCancel, note } from "@/cli/prompt"
 import { loadConfig } from "@/config/loader"
+import { applyEdits, modify, parse, type ParseError } from "jsonc-parser"
 
 const PLUGIN_FILE = "sirenodeck-agent-state.js"
+const PLUGIN_SPEC = `./plugins/${PLUGIN_FILE}`
 const PLUGIN_MARKER = "SIRENODECK_INTEGRATION_ID=coding-agents-v2"
 
-const pluginDir = (): string =>
-  join(
-    process.env["OPENCODE_CONFIG_DIR"] ??
-      process.env["XDG_CONFIG_HOME"] ??
-      join(homedir(), ".config"),
-    "opencode",
-    "plugins",
-  )
+const opencodeConfigDir = (): string =>
+  process.env["OPENCODE_CONFIG_DIR"] ??
+  join(process.env["XDG_CONFIG_HOME"] ?? join(homedir(), ".config"), "opencode")
+
+const pluginDir = (): string => join(opencodeConfigDir(), "plugins")
+
+const opencodeConfigPath = (): string =>
+  join(opencodeConfigDir(), "opencode.json")
 
 export const opencodePluginPath = (): string => join(pluginDir(), PLUGIN_FILE)
 
@@ -36,6 +38,61 @@ export const isOpenCodePluginInstalled = (): boolean => {
   } catch {
     return false
   }
+}
+
+const readOpenCodeConfig = (): {
+  config: Record<string, unknown>
+  text: string
+} | null => {
+  const path = opencodeConfigPath()
+  if (!existsSync(path)) return { config: {}, text: "{}" }
+  try {
+    const text = readFileSync(path, "utf8")
+    const errors: ParseError[] = []
+    const parsed: unknown = parse(text, errors, { allowTrailingComma: true })
+    if (errors.length > 0) return null
+    return parsed !== null && typeof parsed === "object"
+      ? { config: parsed as Record<string, unknown>, text }
+      : null
+  } catch {
+    return null
+  }
+}
+
+const pluginSpec = (entry: unknown): unknown =>
+  Array.isArray(entry) ? entry[0] : entry
+
+export const isOpenCodePluginEnabled = (): boolean => {
+  const config = readOpenCodeConfig()
+  const plugins = config?.config["plugin"]
+  return (
+    Array.isArray(plugins) &&
+    plugins.some((entry) => pluginSpec(entry) === PLUGIN_SPEC)
+  )
+}
+
+export const enableOpenCodePlugin = (): boolean => {
+  const config = readOpenCodeConfig()
+  if (config === null) return false
+  const plugins = Array.isArray(config.config["plugin"])
+    ? config.config["plugin"]
+    : []
+  if (!plugins.some((entry) => pluginSpec(entry) === PLUGIN_SPEC)) {
+    plugins.push(PLUGIN_SPEC)
+    const updated = applyEdits(
+      config.text,
+      modify(config.text, ["plugin"], plugins, {
+        formattingOptions: { insertSpaces: true, tabSize: 2 },
+      }),
+    )
+    const path = opencodeConfigPath()
+    mkdirSync(opencodeConfigDir(), { recursive: true, mode: 0o700 })
+    writeFileSync(path, updated, {
+      encoding: "utf8",
+      mode: 0o600,
+    })
+  }
+  return true
 }
 
 export const codingAgentsPluginSource = `// ${PLUGIN_MARKER}
@@ -93,7 +150,10 @@ export const onboardCodingAgents = async (
   configPath: string,
   options: { readonly nonInteractive?: boolean; readonly yes?: boolean } = {},
 ): Promise<boolean> => {
-  if (!isCodingAgentsConfigured(configPath) || isOpenCodePluginInstalled()) {
+  if (
+    !isCodingAgentsConfigured(configPath) ||
+    (isOpenCodePluginInstalled() && isOpenCodePluginEnabled())
+  ) {
     return false
   }
   if (options.nonInteractive === true) return false
@@ -110,8 +170,16 @@ export const onboardCodingAgents = async (
           initialValue: true,
         })
   if (isCancel(answer) || !answer) return false
+  installOpenCodePlugin()
+  if (!enableOpenCodePlugin()) {
+    note(
+      "Could not update OpenCode's opencode.json because it is invalid JSON.",
+      "OpenCode integration",
+    )
+    return false
+  }
   note(
-    `Installed ${installOpenCodePlugin()}. Restart OpenCode to activate it.`,
+    `Installed and enabled ${opencodePluginPath()}. Restart OpenCode to activate it.`,
     "OpenCode integration",
   )
   return true
