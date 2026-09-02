@@ -12,7 +12,6 @@ import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
 import { systemRequirementsCommand } from "./commands/system-requirements"
-import { resolveDaemonPaths } from "@/util/daemon"
 import { snapshotDaemonLog } from "@/util/log-reader"
 import {
   buildStartupBanner,
@@ -27,6 +26,15 @@ import {
 import { runBuiltinAddonChecks } from "@/addon/check-runner"
 import { installPackage, type InstallOptions } from "./commands/install"
 import type { PackageManager } from "./package-manager"
+import { openBrowser } from "@/outputClient/open-browser"
+import { requestDaemonToken } from "@/util/daemon-control"
+import {
+  isRunning,
+  readPid,
+  readRuntimeState,
+  resolveDaemonPaths,
+} from "@/util/daemon"
+import { cancel, intro, log } from "./prompt"
 
 export interface GlobalOptions {
   verbose?: boolean
@@ -245,6 +253,32 @@ const statusCommand: CommandModule<object, StatusArgs> = {
   },
 }
 
+const configUiCommand: CommandModule<object, GlobalOptions> = {
+  command: "config-ui",
+  describe: "Open the visual configuration editor",
+  handler: async (argv) => {
+    const logger = buildLogger(argv)
+    const paths = resolveDaemonPaths()
+    const pid = readPid(paths)
+    const state =
+      pid !== null && isRunning(pid) ? readRuntimeState(paths) : null
+    if (state === null) {
+      intro("sirenodeck config-ui")
+      log.error("Daemon is not running")
+      cancel("✗ Run `sirenodeck start` first")
+      return
+    }
+    const token = await requestDaemonToken(paths)
+    if (token === null) {
+      throw new Error("Could not retrieve the daemon token")
+    }
+    const base = state.configUiUrl ?? state.emulatorUrl
+    const url = `${base}${base.includes("?") ? "&" : "?"}token=${encodeURIComponent(token)}#/editor`
+    log.info(`Config UI: ${url}`)
+    openBrowser(url, logger)
+  },
+}
+
 const reloadCommand: CommandModule<object, ReloadArgs> = {
   command: "reload",
   describe: "Send SIGUSR1 to the daemon (in-place reload)",
@@ -302,6 +336,7 @@ export const buildCli = async (): Promise<{
   return {
     scriptName: PACKAGE_NAME,
     commands: [
+      configUiCommand,
       startCommand,
       stopCommand,
       statusCommand,

@@ -309,6 +309,7 @@ export const printDaemonUrl = async (
       return `http://${host}:${port}?${params.toString()}`
     }
     const localUrl = buildUrl("127.0.0.1", false)
+    write(`  Config UI:  ${localUrl}#/editor\n`)
     write(`\n  Emulator:  ${localUrl}\n`)
     if (state.remote && state.addresses.length > 0) {
       const isTty = Boolean(process.stdout.isTTY)
@@ -336,6 +337,12 @@ export const printDaemonUrl = async (
         ? `${url}${url.includes("?") ? "&" : "?"}token=${token}`
         : url
     write(`\n  Frontend:  ${withToken}\n`)
+    const configUiUrl = state.configUiUrl ?? state.emulatorUrl
+    const configUiWithToken =
+      token.length > 0
+        ? `${configUiUrl}${configUiUrl.includes("?") ? "&" : "?"}token=${token}`
+        : configUiUrl
+    write(`  Config UI:  ${configUiWithToken}#/editor\n`)
     write("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
   }
 }

@@ -142,6 +142,7 @@ export class EmulatorOutputClient implements OutputClient {
                 logger,
                 wsUrl: opts.bridge.url,
                 configPath: opts.configPath,
+                emulatorMode: true,
                 host,
                 ...(requireToken !== undefined ? { requireToken } : {}),
                 ...(opts.onChildPid !== undefined
@@ -169,6 +170,7 @@ export class EmulatorOutputClient implements OutputClient {
           logger,
           wsUrl: opts.bridge.url,
           configPath: opts.configPath,
+          emulatorMode: true,
           host,
           frontendUrl:
             opts.frontendUrl ?? `http://127.0.0.1:${DEFAULT_FRONTEND_PORT}`,
@@ -276,6 +278,7 @@ export class EmulatorOutputClient implements OutputClient {
       process.stdout.write(`\n  Emulator:  ${emulatorUrl}\n\n`)
       const lanHost = opts.lanHost ?? "127.0.0.1"
       const state: RuntimeState = {
+        configUiUrl: emulatorUrl,
         emulatorUrl,
         wsUrl: opts.bridge.url,
         frontendUrl,
@@ -294,6 +297,7 @@ export class EmulatorOutputClient implements OutputClient {
       openBrowser(emulatorUrl, logger, opts.noAutoOpen === true)
       const lanHost = opts.lanHost ?? "127.0.0.1"
       const state: RuntimeState = {
+        configUiUrl: emulatorUrl,
         emulatorUrl,
         wsUrl: opts.bridge.url,
         frontendUrl,
