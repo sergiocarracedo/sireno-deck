@@ -1,7 +1,7 @@
 {
   "packages/cli": "0.1.0-alpha.0",
   "packages/addons/app-shortcuts": "0.1.0",
-  "packages/addons/pomodoro": "0.1.0",
+  "packages/addons/pomodoro": "0.1.1",
   "packages/themes/neon-grids": "0.1.0",
   "packages/themes/riptide": "0.1.0"
 }
