@@ -24,7 +24,10 @@ export const createAgentsDecks = (
   // faint empty-key outline instead of a themed background behind blank content.
   const cappedLive = Math.min(live, pages * pageSize)
   const buttons: Array<Record<string, unknown>> = []
-  for (let slot = 0; slot < cappedLive; slot += 1) {
+  // Keep one addon tile mounted while empty so its channel stays active and a
+  // newly started instance can trigger the next deck rebuild.
+  const materializedSlots = Math.max(1, cappedLive)
+  for (let slot = 0; slot < materializedSlots; slot += 1) {
     buttons.push({
       position: slot,
       type: "coding-agents:agent",

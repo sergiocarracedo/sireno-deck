@@ -13,7 +13,11 @@ const makeSession = (overrides: Record<string, unknown> = {}) => ({
 type ApiOverrides = Partial<
   Pick<
     OpencodeHttpApi,
-    "listSessions" | "sessionStatus" | "eventStream" | "sessionMessages"
+    | "listSessions"
+    | "sessionStatus"
+    | "eventStream"
+    | "sessionMessages"
+    | "providerModels"
   >
 >
 
@@ -62,6 +66,40 @@ describe("OpenCodeProvider", () => {
     expect(agents[0]?.status).toBe("running")
     expect(agents[0]?.sessionId).toBe("abc")
     expect(agents[0]?.providerId).toBe("opencode")
+  })
+
+  it("reads usage and context from OpenCode API-shaped responses", async () => {
+    const usage = {
+      input: 100,
+      output: 50,
+      reasoning: 25,
+      cache: { read: 10, write: 5 },
+    }
+    const api = makeApi({
+      listSessions: async () => [
+        makeSession({
+          cost: 1.25,
+          model: { id: "model", providerID: "provider" },
+          tokens: usage,
+        }),
+      ],
+      providerModels: async () => [
+        { id: "provider", models: { model: { limit: { context: 1000 } } } },
+      ],
+      sessionMessages: async () => [
+        { info: { role: "assistant", tokens: usage }, parts: [] },
+      ],
+    })
+    const provider = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+    })
+
+    const agents = await provider.fetchSnapshot(new AbortController().signal)
+
+    expect(agents[0]?.cost).toBe(1.25)
+    expect(agents[0]?.contextTokens).toBe(190)
+    expect(agents[0]?.contextPercent).toBe(19)
   })
 
   it("fetchSnapshot marks idle when no status entry", async () => {

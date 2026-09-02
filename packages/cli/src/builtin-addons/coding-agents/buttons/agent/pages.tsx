@@ -5,6 +5,9 @@ import { LabelValueListSurface } from "@/ui"
 
 interface AgentPageProps {
   title: string
+  sessionId?: string
+  directory?: string
+  lastMessagePreview?: string
   status: string
   iconSource?: string
   cost?: number
@@ -18,9 +21,19 @@ const value = (n: number | undefined, suffix = ""): string =>
   typeof n === "number" && Number.isFinite(n) ? `${n}${suffix}` : "---"
 
 const formatCost = (cost: number | undefined): string =>
-  typeof cost === "number" && Number.isFinite(cost) && cost > 0
+  typeof cost === "number" && Number.isFinite(cost) && cost >= 0
     ? `$${cost.toFixed(2)}`
     : "---"
+
+const shortPath = (directory: string | undefined): string => {
+  if (directory === undefined || directory.length === 0) return "---"
+  return directory.split(/[\\/]/).at(-1) || directory
+}
+
+const shortSessionId = (sessionId: string | undefined): string =>
+  sessionId === undefined || sessionId.length === 0
+    ? "---"
+    : sessionId.slice(-8)
 
 export const CurrentAgentPage = ({
   title,
@@ -61,13 +74,48 @@ export const CurrentAgentPage = ({
 export const AgentMetricsPage = ({
   cost,
   contextTokens,
-  contextPercent,
 }: AgentPageProps): ReactElement => (
   <LabelValueListSurface
     lines={[
-      { label: "cost", value: formatCost(cost) },
-      { label: "tokens", value: value(contextTokens) },
-      { label: "context", value: value(contextPercent), units: "%" },
+      { label: "cost", value: formatCost(cost), icon: "icon://coins" },
+      { label: "tokens", value: value(contextTokens), icon: "icon://activity" },
+    ]}
+  />
+)
+
+export const AgentContextPage = ({
+  contextPercent,
+  directory,
+}: AgentPageProps): ReactElement => (
+  <LabelValueListSurface
+    lines={[
+      {
+        label: "context",
+        value: value(contextPercent),
+        units: "%",
+        icon: "icon://cpu",
+      },
+      { label: "project", value: shortPath(directory), icon: "icon://folder" },
+    ]}
+  />
+)
+
+export const AgentDetailsPage = ({
+  sessionId,
+  lastMessagePreview,
+}: AgentPageProps): ReactElement => (
+  <LabelValueListSurface
+    lines={[
+      {
+        label: "session",
+        value: shortSessionId(sessionId),
+        icon: "icon://clock",
+      },
+      {
+        label: "activity",
+        value: lastMessagePreview ?? "---",
+        icon: "icon://terminal",
+      },
     ]}
   />
 )

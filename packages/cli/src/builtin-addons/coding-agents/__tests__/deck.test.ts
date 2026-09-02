@@ -41,13 +41,13 @@ describe("createAgentsDecks", () => {
     expect(agentSlots.length).toBe(20)
   })
 
-  it("emits no buttons when no sessions are live", () => {
+  it("keeps one placeholder tile when no sessions are live", () => {
     setLiveCount(0)
     const deck = createAgentsDecks(ctx(15))[AGENTS_DECK_BASE]!
     const agentSlots = (deck.buttons ?? []).filter(
       (b) => (b as { type?: string }).type === "coding-agents:agent",
     )
-    expect(agentSlots.length).toBe(0)
+    expect(agentSlots.length).toBe(1)
   })
 
   it("caps pages", () => {

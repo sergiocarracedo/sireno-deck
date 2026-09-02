@@ -56,4 +56,21 @@ describe("LabelValueListSurface", () => {
     const units = unitTexts(container)
     expect(units.filter((t) => t === "%")).toHaveLength(2)
   })
+
+  it("renders labels for compact lists", () => {
+    const lines: readonly [
+      LabelValueListLine,
+      LabelValueListLine,
+      LabelValueListLine,
+    ] = [
+      { label: "Cost", value: "$1.00" },
+      { label: "Tokens", value: "100" },
+      { label: "Context", value: "10", units: "%" },
+    ]
+    const { container } = render(<LabelValueListSurface lines={lines} />)
+
+    expect(container.textContent).toContain("Cost")
+    expect(container.textContent).toContain("Tokens")
+    expect(container.textContent).toContain("Context")
+  })
 })

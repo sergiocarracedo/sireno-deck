@@ -3,7 +3,12 @@ import { PaginatedSurface, type PaginatedPage } from "@/ui"
 import type { AddonFrontendButtonProps } from "../../types/types.js"
 
 import type { AgentConfig } from "./config.js"
-import { AgentMetricsPage, CurrentAgentPage } from "./pages.js"
+import {
+  AgentContextPage,
+  AgentDetailsPage,
+  AgentMetricsPage,
+  CurrentAgentPage,
+} from "./pages.js"
 
 const AUTO_RETURN_MS = 10_000
 
@@ -89,6 +94,9 @@ const AgentFrontend = (props: AddonFrontendButtonProps<AgentConfig>) => {
 
   const pageProps = {
     title,
+    sessionId: agent?.sessionId,
+    directory: agent?.directory,
+    lastMessagePreview: agent?.lastMessagePreview,
     status,
     iconSource,
     cost: agent?.cost,
@@ -100,6 +108,8 @@ const AgentFrontend = (props: AddonFrontendButtonProps<AgentConfig>) => {
   const pages: PaginatedPage<typeof pageProps>[] = [
     { render: CurrentAgentPage, config: pageProps },
     { render: AgentMetricsPage, config: pageProps },
+    { render: AgentContextPage, config: pageProps },
+    { render: AgentDetailsPage, config: pageProps },
   ]
   return (
     <PaginatedSurface

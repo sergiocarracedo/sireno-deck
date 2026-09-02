@@ -31,6 +31,8 @@ interface OpencodeSessionLike {
   readonly contextTokens?: number
   readonly contextPercent?: number
   readonly agent?: string
+  readonly model?: { readonly id?: string; readonly providerID?: string }
+  readonly tokens?: TokenUsage
   readonly time?: { readonly updated?: number; readonly created?: number }
 }
 
@@ -45,9 +47,31 @@ interface MessagePart {
   readonly state?: { readonly status?: string; readonly title?: string }
 }
 
+interface TokenUsage {
+  readonly input?: number
+  readonly output?: number
+  readonly reasoning?: number
+  readonly cache?: { readonly read?: number; readonly write?: number }
+}
+
+interface ProviderModelLike {
+  readonly limit?: { readonly context?: number }
+}
+
+interface ProviderLike {
+  readonly id?: string
+  readonly models?: Readonly<Record<string, ProviderModelLike>>
+}
+
 interface MessageLike {
-  readonly info?: { readonly role?: string; readonly tokens?: unknown }
+  readonly info?: {
+    readonly role?: string
+    readonly tokens?: TokenUsage
+    readonly cost?: number
+    readonly finish?: string | null
+  }
   readonly finish?: string | null
+  readonly cost?: number
   readonly parts?: readonly MessagePart[]
 }
 
@@ -61,6 +85,7 @@ export interface OpencodeHttpApi {
     id: string,
     limit: number,
   ): Promise<ReadonlyArray<MessageLike>>
+  providerModels?: (signal: AbortSignal) => Promise<readonly ProviderLike[]>
   eventStream(
     signal: AbortSignal,
   ): Promise<AsyncIterable<OpencodeEvent | unknown>>
@@ -95,6 +120,14 @@ const httpApi = (baseUrl: string): OpencodeHttpApi => ({
       `/session/${encodeURIComponent(id)}/message?limit=${limit}`,
       signal,
     ),
+  providerModels: async (signal) => {
+    const response = await requestJson<{ all?: readonly ProviderLike[] }>(
+      baseUrl,
+      "/provider",
+      signal,
+    )
+    return response.all ?? []
+  },
   eventStream: async (signal) => streamEvents(baseUrl, signal),
 })
 
@@ -190,9 +223,44 @@ const statusFromMessages = (
   if (last === undefined) return null
   // ponytail: an in-flight turn streams with finish==null and empty parts —
   // that's still "running". A finished turn carries a real finish value.
-  if (last.finish === null) return "running"
+  if (last.finish === null || last.info?.finish === null) return "running"
   return "idle"
 }
+
+const tokenTotal = (tokens: TokenUsage | undefined): number | undefined => {
+  if (tokens === undefined) return undefined
+  const values = [
+    tokens.input,
+    tokens.output,
+    tokens.reasoning,
+    tokens.cache?.read,
+    tokens.cache?.write,
+  ]
+  let total = 0
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) total += value
+  }
+  return total > 0 ? total : undefined
+}
+
+const latestAssistantTokens = (
+  messages: ReadonlyArray<MessageLike>,
+): number | undefined => {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const info = messages[i]?.info
+    if (info?.role !== "assistant" || (info.tokens?.output ?? 0) <= 0) {
+      continue
+    }
+    return tokenTotal(info.tokens)
+  }
+  return undefined
+}
+
+const messageCost = (messages: ReadonlyArray<MessageLike>): number =>
+  messages.reduce((sum, message) => {
+    const cost = message.info?.cost ?? message.cost
+    return sum + (typeof cost === "number" && Number.isFinite(cost) ? cost : 0)
+  }, 0)
 
 // ponytail: the fork's /session/status is usually empty, so live status comes
 // from the message parts; when a message-derived status is idle, fall back to
@@ -224,15 +292,31 @@ export class OpenCodeProvider implements AgentProvider {
   async fetchSnapshot(signal: AbortSignal): Promise<readonly Agent[]> {
     if (signal.aborted) return []
     try {
-      const [sessions, statusMap] = await Promise.all([
+      const [sessions, statusMap, providers] = await Promise.all([
         this.#api.listSessions(signal),
         this.#api.sessionStatus(signal),
+        this.#api.providerModels?.(signal).catch(() => []) ??
+          Promise.resolve([]),
       ])
+      const contextLimits = new Map<string, number>()
+      for (const provider of providers) {
+        for (const [modelId, model] of Object.entries(provider.models ?? {})) {
+          const context = model.limit?.context
+          if (provider.id !== undefined && typeof context === "number") {
+            contextLimits.set(`${provider.id}:${modelId}`, context)
+          }
+        }
+      }
       const now = Date.now()
       const recent = sessions
         .filter((s) => (s.time?.updated ?? 0) >= now - this.#recentWindowMs)
         .sort((a, b) => (b.time?.updated ?? 0) - (a.time?.updated ?? 0))
-      const agents = await this.#withMessages(recent, statusMap, signal)
+      const agents = await this.#withMessages(
+        recent,
+        statusMap,
+        signal,
+        contextLimits,
+      )
       const instances = await readOpenCodeInstances()
       return instances.map((instance) => {
         const session = instance.sessionId
@@ -263,11 +347,17 @@ export class OpenCodeProvider implements AgentProvider {
     recent: ReadonlyArray<OpencodeSessionLike>,
     statusMap: Record<string, SessionStatusEntry>,
     signal: AbortSignal,
+    contextLimits: ReadonlyMap<string, number>,
   ): Promise<readonly Agent[]> {
     const out: Agent[] = []
     for (const s of recent) {
       const fromMap = toStatusFromMap(s, statusMap)
       let status = fromMap
+      let contextTokens = tokenTotal(s.tokens)
+      let cost =
+        typeof s.cost === "number" && Number.isFinite(s.cost)
+          ? s.cost
+          : undefined
       if (status !== "waiting_for_human") {
         try {
           const messages = await this.#api.sessionMessages(
@@ -276,24 +366,29 @@ export class OpenCodeProvider implements AgentProvider {
             STATUS_MESSAGE_LIMIT,
           )
           status = combineStatus(fromMap, statusFromMessages(messages))
+          contextTokens = latestAssistantTokens(messages) ?? contextTokens
+          if (cost === undefined) {
+            const derivedCost = messageCost(messages)
+            if (derivedCost > 0) cost = derivedCost
+          }
         } catch {
           // keep derived status; message endpoint may 4xx for closed sessions
         }
       }
+      const contextLimit =
+        s.model?.providerID !== undefined && s.model.id !== undefined
+          ? contextLimits.get(`${s.model.providerID}:${s.model.id}`)
+          : undefined
+      const contextPercent =
+        contextTokens !== undefined && contextLimit !== undefined
+          ? Math.round((contextTokens / contextLimit) * 100)
+          : undefined
       out.push(
         toAgent(s, status, {
           ...(s.directory !== undefined ? { directory: s.directory } : {}),
-          ...(typeof s.cost === "number" && Number.isFinite(s.cost)
-            ? { cost: s.cost }
-            : {}),
-          ...(typeof s.contextTokens === "number" &&
-          Number.isFinite(s.contextTokens)
-            ? { contextTokens: s.contextTokens }
-            : {}),
-          ...(typeof s.contextPercent === "number" &&
-          Number.isFinite(s.contextPercent)
-            ? { contextPercent: s.contextPercent }
-            : {}),
+          ...(cost !== undefined ? { cost } : {}),
+          ...(contextTokens !== undefined ? { contextTokens } : {}),
+          ...(contextPercent !== undefined ? { contextPercent } : {}),
         }),
       )
     }
