@@ -96,4 +96,38 @@ describe("editor WS handler", () => {
       error: "stale editor revision",
     })
   })
+
+  it("returns live button config validation errors", () => {
+    const { socket: client, sent } = socket()
+    const handler = createEditorMessageHandler({
+      mutationService: service(),
+      getState: () => ({
+        config: {},
+        sources: [],
+        sourceContents: {},
+        themes: [],
+      }),
+      validateConfig: (type, config) =>
+        type === "test:button" && config === null ? ["config is required"] : [],
+      broadcast: vi.fn(),
+    })
+
+    handler.onMessage(
+      {
+        type: "editor-validation-request",
+        requestId: "validation-1",
+        revision: 0,
+        buttonType: "test:button",
+        config: null,
+      },
+      client,
+    )
+
+    expect(JSON.parse(sent[0]!)).toEqual({
+      type: "editor-validation-result",
+      requestId: "validation-1",
+      valid: false,
+      errors: ["config is required"],
+    })
+  })
 })

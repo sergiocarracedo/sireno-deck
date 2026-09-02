@@ -1,5 +1,6 @@
 import logoUrl from "../../src/assets/logo72x72.png"
 import { VERSION } from "../../src/version"
+import { Button } from "@heroui/react"
 
 import type { WsClient } from "./bridge"
 
@@ -69,20 +70,17 @@ export const SidePanel = ({
         ).map((s) => {
           const active = activeSection === s.path
           return (
-            <button
+            <Button
               key={s.path}
               type="button"
-              onClick={() => onSelect(s.path)}
+              onPress={() => onSelect(s.path)}
+              variant={active ? "secondary" : "tertiary"}
               data-testid={`side-panel-${s.path}`}
               aria-current={active ? "page" : undefined}
-              className={`cursor-pointer rounded px-3 py-2 text-left font-mono text-xs transition-colors ${
-                active
-                  ? "bg-sky-500/30 text-sky-100 ring-1 ring-sky-400/50"
-                  : "text-neutral-300 hover:bg-neutral-800 hover:text-neutral-100"
-              }`}
+              className="w-full justify-start font-mono text-xs"
             >
               {s.label}
-            </button>
+            </Button>
           )
         })}
       </div>

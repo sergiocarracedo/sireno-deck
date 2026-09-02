@@ -7,6 +7,8 @@ import {
   type EditorMutationMessage,
   type EditorUndoMessage,
   type EditorStateMessage,
+  editorValidationResultMessageSchema,
+  type EditorValidationRequestMessage,
   type WsMessage,
 } from "./protocol"
 
@@ -14,12 +16,14 @@ export interface EditorMessageHandlerOptions {
   readonly mutationService: ConfigMutationService
   readonly getState: () => Omit<
     EditorStateMessage,
-    "type" | "revision" | "canUndo"
+    "type" | "revision" | "canUndo" | "buttonSchemas"
   > & {
+    buttonSchemas?: EditorStateMessage["buttonSchemas"]
     revision?: number
   }
   readonly onChanged?: () => void | Promise<void>
   readonly broadcast: (message: WsMessage) => void
+  readonly validateConfig?: (buttonType: string, config: unknown) => string[]
 }
 
 export interface EditorMessageHandler {
@@ -60,6 +64,23 @@ export const createEditorMessageHandler = (
         ok,
         revision,
         ...(error !== undefined ? { error } : {}),
+      }),
+    )
+  }
+
+  const validationResult = (
+    socket: WebSocket,
+    request: EditorValidationRequestMessage,
+  ): void => {
+    const errors =
+      options.validateConfig?.(request.buttonType, request.config) ?? []
+    send(
+      socket,
+      editorValidationResultMessageSchema.parse({
+        type: "editor-validation-result",
+        requestId: request.requestId,
+        valid: errors.length === 0,
+        errors,
       }),
     )
   }
@@ -107,6 +128,10 @@ export const createEditorMessageHandler = (
     onMessage: (message, socket) => {
       if (message.type === "editor-state-request") {
         send(socket, state())
+        return
+      }
+      if (message.type === "editor-validation-request") {
+        validationResult(socket, message)
         return
       }
       if (message.type === "editor-mutate") {

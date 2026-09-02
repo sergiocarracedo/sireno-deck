@@ -94,6 +94,8 @@
   "dependencies": {
     "@clack/prompts": "^1.0.0",
     "@elgato-stream-deck/node": "^7.6.3",
+    "@heroui/react": "3.0.0-rc.1",
+    "@heroui/styles": "3.0.0-rc.1",
     "@meteocons/svg-static": "^0.1.0",
     "chokidar": "^5.0.0",
     "dbus-next": "^0.10.2",

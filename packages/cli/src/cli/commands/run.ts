@@ -21,6 +21,7 @@ import { loadConfig } from "@/config/loader"
 import { resolveConfigPath, resolveXdgConfigHome } from "./pipeline/helpers"
 import {
   formatFullIssues,
+  serializeButtonSchemas,
   validateButton,
   validateFull,
   validatePerDeck,
@@ -1969,7 +1970,14 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           name: theme.name,
           active: theme.name === currentLoadedConfig.theme.name,
         })),
+        buttonSchemas: serializeButtonSchemas(currentLoadedConfig.registry),
       }),
+      validateConfig: (buttonType, config) =>
+        validateButton(
+          { type: buttonType, config: config as Record<string, unknown> },
+          currentLoadedConfig.registry,
+          "button",
+        ).issues.map((issue) => issue.message),
       onChanged: handleConfigChange,
       broadcast: (message) => bridge!.broadcast(message),
     })

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { ListBox, Select } from "@heroui/react"
 
 import {
   getDeviceModel,
@@ -45,21 +46,30 @@ const DeviceSelector = ({ device, onChange }: DeviceSelectorProps) => {
   return (
     <label className="flex shrink-0 items-center gap-2">
       <span className="text-neutral-500">device</span>
-      <select
-        value={device}
-        onChange={(e) => onChange(e.target.value)}
+      <Select
+        selectedKey={device}
+        onSelectionChange={(key) => onChange(String(key))}
+        aria-label="device"
         data-testid="top-device-selector"
-        className="cursor-pointer rounded bg-neutral-800 px-2 py-1 text-[11px] text-neutral-100"
       >
-        {VIRTUAL_DEVICE_IDS.map((id) => {
-          const model = getDeviceModel(id)
-          return (
-            <option key={id} value={id}>
-              {model.name}
-            </option>
-          )
-        })}
-      </select>
+        <Select.Trigger className="min-h-8 bg-neutral-800 px-2 text-[11px]">
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            {VIRTUAL_DEVICE_IDS.map((id) => {
+              const model = getDeviceModel(id)
+              return (
+                <ListBox.Item key={id} id={id} textValue={model.name}>
+                  {model.name}
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              )
+            })}
+          </ListBox>
+        </Select.Popover>
+      </Select>
     </label>
   )
 }
@@ -122,6 +132,11 @@ export const App = ({
     requestId: string
     ok: boolean
     error?: string
+  } | null>(null)
+  const [editorValidation, setEditorValidation] = useState<{
+    requestId: string
+    valid: boolean
+    errors: string[]
   } | null>(null)
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(() =>
     initialDeviceModel !== undefined && isKnownDeviceModel(initialDeviceModel)
@@ -250,6 +265,10 @@ export const App = ({
                     typeof theme?.name === "string",
                 )
               : [],
+            buttonSchemas:
+              m.buttonSchemas !== null && typeof m.buttonSchemas === "object"
+                ? (m.buttonSchemas as Record<string, Record<string, unknown>>)
+                : {},
             canUndo: m.canUndo === true,
           })
         }
@@ -261,6 +280,20 @@ export const App = ({
             requestId: m.requestId,
             ok: m.ok === true,
             ...(typeof m.error === "string" ? { error: m.error } : {}),
+          })
+        }
+        if (
+          m.type === "editor-validation-result" &&
+          typeof m.requestId === "string"
+        ) {
+          setEditorValidation({
+            requestId: m.requestId,
+            valid: m.valid === true,
+            errors: Array.isArray(m.errors)
+              ? m.errors.filter(
+                  (error): error is string => typeof error === "string",
+                )
+              : [],
           })
         }
         if (typeof m.type === "string" && m.type.endsWith("error")) {
@@ -368,6 +401,7 @@ export const App = ({
               wsClient={clientRef.current}
               state={editorState}
               result={editorResult}
+              validation={editorValidation}
               addonInventory={addonInventory}
               frontendUrl={ENV_FRONTEND_URL}
               device={deviceModel}

@@ -313,7 +313,29 @@ export const editorStateMessageSchema = baseServerMessage
     themes: z.array(
       z.object({ name: z.string(), active: z.boolean().optional() }).strict(),
     ),
+    buttonSchemas: z
+      .record(z.string(), z.record(z.string(), z.unknown()))
+      .default({}),
     canUndo: z.boolean(),
+  })
+  .strict()
+
+export const editorValidationRequestMessageSchema = baseClientMessage
+  .extend({
+    type: z.literal("editor-validation-request"),
+    requestId: z.string().min(1),
+    revision: z.number().int().nonnegative(),
+    buttonType: z.string().min(1),
+    config: z.unknown(),
+  })
+  .strict()
+
+export const editorValidationResultMessageSchema = baseServerMessage
+  .extend({
+    type: z.literal("editor-validation-result"),
+    requestId: z.string().min(1),
+    valid: z.boolean(),
+    errors: z.array(z.string()),
   })
   .strict()
 
@@ -417,6 +439,8 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   iframeReloadMessageSchema,
   editorStateRequestMessageSchema,
   editorStateMessageSchema,
+  editorValidationRequestMessageSchema,
+  editorValidationResultMessageSchema,
   editorMutationMessageSchema,
   editorUndoMessageSchema,
   editorMutationResultMessageSchema,
@@ -449,6 +473,12 @@ export type SubscribeChannelsMessage = z.infer<
 export type IframeReloadMessage = z.infer<typeof iframeReloadMessageSchema>
 export type RootButtonMutation = z.infer<typeof rootButtonMutationSchema>
 export type EditorStateMessage = z.infer<typeof editorStateMessageSchema>
+export type EditorValidationRequestMessage = z.infer<
+  typeof editorValidationRequestMessageSchema
+>
+export type EditorValidationResultMessage = z.infer<
+  typeof editorValidationResultMessageSchema
+>
 export type EditorMutationMessage = z.infer<typeof editorMutationMessageSchema>
 export type EditorUndoMessage = z.infer<typeof editorUndoMessageSchema>
 export type EditorMutationResultMessage = z.infer<

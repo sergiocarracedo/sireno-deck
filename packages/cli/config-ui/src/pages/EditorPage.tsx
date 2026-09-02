@@ -5,6 +5,11 @@ import type { DeviceModelSpec } from "@sirenodeck/cli"
 import type { WsClient } from "../bridge"
 import { DeckFrame } from "../DeckFrame"
 import type { AddonInventory } from "./AddonsPage"
+import {
+  ButtonConfigEditor,
+  type JsonSchema,
+  type ValidationState,
+} from "./ButtonConfigEditor"
 
 type Button = Record<string, unknown> | string
 type Config = {
@@ -23,6 +28,7 @@ export interface EditorState {
   readonly sources: string[]
   readonly sourceContents?: Record<string, string>
   readonly themes?: readonly ThemeOption[]
+  readonly buttonSchemas?: Record<string, JsonSchema>
   readonly canUndo: boolean
 }
 
@@ -46,6 +52,7 @@ export interface EditorPageProps {
     gesture: "tap" | "dbl-tap" | "hold"
   }) => void
   readonly themes?: readonly ThemeOption[]
+  readonly validation?: ValidationState | null
 }
 
 let requestNumber = 0
@@ -106,11 +113,11 @@ export const EditorPage = ({
   token,
   onGesture,
   themes = [],
+  validation = null,
 }: EditorPageProps) => {
   const [deckId, setDeckId] = useState<string | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [selectedPosition, setSelectedPosition] = useState<number | null>(null)
-  const [draft, setDraft] = useState("")
   const [clipboard, setClipboard] = useState<Button | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [sourcePath, setSourcePath] = useState<string | null>(null)
@@ -152,15 +159,6 @@ export const EditorPage = ({
     }
     if (selectedIndex !== null && selectedIndex >= buttons.length) {
       setSelectedIndex(buttons.length === 0 ? null : buttons.length - 1)
-    }
-    if (selected !== undefined) {
-      setDraft(
-        JSON.stringify(
-          isButton(selected) ? selected : { type: selected },
-          null,
-          2,
-        ),
-      )
     }
   }, [activeDeckId, selectedIndex, selectedPosition, state?.revision])
 
@@ -268,21 +266,20 @@ export const EditorPage = ({
     event.dataTransfer.setData("application/json", JSON.stringify(data))
   }
 
-  const update = (): void => {
-    if (activeDeckId === null || selectedIndex === null) return
-    try {
-      const parsed = JSON.parse(draft) as unknown
-      if (!isButton(parsed) || typeof parsed.type !== "string")
-        throw new Error("Button JSON needs a string type")
-      sendMutation({
-        kind: "update",
-        deckId: activeDeckId,
-        index: selectedIndex,
-        button: parsed,
-      })
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Invalid JSON")
-    }
+  const saveConfig = (config: Record<string, unknown>): void => {
+    if (
+      activeDeckId === null ||
+      selectedIndex === null ||
+      selected === undefined
+    )
+      return
+    const button = isButton(selected) ? selected : { type: selected }
+    sendMutation({
+      kind: "update",
+      deckId: activeDeckId,
+      index: selectedIndex,
+      button: { ...button, config },
+    })
   }
 
   const undo = (): void => {
@@ -644,38 +641,26 @@ export const EditorPage = ({
                 )}
               </div>
             ) : (
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault()
-                  update()
-                }}
-                className="space-y-3"
-              >
-                <label
-                  htmlFor="button-json"
-                  className="block text-sm text-neutral-300"
-                >
-                  Button JSON
-                </label>
-                <textarea
-                  id="button-json"
-                  name="button-json"
-                  value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
-                  spellCheck={false}
-                  className="min-h-64 w-full resize-y rounded border border-neutral-700 bg-neutral-950 p-3 font-mono text-sm text-neutral-100 focus-visible:outline-2 focus-visible:outline-sky-400"
-                  aria-describedby="button-json-help"
-                />
-                <p id="button-json-help" className="text-xs text-neutral-500">
-                  The server validates this definition before writing.
-                </p>
-                <button
-                  type="submit"
-                  className="min-h-10 rounded bg-emerald-700 px-3 text-sm hover:bg-emerald-600"
-                >
-                  Save button
-                </button>
-              </form>
+              <ButtonConfigEditor
+                key={`${activeDeckId}:${selectedIndex}:${state?.revision ?? 0}`}
+                wsClient={wsClient}
+                revision={state?.revision ?? 0}
+                buttonType={
+                  isButton(selected) && typeof selected.type === "string"
+                    ? selected.type
+                    : String(selected)
+                }
+                config={isButton(selected) ? selected.config : {}}
+                schema={
+                  state?.buttonSchemas?.[
+                    isButton(selected) && typeof selected.type === "string"
+                      ? selected.type
+                      : String(selected)
+                  ]
+                }
+                validation={validation}
+                onSave={saveConfig}
+              />
             )}
           </section>
         </div>

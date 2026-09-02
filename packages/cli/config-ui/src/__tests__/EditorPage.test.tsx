@@ -22,6 +22,12 @@ const state: EditorState = {
     },
   },
   sources: ["/tmp/config.yml", "/tmp/buttons.yaml", "/tmp/notes.txt"],
+  buttonSchemas: {
+    "core:action": {
+      type: "object",
+      properties: { command: { type: "string" } },
+    },
+  },
   canUndo: true,
 }
 
@@ -90,9 +96,9 @@ describe("EditorPage", () => {
     })
   })
 
-  it("saves selected JSON using the update mutation", () => {
+  it("saves selected config using the update mutation", () => {
     const ws = client()
-    render(
+    const view = render(
       <EditorPage
         wsClient={ws}
         state={state}
@@ -102,10 +108,27 @@ describe("EditorPage", () => {
       />,
     )
     fireEvent.click(screen.getByTestId("deck-key-0"))
-    fireEvent.change(screen.getByLabelText("Button JSON"), {
-      target: { value: '{"type":"core:action","config":{"command":"whoami"}}' },
+    fireEvent.change(screen.getByLabelText("Command"), {
+      target: { value: "whoami" },
     })
-    fireEvent.click(screen.getByRole("button", { name: "Save button" }))
+    const validation = JSON.parse(ws.sent.at(-1) ?? "{}") as {
+      requestId: string
+    }
+    view.rerender(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        validation={{
+          requestId: validation.requestId,
+          valid: true,
+          errors: [],
+        }}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Save button config" }))
 
     const message = JSON.parse(ws.sent.at(-1) ?? "{}") as { mutation?: unknown }
     expect(message.mutation).toEqual({

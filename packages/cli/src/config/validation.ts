@@ -1,4 +1,5 @@
 import type { AddonRegistry } from "@/addon/registry"
+import { z } from "zod"
 import { isSystemButtonType } from "@/deck/system-buttons/types"
 import type { RawButtonDef, RawConfig } from "./schemas"
 
@@ -148,6 +149,27 @@ export const validateButton = (
     return { issues, schemaIssues }
   }
   return { issues, schemaIssues: [] }
+}
+
+export const serializeButtonSchemas = (
+  registry: AddonRegistry,
+): Record<string, Record<string, unknown>> => {
+  const schemas: Record<string, Record<string, unknown>> = {}
+  for (const addon of registry.listAddons()) {
+    for (const [type, definition] of Object.entries(addon.buttonTypes)) {
+      const schema = definition.service?.configSchema
+      if (schema === undefined) continue
+      try {
+        schemas[type] = z.toJSONSchema(schema as never, {
+          io: "input",
+          unrepresentable: "any",
+        }) as Record<string, unknown>
+      } catch {
+        // Some external addons expose only a safeParse-compatible schema.
+      }
+    }
+  }
+  return schemas
 }
 
 // ponytail: deckId/position lets the runtime replace the button in-place

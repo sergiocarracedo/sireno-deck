@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Tabs } from "@heroui/react"
 
 export interface ConfigPageProps {
   configPath?: string | null
@@ -38,40 +39,45 @@ export const ConfigPage = ({ configPath, editor }: ConfigPageProps) => {
   }
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 border-b border-neutral-800" role="tablist">
-        {(["editor", "config"] as const).map((id) => (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={tab === id}
-            onClick={() => setTab(id)}
-            className="min-h-11 border-b-2 px-4 text-xs font-semibold uppercase tracking-wider aria-selected:border-sky-400 aria-selected:text-sky-300"
-          >
-            {id === "editor" ? "Editor" : "Config"}
-          </button>
-        ))}
-      </div>
-      {tab === "editor" ? (
-        <div className="min-h-0 flex-1 overflow-hidden p-4">{editor}</div>
-      ) : (
-        <div className="min-h-0 flex-1 overflow-auto">
-          {configPath !== null && configPath !== undefined && (
-            <div
-              data-testid="config-page-path"
-              className="border-b border-neutral-800 px-3 py-1 font-mono text-[10px] text-neutral-500"
+      <Tabs
+        selectedKey={tab}
+        onSelectionChange={(key) => setTab(String(key) as "editor" | "config")}
+        className="min-h-0 flex-1"
+      >
+        <Tabs.ListContainer>
+          <Tabs.List aria-label="Configuration views">
+            <Tabs.Tab id="editor">
+              Editor
+              <Tabs.Indicator />
+            </Tabs.Tab>
+            <Tabs.Tab id="config">
+              Config
+              <Tabs.Indicator />
+            </Tabs.Tab>
+          </Tabs.List>
+        </Tabs.ListContainer>
+        <Tabs.Panel id="editor" className="min-h-0 flex-1 overflow-hidden p-4">
+          {editor}
+        </Tabs.Panel>
+        <Tabs.Panel id="config" className="min-h-0 flex-1 overflow-auto">
+          <div className="min-h-0 flex-1 overflow-auto">
+            {configPath !== null && configPath !== undefined && (
+              <div
+                data-testid="config-page-path"
+                className="border-b border-neutral-800 px-3 py-1 font-mono text-[10px] text-neutral-500"
+              >
+                {configPath}
+              </div>
+            )}
+            <pre
+              data-testid="config-page"
+              className="whitespace-pre-wrap p-3 font-mono text-xs text-neutral-200"
             >
-              {configPath}
-            </div>
-          )}
-          <pre
-            data-testid="config-page"
-            className="whitespace-pre-wrap p-3 font-mono text-xs text-neutral-200"
-          >
-            {content}
-          </pre>
-        </div>
-      )}
+              {content}
+            </pre>
+          </div>
+        </Tabs.Panel>
+      </Tabs>
     </div>
   )
 }
