@@ -1,0 +1,51 @@
+packages/cli/emulator/vite.config.ts
+  s_1e4bd27dd13fcc::t_a50929f92f314c 90-92
+  s_1e4bd27dd13fcc::t_b31ffd7e82a218 87-89
+packages/cli/src/util/daemon.ts
+  s_1e4bd27dd13fcc::t_89b8bc1f7b2113 396
+packages/cli/src/cli/index.ts
+  s_1e4bd27dd13fcc::t_7a3a76da024b6c 29-30,37,256-262,265-271,275,277-281,339
+  s_1e4bd27dd13fcc::t_4f5ed7ff51f218 272-274,276
+  s_1e4bd27dd13fcc::t_69d446bd307de2 31-36,263-264
+packages/cli/src/cli/commands/status.ts
+  s_1e4bd27dd13fcc::t_7a3a76da024b6c 100-102
+packages/cli/src/outputClient/real.ts
+  s_1e4bd27dd13fcc::t_8674a51c1515d3 264
+  s_1e4bd27dd13fcc::t_fc9b24b38622f3 17,19,219,249-263,265-274,287-288,291,308,346
+  s_1e4bd27dd13fcc::t_b31ffd7e82a218 235
+packages/cli/emulator/src/SidePanel.tsx
+  s_1e4bd27dd13fcc::t_4f5ed7ff51f218 54
+  s_1e4bd27dd13fcc::t_c839b30aeba904 7,10-13,20-21,34-35,65-69
+packages/cli/src/outputClient/types.ts
+  s_1e4bd27dd13fcc::t_89b8bc1f7b2113 77
+packages/cli/src/cli/startup-display.ts
+  s_1e4bd27dd13fcc::t_7a3a76da024b6c 312,340-345
+packages/cli/emulator/src/App.tsx
+  s_1e4bd27dd13fcc::t_c839b30aeba904 30,72-74,82-85,90,425-426
+  s_1e4bd27dd13fcc::t_a50929f92f314c 31
+packages/cli/src/outputClient/emulator.ts
+  s_1e4bd27dd13fcc::t_89b8bc1f7b2113 281,300
+  s_1e4bd27dd13fcc::t_b31ffd7e82a218 145,173
+packages/cli/emulator/src/Shell.tsx
+  s_1e4bd27dd13fcc::t_c839b30aeba904 9-10,19-20,41-42
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_1e4bd27dd13fcc::t_b31ffd7e82a218 59,79,109-111,221,226,243,248
+packages/cli/bin/dev.js
+  s_1e4bd27dd13fcc::t_a50929f92f314c 85-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "00a0cd25871be019247505d0f458f298d154ebd9",
+  "prompts": {},
+  "sessions": {
+    "s_1e4bd27dd13fcc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa3ab64aeffeh0Z0l7eY22eY83",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
