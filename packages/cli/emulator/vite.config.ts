@@ -84,6 +84,12 @@ export default defineConfig({
   define: {
     "import.meta.env.VITE_WS_URL": JSON.stringify(wsUrl),
     "import.meta.env.VITE_FRONTEND_URL": JSON.stringify(frontendUrl),
+    "import.meta.env.VITE_EMULATOR_MODE": JSON.stringify(
+      process.env.SIRENO_EMULATOR_MODE !== "false",
+    ),
+    "import.meta.env.VITE_DEV_MODE": JSON.stringify(
+      process.env.SIRENO_DEV_MODE === "true",
+    ),
   },
   server: {
     port: Number(process.env.SIRENO_EMULATOR_PORT ?? 52938),

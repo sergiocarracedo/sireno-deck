@@ -56,6 +56,7 @@ interface ViteSpawnOptions {
   configPath?: string
   host?: string
   requireToken?: string
+  emulatorMode?: boolean
   childLabel: "frontend vite" | "emulator vite"
   exitFatalMessage: string
   onPid?: (pid: number) => void
@@ -75,6 +76,7 @@ const spawnViteAndWaitForReady = (
     configPath,
     host,
     requireToken,
+    emulatorMode,
     childLabel,
     exitFatalMessage,
     onPid,
@@ -103,6 +105,9 @@ const spawnViteAndWaitForReady = (
     }
     if (requireToken !== undefined) {
       env["SIRENO_REQUIRE_TOKEN"] = requireToken
+    }
+    if (emulatorMode !== undefined) {
+      env["SIRENO_EMULATOR_MODE"] = String(emulatorMode)
     }
     const viteBin = findWorkspaceRoot() + "/node_modules/.bin/vite"
     const viteArgs = [
@@ -213,10 +218,12 @@ export const spawnFrontendVite = (options: {
   configPath?: string
   host?: string
   requireToken?: string
+  emulatorMode?: boolean
   onPid?: (pid: number) => void
 }): Promise<{ process: ChildProcess; url: string }> =>
   spawnViteAndWaitForReady({
     ...options,
+    emulatorMode: options.emulatorMode ?? false,
     childLabel: "frontend vite",
     exitFatalMessage:
       "frontend vite exited after becoming ready — emulator will show a blank deck until the frontend is restarted",
@@ -233,10 +240,12 @@ export const spawnEmulatorVite = (options: {
   configPath?: string
   host?: string
   requireToken?: string
+  emulatorMode?: boolean
   onPid?: (pid: number) => void
 }): Promise<{ process: ChildProcess; url: string }> =>
   spawnViteAndWaitForReady({
     ...options,
+    emulatorMode: options.emulatorMode ?? true,
     childLabel: "emulator vite",
     exitFatalMessage:
       "emulator vite exited after becoming ready — commands from buttons will no longer be received",

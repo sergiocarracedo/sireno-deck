@@ -27,6 +27,8 @@ const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
   "ws://127.0.0.1:52937") as string
 const ENV_FRONTEND_URL = (import.meta.env.VITE_FRONTEND_URL ??
   "http://127.0.0.1:5180") as string
+const ENV_EMULATOR_MODE = import.meta.env.VITE_EMULATOR_MODE !== false
+const ENV_DEV_MODE = import.meta.env.VITE_DEV_MODE === true
 
 const VIRTUAL_DEVICE_IDS = ["mk2", "mini", "xl"] as const
 
@@ -67,22 +69,25 @@ export interface AppProps {
 }
 
 const SECTIONS = [
+  "editor",
+  "addons",
+  "config",
   "device",
   "bridge-logs",
   "service-logs",
-  "addons",
   "decks",
-  "config",
-  "editor",
 ] as const
 
 const isValidSection = (s: string | null): s is (typeof SECTIONS)[number] =>
-  s !== null && (SECTIONS as ReadonlyArray<string>).includes(s)
+  s !== null &&
+  (SECTIONS as ReadonlyArray<string>).includes(s) &&
+  (s !== "device" || ENV_EMULATOR_MODE) &&
+  (!["bridge-logs", "service-logs", "decks"].includes(s) || ENV_DEV_MODE)
 
 export const App = ({
   wsUrl = ENV_WS_URL,
   initialDeviceModel,
-  initialSection = "device",
+  initialSection = "editor",
 }: AppProps = {}): React.ReactElement => {
   const [activeSection, setActiveSection] = useState<string>(initialSection)
   const [deckOnly] = useState<boolean>(
@@ -417,6 +422,8 @@ export const App = ({
       onSelect={onSelect}
       hideSidebar={deckOnly}
       wsClient={clientRef.current}
+      emulatorMode={ENV_EMULATOR_MODE}
+      devMode={ENV_DEV_MODE}
       content={
         <>
           {deckOnly ? (

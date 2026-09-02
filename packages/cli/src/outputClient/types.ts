@@ -74,6 +74,7 @@ export interface InitOptions {
 export interface OutputHandle {
   readonly descriptor: DeviceDescriptor
   readonly frontendUrl: string
+  readonly configUiUrl?: string
   readonly emulatorUrl?: string
   readonly wsUrl?: string
   readonly childPids: ReadonlyArray<number>

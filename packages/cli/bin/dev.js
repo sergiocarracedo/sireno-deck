@@ -82,7 +82,10 @@ const args = useWatch
     ]
   : [cliEntry, ...restArgs]
 
-const child = spawnTsx(args, { SIRENO_WRAPPER_CHILD: "1" })
+const child = spawnTsx(args, {
+  SIRENO_DEV_MODE: "true",
+  SIRENO_WRAPPER_CHILD: "1",
+})
 
 child.on("exit", (code) => {
   if (child.pid !== undefined) {

@@ -4,19 +4,21 @@ import { VERSION } from "../../src/version"
 import type { WsClient } from "./bridge"
 
 const SECTIONS = [
-  { path: "device", label: "Device" },
-  { path: "bridge-logs", label: "Bridge logs" },
-  { path: "service-logs", label: "Service logs" },
-  { path: "addons", label: "Addons" },
-  { path: "decks", label: "Decks" },
-  { path: "config", label: "Config" },
   { path: "editor", label: "Editor" },
+  { path: "addons", label: "Addons" },
+  { path: "config", label: "Config" },
+  { path: "device", label: "Device", emulatorOnly: true },
+  { path: "bridge-logs", label: "Bridge logs", devOnly: true },
+  { path: "service-logs", label: "Service logs", devOnly: true },
+  { path: "decks", label: "Decks", devOnly: true },
 ] as const
 
 export interface SidePanelProps {
   readonly activeSection: string
   readonly onSelect: (path: string) => void
   readonly wsClient: WsClient | null
+  readonly emulatorMode?: boolean
+  readonly devMode?: boolean
 }
 
 const statusColor = (status: string): string => {
@@ -29,6 +31,8 @@ export const SidePanel = ({
   activeSection,
   onSelect,
   wsClient,
+  emulatorMode = false,
+  devMode = false,
 }: SidePanelProps) => {
   const status = wsClient?.status() ?? "connecting"
   return (
@@ -47,7 +51,7 @@ export const SidePanel = ({
             sirenodeck
           </div>
           <div className="font-mono text-[10px] uppercase tracking-widest text-neutral-500">
-            emulator
+            UI
           </div>
         </div>
       </div>
@@ -58,7 +62,11 @@ export const SidePanel = ({
             ● {status}
           </span>
         </div>
-        {SECTIONS.map((s) => {
+        {SECTIONS.filter(
+          (s) =>
+            (s.emulatorOnly !== true || emulatorMode) &&
+            (s.devOnly !== true || devMode),
+        ).map((s) => {
           const active = activeSection === s.path
           return (
             <button

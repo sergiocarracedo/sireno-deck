@@ -14,7 +14,9 @@ import { saveDeviceConfig } from "@/util/device-config"
 import {
   DEFAULT_FRONTEND_PORT,
   killChild,
+  resolveEmulatorCwd,
   resolveFrontendCwd,
+  spawnEmulatorVite,
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
 import {
@@ -214,6 +216,7 @@ export class RealOutputClient implements OutputClient {
       `http://127.0.0.1:${opts.port ?? DEFAULT_FRONTEND_PORT}`
     let shuttingDown = false
     let frontendSupervisor: SuperviseHandle | null = null
+    let configUiSupervisor: SuperviseHandle | null = null
     if (opts.frontendUrl === undefined) {
       frontendSupervisor = await supervise({
         label: "frontend vite",
@@ -229,6 +232,7 @@ export class RealOutputClient implements OutputClient {
             logger,
             themeDir: opts.themeDir,
             configPath: opts.configPath,
+            emulatorMode: false,
             ...(opts.onChildPid !== undefined
               ? { onPid: opts.onChildPid }
               : {}),
@@ -242,6 +246,32 @@ export class RealOutputClient implements OutputClient {
       })
     }
 
+    let configUiUrl = `http://127.0.0.1:${DEFAULT_FRONTEND_PORT + 1}`
+    configUiSupervisor = await supervise({
+      label: "config ui vite",
+      kill: killChild,
+      delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
+      spawn: async () => {
+        const r = await spawnEmulatorVite({
+          port: DEFAULT_FRONTEND_PORT + 1,
+          cwd: resolveEmulatorCwd(),
+          pnpmCommand: "pnpm",
+          readyTimeoutMs: 30_000,
+          logger,
+          wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
+          frontendUrl,
+          configPath: opts.configPath,
+          emulatorMode: false,
+          onPid: opts.onChildPid,
+        })
+        configUiUrl = r.url
+        return r.process
+      },
+      onGiveUp: () => opts.onChildCrash?.(),
+      isShuttingDown: () => shuttingDown,
+      logger,
+    })
+
     logger.info({ frontendUrl }, "real mode: frontend URL")
 
     const renderer = new BrowserRenderer({
@@ -254,9 +284,11 @@ export class RealOutputClient implements OutputClient {
     await renderer.start()
 
     const frontendVitePid = frontendSupervisor?.process.pid ?? 0
-    const childPids = frontendVitePid > 0 ? [frontendVitePid] : []
+    const configUiPid = configUiSupervisor.process.pid ?? 0
+    const childPids = [frontendVitePid, configUiPid].filter((pid) => pid > 0)
 
     const state: RuntimeState = {
+      configUiUrl,
       emulatorUrl: frontendUrl,
       wsUrl: opts.bridge.url,
       frontendUrl,
@@ -273,6 +305,7 @@ export class RealOutputClient implements OutputClient {
     return {
       descriptor,
       frontendUrl,
+      configUiUrl,
       wsUrl: opts.bridge.url,
       childPids,
       async pushBlackFrame(): Promise<void> {
@@ -310,6 +343,7 @@ export class RealOutputClient implements OutputClient {
           // captured the initial child and leaked the respawned vite.
           await frontendSupervisor.stop()
         }
+        await configUiSupervisor.stop()
       },
     }
   }

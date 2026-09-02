@@ -6,6 +6,8 @@ export interface ShellProps {
   readonly content: React.ReactNode
   readonly wsClient: import("./bridge").WsClient | null
   readonly hideSidebar?: boolean
+  readonly emulatorMode?: boolean
+  readonly devMode?: boolean
 }
 
 export const Shell = ({
@@ -14,6 +16,8 @@ export const Shell = ({
   content,
   wsClient,
   hideSidebar = false,
+  emulatorMode = false,
+  devMode = false,
 }: ShellProps) => {
   if (hideSidebar) {
     return (
@@ -34,6 +38,8 @@ export const Shell = ({
         activeSection={activeSection}
         onSelect={onSelect}
         wsClient={wsClient}
+        emulatorMode={emulatorMode}
+        devMode={devMode}
       />
       <main className="flex-1 overflow-hidden">{content}</main>
     </div>

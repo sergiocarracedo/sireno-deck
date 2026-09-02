@@ -393,6 +393,7 @@ export const removeFlagsFile = (paths = resolveDaemonPaths()): void => {
 }
 
 export interface RuntimeState {
+  readonly configUiUrl?: string
   readonly emulatorUrl: string
   readonly wsUrl: string
   readonly frontendUrl: string
