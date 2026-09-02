@@ -1,0 +1,21 @@
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_b1b691b4423dca::t_0ee2226bdd4cce 321-340,342-347
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-provider.test.ts
+  s_b1b691b4423dca::t_0ee2226bdd4cce 166,190,193-214
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "d36a5f33e8b54498387f84d1653ad19d1495a5f3",
+  "prompts": {},
+  "sessions": {
+    "s_b1b691b4423dca": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9ed48e64ffeTT08z1emztHUCq",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
