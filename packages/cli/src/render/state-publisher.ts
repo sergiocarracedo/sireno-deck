@@ -12,6 +12,7 @@ export interface StatePublisherChannel {
 export interface StatePublisherOptions {
   readonly bridge: Pick<WsBridge, "broadcast">
   readonly logger: pino.Logger
+  readonly onPublish?: () => void
 }
 
 export interface DeckSnapshot {
@@ -21,6 +22,7 @@ export interface DeckSnapshot {
 export class StatePublisher {
   private readonly bridge: Pick<WsBridge, "broadcast">
   private readonly logger: pino.Logger
+  private readonly onPublish: (() => void) | undefined
   private readonly channels = new Map<string, StatePublisherChannel>()
   private readonly timers = new Map<string, NodeJS.Timeout>()
   private activeAddonNames: ReadonlyArray<string> = []
@@ -28,6 +30,7 @@ export class StatePublisher {
   constructor(options: StatePublisherOptions) {
     this.bridge = options.bridge
     this.logger = options.logger.child({ component: "state-publisher" })
+    this.onPublish = options.onPublish
   }
 
   registerChannel(channel: StatePublisherChannel): void {
@@ -70,6 +73,7 @@ export class StatePublisher {
                 type: "state",
                 channels: { [channel.channel]: value },
               })
+              this.onPublish?.()
             })
             .catch((err: unknown) => {
               this.logger.warn(
@@ -82,6 +86,7 @@ export class StatePublisher {
             type: "state",
             channels: { [channel.channel]: payload },
           })
+          this.onPublish?.()
         }
       } catch (err) {
         this.logger.warn(

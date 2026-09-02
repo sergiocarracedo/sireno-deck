@@ -53,6 +53,27 @@ describe("StatePublisher", () => {
     publisher.stopAll()
   })
 
+  it("notifies the renderer after publishing state", () => {
+    const bridge = makeBridge()
+    const onPublish = vi.fn()
+    const publisher = new StatePublisher({
+      bridge,
+      logger: silentLogger(),
+      onPublish,
+    })
+    publisher.registerChannel({
+      channel: "test:state",
+      addonName: "test-addon",
+      intervalMs: 1000,
+      poll: () => ({ value: 42 }),
+    })
+
+    publisher.setActiveDeck({ addonNames: ["test-addon"] })
+
+    expect(onPublish).toHaveBeenCalledTimes(1)
+    publisher.stopAll()
+  })
+
   it("stops polling when the addon's deck leaves the active set", () => {
     const bridge = makeBridge()
     const publisher = new StatePublisher({ bridge, logger: silentLogger() })

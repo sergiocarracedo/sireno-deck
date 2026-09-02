@@ -28,6 +28,8 @@ interface OpencodeSessionLike {
   readonly title?: string
   readonly directory?: string
   readonly cost?: number
+  readonly contextTokens?: number
+  readonly contextPercent?: number
   readonly agent?: string
   readonly time?: { readonly updated?: number; readonly created?: number }
 }
@@ -284,6 +286,14 @@ export class OpenCodeProvider implements AgentProvider {
           ...(typeof s.cost === "number" && Number.isFinite(s.cost)
             ? { cost: s.cost }
             : {}),
+          ...(typeof s.contextTokens === "number" &&
+          Number.isFinite(s.contextTokens)
+            ? { contextTokens: s.contextTokens }
+            : {}),
+          ...(typeof s.contextPercent === "number" &&
+          Number.isFinite(s.contextPercent)
+            ? { contextPercent: s.contextPercent }
+            : {}),
         }),
       )
     }
@@ -365,7 +375,12 @@ const toStatusFromMap = (
 const toAgent = (
   s: OpencodeSessionLike,
   status: AgentStatus,
-  extra: { directory?: string; cost?: number },
+  extra: {
+    directory?: string
+    cost?: number
+    contextTokens?: number
+    contextPercent?: number
+  },
 ): Agent => ({
   sessionId: s.id,
   providerId: "opencode",
@@ -374,6 +389,13 @@ const toAgent = (
   ...(extra.directory !== undefined ? { directory: extra.directory } : {}),
   ...(extra.cost !== undefined && Number.isFinite(extra.cost)
     ? { cost: extra.cost }
+    : {}),
+  ...(extra.contextTokens !== undefined && Number.isFinite(extra.contextTokens)
+    ? { contextTokens: extra.contextTokens }
+    : {}),
+  ...(extra.contextPercent !== undefined &&
+  Number.isFinite(extra.contextPercent)
+    ? { contextPercent: extra.contextPercent }
     : {}),
   ...(s.time?.created !== undefined ? { createdAt: s.time.created } : {}),
   updatedAt: s.time?.updated ?? s.time?.created ?? 0,

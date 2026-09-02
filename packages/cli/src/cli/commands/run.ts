@@ -1578,7 +1578,11 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     })
 
     bridgeSignal = new AbortController()
-    statePublisher = new StatePublisher({ bridge, logger })
+    statePublisher = new StatePublisher({
+      bridge,
+      logger,
+      onPublish: () => pubSub?.publish("runtime:invalidate", undefined),
+    })
 
     const addonRegistryForSystemStatus = new AddonRegistry()
     registerSystemStatusAddon(addonRegistryForSystemStatus)

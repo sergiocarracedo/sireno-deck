@@ -141,6 +141,7 @@ export const bridgeAddonServices = async (
             type: "state",
             channels: { [primaryChannel]: data },
           })
+          pubSub.publish("runtime:invalidate", undefined)
         } else {
           pubSub.publish(`addon:${addonName}`, data)
         }
