@@ -1,0 +1,70 @@
+packages/cli/config-ui/src/DeckFrame.tsx
+  s_1e4bd27dd13fcc::t_f51c262e33badf 104
+  s_1e4bd27dd13fcc::t_e9ee9994934e3c 151
+  s_1e4bd27dd13fcc::t_8773fe2922557f 184-216,219-228,230-280,283-291,293-314,317
+  s_d88d1be59d245f::t_e27850935d49fb 23-27,42-43
+  s_d88d1be59d245f::t_0a272f796d3fb5 281-282,292,315-316
+  s_1e4bd27dd13fcc::t_bbe28dcb4e32f8 28,44,57-58,132-150,152-155,159,162-163,166-167,169-172,174-183,217
+packages/cli/src/cli/index.ts
+  s_1e4bd27dd13fcc::t_443a1dc3408741 276
+packages/cli/config-ui/src/SidePanel.tsx
+  s_1e4bd27dd13fcc::t_f51c262e33badf 8-10
+packages/cli/config-ui/src/App.tsx
+  s_1e4bd27dd13fcc::t_8773fe2922557f 82,497-500
+  s_1e4bd27dd13fcc::t_9f015cf0dc71b0 25,33,75-78,87,363,365-378,381,496,501
+packages/cli/config-ui/src/pages/ConfigPage.tsx
+  s_1e4bd27dd13fcc::t_f51c262e33badf 5,8,40-58
+  s_1e4bd27dd13fcc::t_72d674b9449fde 9-11
+  s_1e4bd27dd13fcc::t_8773fe2922557f 59-72
+packages/cli/src/cli/startup-display.ts
+  s_1e4bd27dd13fcc::t_443a1dc3408741 312,345
+packages/cli/config-ui/src/__tests__/EditorPage.test.tsx
+  s_d88d1be59d245f::t_aff9e069cb6632 89
+  s_d88d1be59d245f::t_dc2830429a019d 43,45,47-48,78,80,129,134,144
+  s_d88d1be59d245f::t_0a272f796d3fb5 69-77,95-102,104
+  s_d88d1be59d245f::t_22b30ace24e264 79,167-189
+  s_d88d1be59d245f::t_287629e0fb543d 190
+packages/cli/config-ui/src/pages/EditorPage.tsx
+  s_d88d1be59d245f::t_5c5a6364fd38f9 98,112,180,182-185,190,192-201,228,239-242,244-250,257-262,264
+  s_d88d1be59d245f::t_3662b5b1c43aa2 207-211
+  s_d88d1be59d245f::t_d87a051140c4f9 632,634,636,642,644-645
+  s_d88d1be59d245f::t_861e6bfbfc80bf 359-372,376-377
+  s_1e4bd27dd13fcc::t_b6389c1e402f8a 43-47,107,603,610
+  s_1e4bd27dd13fcc::t_7075f388392010 78-97,135-142,149-152,165,191,212-215,220,243,263
+  s_d88d1be59d245f::t_0a272f796d3fb5 144-146,186-189,251-256,373-375,403,446-447,450-460,462-464,467-501,638-640
+  s_1e4bd27dd13fcc::t_8773fe2922557f 181,216-219,357
+  s_d88d1be59d245f::t_08a9c07200d57d 385-386,402,405-437,443-445,449,461,465-466
+  s_1e4bd27dd13fcc::t_bbe28dcb4e32f8 613-614
+  s_d88d1be59d245f::t_cd43b8548d01d4 611-612
+  s_1e4bd27dd13fcc::t_003aee574a3cd0 202,265
+packages/cli/config-ui/vite.config.ts
+  s_1e4bd27dd13fcc::t_f51c262e33badf 94-96
+packages/cli/config-ui/src/pages/AboutPage.tsx
+  s_1e4bd27dd13fcc::t_f51c262e33badf 2-3,8-11,16-52
+  s_1e4bd27dd13fcc::t_3addd81b5fb8b6 1
+  s_1e4bd27dd13fcc::t_8773fe2922557f 4-7,12-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "d2ef28ac237928f7e49200af9e12f3320abf05bc",
+  "prompts": {},
+  "sessions": {
+    "s_1e4bd27dd13fcc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa3ab64aeffeh0Z0l7eY22eY83",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_d88d1be59d245f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9c5eb8cbffeNVWdGIaEUzNqiP",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
