@@ -14,9 +14,9 @@ import { saveDeviceConfig } from "@/util/device-config"
 import {
   DEFAULT_FRONTEND_PORT,
   killChild,
-  resolveEmulatorCwd,
+  resolveConfigUiCwd,
   resolveFrontendCwd,
-  spawnEmulatorVite,
+  spawnConfigUiVite,
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
 import {
@@ -252,9 +252,9 @@ export class RealOutputClient implements OutputClient {
       kill: killChild,
       delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
       spawn: async () => {
-        const r = await spawnEmulatorVite({
+        const r = await spawnConfigUiVite({
           port: DEFAULT_FRONTEND_PORT + 1,
-          cwd: resolveEmulatorCwd(),
+          cwd: resolveConfigUiCwd(),
           pnpmCommand: "pnpm",
           readyTimeoutMs: 30_000,
           logger,
@@ -289,7 +289,6 @@ export class RealOutputClient implements OutputClient {
 
     const state: RuntimeState = {
       configUiUrl,
-      emulatorUrl: frontendUrl,
       wsUrl: opts.bridge.url,
       frontendUrl,
       lanHost: opts.lanHost ?? "127.0.0.1",

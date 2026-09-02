@@ -11,11 +11,11 @@
 
 Sireno Deck is a Node CLI that drives an Elgato Stream Deck from a YAML config.
 The service runs locally, renders the active deck to a Vite-built SPA, and
-pushes the result to the device key-by-key. A second Vite SPA (the _emulator_)
-wraps the frontend in a clickable shell so the same code path runs without
-hardware.
+pushes the result to the device key-by-key. A second Vite SPA (the _config UI_)
+wraps the frontend in a clickable shell so the same code path can be edited and
+tested without hardware.
 
-Three Vite-served surfaces (frontend, emulator, addon frontends) and one Node
+Three Vite-served surfaces (frontend, config UI, addon frontends) and one Node
 process (the service). They talk over a single WebSocket on `127.0.0.1`.
 
 ## 2. Repo layout
@@ -34,7 +34,7 @@ sireno-deck/
         │   ├── builtin-addons/   ← First-party addons shipped as TS source
         │   └── addons/           ← User-installed addons (npm / local)
         ├── frontend/          ← Vite SPA — renders the active deck
-        ├── emulator/          ← Vite SPA — embeds frontend, adds click overlay
+        ├── config-ui/         ← Vite SPA — embeds frontend, adds click overlay
         ├── themes/            ← Built-in theme YAML files
         ├── fixtures/          ← Config + schema fixtures
         └── package.json
@@ -208,7 +208,7 @@ Constants: `HOLD_ACTION_DELAY_MS = 200`, `DOUBLE_TAP_DELAY_MS = 200`.
 ### 3.9 Renderer / WS bridge — `render/ws-bridge.ts`
 
 `WebSocket` server on `127.0.0.1` (port chosen at startup, default 52937).
-One connection per frontend / emulator surface.
+One connection per frontend / config UI surface.
 
 - Hello handshake: token check, protocol version.
 - Channel cache: `lastChannels` + `cacheablePollers` so reconnects replay state.
@@ -247,7 +247,7 @@ headless instance that screenshots the frontend URL with `?compact=1`. The
 resulting image is sliced and written to the device key-by-key.
 
 **Emulator mode** (`cli/commands/emulator-mode.ts`): spawns two Vite dev
-servers (frontend + emulator). The emulator SPA owns gesture detection; it
+servers (frontend + config UI). The config UI SPA owns gesture detection; it
 sends final-gesture `button-action` messages over the bridge. The backend
 `EmulatorOutputClient` looks up the button by position and calls
 `runtime.dispatchGesture`. `buildDeckConfigMessage()` builds the per-deck
@@ -259,7 +259,7 @@ locate the Vite projects from the monorepo.
 
 ### 3.11.1 Process supervisors (vite)
 
-Vite children (frontend / emulator dev servers) are supervised by
+Vite children (frontend / config UI dev servers) are supervised by
 `cli/commands/subprocess-supervisor.ts`. The retry state machine lives in
 one place.
 
@@ -389,12 +389,12 @@ in `main.tsx` for route-to-deck mapping, but gesture routing inside the
 active deck is driven entirely by the runtime — react-router only owns the
 top-level URL ↔ deck mapping.
 
-## 5. Emulator — `packages/cli/emulator/`
+## 5. Config UI — `packages/cli/config-ui/`
 
 Vite SPA. Embeds the frontend in an iframe (so the same code path runs) and
 overlays clickable button regions on top. The overlay captures pointerdown /
 pointerup / leave and runs its own gesture detector
-(`packages/cli/emulator/src/gesture.ts`, wrapping the shared constants from
+(`packages/cli/config-ui/src/gesture.ts`, wrapping the shared constants from
 `core/gesture-state.ts`). It sends the final gesture to the backend as a
 `button-action` WS message; the backend's `EmulatorOutputClient` is a thin
 pass-through that calls `runtime.dispatchGesture`. Renders a side panel
@@ -452,9 +452,9 @@ runtime.dispatchGesture(buttonId, gesture)
 
 ### 7.2 Emulator overlay (no hardware)
 
-The emulator SPA in `packages/cli/emulator/` captures pointer events on the
+The config UI SPA in `packages/cli/config-ui/` captures pointer events on the
 visible tiles. It runs its own gesture state machine — `dispatchMouseEvent`
-in `packages/cli/emulator/src/gesture.ts`, wrapping the shared
+in `packages/cli/config-ui/src/gesture.ts`, wrapping the shared
 `createGestureDetector` constants from `core/gesture-state.ts`. Only the
 final gesture (`tap` / `dbl-tap` / `hold`) is sent over the wire as a
 `button-action` message.
@@ -497,7 +497,7 @@ path (real hardware, emulator SPA, chrome SPA) is the **final gesture**
 The chrome SPA in `packages/cli/frontend/` is interactive display: it
 emits `button-action` for user clicks and subscribes to `runtime:gesture:*`
 (per button) and generic `state` channels to render button feedback. The
-emulator SPA in `packages/cli/emulator/` likewise emits `button-action` for
+config UI SPA in `packages/cli/config-ui/` likewise emits `button-action` for
 virtual button presses and subscribes to state for rendering. The real
 hardware transport emits `button-action` via the hardware Stream Deck's
 native key events.

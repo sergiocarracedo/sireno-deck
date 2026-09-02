@@ -9,7 +9,7 @@
 
 <p align="center">
   A Node CLI that drives an Elgato Stream Deck from a YAML config.
-  Same UI in a browser emulator, on real hardware, or behind a dev daemon.
+  Same UI in the config UI, on real hardware, or behind a dev daemon.
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@
 ## Features
 
 - **YAML-driven decks** — one file, no JS required to use an addon.
-- **Three surfaces from one code path** — emulator browser shell, real hardware, and a Vite dev SPA all run the same React 19 + Tailwind 4 frontend.
+- **Three surfaces from one code path** — config UI browser shell, real hardware, and a Vite dev SPA all run the same React 19 + Tailwind 4 frontend.
 - **Addon API** — register custom button types, decks, and frontends. Eight built-in addons ship as TS source.
 - **Cross-platform input** — `ydotool` (Linux), `osascript` (macOS), SendInput (Windows). Per-button gesture state machine for tap / dbl-tap / hold.
 - **WebSocket bridge protocol** — single JSON protocol over `127.0.0.1`; surfaces are stateless.

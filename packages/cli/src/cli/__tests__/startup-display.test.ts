@@ -49,7 +49,7 @@ describe("waitForRuntimeState", () => {
 
   it("returns state when file appears quickly", async () => {
     const state = {
-      emulatorUrl: "http://127.0.0.1:52938",
+      configUiUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       lanHost: "192.168.1.10",
@@ -60,7 +60,7 @@ describe("waitForRuntimeState", () => {
     readRuntimeStateMock.mockReturnValue(state)
     const result = await waitForRuntimeState(2_000)
     expect(result).not.toBeNull()
-    expect(result!.emulatorUrl).toBe("http://127.0.0.1:52938")
+    expect(result!.configUiUrl).toBe("http://127.0.0.1:52938")
   })
 })
 
@@ -128,7 +128,7 @@ describe("printDaemonEvents", () => {
 
 describe("printDaemonUrl", () => {
   const makeState = (overrides = {}): Parameters<typeof printDaemonUrl>[0] => ({
-    emulatorUrl: "http://127.0.0.1:52938",
+    configUiUrl: "http://127.0.0.1:52938",
     wsUrl: "ws://127.0.0.1:52937",
     frontendUrl: "http://127.0.0.1:5180",
     lanHost: "192.168.1.10",

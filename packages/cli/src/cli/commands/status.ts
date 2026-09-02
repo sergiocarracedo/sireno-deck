@@ -97,14 +97,10 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
   if (alive && state !== null) {
     const frontendUrl = state.frontendUrl
     log.info(`Frontend URL : ${frontendUrl}`)
-    log.info(
-      `Config UI URL : ${state.configUiUrl ?? state.emulatorUrl}/#/editor`,
-    )
-    log.info(`Bridge URL   : ${state.wsUrl}`)
-    if (state.emulatorMode) {
-      const emulatorUrl = state.emulatorUrl
-      log.info(`Emulator URL : ${emulatorUrl}`)
+    if (state.configUiUrl.length > 0) {
+      log.info(`Config UI URL : ${state.configUiUrl}`)
     }
+    log.info(`Bridge URL   : ${state.wsUrl}`)
     outro("✓ Status snapshot")
   } else {
     cancel("✗ Stale pid file — run `p dev stop` to clean up")

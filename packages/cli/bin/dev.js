@@ -28,7 +28,7 @@ const excludePatterns = [
   "packages/cli/frontend/**",
   "packages/cli/src/builtin-addons/**/frontend.tsx",
   "packages/cli/src/builtin-addons/**/frontend/**",
-  "packages/cli/emulator/**",
+  "packages/cli/config-ui/**",
   // Also match by the bare path tsx reports from the workspace root, where
   // tsx is invoked relative to `src/cli/main.ts`:
   "src/builtin-addons/**/frontend.tsx",

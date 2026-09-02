@@ -14,7 +14,7 @@ symptoms:
 - "Daemon IS actually running afterwards — `ss -ltn` shows 52937/52938/5180 bound, `p dev status` reports mode=emulator with uptime climbing"
 - "Failure is intermittent — clean runs from cold cache occasionally succeed, then a later run fails"
   diagnosis:
-- "Compare CLI wait window (10s) against daemon init pipeline budget: `outputClient.init` calls `spawnFrontendVite`/`spawnEmulatorVite`, each gated by `readyTimeoutMs: 30_000`, with supervisor retry schedule `[2_000, 5_000, 15_000, 30_000, 60_000]` (worst case ~112s)."
+- "Compare CLI wait window (10s) against daemon init pipeline budget: `outputClient.init` calls `spawnFrontendVite`/`spawnConfigUiVite`, each gated by `readyTimeoutMs: 30_000`, with supervisor retry schedule `[2_000, 5_000, 15_000, 30_000, 60_000]` (worst case ~112s)."
 - "On first run after dependency cache invalidation, Tailwind+vite dep optimization alone can take 10-15s. Add the module-graph scan, addon materialization, and supervisor spawn — slow-path boot is realistic at 25-35s."
 - "CLI's `waitForFullStart({ runtimeTimeoutMs })` polls `runtime-state.json` every 100ms for that window. When the daemon JUST doesn't finish in 10s, the CLI exits 1, but `startInBackground` has already spawned the detached daemon — so the daemon survives but the operator sees a false failure."
   root_cause: "The CLI's runtime-state wait window (10s, bumped from 5s in PR #36) is shorter than the daemon's realistic slow-path boot (≥30s on first run). When the daemon is just slow rather than broken, the CLI gives up early and exits non-zero."

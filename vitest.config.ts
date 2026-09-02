@@ -47,26 +47,26 @@ export default defineConfig({
     include: [
       "packages/cli/src/**/__tests__/**/*.test.{ts,tsx}",
       "packages/cli/frontend/src/**/__tests__/**/*.test.{ts,tsx}",
-      "packages/cli/emulator/src/**/__tests__/**/*.test.{ts,tsx}",
+      "packages/cli/config-ui/src/**/__tests__/**/*.test.{ts,tsx}",
     ],
     environmentMatchGlobs: [
       ["packages/cli/frontend/**", "jsdom"],
-      ["packages/cli/emulator/**", "jsdom"],
+      ["packages/cli/config-ui/**", "jsdom"],
     ],
-    setupFiles: ["./packages/cli/emulator/src/__tests__/setup.ts"],
+    setupFiles: ["./packages/cli/config-ui/src/__tests__/setup.ts"],
     coverage: {
       provider: "v8",
       include: [
         "packages/cli/src/**/*.{ts,tsx}",
         "packages/cli/frontend/src/**/*.{ts,tsx}",
-        "packages/cli/emulator/src/**/*.{ts,tsx}",
+        "packages/cli/config-ui/src/**/*.{ts,tsx}",
       ],
       exclude: [
         "packages/cli/src/**/__tests__/**",
         "packages/cli/frontend/src/**/__tests__/**",
         "packages/cli/frontend/src/**/__mocks__/**",
-        "packages/cli/emulator/src/**/__tests__/**",
-        "packages/cli/emulator/src/**/__mocks__/**",
+        "packages/cli/config-ui/src/**/__tests__/**",
+        "packages/cli/config-ui/src/**/__mocks__/**",
       ],
     },
   },

@@ -25,8 +25,8 @@
       {
         "patterns": [
           {
-            "group": ["**/frontend/**", "**/emulator/**"],
-            "message": "Core packages/cli/src cannot import from frontend or emulator subprojects. Use the bridge (WS) for cross-process communication.",
+            "group": ["**/frontend/**", "**/config-ui/**"],
+            "message": "Core packages/cli/src cannot import from frontend or config-ui subprojects. Use the bridge (WS) for cross-process communication.",
             "exceptPaths": ["./packages/cli/src/index.ts"]
           },
           {

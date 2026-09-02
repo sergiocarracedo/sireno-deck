@@ -26,14 +26,14 @@
       "@/*": [
         "./packages/cli/src/*",
         "./packages/cli/frontend/src/*",
-        "./packages/cli/emulator/src/*"
+        "./packages/cli/config-ui/src/*"
       ]
     }
   },
   "include": [
     "packages/*/src",
     "packages/*/frontend/src",
-    "packages/*/emulator/src",
+    "packages/*/config-ui/src",
     "vitest.config.ts"
   ]
 }

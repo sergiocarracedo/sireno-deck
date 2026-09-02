@@ -24,7 +24,7 @@ interface UiOverridesModule {
 /**
  * Build a ThemeUiPresentation from a ui-overrides module. Returns undefined
  * when the module has no overrides so the provider can stay free of extra
- * context. Used by both `frontend/src/App.tsx` and `emulator/src/App.tsx`
+ * context. Used by both `frontend/src/App.tsx` and `config-ui/src/App.tsx`
  * so changes to the override contract stay in one place.
  */
 export const buildPresentation = (

@@ -272,7 +272,7 @@ const configUiCommand: CommandModule<object, GlobalOptions> = {
     if (token === null) {
       throw new Error("Could not retrieve the daemon token")
     }
-    const base = state.configUiUrl ?? state.emulatorUrl
+    const base = state.configUiUrl
     const url = `${base}${base.includes("?") ? "&" : "?"}token=${encodeURIComponent(token)}#/editor`
     log.info(`Config UI: ${url}`)
     openBrowser(url, logger)

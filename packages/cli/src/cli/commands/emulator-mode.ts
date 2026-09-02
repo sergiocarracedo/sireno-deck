@@ -13,7 +13,7 @@ import {
 } from "@/themes/loader"
 
 export const DEFAULT_FRONTEND_PORT = 5180
-export const DEFAULT_EMULATOR_PORT = 52938
+export const DEFAULT_CONFIG_UI_PORT = 52938
 const DEFAULT_TIMEOUT_MS = 30_000
 // eslint-disable-next-line no-control-regex
 const ANSI_REGEX = /\u001b\[[0-9;]*m/g
@@ -36,9 +36,9 @@ export const findWorkspaceRoot = (): string => {
   return here
 }
 
-export const resolveEmulatorCwd = (override?: string): string => {
+export const resolveConfigUiCwd = (override?: string): string => {
   if (override !== undefined) return override
-  return resolvePath(findWorkspaceRoot(), "packages", "cli", "emulator")
+  return resolvePath(findWorkspaceRoot(), "packages", "cli", "config-ui")
 }
 
 export const resolveFrontendCwd = (): string =>
@@ -57,7 +57,7 @@ interface ViteSpawnOptions {
   host?: string
   requireToken?: string
   emulatorMode?: boolean
-  childLabel: "frontend vite" | "emulator vite"
+  childLabel: "frontend vite" | "config ui vite"
   exitFatalMessage: string
   onPid?: (pid: number) => void
 }
@@ -229,7 +229,7 @@ export const spawnFrontendVite = (options: {
       "frontend vite exited after becoming ready — emulator will show a blank deck until the frontend is restarted",
   })
 
-export const spawnEmulatorVite = (options: {
+export const spawnConfigUiVite = (options: {
   port: number
   cwd: string
   pnpmCommand: string
@@ -246,9 +246,9 @@ export const spawnEmulatorVite = (options: {
   spawnViteAndWaitForReady({
     ...options,
     emulatorMode: options.emulatorMode ?? true,
-    childLabel: "emulator vite",
+    childLabel: "config ui vite",
     exitFatalMessage:
-      "emulator vite exited after becoming ready — commands from buttons will no longer be received",
+      "config ui vite exited after becoming ready — commands from buttons will no longer be received",
   })
 
 export const killChild = (child: ChildProcess): Promise<void> =>

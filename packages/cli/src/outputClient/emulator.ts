@@ -13,12 +13,12 @@ import type { DeviceDescriptor } from "@/device/registry"
 import { writeRuntimeState, type RuntimeState } from "@/util/daemon"
 
 import {
-  DEFAULT_EMULATOR_PORT,
+  DEFAULT_CONFIG_UI_PORT,
   DEFAULT_FRONTEND_PORT,
   killChild,
-  resolveEmulatorCwd,
+  resolveConfigUiCwd,
   resolveFrontendCwd,
-  spawnEmulatorVite,
+  spawnConfigUiVite,
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
 import {
@@ -114,14 +114,14 @@ export class EmulatorOutputClient implements OutputClient {
     const requireToken = remote ? token : undefined
 
     // ponytail: supervise each vite child independently — frontend crash
-    // respawns only the frontend, emulator crash respawns only the emulator.
+    // respawns only the frontend, config UI crash respawns only the config UI.
     // Both share the same `onChildCrash` so the pipeline exits cleanly when
     // either exhausts its retry budget. The supervisor spawn closure captures
-    // the resolved URL into a hoisted `frontendUrl`/`emulatorUrl` so callers
+    // the resolved URL into a hoisted `frontendUrl`/`configUiUrl` so callers
     // see it after the initial await; subsequent respawns bind the same port
     // so the URL stays accurate.
     let frontendUrl = ""
-    let emulatorUrl = ""
+    let configUiUrl = ""
 
     const frontendSupervisor: SuperviseHandle | null =
       opts.frontendUrl !== undefined
@@ -158,13 +158,13 @@ export class EmulatorOutputClient implements OutputClient {
           })
 
     const emulatorSupervisor = await supervise({
-      label: "emulator vite",
+      label: "config ui vite",
       kill: killChild,
       delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
       spawn: async () => {
-        const r = await spawnEmulatorVite({
-          port: DEFAULT_EMULATOR_PORT,
-          cwd: resolveEmulatorCwd(),
+        const r = await spawnConfigUiVite({
+          port: DEFAULT_CONFIG_UI_PORT,
+          cwd: resolveConfigUiCwd(),
           pnpmCommand: "pnpm",
           readyTimeoutMs: DEFAULT_TIMEOUT_MS,
           logger,
@@ -177,7 +177,7 @@ export class EmulatorOutputClient implements OutputClient {
           ...(requireToken !== undefined ? { requireToken } : {}),
           ...(opts.onChildPid !== undefined ? { onPid: opts.onChildPid } : {}),
         })
-        emulatorUrl = r.url
+        configUiUrl = r.url
         return r.process
       },
       onGiveUp: () => opts.onChildCrash?.(),
@@ -268,18 +268,17 @@ export class EmulatorOutputClient implements OutputClient {
 
     logger.info(
       {
-        emulatorUrl,
+        configUiUrl,
         frontendUrl,
         wsUrl: opts.bridge.url,
       },
       "emulator mode ready",
     )
     if (remote) {
-      process.stdout.write(`\n  Emulator:  ${emulatorUrl}\n\n`)
+      process.stdout.write(`\n  Config UI:  ${configUiUrl}\n\n`)
       const lanHost = opts.lanHost ?? "127.0.0.1"
       const state: RuntimeState = {
-        configUiUrl: emulatorUrl,
-        emulatorUrl,
+        configUiUrl,
         wsUrl: opts.bridge.url,
         frontendUrl,
         lanHost,
@@ -292,13 +291,12 @@ export class EmulatorOutputClient implements OutputClient {
       writeRuntimeState(state)
     } else {
       process.stdout.write(
-        `\n  Emulator:  ${emulatorUrl}\n  Frontend:  ${frontendUrl}\n\n`,
+        `\n  Config UI:  ${configUiUrl}\n  Frontend:  ${frontendUrl}\n\n`,
       )
-      openBrowser(emulatorUrl, logger, opts.noAutoOpen === true)
+      openBrowser(configUiUrl, logger, opts.noAutoOpen === true)
       const lanHost = opts.lanHost ?? "127.0.0.1"
       const state: RuntimeState = {
-        configUiUrl: emulatorUrl,
-        emulatorUrl,
+        configUiUrl,
         wsUrl: opts.bridge.url,
         frontendUrl,
         lanHost,
@@ -316,7 +314,7 @@ export class EmulatorOutputClient implements OutputClient {
     return {
       descriptor,
       frontendUrl,
-      emulatorUrl,
+      configUiUrl,
       wsUrl: opts.bridge.url,
       childPids,
       async stop(): Promise<void> {

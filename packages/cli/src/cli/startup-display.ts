@@ -301,7 +301,7 @@ export const printDaemonUrl = async (
   const token = typeof tokenOrOutput === "string" ? tokenOrOutput : ""
   const write = typeof tokenOrOutput === "function" ? tokenOrOutput : output
   if (state.emulatorMode) {
-    const port = state.emulatorUrl.split(":").pop() ?? ""
+    const port = state.configUiUrl.split(":").pop() ?? ""
     const buildUrl = (host: string, deckOnly: boolean): string => {
       const params = new URLSearchParams()
       if (token.length > 0) params.set("token", token)
@@ -337,7 +337,7 @@ export const printDaemonUrl = async (
         ? `${url}${url.includes("?") ? "&" : "?"}token=${token}`
         : url
     write(`\n  Frontend:  ${withToken}\n`)
-    const configUiUrl = state.configUiUrl ?? state.emulatorUrl
+    const configUiUrl = state.configUiUrl
     const configUiWithToken =
       token.length > 0
         ? `${configUiUrl}${configUiUrl.includes("?") ? "&" : "?"}token=${token}`

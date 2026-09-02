@@ -393,8 +393,7 @@ export const removeFlagsFile = (paths = resolveDaemonPaths()): void => {
 }
 
 export interface RuntimeState {
-  readonly configUiUrl?: string
-  readonly emulatorUrl: string
+  readonly configUiUrl: string
   readonly wsUrl: string
   readonly frontendUrl: string
   readonly lanHost: string
@@ -425,7 +424,7 @@ export const readRuntimeState = (
     if (
       parsed !== null &&
       typeof parsed === "object" &&
-      typeof (parsed as RuntimeState).emulatorUrl === "string" &&
+      typeof (parsed as RuntimeState).configUiUrl === "string" &&
       typeof (parsed as RuntimeState).wsUrl === "string" &&
       typeof (parsed as RuntimeState).frontendUrl === "string" &&
       typeof (parsed as RuntimeState).lanHost === "string" &&
@@ -435,7 +434,7 @@ export const readRuntimeState = (
     ) {
       const p = parsed as RuntimeState
       return {
-        emulatorUrl: p.emulatorUrl,
+        configUiUrl: p.configUiUrl,
         wsUrl: p.wsUrl,
         frontendUrl: p.frontendUrl,
         lanHost: p.lanHost,

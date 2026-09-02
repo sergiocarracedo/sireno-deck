@@ -61,7 +61,7 @@ export const readProcPpid = (pid: number): number | null => {
 //
 //   1. cmdline (`/proc/<pid>/cmdline`) must reference a sirenodeck vite
 //      config — the frontend (packages/cli/frontend/vite.config.ts) or the
-//      emulator (packages/cli/emulator/vite.config.ts). The host string
+//      config UI (packages/cli/config-ui/vite.config.ts). The host string
 //      can be vendored, fork-installed, or extracted into a shared repo
 //      clone, so we match against the basename + the relative path
 //      tail; we also accept path segments that include the
@@ -82,7 +82,7 @@ export const isOurViteChild = (pid: number): boolean => {
   const cmdline = readProcCmdline(pid)
   if (cmdline === null) return false
   // Accept any path that ends with frontend/vite.config.ts or
-  // emulator/vite.config.ts AND contains `vite` (the executable). The
+  // config-ui/vite.config.ts AND contains `vite` (the executable). The
   // (?:^|\s) anchor catches the bin path's `/tsx/dist/cli.mjs` which
   // may pass the config as a separate arg.
   return /vite(?:[^\s]*)?\s+(?:[^\s]*\s+)?[^\s]*\/(frontend|emulator)\/vite\.config\.ts/.test(

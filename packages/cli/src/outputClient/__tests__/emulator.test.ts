@@ -85,7 +85,7 @@ describe("EmulatorOutputClient.init", () => {
     const client = new EmulatorOutputClient()
     const devices = await client.listDevices()
     await client.selectDevice(devices, null, silentLogger())
-    // init() will reject downstream (spawnEmulatorVite can't run in unit test env);
+    // init() will reject downstream (spawnConfigUiVite can't run in unit test env);
     // we only assert the descriptor guard from selectDevice has been removed.
     await expect(
       client.init({

@@ -97,21 +97,21 @@ flowchart LR
 #### U3. Always-on emulator and device behavior
 
 - **Goal:** Run the emulator shell in hardware and emulation modes with correct device inventory.
-- **Files:** `packages/cli/src/outputClient/real.ts`, `packages/cli/src/outputClient/emulator.ts`, `packages/cli/src/cli/commands/run.ts`, `packages/cli/emulator/src/App.tsx`, `packages/cli/emulator/src/SidePanel.tsx`, tests.
+- **Files:** `packages/cli/src/outputClient/real.ts`, `packages/cli/src/outputClient/emulator.ts`, `packages/cli/src/cli/commands/run.ts`, `packages/cli/config-ui/src/App.tsx`, `packages/cli/config-ui/src/SidePanel.tsx`, tests.
 - **Approach:** Keep real output for hardware while starting the emulator surface as an additional observer/editor; use real-device inventory in hardware mode and virtual models only in emulation mode.
 - **Test scenarios:** No hardware, one hardware device, multiple devices, persisted selection, model changes, and emulator startup/shutdown.
 
 #### U4. Editor metadata and schema forms
 
 - **Goal:** Make addon buttons/decks and themes editable through serializable metadata.
-- **Files:** `packages/cli/src/cli/commands/addon-registry.ts`, `packages/cli/src/cli/commands/run.ts`, `packages/cli/emulator/src/pages/EditorPage.tsx`, editor components/tests.
+- **Files:** `packages/cli/src/cli/commands/addon-registry.ts`, `packages/cli/src/cli/commands/run.ts`, `packages/cli/config-ui/src/pages/EditorPage.tsx`, editor components/tests.
 - **Approach:** Hide internal types, serialize supported service schemas with `z.toJSONSchema`, expose generated-deck override capability, and render a small schema-driven form.
 - **Test scenarios:** Builtin/external addons, schema defaults/enums/nested fields, unsupported schemas, missing themes, and internal item filtering.
 
 #### U5. Editor canvas interactions
 
 - **Goal:** Provide responsive drag/drop editing over the existing deck preview.
-- **Files:** `packages/cli/emulator/src/App.tsx`, `packages/cli/emulator/src/DeckFrame.tsx`, `packages/cli/emulator/src/pages/EditorPage.tsx`, `packages/cli/emulator/src/components/*`, tests.
+- **Files:** `packages/cli/config-ui/src/App.tsx`, `packages/cli/config-ui/src/DeckFrame.tsx`, `packages/cli/config-ui/src/pages/EditorPage.tsx`, `packages/cli/config-ui/src/components/*`, tests.
 - **Approach:** Reuse the iframe deck rendering and add accessible overlay controls for empty slots, drag targets, button menus, clipboard, duplicate, delete, undo, and keyboard shortcuts.
 - **Test scenarios:** Add/reorder/delete/duplicate/copy/paste, configure and preview a button, keyboard operation, mobile layout, and error/reconnect states.
 

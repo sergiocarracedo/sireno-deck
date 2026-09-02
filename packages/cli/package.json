@@ -84,7 +84,7 @@
     "start": "node --import tsx src/cli/main.ts",
     "build": "tsdown",
     "build:frontend": "vite --config frontend/vite.build.config.ts build",
-    "build:emulator": "vite --config emulator/vite.build.config.ts build",
+    "build:config-ui": "vite --config config-ui/vite.config.ts build",
     "prepublishOnly": "tsdown",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",

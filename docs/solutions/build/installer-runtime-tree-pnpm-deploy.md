@@ -50,7 +50,7 @@ Without `--legacy`, pnpm v10 fails with `ERR_PNPM_DEPLOY_NONINJECTED_WORKSPACE` 
 ```
 <sireno>/lib/cli/main.mjs      # tsdown bundle (entry + code-split chunks)
 <sireno>/frontend/dist/        # vite build
-<sireno>/emulator/dist/        # vite build
+<sireno>/config-ui/dist/       # vite build
 <sireno>/etc/install.json      # { version, platform, arch }
 <sireno>/node_modules/         # pruned prod deps, native builds done
 <sireno>/sirenodeck            # POSIX sh launcher (prefers bundled node)

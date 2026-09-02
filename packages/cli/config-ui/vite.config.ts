@@ -63,6 +63,7 @@ const addonsFromEnv = () => {
 }
 
 export default defineConfig({
+  root: __dirname,
   plugins: [
     react(),
     tailwindcss(),
@@ -92,7 +93,7 @@ export default defineConfig({
     ),
   },
   server: {
-    port: Number(process.env.SIRENO_EMULATOR_PORT ?? 52938),
+    port: Number(process.env.SIRENO_CONFIG_UI_PORT ?? 52938),
     strictPort: false,
     host: process.env["SIRENO_VITE_HOST"] ?? "127.0.0.1",
   },

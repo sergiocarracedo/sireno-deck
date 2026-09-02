@@ -31,7 +31,7 @@ packages/cli/
         start.ts             # detached daemon
         stop.ts              # SIGTERM → 5s → SIGKILL on children + daemon
         status.ts            # pid + token preview + tracked children
-        emulator-mode.ts     # WS bridge + vite children spawner
+        emulator-mode.ts     # WS bridge + virtual-device vite children spawner
         real-mode.ts         # Playwright screenshot → hardware write
     addon/                   # addon API + loader (local + npm)
     api/                     # shared types
@@ -47,7 +47,7 @@ packages/cli/
     util/                    # daemon, logger, cache-paths, device-config
     vite/                    # vite plugin (sirenoDeck2)
   frontend/                  # vite React 19 + Tailwind 4 frontend
-  emulator/         # vite emulator shell
+  config-ui/                  # vite configuration UI shell
 ```
 
 ## Conventions

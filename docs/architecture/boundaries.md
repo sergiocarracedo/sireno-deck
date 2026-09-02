@@ -398,7 +398,7 @@ handle the gap beyond trusting the cache.
 | Per-platform provider layout         | `packages/cli/src/system/providers/*/`                               |
 | Shared provider interfaces           | `packages/cli/src/system/providers/shared.ts:1`                      |
 | Frontend bundle                      | `packages/cli/frontend/`                                             |
-| Emulator bundle                      | `packages/cli/emulator/`                                             |
+| Config UI bundle                     | `packages/cli/config-ui/`                                            |
 | Builtin addons                       | `packages/cli/src/builtin-addons/*`                                  |
 | Theme loading                        | `packages/cli/src/themes/{loader,css}.ts`                            |
 | Icon asset registry                  | `packages/cli/src/core/icon-asset-registry.ts:1`                     |

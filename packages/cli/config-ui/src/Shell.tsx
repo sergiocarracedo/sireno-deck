@@ -22,7 +22,7 @@ export const Shell = ({
   if (hideSidebar) {
     return (
       <main
-        data-testid="emulator-shell"
+        data-testid="config-ui-shell"
         className="flex h-screen flex-1 overflow-hidden bg-neutral-900 text-neutral-100"
       >
         {content}
@@ -31,7 +31,7 @@ export const Shell = ({
   }
   return (
     <div
-      data-testid="emulator-shell"
+      data-testid="config-ui-shell"
       className="flex h-screen bg-neutral-900 text-neutral-100"
     >
       <SidePanel

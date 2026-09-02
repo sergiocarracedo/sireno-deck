@@ -623,7 +623,7 @@ const runInProcessSetup = async (
       }
       await new Promise<void>((resolve) => control.close(() => resolve()))
       removeDaemonControl(daemonPaths)
-      // ponytail: kill tracked children (frontend vite, emulator vite, ...)
+      // ponytail: kill tracked children (frontend vite, config UI vite, ...)
       // BEFORE removing the children file. Without this, when the daemon
       // exits cleanly the children outlive it as init-adopted orphans, keep
       // their ports, and the next `start` invocation fails with EADDRINUSE
@@ -907,7 +907,7 @@ const start = async (options: StartOptions): Promise<void> => {
     removeStartLock()
   } else {
     // ponytail: previous daemon is dead (or never started cleanly) — kill any
-    // children it left behind (frontend vite on :5180, emulator vite on :52938,
+    // children it left behind (frontend vite on :5180, config UI vite on :52938,
     // ws-bridge on :52937). Without this, the children's ports stay bound
     // by orphans and the new daemon's preflight can't bind them — user's
     // complaint: "the frontend port still in use by children". terminateChildren

@@ -22,7 +22,7 @@ const {
   mockReadDaemonEventsFromSnapshot: vi.fn(() => []),
   mockWaitForFullStart: vi.fn(async () => ({
     state: {
-      emulatorUrl: "http://127.0.0.1:52938",
+      configUiUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       token: "test",

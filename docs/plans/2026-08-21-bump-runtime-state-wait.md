@@ -14,7 +14,7 @@ branch: fix/runtime-state-wait-bump
 
 ## Root Cause
 
-The CLI waits 10s for `runtime-state.json` to appear (post-#36 bump from 5s). The daemon's `outputClient.init` calls `spawnFrontendVite` + `spawnEmulatorVite`, each gated by `readyTimeoutMs: 30_000` plus the supervisor retry budget `[2_000, 5_000, 15_000, 30_000, 60_000]` (worst case ~2 min). On first run after dependency cache invalidation, Tailwind/vite dep optimization alone is ~10-15s. So the CLI wait window (10s) is shorter than a realistic slow-path boot (~30s). When the daemon is just slow, the CLI bails with exit code 1 even though the daemon eventually succeeds.
+The CLI waits 10s for `runtime-state.json` to appear (post-#36 bump from 5s). The daemon's `outputClient.init` calls `spawnFrontendVite` + `spawnConfigUiVite`, each gated by `readyTimeoutMs: 30_000` plus the supervisor retry budget `[2_000, 5_000, 15_000, 30_000, 60_000]` (worst case ~2 min). On first run after dependency cache invalidation, Tailwind/vite dep optimization alone is ~10-15s. So the CLI wait window (10s) is shorter than a realistic slow-path boot (~30s). When the daemon is just slow, the CLI bails with exit code 1 even though the daemon eventually succeeds.
 
 ## Fix
 

@@ -69,8 +69,8 @@ export const selectLanAddresses = (
   )
 }
 
-export interface PrintEmulatorBannerOptions {
-  readonly emulatorUrlFn: (lanAddress: string) => string
+export interface PrintConfigUiBannerOptions {
+  readonly configUiUrlFn: (lanAddress: string) => string
   readonly lanAddresses: ReadonlyArray<LanAddress>
   readonly securityWarning: string
   readonly output: (text: string) => void
@@ -79,14 +79,14 @@ export interface PrintEmulatorBannerOptions {
 
 const formatInterfaceLabel = (name: string): string => name
 
-export async function printEmulatorBanner(
-  options: PrintEmulatorBannerOptions,
+export async function printConfigUiBanner(
+  options: PrintConfigUiBannerOptions,
 ): Promise<void> {
-  const { emulatorUrlFn, lanAddresses, securityWarning, output, qrGenerate } =
+  const { configUiUrlFn, lanAddresses, securityWarning, output, qrGenerate } =
     options
 
   if (lanAddresses.length === 0) {
-    output("\n  Emulator:  http://127.0.0.1:52938\n")
+    output("\n  Config UI:  http://127.0.0.1:52938\n")
     output(
       "\x1b[33m  warning: no LAN interfaces detected — QR may not reach your phone.\x1b[0m\n\n",
     )
@@ -94,9 +94,9 @@ export async function printEmulatorBanner(
     return
   }
 
-  output("\n  Emulator (LAN):\n")
+  output("\n  Config UI (LAN):\n")
   for (const entry of lanAddresses) {
-    const url = emulatorUrlFn(entry.address)
+    const url = configUiUrlFn(entry.address)
     if (qrGenerate !== undefined) {
       output("\n")
       const qr = await qrGenerate(url)

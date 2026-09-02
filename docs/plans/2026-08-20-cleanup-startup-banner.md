@@ -53,7 +53,7 @@ Plus two CLI-side nits the user explicitly asked to fix:
 
 **Rationale:** The user's crash is reproducible locally. Need the actual error before guessing a fix.
 
-**Governs:** `packages/cli/frontend/vite.config.ts`, `packages/cli/emulator/vite.config.ts`
+**Governs:** `packages/cli/frontend/vite.config.ts`, `packages/cli/config-ui/vite.config.ts`
 
 ### KTD-2: Drop `probeMediaAccess` from banner; addon checks already cover media
 
@@ -75,7 +75,7 @@ Plus two CLI-side nits the user explicitly asked to fix:
 
 ### IU-1: Investigate vite subprocess crash
 
-**File:** `packages/cli/frontend/vite.config.ts` + `packages/cli/emulator/vite.config.ts`
+**File:** `packages/cli/frontend/vite.config.ts` + `packages/cli/config-ui/vite.config.ts`
 
 Run `pnpm --filter sirenodeck run dev start --emulator` and tail `/run/user/1000/sireno-deck/service.log` to find the actual vite error.
 
@@ -119,7 +119,7 @@ Run `pnpm --filter sirenodeck run dev start --emulator` from a clean state (kill
 - `packages/cli/src/cli/startup-display.ts` — remove `probeMedia` from banner deps + Promise.all + FeatureItem
 - `packages/cli/src/util/logger.ts` — strip timestamp + indent from `formatHuman`
 - `packages/cli/src/util/__tests__/logger.test.ts` — update tests for new format
-- `packages/cli/frontend/vite.config.ts` + `packages/cli/emulator/vite.config.ts` — fix vite crash (depending on root cause)
+- `packages/cli/frontend/vite.config.ts` + `packages/cli/config-ui/vite.config.ts` — fix vite crash (depending on root cause)
 - `packages/cli/src/cli/__tests__/startup-display.test.ts` — update if banner tests depend on `media` field
 
 **Create:**

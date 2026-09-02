@@ -38,7 +38,7 @@ export interface InitOptions {
    */
   readonly remote?: boolean
   /**
-   * --no-autoopen: do not launch the emulator URL in the system browser.
+   * --no-autoopen: do not launch the config UI URL in the system browser.
    * Useful for capture tooling and headless runs. Default false.
    */
   readonly noAutoOpen?: boolean
@@ -63,7 +63,7 @@ export interface InitOptions {
   ) => ReadonlyArray<RuntimeDeck>
   readonly onChildPid?: (pid: number) => void
   /**
-   * Called when a supervised child (frontend/emulator vite) gives up after
+   * Called when a supervised child (frontend/config UI vite) gives up after
    * exhausting its retry budget. The pipeline uses this to resolve `done` and
    * trigger the full shutdown sequence. ponytail: kept optional so existing
    * tests that don't simulate subprocess crashes don't have to wire it.
@@ -75,7 +75,6 @@ export interface OutputHandle {
   readonly descriptor: DeviceDescriptor
   readonly frontendUrl: string
   readonly configUiUrl?: string
-  readonly emulatorUrl?: string
   readonly wsUrl?: string
   readonly childPids: ReadonlyArray<number>
   pushBlackFrame?(): Promise<void>

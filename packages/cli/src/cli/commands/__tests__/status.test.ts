@@ -105,7 +105,7 @@ describe("status", () => {
       remote: false,
     })
     readRuntimeStateMock.mockReturnValue({
-      emulatorUrl: "http://127.0.0.1:52938",
+      configUiUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       lanHost: "127.0.0.1",
@@ -150,7 +150,7 @@ describe("status", () => {
       "Bridge URL   : ws://127.0.0.1:52937",
     )
     expect(logMock.info).toHaveBeenCalledWith(
-      "Emulator URL : http://127.0.0.1:52938",
+      "Config UI URL : http://127.0.0.1:52938",
     )
     // Token line is gone
     expect(logMock.info).not.toHaveBeenCalledWith(
@@ -169,7 +169,7 @@ describe("status", () => {
       remote: false,
     })
     readRuntimeStateMock.mockReturnValue({
-      emulatorUrl: "http://127.0.0.1:52938",
+      configUiUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       lanHost: "127.0.0.1",
@@ -186,7 +186,7 @@ describe("status", () => {
       "Frontend URL : http://127.0.0.1:5180",
     )
     expect(logMock.info).toHaveBeenCalledWith(
-      "Emulator URL : http://127.0.0.1:52938",
+      "Config UI URL : http://127.0.0.1:52938",
     )
     expect(outroMock).toHaveBeenCalledWith("✓ Status snapshot")
   })
@@ -197,7 +197,7 @@ describe("status", () => {
     isRunningMock.mockReturnValue(true)
     readFlagsMock.mockReturnValue({ emulator: false, httpPort: 3939 })
     readRuntimeStateMock.mockReturnValue({
-      emulatorUrl: "",
+      configUiUrl: "",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       lanHost: "127.0.0.1",
@@ -225,7 +225,7 @@ describe("status", () => {
     )
     // No emulator URL in hardware mode
     expect(logMock.info).not.toHaveBeenCalledWith(
-      expect.stringContaining("Emulator URL"),
+      expect.stringContaining("Config UI URL"),
     )
   })
 
@@ -235,7 +235,7 @@ describe("status", () => {
     isRunningMock.mockReturnValue(true)
     readFlagsMock.mockReturnValue({ emulator: false, httpPort: 3939 })
     readRuntimeStateMock.mockReturnValue({
-      emulatorUrl: "",
+      configUiUrl: "",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       lanHost: "127.0.0.1",
@@ -260,7 +260,7 @@ describe("status", () => {
     isRunningMock.mockReturnValue(true)
     readFlagsMock.mockReturnValue({ emulator: false, httpPort: 3939 })
     readRuntimeStateMock.mockReturnValue({
-      emulatorUrl: "",
+      configUiUrl: "",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       lanHost: "127.0.0.1",
@@ -285,7 +285,7 @@ describe("status", () => {
     isRunningMock.mockReturnValue(true)
     readFlagsMock.mockReturnValue({ emulator: true, httpPort: 3939 })
     readRuntimeStateMock.mockReturnValue({
-      emulatorUrl: "http://127.0.0.1:52938",
+      configUiUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       lanHost: "127.0.0.1",
@@ -319,7 +319,7 @@ describe("status", () => {
     readPidMock.mockReturnValue(pid)
     isRunningMock.mockReturnValue(true)
     readRuntimeStateMock.mockReturnValue({
-      emulatorUrl: "http://127.0.0.1:52938",
+      configUiUrl: "http://127.0.0.1:52938",
       wsUrl: "ws://127.0.0.1:52937",
       frontendUrl: "http://127.0.0.1:5180",
       lanHost: "127.0.0.1",

@@ -22,7 +22,7 @@ branch: fix/real-mode-runtime-state
 
 Make `RealOutputClient.init` write runtime state after the renderer starts (mirroring `EmulatorOutputClient`):
 
-1. **`outputClient/real.ts`**: after `renderer.start()` + childPids (~line 248), build `RuntimeState` with `emulatorMode: false`, `remote: false`, `emulatorUrl: frontendUrl` (placeholder), token from `SIRENO_TOKEN` env, and call `writeRuntimeState(state)` + log "real mode: runtime state written".
+1. **`outputClient/real.ts`**: after `renderer.start()` + childPids (~line 248), build `RuntimeState` with `emulatorMode: false`, `remote: false`, `configUiUrl`, token from `SIRENO_TOKEN` env, and call `writeRuntimeState(state)` + log "real mode: runtime state written".
 
 2. **`startup-display.ts` `printDaemonUrl`**: branch on `state.emulatorMode` — `false` prints `Frontend: <frontendUrl>?token=...` (no QR/LAN/QR section).
 
