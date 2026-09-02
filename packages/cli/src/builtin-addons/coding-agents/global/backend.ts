@@ -216,13 +216,14 @@ const humanStatus = (s: import("../shared/state.js").AgentStatus): string => {
   }
 }
 
-const publishSnapshot = (): void => {
+const publishSnapshot = (): AgentsSnapshot => {
   syncLiveCountAndMaybeRebuild()
   const payload: AgentsSnapshot = {
     ...state.lastSnapshot,
     icons: state.icons,
   }
   state.context?.publish(payload)
+  return payload
 }
 
 const poller: AddonGlobalPoller = {
@@ -233,7 +234,7 @@ const poller: AddonGlobalPoller = {
     state.context = ctx
     await setStateFromProviders()
     fireNotices(state.lastSnapshot)
-    publishSnapshot()
+    return publishSnapshot()
   },
 }
 

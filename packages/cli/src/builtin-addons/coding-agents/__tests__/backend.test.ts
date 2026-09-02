@@ -70,6 +70,23 @@ describe("coding-agents globalService", () => {
     expect(poller?.intervalMs).toBe(POLLER_INTERVAL_MS)
   })
 
+  it("returns the published snapshot from its poller", async () => {
+    const { ctx } = makeCtx()
+    await globalService.onLoad?.(ctx as never, {
+      opencodeUrl: "http://127.0.0.1:1",
+      spawnOpencodeIfMissing: false,
+      claudeCodeProjectsDir: "/nonexistent",
+    })
+
+    const poller = globalService.pollers?.[0]
+    const snapshot = await poller?.poll(ctx as never)
+
+    expect(snapshot).toEqual(ctx.publish.mock.calls.at(-1)?.[0])
+    expect(snapshot).toEqual(
+      expect.objectContaining({ byProvider: expect.any(Object) }),
+    )
+  })
+
   it("onUnload is a no-op when onLoad was not called", () => {
     const noopCtx = { signal: new AbortController().signal } as never
     expect(() => globalService.onUnload?.(noopCtx)).not.toThrow()
