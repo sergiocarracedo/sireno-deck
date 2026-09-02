@@ -290,9 +290,11 @@ export class EmulatorOutputClient implements OutputClient {
       }
       writeRuntimeState(state)
     } else {
-      process.stdout.write(
-        `\n  Config UI:  ${configUiUrl}\n  Frontend:  ${frontendUrl}\n\n`,
-      )
+      const frontendLine =
+        process.env.SIRENO_DEV_MODE === "true"
+          ? `\n  Frontend:  ${frontendUrl}`
+          : ""
+      process.stdout.write(`\n  Config UI:  ${configUiUrl}${frontendLine}\n\n`)
       openBrowser(configUiUrl, logger, opts.noAutoOpen === true)
       const lanHost = opts.lanHost ?? "127.0.0.1"
       const state: RuntimeState = {

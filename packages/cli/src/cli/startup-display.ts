@@ -336,7 +336,9 @@ export const printDaemonUrl = async (
       token.length > 0
         ? `${url}${url.includes("?") ? "&" : "?"}token=${token}`
         : url
-    write(`\n  Frontend:  ${withToken}\n`)
+    if (process.env.SIRENO_DEV_MODE === "true") {
+      write(`\n  Frontend:  ${withToken}\n`)
+    }
     const configUiUrl = state.configUiUrl
     const configUiWithToken =
       token.length > 0

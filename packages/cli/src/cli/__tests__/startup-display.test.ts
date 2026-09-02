@@ -148,6 +148,34 @@ describe("printDaemonUrl", () => {
     expect(text).toContain("token=tok123")
   })
 
+  it("omits the frontend URL outside dev mode", async () => {
+    const output = vi.fn()
+    const previous = process.env.SIRENO_DEV_MODE
+    delete process.env.SIRENO_DEV_MODE
+    try {
+      await printDaemonUrl(makeState({ emulatorMode: false }), "tok123", output)
+      const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
+      expect(text).not.toContain("Frontend:")
+    } finally {
+      if (previous === undefined) delete process.env.SIRENO_DEV_MODE
+      else process.env.SIRENO_DEV_MODE = previous
+    }
+  })
+
+  it("prints the frontend URL in dev mode", async () => {
+    const output = vi.fn()
+    const previous = process.env.SIRENO_DEV_MODE
+    process.env.SIRENO_DEV_MODE = "true"
+    try {
+      await printDaemonUrl(makeState({ emulatorMode: false }), "tok123", output)
+      const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
+      expect(text).toContain("Frontend:  http://127.0.0.1:5180?token=tok123")
+    } finally {
+      if (previous === undefined) delete process.env.SIRENO_DEV_MODE
+      else process.env.SIRENO_DEV_MODE = previous
+    }
+  })
+
   it("includes LAN lines when addresses present", async () => {
     const output = vi.fn()
     // Force non-TTY so we get plain URL output
