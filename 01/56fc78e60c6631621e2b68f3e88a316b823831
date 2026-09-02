@@ -1,0 +1,38 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/pages.tsx
+  s_0d66ee04bd72b4::t_02e32850ad2ff9 4-5,66-72
+  s_0d66ee04bd72b4::t_c2be49a5054645 13-14,29-30,33-39,47
+  s_0d66ee04bd72b4::t_ca68ddf1ff58a6 1-3,6-12,15-28,31-32,40-46,48-65,73
+packages/cli/src/cli/commands/run.ts
+  s_0d66ee04bd72b4::t_95464d839db64a 1584
+  s_0d66ee04bd72b4::t_7728402e88ddda 1581-1583,1585
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_0d66ee04bd72b4::t_ca68ddf1ff58a6 6-8,33-34,90-96,99-103
+  s_0d66ee04bd72b4::t_c2be49a5054645 80,97-98,105-109
+  s_0d66ee04bd72b4::t_95464d839db64a 1
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_0d66ee04bd72b4::t_7728402e88ddda 144
+packages/cli/src/builtin-addons/coding-agents/shared/state.ts
+  s_0d66ee04bd72b4::t_7728402e88ddda 20-21
+packages/cli/src/render/__tests__/state-publisher.test.ts
+  s_0d66ee04bd72b4::t_1bd9d578d0cc58 56-76
+packages/cli/src/render/state-publisher.ts
+  s_0d66ee04bd72b4::t_7728402e88ddda 15,25,33,76,89
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_0d66ee04bd72b4::t_3df2d5ee8d6bf1 31-32,289-296,378-383,393-399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "0156fc78e60c6631621e2b68f3e88a316b823831",
+  "prompts": {},
+  "sessions": {
+    "s_0d66ee04bd72b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa724ce02ffeDkl5fjsB6Ijz8x",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
