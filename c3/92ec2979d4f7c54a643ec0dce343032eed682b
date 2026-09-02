@@ -1,0 +1,23 @@
+packages/cli/src/outputClient/emulator.ts
+  s_1e4bd27dd13fcc::t_ea1ed52a7a7134 293-297
+packages/cli/src/cli/startup-display.ts
+  s_1e4bd27dd13fcc::t_ea1ed52a7a7134 339-341
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_1e4bd27dd13fcc::t_95fabeca2a2b71 151-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c392ec2979d4f7c54a643ec0dce343032eed682b",
+  "prompts": {},
+  "sessions": {
+    "s_1e4bd27dd13fcc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa3ab64aeffeh0Z0l7eY22eY83",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
