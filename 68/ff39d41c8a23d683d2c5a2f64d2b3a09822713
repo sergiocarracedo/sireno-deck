@@ -1,0 +1,99 @@
+packages/cli/src/outputClient/__tests__/emulator.test.ts
+  s_1e4bd27dd13fcc::t_d88835d031e0c9 88
+README.md
+  s_1e4bd27dd13fcc::t_4770f0358bf089 12,25
+docs/solutions/runtime-errors/real-output-client-missing-runtime-state-write.md
+  s_1e4bd27dd13fcc::t_fe7766b2e5b649 22
+packages/cli/bin/dev.js
+  s_1e4bd27dd13fcc::t_e939ef43abce13 31
+packages/cli/src/cli/prompt.ts
+  s_1e4bd27dd13fcc::t_e939ef43abce13 5
+packages/cli/config-ui/src/Shell.tsx
+  s_1e4bd27dd13fcc::t_aa3d94ca75c5f0 34
+  s_1e4bd27dd13fcc::t_c660c66b10baeb 25
+docs/solutions/build/installer-runtime-tree-pnpm-deploy.md
+  s_1e4bd27dd13fcc::t_4a80e842bd9639 53
+packages/cli/config-ui/index.html
+  s_1e4bd27dd13fcc::t_c660c66b10baeb 6
+packages/cli/config-ui/vite.config.ts
+  s_1e4bd27dd13fcc::t_c660c66b10baeb 96
+  s_1e4bd27dd13fcc::t_fafae3ca4f946c 66
+packages/cli/src/outputClient/real.ts
+  s_1e4bd27dd13fcc::t_ad5bfe4afdc69c 17,19,255,257
+packages/cli/src/cli/commands/network-bind.ts
+  s_1e4bd27dd13fcc::t_2b308662ab0a58 72-73,82-83,85,89,97,99
+packages/cli/src/cli/index.ts
+  s_1e4bd27dd13fcc::t_ad5bfe4afdc69c 275
+packages/cli/src/outputClient/types.ts
+  s_1e4bd27dd13fcc::t_d74d748acc92c7 41,66
+packages/cli/src/ui/theme-presentation-builder.ts
+  s_1e4bd27dd13fcc::t_e939ef43abce13 27
+packages/cli/src/cli/commands/start.ts
+  s_1e4bd27dd13fcc::t_e939ef43abce13 626,910
+packages/cli/src/util/daemon.ts
+  s_1e4bd27dd13fcc::t_ad5bfe4afdc69c 396,427,437
+packages/cli/src/cli/startup-display.ts
+  s_1e4bd27dd13fcc::t_ad5bfe4afdc69c 304,340
+tsconfig.base.json
+  s_1e4bd27dd13fcc::t_e939ef43abce13 29,36
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_1e4bd27dd13fcc::t_d88835d031e0c9 52,63,131
+packages/cli/src/cli/commands/__tests__/restart.test.ts
+  s_1e4bd27dd13fcc::t_d74d748acc92c7 25
+packages/cli/src/outputClient/emulator.ts
+  s_1e4bd27dd13fcc::t_d74d748acc92c7 161,278,281,294,296,299,317
+  s_1e4bd27dd13fcc::t_ad5bfe4afdc69c 16,19,21,117,120,124,165-167,180,271
+packages/cli/src/cli/commands/__tests__/status.test.ts
+  s_1e4bd27dd13fcc::t_d88835d031e0c9 108,172,200,238,263,288,322
+  s_1e4bd27dd13fcc::t_2b308662ab0a58 153,189,228
+packages/cli/src/cli/commands/status.ts
+  s_1e4bd27dd13fcc::t_40e20edd182562 100,103
+  s_1e4bd27dd13fcc::t_6fa875668bf383 101
+vitest.config.ts
+  s_1e4bd27dd13fcc::t_e939ef43abce13 50,54,56,62,68-69
+ARCHITECTURE.md
+  s_1e4bd27dd13fcc::t_52f13060e6916a 14-16,18,37
+  s_1e4bd27dd13fcc::t_5171a76afaa8b3 211,250,262,392,397,455,457,500
+docs/solutions/runtime-errors/runtime-state-wait-window-too-short.md
+  s_1e4bd27dd13fcc::t_fe7766b2e5b649 17
+docs/plans/2026-08-21-fix-real-mode-runtime-state.md
+  s_1e4bd27dd13fcc::t_fe7766b2e5b649 25
+packages/cli/src/cli/commands/port-identity.ts
+  s_1e4bd27dd13fcc::t_e939ef43abce13 85
+  s_1e4bd27dd13fcc::t_d74d748acc92c7 64
+docs/plans/2026-08-20-cleanup-startup-banner.md
+  s_1e4bd27dd13fcc::t_4a80e842bd9639 56,78,122
+docs/plans/2026-08-21-bump-runtime-state-wait.md
+  s_1e4bd27dd13fcc::t_fe7766b2e5b649 17
+.oxlintrc.json
+  s_1e4bd27dd13fcc::t_e939ef43abce13 28-29
+docs/plans/2026-09-01-visual-config-editor-plan.md
+  s_1e4bd27dd13fcc::t_4a80e842bd9639 100,107,114
+packages/cli/package.json
+  s_1e4bd27dd13fcc::t_fafae3ca4f946c 87
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_1e4bd27dd13fcc::t_ad5bfe4afdc69c 16,39,41,60,232,249,251
+packages/cli/config-ui/src/DeckFrame.tsx
+  s_1e4bd27dd13fcc::t_c660c66b10baeb 80
+  s_1e4bd27dd13fcc::t_aa3d94ca75c5f0 95-97
+docs/architecture/boundaries.md
+  s_1e4bd27dd13fcc::t_5171a76afaa8b3 401
+packages/cli/README.md
+  s_1e4bd27dd13fcc::t_52f13060e6916a 34,50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "68ff39d41c8a23d683d2c5a2f64d2b3a09822713",
+  "prompts": {},
+  "sessions": {
+    "s_1e4bd27dd13fcc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa3ab64aeffeh0Z0l7eY22eY83",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
