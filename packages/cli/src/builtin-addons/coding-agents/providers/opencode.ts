@@ -318,21 +318,33 @@ export class OpenCodeProvider implements AgentProvider {
         contextLimits,
       )
       const instances = await readOpenCodeInstances()
-      return instances.map((instance) => {
-        const session = instance.sessionId
-          ? agents.find((agent) => agent.sessionId === instance.sessionId)
-          : undefined
-        return session === undefined
-          ? toInstanceAgent(instance)
-          : {
-              ...session,
-              instanceId: instance.instanceId,
-              pid: instance.pid,
-              status: instance.status,
-              directory: instance.cwd,
-              updatedAt: instance.updatedAt,
-            }
+      const bySessionId = new Map(
+        instances.flatMap((instance) =>
+          instance.sessionId === undefined
+            ? []
+            : [[instance.sessionId, instance] as const],
+        ),
+      )
+      const represented = new Set<string>()
+      const merged = agents.map((session) => {
+        const instance = bySessionId.get(session.sessionId)
+        if (instance === undefined) return session
+        represented.add(instance.instanceId)
+        return {
+          ...session,
+          instanceId: instance.instanceId,
+          pid: instance.pid,
+          status: instance.status,
+          directory: instance.cwd,
+          updatedAt: instance.updatedAt,
+        }
       })
+      return [
+        ...merged,
+        ...instances
+          .filter((instance) => !represented.has(instance.instanceId))
+          .map(toInstanceAgent),
+      ]
     } catch (err) {
       if (signal.aborted) return []
       console.warn(

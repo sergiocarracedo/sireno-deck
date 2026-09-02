@@ -163,7 +163,7 @@ describe("OpenCodeProvider", () => {
     expect(agents).toHaveLength(0)
   })
 
-  it("returns only plugin-reported active instances", async () => {
+  it("merges live instances over recent API sessions", async () => {
     vi.spyOn(instances, "readOpenCodeInstances").mockResolvedValue([
       {
         instanceId: "opencode:123",
@@ -187,9 +187,31 @@ describe("OpenCodeProvider", () => {
 
     const agents = await provider.fetchSnapshot(new AbortController().signal)
 
-    expect(agents).toHaveLength(1)
+    expect(agents).toHaveLength(2)
     expect(agents[0]?.sessionId).toBe("abc")
     expect(agents[0]?.status).toBe("waiting_for_human")
+    expect(agents[1]?.sessionId).toBe("unrelated")
+    expect(agents[1]?.status).toBe("idle")
+  })
+
+  it("keeps recent idle sessions without live plugin leases", async () => {
+    vi.spyOn(instances, "readOpenCodeInstances").mockResolvedValue([])
+    const api = makeApi({
+      listSessions: async () =>
+        Array.from({ length: 7 }, (_, index) =>
+          makeSession({ id: `idle-${index}`, title: `Idle ${index}` }),
+        ),
+      sessionStatus: async () => ({}),
+    })
+    const provider = new OpenCodeProvider({
+      baseUrl: "http://x",
+      apiFactory: () => api,
+    })
+
+    const agents = await provider.fetchSnapshot(new AbortController().signal)
+
+    expect(agents).toHaveLength(7)
+    expect(agents.every((agent) => agent.status === "idle")).toBe(true)
   })
 
   it("derives running from a message tool part state running", async () => {
