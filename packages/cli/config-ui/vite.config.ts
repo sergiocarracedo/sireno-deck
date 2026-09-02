@@ -91,6 +91,9 @@ export default defineConfig({
     "import.meta.env.VITE_DEV_MODE": JSON.stringify(
       process.env.SIRENO_DEV_MODE === "true",
     ),
+    "import.meta.env.VITE_REMOTE_MODE": JSON.stringify(
+      process.env.SIRENO_REQUIRE_TOKEN !== undefined,
+    ),
   },
   server: {
     port: Number(process.env.SIRENO_CONFIG_UI_PORT ?? 52938),

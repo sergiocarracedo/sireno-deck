@@ -22,6 +22,7 @@ import { AddonsPage, type AddonInventory } from "./pages/AddonsPage"
 import { ConfigPage } from "./pages/ConfigPage"
 import { DecksPage } from "./pages/DecksPage"
 import { EditorPage, type EditorState } from "./pages/EditorPage"
+import { AboutPage } from "./pages/AboutPage"
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
   "ws://127.0.0.1:52937") as string
@@ -29,6 +30,7 @@ const ENV_FRONTEND_URL = (import.meta.env.VITE_FRONTEND_URL ??
   "http://127.0.0.1:5180") as string
 const ENV_EMULATOR_MODE = import.meta.env.VITE_EMULATOR_MODE !== false
 const ENV_DEV_MODE = import.meta.env.VITE_DEV_MODE === true
+const ENV_REMOTE_MODE = import.meta.env.VITE_REMOTE_MODE === true
 
 const VIRTUAL_DEVICE_IDS = ["mk2", "mini", "xl"] as const
 
@@ -69,25 +71,20 @@ export interface AppProps {
 }
 
 const SECTIONS = [
-  "editor",
-  "addons",
   "config",
-  "device",
-  "bridge-logs",
-  "service-logs",
-  "decks",
+  "about",
+  ...(ENV_DEV_MODE
+    ? (["addons", "device", "bridge-logs", "service-logs", "decks"] as const)
+    : []),
 ] as const
 
 const isValidSection = (s: string | null): s is (typeof SECTIONS)[number] =>
-  s !== null &&
-  (SECTIONS as ReadonlyArray<string>).includes(s) &&
-  (s !== "device" || ENV_EMULATOR_MODE) &&
-  (!["bridge-logs", "service-logs", "decks"].includes(s) || ENV_DEV_MODE)
+  s !== null && (SECTIONS as ReadonlyArray<string>).includes(s)
 
 export const App = ({
   wsUrl = ENV_WS_URL,
   initialDeviceModel,
-  initialSection = "editor",
+  initialSection = "config",
 }: AppProps = {}): React.ReactElement => {
   const [activeSection, setActiveSection] = useState<string>(initialSection)
   const [deckOnly] = useState<boolean>(
@@ -363,20 +360,25 @@ export const App = ({
     if (activeSection === "addons")
       return <AddonsPage addonInventory={addonInventory} />
     if (activeSection === "decks") return <DecksPage deckTree={deckTree} />
-    if (activeSection === "config") return <ConfigPage />
-    if (activeSection === "editor")
+    if (activeSection === "config")
       return (
-        <EditorPage
-          wsClient={clientRef.current}
-          state={editorState}
-          result={editorResult}
-          addonInventory={addonInventory}
-          frontendUrl={ENV_FRONTEND_URL}
-          device={deviceModel}
-          token={token}
-          themes={editorState?.themes}
+        <ConfigPage
+          editor={
+            <EditorPage
+              wsClient={clientRef.current}
+              state={editorState}
+              result={editorResult}
+              addonInventory={addonInventory}
+              frontendUrl={ENV_FRONTEND_URL}
+              device={deviceModel}
+              token={token}
+              onGesture={sendButtonAction}
+              themes={editorState?.themes}
+            />
+          }
         />
       )
+    if (activeSection === "about") return <AboutPage />
     return null
   }
 
@@ -491,7 +493,12 @@ export const App = ({
                   fe: {ENV_FRONTEND_URL}
                 </a>
                 <span className="flex-1" />
-                <DeviceSelector device={deviceModel.id} onChange={setDevice} />
+                {(ENV_EMULATOR_MODE || ENV_REMOTE_MODE) && (
+                  <DeviceSelector
+                    device={deviceModel.id}
+                    onChange={setDevice}
+                  />
+                )}
               </header>
               <div className="flex flex-1 overflow-hidden">
                 <section className="flex-1 overflow-auto p-4">

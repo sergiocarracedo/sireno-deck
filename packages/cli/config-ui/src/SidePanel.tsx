@@ -4,10 +4,10 @@ import { VERSION } from "../../src/version"
 import type { WsClient } from "./bridge"
 
 const SECTIONS = [
-  { path: "editor", label: "Editor" },
-  { path: "addons", label: "Addons" },
   { path: "config", label: "Config" },
-  { path: "device", label: "Device", emulatorOnly: true },
+  { path: "about", label: "About" },
+  { path: "addons", label: "Addons", devOnly: true },
+  { path: "device", label: "Device", devOnly: true },
   { path: "bridge-logs", label: "Bridge logs", devOnly: true },
   { path: "service-logs", label: "Service logs", devOnly: true },
   { path: "decks", label: "Decks", devOnly: true },

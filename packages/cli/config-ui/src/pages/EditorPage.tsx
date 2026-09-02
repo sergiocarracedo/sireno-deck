@@ -40,6 +40,11 @@ export interface EditorPageProps {
   readonly frontendUrl?: string
   readonly device?: DeviceModelSpec
   readonly token?: string
+  readonly onGesture?: (msg: {
+    deckId: string
+    position: number
+    gesture: "tap" | "dbl-tap" | "hold"
+  }) => void
   readonly themes?: readonly ThemeOption[]
 }
 
@@ -70,6 +75,27 @@ const readDragData = (event: React.DragEvent): DragData | null => {
   return null
 }
 
+const buttonPositions = (buttons: Button[]): number[] => {
+  const used = new Set<number>()
+  let next = 0
+  return buttons.map((button) => {
+    const explicit =
+      isButton(button) && typeof button.position === "number"
+        ? button.position
+        : undefined
+    const position =
+      explicit !== undefined && explicit >= 0 && !used.has(explicit)
+        ? explicit
+        : (() => {
+            while (used.has(next)) next += 1
+            return next
+          })()
+    used.add(position)
+    next = Math.max(next, position + 1)
+    return position
+  })
+}
+
 export const EditorPage = ({
   wsClient,
   state,
@@ -78,20 +104,17 @@ export const EditorPage = ({
   frontendUrl,
   device,
   token,
+  onGesture,
   themes = [],
 }: EditorPageProps) => {
   const [deckId, setDeckId] = useState<string | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [selectedPosition, setSelectedPosition] = useState<number | null>(null)
   const [draft, setDraft] = useState("")
   const [clipboard, setClipboard] = useState<Button | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [sourcePath, setSourcePath] = useState<string | null>(null)
   const [sourceDraft, setSourceDraft] = useState("")
-  const [addonDeck, setAddonDeck] = useState<{
-    addonIndex: number
-    deckId: string
-  } | null>(null)
-  const [addonDeckDraft, setAddonDeckDraft] = useState("{}")
 
   useEffect(() => {
     wsClient?.send(JSON.stringify({ type: "editor-state-request" }))
@@ -109,10 +132,24 @@ export const EditorPage = ({
   const activeDeckId = deckId ?? decks[0]?.[0] ?? null
   const buttons =
     activeDeckId === null ? [] : (config.decks?.[activeDeckId]?.buttons ?? [])
+  const positions = buttonPositions(buttons)
+  const firstFreePosition = (): number => {
+    const used = new Set(positions)
+    for (let position = 0; position < (device?.keyCount ?? 15); position += 1) {
+      if (!used.has(position)) return position
+    }
+    return positions.length
+  }
   const selected = selectedIndex === null ? undefined : buttons[selectedIndex]
-  const [paletteTab, setPaletteTab] = useState<"addons" | "themes">("addons")
+  const [paletteTab, setPaletteTab] = useState<"buttons" | "decks" | "themes">(
+    "buttons",
+  )
 
   useEffect(() => {
+    if (selectedPosition !== null) {
+      const index = positions.indexOf(selectedPosition)
+      if (index >= 0 && index !== selectedIndex) setSelectedIndex(index)
+    }
     if (selectedIndex !== null && selectedIndex >= buttons.length) {
       setSelectedIndex(buttons.length === 0 ? null : buttons.length - 1)
     }
@@ -125,7 +162,7 @@ export const EditorPage = ({
         ),
       )
     }
-  }, [activeDeckId, selectedIndex, state?.revision])
+  }, [activeDeckId, selectedIndex, selectedPosition, state?.revision])
 
   const sendMutation = (mutation: Record<string, unknown>): void => {
     if (state === null) return
@@ -140,11 +177,47 @@ export const EditorPage = ({
     setMessage("Saving…")
   }
 
+  const selectPosition = (position: number): void => {
+    const index = buttons.findIndex((_, i) => positions[i] === position)
+    setSelectedPosition(position)
+    setSelectedIndex(index === -1 ? null : index)
+  }
+
+  const insertAt = (
+    button: Record<string, unknown>,
+    position: number,
+  ): void => {
+    if (activeDeckId === null) return
+    const index = positions.indexOf(position)
+    if (index >= 0 && !window.confirm(`Overwrite key ${position}?`)) return
+    sendMutation({
+      kind: index >= 0 ? "update" : "add",
+      deckId: activeDeckId,
+      ...(index >= 0 ? { index } : { index: buttons.length }),
+      button: { ...button, position },
+    })
+    setSelectedPosition(position)
+    setSelectedIndex(index >= 0 ? index : null)
+  }
+
   const add = (index?: number): void => {
     if (activeDeckId === null) return
     const button =
       clipboard === null ? { type: "core:action", config: {} } : clipboard
-    sendMutation({ kind: "add", deckId: activeDeckId, index, button })
+    if (selectedPosition !== null)
+      return insertAt(
+        isButton(button) ? button : { type: button, config: {} },
+        selectedPosition,
+      )
+    sendMutation({
+      kind: "add",
+      deckId: activeDeckId,
+      index,
+      button: {
+        ...(isButton(button) ? button : { type: button }),
+        position: firstFreePosition(),
+      },
+    })
   }
 
   const dropAt = (event: React.DragEvent, index: number): void => {
@@ -152,12 +225,7 @@ export const EditorPage = ({
     if (activeDeckId === null) return
     const data = readDragData(event)
     if (data?.kind === "palette") {
-      sendMutation({
-        kind: "add",
-        deckId: activeDeckId,
-        index,
-        button: data.button,
-      })
+      insertAt(data.button, index)
     } else if (data?.kind === "existing" && data.index !== index) {
       sendMutation({
         kind: "reorder",
@@ -165,6 +233,33 @@ export const EditorPage = ({
         from: data.index,
         to: index,
       })
+    }
+  }
+
+  const keyAction = (
+    position: number,
+    action: "edit" | "copy" | "duplicate" | "up" | "down" | "delete",
+  ): void => {
+    const index = positions.indexOf(position)
+    const button = index < 0 ? undefined : buttons[index]
+    if (action === "edit") return selectPosition(position)
+    if (button === undefined || activeDeckId === null) return
+    if (action === "copy") {
+      setClipboard(button)
+      setMessage("Copied")
+    } else if (action === "duplicate") {
+      sendMutation({
+        kind: "add",
+        deckId: activeDeckId,
+        index: index + 1,
+        button,
+      })
+    } else if (action === "delete") {
+      sendMutation({ kind: "delete", deckId: activeDeckId, index })
+    } else {
+      const to = action === "up" ? index - 1 : index + 1
+      if (to >= 0 && to < buttons.length)
+        sendMutation({ kind: "reorder", deckId: activeDeckId, from: index, to })
     }
   }
 
@@ -206,10 +301,6 @@ export const EditorPage = ({
     if (sourcePath !== null)
       setSourceDraft(state?.sourceContents?.[sourcePath] ?? "")
   }, [sourcePath, state?.revision, state?.sourceContents])
-
-  useEffect(() => {
-    if (addonDeck !== null) setAddonDeckDraft("{}")
-  }, [addonDeck])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -263,8 +354,27 @@ export const EditorPage = ({
       {state === null ? (
         <p className="text-sm text-neutral-400">Loading configured decks…</p>
       ) : (
-        <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(12rem,16rem)_minmax(18rem,1fr)_minmax(16rem,1fr)_minmax(18rem,1fr)]">
+        <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(12rem,16rem)_minmax(20rem,1fr)_minmax(18rem,1fr)]">
           <aside aria-label="Editor palette" className="min-w-0">
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              Configured deck
+            </h2>
+            <select
+              aria-label="Configured deck"
+              value={activeDeckId ?? ""}
+              onChange={(event) => {
+                setDeckId(event.target.value)
+                setSelectedIndex(null)
+                setSelectedPosition(null)
+              }}
+              className="mb-3 min-h-10 w-full rounded border border-neutral-800 bg-neutral-950 px-3 text-sm"
+            >
+              {decks.map(([id, deck]) => (
+                <option key={id} value={id}>
+                  {deck.name ?? id}
+                </option>
+              ))}
+            </select>
             <div
               className="mb-3 flex border-b border-neutral-800"
               role="tablist"
@@ -272,7 +382,8 @@ export const EditorPage = ({
             >
               {(
                 [
-                  ["addons", "Addons"],
+                  ["buttons", "Buttons"],
+                  ["decks", "Decks"],
                   ["themes", "Themes"],
                 ] as const
               ).map(([id, label]) => (
@@ -288,89 +399,107 @@ export const EditorPage = ({
                 </button>
               ))}
             </div>
-            {paletteTab === "addons" ? (
-              <div
-                role="tabpanel"
-                aria-label="Addon buttons and decks"
-                className="space-y-3"
-              >
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                  Button types
-                </h2>
+            {paletteTab === "buttons" ? (
+              <div role="tabpanel" aria-label="Buttons" className="space-y-3">
                 <div className="space-y-1">
-                  {addonInventory?.addons.flatMap((addon) =>
-                    addon.buttonTypes
-                      .filter((bt) => !bt.internal)
-                      .map((bt) => (
-                        <button
-                          key={bt.type}
-                          type="button"
-                          draggable
-                          onDragStart={(event) =>
-                            dragStart(event, {
-                              kind: "palette",
-                              button: { type: bt.type, config: {} },
-                            })
-                          }
-                          onClick={() => add()}
-                          className="block min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
-                        >
-                          {bt.type}
-                        </button>
-                      )),
-                  ) ?? (
+                  {addonInventory?.addons
+                    .filter((addon) => !addon.internal)
+                    .map((addon) => (
+                      <div key={addon.name} className="space-y-1">
+                        <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                          {addon.name}
+                        </h2>
+                        {addon.buttonTypes
+                          .filter((bt) => !bt.internal)
+                          .map((bt) => (
+                            <button
+                              key={bt.type}
+                              type="button"
+                              draggable
+                              onDragStart={(event) =>
+                                dragStart(event, {
+                                  kind: "palette",
+                                  button: { type: bt.type, config: {} },
+                                })
+                              }
+                              onClick={() =>
+                                insertAt(
+                                  { type: bt.type, config: {} },
+                                  selectedPosition ?? buttons.length,
+                                )
+                              }
+                              className="block min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
+                            >
+                              {bt.type}
+                            </button>
+                          ))}
+                      </div>
+                    )) ?? (
                     <p className="text-xs text-neutral-500">
                       No addon types received.
                     </p>
                   )}
                 </div>
-                <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                  Decks
+              </div>
+            ) : paletteTab === "decks" ? (
+              <div role="tabpanel" aria-label="Decks" className="space-y-3">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                  Configured decks
                 </h2>
-                <div className="space-y-1">
-                  {decks.map(([id, deck]) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => {
-                        setDeckId(id)
-                        setSelectedIndex(null)
-                      }}
-                      aria-pressed={id === activeDeckId}
-                      className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm aria-pressed:border-sky-400 aria-pressed:bg-sky-500/15"
-                    >
-                      <span className="block truncate">{deck.name ?? id}</span>
-                      <span className="block truncate text-xs text-neutral-500">
-                        #{id}
-                      </span>
-                    </button>
+                {decks.map(([id, deck]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      setDeckId(id)
+                      setSelectedIndex(null)
+                      setSelectedPosition(null)
+                    }}
+                    aria-pressed={id === activeDeckId}
+                    className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm aria-pressed:border-sky-400 aria-pressed:bg-sky-500/15"
+                  >
+                    <span className="block truncate">{deck.name ?? id}</span>
+                    <span className="block truncate text-xs text-neutral-500">
+                      #{id}
+                    </span>
+                  </button>
+                ))}
+                {addonInventory?.addons
+                  .filter((addon) => !addon.internal)
+                  .map((addon) => (
+                    <div key={addon.name} className="space-y-1">
+                      <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                        {addon.name}
+                      </h2>
+                      {addon.decks
+                        .filter((deck) => !deck.internal)
+                        .map((deck) => {
+                          const button = {
+                            type: "core:change-deck",
+                            config: { deck: deck.id, label: deck.id },
+                          }
+                          return (
+                            <button
+                              key={deck.id}
+                              type="button"
+                              draggable
+                              onDragStart={(event) =>
+                                dragStart(event, { kind: "palette", button })
+                              }
+                              onClick={() =>
+                                insertAt(
+                                  button,
+                                  selectedPosition ?? buttons.length,
+                                )
+                              }
+                              className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-amber-300 hover:border-amber-400"
+                            >
+                              {deck.id}
+                            </button>
+                          )
+                        })}
+                    </div>
                   ))}
-                </div>
-                <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                  Addon decks
-                </h2>
-                <div className="space-y-1">
-                  {addonInventory?.addons.flatMap((addon, addonIndex) =>
-                    addon.decks
-                      .filter((deck) => !deck.internal)
-                      .map((deck) => (
-                        <button
-                          key={`${addonIndex}:${deck.id}`}
-                          type="button"
-                          onClick={() => {
-                            setSelectedIndex(null)
-                            setAddonDeck({ addonIndex, deckId: deck.id })
-                          }}
-                          className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm hover:border-amber-400"
-                        >
-                          <span className="block truncate">{deck.id}</span>
-                          <span className="block truncate text-xs text-neutral-500">
-                            {addon.name}
-                          </span>
-                        </button>
-                      )),
-                  )}
-                </div>
               </div>
             ) : (
               <div role="tabpanel" aria-label="Themes" className="space-y-2">
@@ -458,134 +587,6 @@ export const EditorPage = ({
               </form>
             ) : null}
           </aside>
-          <section aria-labelledby="buttons-title" className="min-w-0">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <h2
-                id="buttons-title"
-                className="text-xs font-semibold uppercase tracking-wider text-neutral-500"
-              >
-                {activeDeckId ?? "No deck"} buttons
-              </h2>
-              <button
-                type="button"
-                onClick={() => add()}
-                disabled={activeDeckId === null}
-                className="min-h-10 rounded bg-sky-600 px-3 text-sm hover:bg-sky-500 disabled:opacity-40"
-              >
-                {clipboard === null ? "Add button" : "Paste button"}
-              </button>
-            </div>
-            <ol className="space-y-2" aria-label="Buttons in order">
-              {buttons.map((button, index) => {
-                const label =
-                  isButton(button) && typeof button.type === "string"
-                    ? button.type
-                    : String(button)
-                return (
-                  <li
-                    key={`${index}-${label}`}
-                    draggable
-                    onDragStart={(event) =>
-                      dragStart(event, { kind: "existing", index })
-                    }
-                    onDragOver={(event) => event.preventDefault()}
-                    onDrop={(event) => dropAt(event, index)}
-                    className={`flex items-center gap-2 rounded border p-2 ${selectedIndex === index ? "border-sky-400 bg-sky-500/10" : "border-neutral-800"}`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAddonDeck(null)
-                        setSelectedIndex(index)
-                      }}
-                      aria-label={`Edit button ${index + 1}, ${label}`}
-                      className="min-h-10 min-w-0 flex-1 truncate text-left text-sm"
-                    >
-                      {index + 1}. {label}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        index > 0 &&
-                        activeDeckId !== null &&
-                        sendMutation({
-                          kind: "reorder",
-                          deckId: activeDeckId,
-                          from: index,
-                          to: index - 1,
-                        })
-                      }
-                      disabled={index === 0}
-                      aria-label={`Move ${label} up`}
-                      className="min-h-10 min-w-10 rounded border border-neutral-700 text-lg disabled:opacity-30"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        index < buttons.length - 1 &&
-                        activeDeckId !== null &&
-                        sendMutation({
-                          kind: "reorder",
-                          deckId: activeDeckId,
-                          from: index,
-                          to: index + 1,
-                        })
-                      }
-                      disabled={index === buttons.length - 1}
-                      aria-label={`Move ${label} down`}
-                      className="min-h-10 min-w-10 rounded border border-neutral-700 text-lg disabled:opacity-30"
-                    >
-                      ↓
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setClipboard(button)
-                        setMessage("Copied")
-                      }}
-                      aria-label={`Copy ${label}`}
-                      className="min-h-10 min-w-10 rounded border border-neutral-700 text-xs"
-                    >
-                      Copy
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        activeDeckId !== null &&
-                        sendMutation({
-                          kind: "add",
-                          deckId: activeDeckId,
-                          index: index + 1,
-                          button,
-                        })
-                      }
-                      aria-label={`Duplicate ${label}`}
-                      className="min-h-10 rounded border border-neutral-700 px-2 text-xs"
-                    >
-                      Duplicate
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        activeDeckId !== null &&
-                        sendMutation({
-                          kind: "delete",
-                          deckId: activeDeckId,
-                          index,
-                        })
-                      }
-                      aria-label={`Delete ${label}`}
-                      className="min-h-10 min-w-10 rounded border border-red-900 px-2 text-xs text-red-300 hover:bg-red-950"
-                    >
-                      Delete
-                    </button>
-                  </li>
-                )
-              })}
-            </ol>
-          </section>
           <section aria-labelledby="preview-title" className="min-w-0">
             <h2
               id="preview-title"
@@ -599,14 +600,18 @@ export const EditorPage = ({
               <div
                 data-testid="editor-preview"
                 onDragOver={(event) => event.preventDefault()}
-                onDrop={(event) => dropAt(event, buttons.length)}
-                className="overflow-auto rounded-xl"
+                className="overflow-hidden rounded-xl"
               >
                 <DeckFrame
                   frontendUrl={frontendUrl}
                   device={device}
                   deckId={activeDeckId}
                   token={token}
+                  onGesture={onGesture}
+                  onSelectPosition={selectPosition}
+                  onKeyAction={keyAction}
+                  onGesture={onGesture}
+                  fitToContainer
                   onDropPosition={(position, event) => dropAt(event, position)}
                 />
               </div>
@@ -624,53 +629,20 @@ export const EditorPage = ({
               Selected button
             </h2>
             {selected === undefined ? (
-              addonDeck === null ? (
+              <div className="space-y-3">
                 <p className="text-sm text-neutral-500">
-                  Select a button or addon deck to edit its configuration.
+                  Select a preview position to edit its configuration.
                 </p>
-              ) : (
-                <form
-                  onSubmit={(event) => {
-                    event.preventDefault()
-                    try {
-                      const override = JSON.parse(addonDeckDraft) as unknown
-                      if (
-                        typeof override !== "object" ||
-                        override === null ||
-                        Array.isArray(override)
-                      )
-                        throw new Error("Override JSON must be an object")
-                      sendMutation({
-                        kind: "set-addon-deck-override",
-                        ...addonDeck,
-                        override,
-                      })
-                    } catch (error) {
-                      setMessage(
-                        error instanceof Error ? error.message : "Invalid JSON",
-                      )
-                    }
-                  }}
-                  className="space-y-3"
-                >
-                  <p className="text-sm text-amber-300">
-                    {addonDeck.deckId} override
-                  </p>
-                  <textarea
-                    aria-label="Addon deck override JSON"
-                    value={addonDeckDraft}
-                    onChange={(event) => setAddonDeckDraft(event.target.value)}
-                    className="min-h-64 w-full rounded border border-neutral-700 bg-neutral-950 p-3 font-mono text-sm"
-                    spellCheck={false}
-                  />
+                {clipboard !== null && (
                   <button
-                    type="submit"
-                    className="min-h-10 rounded bg-emerald-700 px-3 text-sm"
+                    type="button"
+                    onClick={() => add()}
+                    className="min-h-10 rounded bg-sky-600 px-3 text-sm"
                   >
-                    Save override
+                    Paste button
                   </button>
-                </form>
-              )
+                )}
+              </div>
             ) : (
               <form
                 onSubmit={(event) => {

@@ -40,12 +40,12 @@ const client = (): WsClient & { sent: string[] } => {
 const inventory: AddonInventory = {
   addons: [
     {
-      name: "core",
+      name: "test-addon",
       path: "builtin",
-      internal: true,
+      internal: false,
       source: "builtin",
-      buttonTypes: [{ type: "core:action", internal: false }],
-      defaultButton: "core:action",
+      buttonTypes: [{ type: "test-addon:action", internal: false }],
+      defaultButton: "test-addon:action",
       decks: [],
     },
   ],
@@ -66,8 +66,18 @@ describe("EditorPage", () => {
 
   it("copies and pastes with the existing add mutation", () => {
     const ws = client()
-    render(<EditorPage wsClient={ws} state={state} result={null} />)
-    fireEvent.click(screen.getByRole("button", { name: "Copy core:action" }))
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getAllByRole("button", { name: "Copy" })[0]!)
+    fireEvent.click(screen.getByTestId("deck-key-2"))
     fireEvent.click(screen.getByRole("button", { name: "Paste button" }))
 
     const message = JSON.parse(ws.sent.at(-1) ?? "{}") as {
@@ -76,15 +86,22 @@ describe("EditorPage", () => {
     expect(message.mutation?.button).toEqual({
       type: "core:action",
       config: { command: "date" },
+      position: 2,
     })
   })
 
   it("saves selected JSON using the update mutation", () => {
     const ws = client()
-    render(<EditorPage wsClient={ws} state={state} result={null} />)
-    fireEvent.click(
-      screen.getByRole("button", { name: "Edit button 1, core:action" }),
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
     )
+    fireEvent.click(screen.getByTestId("deck-key-0"))
     fireEvent.change(screen.getByLabelText("Button JSON"), {
       target: { value: '{"type":"core:action","config":{"command":"whoami"}}' },
     })
@@ -109,12 +126,12 @@ describe("EditorPage", () => {
       />,
     )
 
-    expect(screen.getByRole("tab", { name: "Addons" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Buttons" })).toHaveAttribute(
       "aria-selected",
       "true",
     )
     expect(
-      screen.getByRole("button", { name: "core:action" }),
+      screen.getByRole("button", { name: "test-addon:action" }),
     ).toBeInTheDocument()
     fireEvent.click(screen.getByRole("tab", { name: "Themes" }))
 
@@ -124,7 +141,7 @@ describe("EditorPage", () => {
     )
     expect(screen.getByText("default")).toBeInTheDocument()
     expect(
-      screen.queryByRole("button", { name: "core:action" }),
+      screen.queryByRole("button", { name: "test-addon:action" }),
     ).not.toBeInTheDocument()
   })
 
@@ -146,5 +163,29 @@ describe("EditorPage", () => {
       "src",
       expect.stringContaining("device=mk2"),
     )
+  })
+
+  it("inserts a palette button at an empty selected position", () => {
+    const ws = client()
+    vi.spyOn(window, "confirm").mockReturnValue(true)
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        addonInventory={inventory}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByTestId("deck-key-4"))
+    fireEvent.click(screen.getByRole("button", { name: "test-addon:action" }))
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+      kind: "add",
+      deckId: "main",
+      index: 2,
+      button: { type: "test-addon:action", config: {}, position: 4 },
+    })
   })
 })
