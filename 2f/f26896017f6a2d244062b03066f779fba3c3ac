@@ -1,0 +1,48 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/pages.test.tsx
+  s_b1b691b4423dca::t_37606198478345 1-4,6-7,26-42,59-60
+  s_b1b691b4423dca::t_48f5af6c156032 5,8-25,43-58
+packages/cli/src/ui/surfaces/__tests__/LabelValueListSurface.test.tsx
+  s_b1b691b4423dca::t_37606198478345 59-60,66-75
+  s_b1b691b4423dca::t_b6d358adffc534 61-65
+packages/cli/src/builtin-addons/coding-agents/decks/agents.ts
+  s_b1b691b4423dca::t_e18080d848ffaf 27-30
+packages/cli/src/builtin-addons/coding-agents/__tests__/deck.test.ts
+  s_b1b691b4423dca::t_e18080d848ffaf 44,50
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  s_b1b691b4423dca::t_96b84f74822d9d 239-242
+  s_b1b691b4423dca::t_afb0a1b17b022c 356,369,378-385,390-391
+  s_b1b691b4423dca::t_530b298a04a08c 357
+  s_b1b691b4423dca::t_052c280596abb9 298-299
+  s_b1b691b4423dca::t_6ed7e39da12c46 124,126,129
+  s_b1b691b4423dca::t_390009bfb8f9c1 358-360,370-373,389
+  s_b1b691b4423dca::t_39b03af20db527 34-35,50-65,67-72,74,88,123,125,127-128,130,226,230-238,243-264,295,301-309,314-319,350
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/pages.tsx
+  s_b1b691b4423dca::t_79054c89e777f6 80-81,92-98,109-118
+  s_b1b691b4423dca::t_37606198478345 8-10,28-37,99-105
+  s_b1b691b4423dca::t_48f5af6c156032 77-79,82-86,88-91
+  s_b1b691b4423dca::t_390009bfb8f9c1 24
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/frontend.tsx
+  s_b1b691b4423dca::t_48f5af6c156032 7,111
+  s_b1b691b4423dca::t_37606198478345 6,8-11,97-99,112
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-provider.test.ts
+  s_b1b691b4423dca::t_96b84f74822d9d 16-20
+  s_b1b691b4423dca::t_79054c89e777f6 71-104
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_b1b691b4423dca::t_37606198478345 71,78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "2ff26896017f6a2d244062b03066f779fba3c3ac",
+  "prompts": {},
+  "sessions": {
+    "s_b1b691b4423dca": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9ed48e64ffeTT08z1emztHUCq",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
