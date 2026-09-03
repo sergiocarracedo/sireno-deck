@@ -1,0 +1,20 @@
+packages/cli/frontend/src/App.tsx
+  s_76439d10b7754e::t_cbbf0b092550fa 266-268
+  s_76439d10b7754e::t_d7b86653838280 164-167,169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "1a2db92b52113bebdf3a07096eb740734f7895df",
+  "prompts": {},
+  "sessions": {
+    "s_76439d10b7754e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f986a6cf4ffeF2m9HADXaJ4Bjh",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
