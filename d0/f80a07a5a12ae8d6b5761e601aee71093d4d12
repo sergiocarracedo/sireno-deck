@@ -1,0 +1,19 @@
+packages/cli/src/cli/commands/run.ts
+  s_76439d10b7754e::t_103032b62c5dac 47-50,1164-1170
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "d0f80a07a5a12ae8d6b5761e601aee71093d4d12",
+  "prompts": {},
+  "sessions": {
+    "s_76439d10b7754e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f986a6cf4ffeF2m9HADXaJ4Bjh",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
