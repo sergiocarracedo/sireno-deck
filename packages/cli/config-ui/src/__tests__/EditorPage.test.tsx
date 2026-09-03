@@ -82,7 +82,7 @@ describe("EditorPage", () => {
       />,
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
-    fireEvent.click(screen.getAllByRole("button", { name: "Copy" })[0]!)
+    fireEvent.click(screen.getByRole("menuitem", { name: "Copy" }))
     fireEvent.click(screen.getByTestId("deck-key-2"))
     fireEvent.click(screen.getByRole("button", { name: "Paste button" }))
 

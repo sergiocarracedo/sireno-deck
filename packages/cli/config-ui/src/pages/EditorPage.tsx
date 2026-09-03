@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Tabs } from "@heroui/react"
 
 import type { DeviceModelSpec } from "@sirenodeck/cli"
 
@@ -120,8 +121,6 @@ export const EditorPage = ({
   const [selectedPosition, setSelectedPosition] = useState<number | null>(null)
   const [clipboard, setClipboard] = useState<Button | null>(null)
   const [message, setMessage] = useState<string | null>(null)
-  const [sourcePath, setSourcePath] = useState<string | null>(null)
-  const [sourceDraft, setSourceDraft] = useState("")
 
   useEffect(() => {
     wsClient?.send(JSON.stringify({ type: "editor-state-request" }))
@@ -133,8 +132,6 @@ export const EditorPage = ({
   }, [result])
 
   const config = (state?.config ?? {}) as Config
-  const editableSources =
-    state?.sources.filter((source) => /\.ya?ml$/i.test(source)) ?? []
   const decks = Object.entries(config.decks ?? {})
   const activeDeckId = deckId ?? decks[0]?.[0] ?? null
   const buttons =
@@ -295,11 +292,6 @@ export const EditorPage = ({
   }
 
   useEffect(() => {
-    if (sourcePath !== null)
-      setSourceDraft(state?.sourceContents?.[sourcePath] ?? "")
-  }, [sourcePath, state?.revision, state?.sourceContents])
-
-  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
         event.preventDefault()
@@ -354,10 +346,10 @@ export const EditorPage = ({
         <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(12rem,16rem)_minmax(20rem,1fr)_minmax(18rem,1fr)]">
           <aside aria-label="Editor palette" className="min-w-0">
             <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              Configured deck
+              Editing deck
             </h2>
             <select
-              aria-label="Configured deck"
+              aria-label="Editing deck"
               value={activeDeckId ?? ""}
               onChange={(event) => {
                 setDeckId(event.target.value)
@@ -372,66 +364,74 @@ export const EditorPage = ({
                 </option>
               ))}
             </select>
-            <div
-              className="mb-3 flex border-b border-neutral-800"
-              role="tablist"
-              aria-label="Palette categories"
-            >
-              {(
-                [
-                  ["buttons", "Buttons"],
-                  ["decks", "Decks"],
-                  ["themes", "Themes"],
-                ] as const
-              ).map(([id, label]) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  aria-selected={paletteTab === id}
-                  onClick={() => setPaletteTab(id)}
-                  className="min-h-10 flex-1 border-b-2 px-2 text-xs font-semibold uppercase tracking-wider aria-selected:border-sky-400 aria-selected:text-sky-300"
-                >
-                  {label}
-                </button>
-              ))}
+            <div className="mb-3">
+              <Tabs
+                selectedKey={paletteTab}
+                onSelectionChange={(key) =>
+                  setPaletteTab(String(key) as typeof paletteTab)
+                }
+              >
+                <Tabs.ListContainer>
+                  <Tabs.List className="w-fit rounded-full bg-neutral-800 p-1">
+                    <Tabs.Tab
+                      id="buttons"
+                      className="rounded-full px-3 py-1.5 text-xs"
+                    >
+                      Buttons
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                    <Tabs.Tab
+                      id="decks"
+                      className="rounded-full px-3 py-1.5 text-xs"
+                    >
+                      Decks
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                    <Tabs.Tab
+                      id="themes"
+                      className="rounded-full px-3 py-1.5 text-xs"
+                    >
+                      Themes
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                  </Tabs.List>
+                </Tabs.ListContainer>
+              </Tabs>
             </div>
             {paletteTab === "buttons" ? (
               <div role="tabpanel" aria-label="Buttons" className="space-y-3">
                 <div className="space-y-1">
-                  {addonInventory?.addons
-                    .filter((addon) => !addon.internal)
-                    .map((addon) => (
-                      <div key={addon.name} className="space-y-1">
-                        <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                          {addon.name}
-                        </h2>
-                        {addon.buttonTypes
-                          .filter((bt) => !bt.internal)
-                          .map((bt) => (
-                            <button
-                              key={bt.type}
-                              type="button"
-                              draggable
-                              onDragStart={(event) =>
-                                dragStart(event, {
-                                  kind: "palette",
-                                  button: { type: bt.type, config: {} },
-                                })
-                              }
-                              onClick={() =>
-                                insertAt(
-                                  { type: bt.type, config: {} },
-                                  selectedPosition ?? buttons.length,
-                                )
-                              }
-                              className="block min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
-                            >
-                              {bt.type}
-                            </button>
-                          ))}
-                      </div>
-                    )) ?? (
+                  {addonInventory?.addons.map((addon) => (
+                    <div key={addon.name} className="space-y-1">
+                      <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                        {addon.name}
+                      </h2>
+                      {addon.buttonTypes
+                        .filter((bt) => !bt.internal)
+                        .map((bt) => (
+                          <button
+                            key={bt.type}
+                            type="button"
+                            draggable
+                            onDragStart={(event) =>
+                              dragStart(event, {
+                                kind: "palette",
+                                button: { type: bt.type, config: {} },
+                              })
+                            }
+                            onClick={() =>
+                              insertAt(
+                                { type: bt.type, config: {} },
+                                selectedPosition ?? buttons.length,
+                              )
+                            }
+                            className="block min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
+                          >
+                            {bt.type}
+                          </button>
+                        ))}
+                    </div>
+                  )) ?? (
                     <p className="text-xs text-neutral-500">
                       No addon types received.
                     </p>
@@ -531,58 +531,6 @@ export const EditorPage = ({
                 </p>
               </div>
             )}
-            <h2 className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              Included YAML
-            </h2>
-            <ul
-              className="space-y-1 text-xs text-neutral-400"
-              aria-label="Included YAML sources"
-            >
-              {editableSources.map((source) => (
-                <li key={source} className="break-all">
-                  <button
-                    type="button"
-                    onClick={() => setSourcePath(source)}
-                    className="text-left hover:text-sky-300"
-                  >
-                    {source}
-                  </button>
-                </li>
-              ))}
-            </ul>
-            {sourcePath !== null ? (
-              <form
-                className="mt-3 space-y-2"
-                onSubmit={(event) => {
-                  event.preventDefault()
-                  sendMutation({
-                    kind: "edit-source",
-                    path: sourcePath,
-                    content: sourceDraft,
-                  })
-                }}
-              >
-                <label
-                  htmlFor="source-yaml"
-                  className="text-xs text-neutral-400"
-                >
-                  Edit included YAML
-                </label>
-                <textarea
-                  id="source-yaml"
-                  value={sourceDraft}
-                  onChange={(event) => setSourceDraft(event.target.value)}
-                  className="min-h-40 w-full rounded border border-neutral-700 bg-neutral-950 p-2 font-mono text-xs"
-                  spellCheck={false}
-                />
-                <button
-                  type="submit"
-                  className="min-h-10 rounded bg-emerald-700 px-3 text-sm"
-                >
-                  Save YAML
-                </button>
-              </form>
-            ) : null}
           </aside>
           <section aria-labelledby="preview-title" className="min-w-0">
             <h2
@@ -607,7 +555,6 @@ export const EditorPage = ({
                   onGesture={onGesture}
                   onSelectPosition={selectPosition}
                   onKeyAction={keyAction}
-                  onGesture={onGesture}
                   fitToContainer
                   onDropPosition={(position, event) => dropAt(event, position)}
                 />

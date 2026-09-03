@@ -1,12 +1,16 @@
 export {
   BUTTON_SIZE_PX,
+  DECK_GAP_PX,
+  DECK_PADDING_PX,
   DEFAULT_DEVICE_MODEL_ID,
   DEFAULT_KEY_COUNT,
   DEVICE_MODELS,
+  deckDimensions,
   getDeviceModel,
   gridForKeyCount,
   isKnownDeviceModel,
   resolveKeyCount,
+  resolveDeckGap,
   type DeviceModelSpec,
 } from "./device/models"
 export {

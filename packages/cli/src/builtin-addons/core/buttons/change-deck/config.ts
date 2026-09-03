@@ -5,7 +5,7 @@ import { IconSourceSchema } from "@/config/schemas"
 export const configSchema = z
   .object({
     deck: z.string().min(1),
-    addToHistory: z.boolean().default(true),
+    addToHistory: z.boolean().default(true).meta({ internal: true }),
     icon: IconSourceSchema.optional(),
     label: z.string().optional(),
   })

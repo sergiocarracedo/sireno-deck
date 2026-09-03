@@ -148,4 +148,18 @@ describe("Deck", () => {
       0,
     )
   })
+
+  it("lets the preview URL override compact websocket state", () => {
+    const { container } = render(
+      <Deck
+        deck={{ ...DECK, isCompact: true }}
+        deviceModel={MODEL}
+        compact={false}
+        gap={8}
+      />,
+    )
+    const grid = container.querySelector("[data-deck-id]") as HTMLElement
+    expect(grid.style.gap).toBe("8px")
+    expect(grid.style.width).toBe("544px")
+  })
 })

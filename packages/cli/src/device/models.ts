@@ -32,6 +32,27 @@ export const DEFAULT_DEVICE_MODEL_ID = "mk2"
 export const DEFAULT_KEY_COUNT = 15
 
 export const BUTTON_SIZE_PX = 96
+export const DECK_PADDING_PX = 16
+export const DECK_GAP_PX = 8
+
+export const resolveDeckGap = (
+  value: string | null | undefined,
+  compact = false,
+): number => {
+  if (value === "false" || value === "0") return 0
+  if (value === "true" || value === "8") return DECK_GAP_PX
+  return compact ? 0 : DECK_GAP_PX
+}
+
+export const deckDimensions = (
+  model: Pick<DeviceModelSpec, "columns" | "rows">,
+  gap: number,
+  padding = DECK_PADDING_PX,
+) => ({
+  width:
+    model.columns * BUTTON_SIZE_PX + (model.columns - 1) * gap + padding * 2,
+  height: model.rows * BUTTON_SIZE_PX + (model.rows - 1) * gap + padding * 2,
+})
 
 export const isKnownDeviceModel = (id: string): id is DeviceModelSpec["id"] =>
   DEVICE_MODELS.some((m) => m.id === id)

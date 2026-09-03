@@ -4,6 +4,8 @@ import { ListBox, Select } from "@heroui/react"
 import {
   getDeviceModel,
   isKnownDeviceModel,
+  deckDimensions,
+  DECK_GAP_PX,
   type DeviceModelSpec,
 } from "@/device/models"
 
@@ -326,17 +328,12 @@ export const App = ({
       const containerW = el.clientWidth - padding
       const containerH = el.clientHeight - padding
       if (containerW <= 0 || containerH <= 0) return
-      const BUTTON_SIZE_PX = 96
-      const BUTTON_GAP_PX = 8
-      const DECK_PADDING_PX = 16
       const rows = Math.ceil(deviceModel.keyCount / deviceModel.columns)
-      const deckWidth =
-        deviceModel.columns * BUTTON_SIZE_PX +
-        (deviceModel.columns - 1) * BUTTON_GAP_PX +
-        DECK_PADDING_PX * 2
-      const deckHeight =
-        rows * BUTTON_SIZE_PX + (rows - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2
-      setDeckScale(Math.min(containerW / deckWidth, containerH / deckHeight, 1))
+      const { width, height } = deckDimensions(
+        { columns: deviceModel.columns, rows },
+        DECK_GAP_PX,
+      )
+      setDeckScale(Math.min(containerW / width, containerH / height, 1))
     }
     computeDeckScale()
     const ro =

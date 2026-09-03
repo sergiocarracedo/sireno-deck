@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 
 import { Button, Input, ListBox, Select, Tabs, TextArea } from "@heroui/react"
 import { parse, stringify } from "yaml"
+import { Icon } from "@sirenodeck/cli"
 
 import type { WsClient } from "../bridge"
 
@@ -19,6 +20,7 @@ export interface JsonSchema {
   readonly maxItems?: number
   readonly oneOf?: JsonSchema[]
   readonly anyOf?: JsonSchema[]
+  readonly internal?: boolean
 }
 
 export interface ValidationState {
@@ -32,6 +34,107 @@ interface ConfigFormProps {
   readonly value: unknown
   readonly path: string
   readonly onChange: (path: string, value: unknown) => void
+  readonly wsClient: WsClient | null
+  readonly revision: number
+}
+
+const LUCIDE_ICONS = [
+  "activity",
+  "arrow-left",
+  "arrow-right",
+  "bot",
+  "calendar",
+  "check",
+  "chevron-down",
+  "chrome",
+  "clock",
+  "cloud",
+  "cpu",
+  "folder",
+  "globe",
+  "grid-2x2",
+  "layers",
+  "layout-grid",
+  "play",
+  "settings",
+  "sparkles",
+  "volume-2",
+] as const
+
+const isIconField = (key: string, schema: JsonSchema): boolean =>
+  key.toLowerCase() === "icon" ||
+  schema.description?.toLowerCase().includes("icon://") === true
+
+const IconField = ({
+  value,
+  onChange,
+  wsClient,
+  revision,
+}: {
+  readonly value: unknown
+  readonly onChange: (value: string) => void
+  readonly wsClient: WsClient | null
+  readonly revision: number
+}) => {
+  const current = typeof value === "string" ? value : ""
+  const selected = current.startsWith("icon://") ? current.slice(7) : ""
+  return (
+    <fieldset className="grid gap-2 rounded-lg border border-neutral-800 p-3">
+      <legend className="px-1 text-sm text-neutral-300">Icon</legend>
+      <div className="grid grid-cols-5 gap-1">
+        {LUCIDE_ICONS.map((name) => (
+          <Button
+            key={name}
+            type="button"
+            size="sm"
+            variant={selected === name ? "secondary" : "tertiary"}
+            aria-label={name}
+            className="h-9 min-w-0 p-0"
+            onPress={() => onChange(`icon://${name}`)}
+          >
+            <Icon source={`icon://${name}`} size={16} />
+          </Button>
+        ))}
+      </div>
+      <Input
+        aria-label="Image path"
+        label="Image path"
+        placeholder="./assets/icon.png"
+        value={current.startsWith("icon://") ? "" : current}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <label className="grid gap-1 text-xs text-neutral-500">
+        Choose an image file
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(event) => {
+            const file = event.target.files?.[0]
+            if (file === undefined) return
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_")
+            const reader = new FileReader()
+            reader.onload = () => {
+              const dataUrl = String(reader.result)
+              const data = dataUrl.split(",", 2)[1]
+              if (data === undefined || wsClient === null) return
+              wsClient.send(
+                JSON.stringify({
+                  type: "editor-asset-write",
+                  requestId: `asset-${Date.now()}-${validationNumber++}`,
+                  revision,
+                  filename: safeName,
+                  data,
+                }),
+              )
+              onChange(`./assets/${safeName}`)
+            }
+            reader.readAsDataURL(file)
+          }}
+          className="text-xs text-neutral-400 file:mr-2 file:rounded file:border-0 file:bg-neutral-800 file:px-2 file:py-1 file:text-xs file:text-neutral-200"
+        />
+      </label>
+    </fieldset>
+  )
 }
 
 const labelFor = (key: string): string =>
@@ -75,6 +178,7 @@ const defaultValue = (schema: JsonSchema): unknown => {
   if (schema.type === "object") {
     return Object.fromEntries(
       Object.entries(schema.properties ?? {})
+        .filter(([, child]) => child.internal !== true)
         .filter(([key]) => schema.required?.includes(key))
         .map(([key, child]) => [key, defaultValue(child)]),
     )
@@ -85,7 +189,14 @@ const defaultValue = (schema: JsonSchema): unknown => {
   return ""
 }
 
-const ConfigForm = ({ schema, value, path, onChange }: ConfigFormProps) => {
+const ConfigForm = ({
+  schema,
+  value,
+  path,
+  onChange,
+  wsClient,
+  revision,
+}: ConfigFormProps) => {
   const variants = schema.oneOf ?? schema.anyOf
   if (variants !== undefined && variants.length > 0) {
     const currentType =
@@ -135,6 +246,8 @@ const ConfigForm = ({ schema, value, path, onChange }: ConfigFormProps) => {
           value={value}
           path={path}
           onChange={onChange}
+          wsClient={wsClient}
+          revision={revision}
         />
       </div>
     )
@@ -171,16 +284,32 @@ const ConfigForm = ({ schema, value, path, onChange }: ConfigFormProps) => {
   if (selectedSchema.type === "object" || selectedSchema.properties) {
     return (
       <div className="grid gap-3 border-l border-neutral-800 pl-3">
-        {Object.entries(selectedSchema.properties ?? {}).map(([key, child]) => (
-          <ConfigForm
-            key={key}
-            schema={child}
-            value={valueAt(value, key)}
-            path={`${path}.${key}`}
-            onChange={onChange}
-          />
-        ))}
-        {Object.keys(selectedSchema.properties ?? {}).length === 0 && (
+        {Object.entries(selectedSchema.properties ?? {})
+          .filter(([, child]) => child.internal !== true)
+          .map(([key, child]) =>
+            isIconField(key, child) ? (
+              <IconField
+                key={key}
+                value={valueAt(value, key)}
+                onChange={(next) => onChange(`${path}.${key}`, next)}
+                wsClient={wsClient}
+                revision={revision}
+              />
+            ) : (
+              <ConfigForm
+                key={key}
+                schema={child}
+                value={valueAt(value, key)}
+                path={`${path}.${key}`}
+                onChange={onChange}
+                wsClient={wsClient}
+                revision={revision}
+              />
+            ),
+          )}
+        {Object.entries(selectedSchema.properties ?? {}).filter(
+          ([, child]) => child.internal !== true,
+        ).length === 0 && (
           <p className="text-xs text-neutral-500">This config has no fields.</p>
         )}
       </div>
@@ -201,6 +330,8 @@ const ConfigForm = ({ schema, value, path, onChange }: ConfigFormProps) => {
                 value={item}
                 path={`${path}.${index}`}
                 onChange={onChange}
+                wsClient={wsClient}
+                revision={revision}
               />
             </div>
             <Button
@@ -383,6 +514,8 @@ export const ButtonConfigEditor = ({
               value={value}
               path=""
               onChange={change}
+              wsClient={wsClient}
+              revision={revision}
             />
           )}
         </Tabs.Panel>

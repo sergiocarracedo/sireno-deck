@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest"
 
-import { DEVICE_MODELS, isKnownDeviceModel, resolveKeyCount } from "../models"
+import {
+  DECK_GAP_PX,
+  DEVICE_MODELS,
+  isKnownDeviceModel,
+  resolveDeckGap,
+  resolveKeyCount,
+} from "../models"
 
 describe("device/models", () => {
   it("recognizes Stream Deck Original V2 (productId 0x006d)", () => {
@@ -22,5 +28,15 @@ describe("device/models", () => {
       expect(m.columns).toBe(5)
       expect(m.rows).toBe(3)
     }
+  })
+
+  it("resolves only the supported preview gap values", () => {
+    expect(resolveDeckGap(undefined)).toBe(DECK_GAP_PX)
+    expect(resolveDeckGap("true")).toBe(DECK_GAP_PX)
+    expect(resolveDeckGap("8")).toBe(DECK_GAP_PX)
+    expect(resolveDeckGap("false")).toBe(0)
+    expect(resolveDeckGap("0")).toBe(0)
+    expect(resolveDeckGap("12")).toBe(DECK_GAP_PX)
+    expect(resolveDeckGap(undefined, true)).toBe(0)
   })
 })

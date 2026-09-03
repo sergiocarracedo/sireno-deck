@@ -39,9 +39,9 @@ export const SidePanel = ({
   return (
     <nav
       data-testid="side-panel"
-      className="flex w-56 shrink-0 flex-col border-r border-neutral-800 bg-neutral-950"
+      className="flex w-64 shrink-0 flex-col border-r border-neutral-800 bg-neutral-950"
     >
-      <div className="flex items-center gap-3 border-b border-neutral-800 px-4 py-4">
+      <div className="flex items-center gap-3 border-b border-neutral-800 px-5 py-5">
         <img
           src={logoUrl}
           alt="sirenodeck logo"
@@ -57,7 +57,7 @@ export const SidePanel = ({
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
-        <div className="mb-2 flex items-center gap-2 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+        <div className="mb-2 flex items-center gap-2 px-3 py-2 text-[10px] uppercase tracking-widest text-neutral-500">
           <span>ws</span>
           <span data-testid="side-panel-status" className={statusColor(status)}>
             ● {status}
@@ -77,7 +77,7 @@ export const SidePanel = ({
               variant={active ? "secondary" : "tertiary"}
               data-testid={`side-panel-${s.path}`}
               aria-current={active ? "page" : undefined}
-              className="w-full justify-start font-mono text-xs"
+              className={`w-full justify-start rounded-full px-3 text-sm ${active ? "" : "bg-transparent"}`}
             >
               {s.label}
             </Button>

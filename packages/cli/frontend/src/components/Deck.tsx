@@ -1,5 +1,7 @@
 import {
   BUTTON_SIZE_PX,
+  DECK_GAP_PX,
+  DECK_PADDING_PX,
   gridForKeyCount,
   type DeviceModelSpec,
 } from "@/device/models"
@@ -45,9 +47,6 @@ import { ErrorBoundary } from "./ErrorBoundary"
 ).__codingAgentsUseAddonChannel = useAddonChannel
 
 const BUTTON_SIZE = BUTTON_SIZE_PX
-const BUTTON_GAP_PX = 8
-const DECK_PADDING_PX = 16
-
 export interface DeckButton {
   id: string
   type: string
@@ -87,6 +86,8 @@ export interface Deck {
 export interface DeckProps {
   readonly deck: Deck & { isCompact?: boolean }
   readonly deviceModel: DeviceModelSpec
+  readonly gap?: number
+  readonly compact?: boolean
   readonly children?: ReactNode
 }
 
@@ -351,14 +352,20 @@ const ButtonSurface = ({
   )
 }
 
-export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
+export const Deck = ({
+  deck,
+  deviceModel,
+  gap,
+  compact: compactOverride,
+  children,
+}: DeckProps) => {
   const model = deviceModel
   const { columns, rows } = gridForKeyCount(model.keyCount)
-  const compact = deck.isCompact ?? false
-  const gap = compact ? 0 : BUTTON_GAP_PX
+  const compact = compactOverride ?? deck.isCompact ?? false
+  const resolvedGap = compact ? 0 : (gap ?? DECK_GAP_PX)
   const pad = compact ? 0 : DECK_PADDING_PX
-  const width = columns * BUTTON_SIZE + (columns - 1) * gap + pad * 2
-  const height = rows * BUTTON_SIZE + (rows - 1) * gap + pad * 2
+  const width = columns * BUTTON_SIZE + (columns - 1) * resolvedGap + pad * 2
+  const height = rows * BUTTON_SIZE + (rows - 1) * resolvedGap + pad * 2
   const n1Position = model.keyCount - 1
   const splitAtN1 = deck.hasOverlayDeckAvailable === true
   const errorPositions = new Set(
@@ -422,7 +429,7 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
         {
           gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE}px)`,
           gridTemplateRows: `repeat(${rows}, ${BUTTON_SIZE}px)`,
-          gap: `${gap}px`,
+          gap: `${resolvedGap}px`,
           width,
           height,
         } as CSSProperties
