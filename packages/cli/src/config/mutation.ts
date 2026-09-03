@@ -3,6 +3,7 @@ import {
   existsSync,
   fsyncSync,
   mkdtempSync,
+  mkdirSync,
   openSync,
   readFileSync,
   realpathSync,
@@ -11,7 +12,13 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs"
-import { dirname, join, extname, resolve as resolvePath } from "node:path"
+import {
+  basename,
+  dirname,
+  join,
+  extname,
+  resolve as resolvePath,
+} from "node:path"
 
 import { parseDocument, YAMLSeq } from "yaml"
 
@@ -49,6 +56,7 @@ export interface ConfigMutationService {
   readonly sources: () => string[]
   readonly readSource: (path: string) => string
   readonly isEditableSource: (path: string) => boolean
+  readonly writeAsset: (filename: string, data: string) => Promise<void>
   readonly apply: (mutation: RootButtonMutation) => Promise<void>
   readonly undo: () => Promise<boolean>
   readonly canUndo: () => boolean
@@ -159,6 +167,20 @@ export const createConfigMutationService = ({
       return readFileSync(sourcePath, "utf8")
     },
     isEditableSource,
+    writeAsset: async (filename, data) => {
+      const safeName = basename(filename).replace(/[^a-zA-Z0-9._-]/g, "_")
+      if (safeName === "." || safeName === ".." || safeName.length === 0)
+        throw new ConfigMutationError("Invalid asset filename")
+      let bytes: Buffer
+      try {
+        bytes = Buffer.from(data, "base64")
+      } catch {
+        throw new ConfigMutationError("Invalid asset data")
+      }
+      const assetDir = join(dirname(rootPath), "assets")
+      mkdirSync(assetDir, { recursive: true })
+      writeFileSync(join(assetDir, safeName), bytes)
+    },
     apply: (mutation) =>
       run(() => {
         if (mutation.kind === "edit-source") {

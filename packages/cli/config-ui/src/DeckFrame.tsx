@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 
-import { BUTTON_SIZE_PX, type DeviceModelSpec } from "@sirenodeck/cli"
+import {
+  BUTTON_SIZE_PX,
+  DECK_GAP_PX,
+  DECK_PADDING_PX,
+  deckDimensions,
+  type DeviceModelSpec,
+} from "@sirenodeck/cli"
+import { Dropdown, Button, Label } from "@heroui/react"
 
 import {
   createEmulatorGestureDetector,
@@ -14,6 +21,7 @@ export interface DeckFrameProps {
   readonly device: DeviceModelSpec
   readonly deckId: string
   readonly token?: string
+  readonly gap?: boolean
   readonly onGesture?: (msg: {
     deckId: string
     position: number
@@ -37,6 +45,7 @@ export const DeckFrame = ({
   device,
   deckId,
   token = "",
+  gap = true,
   onGesture,
   onDropPosition,
   onSelectPosition,
@@ -101,7 +110,18 @@ export const DeckFrame = ({
   })()
 
   const iframeUrl = ((): string => {
-    const base = `${resolvedFrontendUrl}${resolvedFrontendUrl.includes("?") ? "&" : "?"}device=${device.id}&_r=${reloadNonce}&compact=0&gap=8`
+    let parsed: URL
+    try {
+      parsed = new URL(resolvedFrontendUrl)
+    } catch {
+      return resolvedFrontendUrl
+    }
+    parsed.searchParams.set("device", device.id)
+    parsed.searchParams.set("_r", String(reloadNonce))
+    parsed.searchParams.set("compact", "0")
+    parsed.searchParams.set("gap", String(gap))
+    if (token.length > 0) parsed.searchParams.set("token", token)
+    const base = parsed.toString()
     // ponytail: --remote puts the deck behind the daemon's token. The
     // config UI's own bundle already authenticates via the sireno-token
     // cookie, but the iframe loads the *frontend* on a different origin
@@ -109,8 +129,7 @@ export const DeckFrame = ({
     // token to the iframe URL so the frontend's middleware lets the
     // request through on first paint — the injected cookie script in
     // that HTML then keeps subsequent module requests authenticated.
-    if (typeof window === "undefined" || token.length === 0) return base
-    return `${base}&token=${encodeURIComponent(token)}`
+    return base
   })()
 
   useEffect(() => {
@@ -127,16 +146,12 @@ export const DeckFrame = ({
     onIframeRef?.(el)
   }
 
-  const BUTTON_GAP_PX = 8
-  const DECK_PADDING_PX = 16
-  const frameWidth =
-    columns * BUTTON_SIZE_PX +
-    (columns - 1) * BUTTON_GAP_PX +
-    DECK_PADDING_PX * 2
-  const frameHeight =
-    Math.ceil(keyCount / columns) * BUTTON_SIZE_PX +
-    (Math.ceil(keyCount / columns) - 1) * BUTTON_GAP_PX +
-    DECK_PADDING_PX * 2
+  const resolvedGap = gap ? DECK_GAP_PX : 0
+  const { width: frameWidth, height: frameHeight } = deckDimensions(
+    { columns, rows: Math.ceil(keyCount / columns) },
+    resolvedGap,
+    DECK_PADDING_PX,
+  )
 
   useEffect(() => {
     if (!fitToContainer) {
@@ -224,67 +239,70 @@ export const DeckFrame = ({
           style={{
             gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE_PX}px)`,
             gridTemplateRows: `repeat(${Math.ceil(keyCount / columns)}, ${BUTTON_SIZE_PX}px)`,
-            gap: `${BUTTON_GAP_PX}px`,
+            gap: `${resolvedGap}px`,
           }}
         >
           {Array.from({ length: keyCount }, (_, i) => {
             const isPressed = pressedIndex === i
             const editorControls =
               onKeyAction === undefined ? null : (
-                <div className="pointer-events-auto absolute top-0 right-0 z-20">
-                  <button
-                    type="button"
-                    aria-label={`Actions for key ${i}`}
-                    className="h-6 w-6 rounded-bl bg-neutral-950/90 text-xs text-neutral-200"
-                    onMouseDown={(event) => event.stopPropagation()}
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      const menu = event.currentTarget.nextElementSibling
-                      if (menu instanceof HTMLDetailsElement)
-                        menu.open = !menu.open
-                    }}
-                  >
-                    ⋮
-                  </button>
-                  <details className="absolute right-0 top-6 z-30 w-32 rounded border border-neutral-700 bg-neutral-950 p-1 text-left text-[10px] shadow-xl">
-                    <summary className="sr-only">Key actions</summary>
-                    {(
-                      [
-                        ["edit", "Edit/select"],
-                        ["copy", "Copy"],
-                        ["duplicate", "Duplicate"],
-                        ["up", "Move up"],
-                        ["down", "Move down"],
-                        ["delete", "Delete"],
-                      ] as const
-                    ).map(([action, label]) => (
-                      <button
-                        key={action}
-                        type="button"
-                        onMouseDown={(event) => event.stopPropagation()}
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          onKeyAction(i, action)
-                          const details = event.currentTarget.closest("details")
-                          if (details !== null) details.open = false
-                        }}
-                        className="block min-h-7 w-full rounded px-2 text-left hover:bg-neutral-800"
+                <div className="pointer-events-none absolute top-0 right-0 z-20 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100">
+                  <Dropdown>
+                    <Button
+                      type="button"
+                      aria-label={`Actions for key ${i}`}
+                      className="h-6 w-6 min-w-6 rounded-full bg-neutral-950/90 p-0 text-xs text-neutral-200"
+                      onMouseDown={(event) => event.stopPropagation()}
+                    >
+                      ⋮
+                    </Button>
+                    <Dropdown.Popover>
+                      <Dropdown.Menu
+                        aria-label="Key actions"
+                        onAction={(key) =>
+                          onKeyAction(
+                            i,
+                            String(key) as
+                              | "edit"
+                              | "copy"
+                              | "duplicate"
+                              | "up"
+                              | "down"
+                              | "delete",
+                          )
+                        }
                       >
-                        {label}
-                      </button>
-                    ))}
-                  </details>
+                        {(
+                          [
+                            ["edit", "Edit/select"],
+                            ["copy", "Copy"],
+                            ["duplicate", "Duplicate"],
+                            ["up", "Move up"],
+                            ["down", "Move down"],
+                            ["delete", "Delete"],
+                          ] as const
+                        ).map(([action, label]) => (
+                          <Dropdown.Item
+                            key={action}
+                            id={action}
+                            textValue={label}
+                          >
+                            <Label>{label}</Label>
+                          </Dropdown.Item>
+                        ))}
+                      </Dropdown.Menu>
+                    </Dropdown.Popover>
+                  </Dropdown>
                 </div>
               )
             return (
-              <div key={i} className="relative">
+              <div key={i} className="group relative">
                 <button
                   type="button"
                   data-testid={`deck-key-${i}`}
                   data-key-index={i}
                   aria-label={`Key ${i}`}
                   aria-pressed={isPressed}
-                  onClick={() => onSelectPosition?.(i)}
                   onMouseDown={() => handleDown(i)}
                   onMouseUp={() => handleUp(i)}
                   onMouseLeave={(e) => {

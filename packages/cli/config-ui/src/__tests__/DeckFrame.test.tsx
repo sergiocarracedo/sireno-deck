@@ -95,6 +95,21 @@ describe("DeckFrame (emulator)", () => {
     expect(queryByTestId("iframe-status")).not.toBeInTheDocument()
   })
 
+  it("passes the supported boolean gap parameter to the frontend", () => {
+    const { container } = render(
+      <DeckFrame
+        frontendUrl="http://127.0.0.1:5180"
+        deckId="main"
+        device={mk2}
+        gap={false}
+      />,
+    )
+    expect(container.querySelector("iframe")).toHaveAttribute(
+      "src",
+      expect.stringContaining("gap=false"),
+    )
+  })
+
   describe("gesture delivery", () => {
     beforeEach(() => {
       vi.useFakeTimers()

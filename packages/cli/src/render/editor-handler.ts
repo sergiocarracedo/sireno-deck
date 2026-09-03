@@ -134,6 +134,20 @@ export const createEditorMessageHandler = (
         validationResult(socket, message)
         return
       }
+      if (message.type === "editor-asset-write") {
+        void options.mutationService
+          .writeAsset(message.filename, message.data)
+          .then(() => result(socket, message.requestId, true))
+          .catch((error: unknown) =>
+            result(
+              socket,
+              message.requestId,
+              false,
+              error instanceof Error ? error.message : String(error),
+            ),
+          )
+        return
+      }
       if (message.type === "editor-mutate") {
         void apply(socket, message.requestId, message.revision, () =>
           options.mutationService.apply(message.mutation),

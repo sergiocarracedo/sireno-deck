@@ -45,12 +45,15 @@ export const ConfigPage = ({ configPath, editor }: ConfigPageProps) => {
         className="min-h-0 flex-1"
       >
         <Tabs.ListContainer>
-          <Tabs.List aria-label="Configuration views">
-            <Tabs.Tab id="editor">
+          <Tabs.List
+            aria-label="Configuration views"
+            className="w-fit rounded-full bg-neutral-800 p-1"
+          >
+            <Tabs.Tab id="editor" className="rounded-full px-4 py-1.5 text-xs">
               Editor
               <Tabs.Indicator />
             </Tabs.Tab>
-            <Tabs.Tab id="config">
+            <Tabs.Tab id="config" className="rounded-full px-4 py-1.5 text-xs">
               Config
               <Tabs.Indicator />
             </Tabs.Tab>

@@ -348,6 +348,16 @@ export const editorMutationMessageSchema = baseClientMessage
   })
   .strict()
 
+export const editorAssetWriteMessageSchema = baseClientMessage
+  .extend({
+    type: z.literal("editor-asset-write"),
+    requestId: z.string().min(1),
+    revision: z.number().int().nonnegative(),
+    filename: z.string().min(1).max(255),
+    data: z.string().min(1),
+  })
+  .strict()
+
 export const editorUndoMessageSchema = baseClientMessage
   .extend({
     type: z.literal("editor-undo"),
@@ -442,6 +452,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   editorValidationRequestMessageSchema,
   editorValidationResultMessageSchema,
   editorMutationMessageSchema,
+  editorAssetWriteMessageSchema,
   editorUndoMessageSchema,
   editorMutationResultMessageSchema,
   addonsInventoryMessageSchema,
@@ -480,6 +491,9 @@ export type EditorValidationResultMessage = z.infer<
   typeof editorValidationResultMessageSchema
 >
 export type EditorMutationMessage = z.infer<typeof editorMutationMessageSchema>
+export type EditorAssetWriteMessage = z.infer<
+  typeof editorAssetWriteMessageSchema
+>
 export type EditorUndoMessage = z.infer<typeof editorUndoMessageSchema>
 export type EditorMutationResultMessage = z.infer<
   typeof editorMutationResultMessageSchema

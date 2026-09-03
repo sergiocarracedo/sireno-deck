@@ -19,6 +19,7 @@ import {
 import {
   getDeviceModel,
   isKnownDeviceModel,
+  resolveDeckGap,
   type DeviceModelSpec,
 } from "@/device/models"
 import {
@@ -160,6 +161,16 @@ const AppContent = () => {
   const clientRef = useRef<WsClient | null>(null)
   const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
+  const compactParam =
+    typeof window === "undefined"
+      ? null
+      : new URLSearchParams(window.location.search).get("compact")
+  const deckGap = resolveDeckGap(
+    typeof window === "undefined"
+      ? undefined
+      : new URLSearchParams(window.location.search).get("gap"),
+    false,
+  )
   // ponytail: ignore the first `closed` after an `open` — happens during
   // WS-replacement that some React navigations trigger (StrictMode /
   // hot-reload / route transitions). The WS client reports the old socket's
@@ -265,7 +276,8 @@ const AppContent = () => {
               ...(surface.variant !== undefined
                 ? { variant: surface.variant }
                 : {}),
-              isCompact: message.isCompact ?? false,
+              isCompact:
+                compactParam === "0" ? false : (message.isCompact ?? false),
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
               overlayDeckIcon:
                 message.overlayDeckIcon ??
@@ -366,7 +378,16 @@ const AppContent = () => {
           <Routes>
             <Route
               path="/decks/:deckId"
-              element={<Deck deck={deck} deviceModel={deviceModel} />}
+              element={
+                <Deck
+                  deck={deck}
+                  deviceModel={deviceModel}
+                  gap={deckGap}
+                  compact={
+                    compactParam === null ? undefined : compactParam === "1"
+                  }
+                />
+              }
             />
             <Route path="*" element={<Navigate to="/decks/main" replace />} />
           </Routes>
