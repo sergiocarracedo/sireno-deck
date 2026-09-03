@@ -9,12 +9,7 @@ import {
 
 import { token } from "virtual:sireno/token"
 
-import {
-  createWsClient,
-  serializeHello,
-  type WsClient,
-  type WsStatus,
-} from "./bridge"
+import { createWsClient, type WsClient, type WsStatus } from "./bridge"
 import { DeckFrame } from "./DeckFrame"
 import { Shell } from "./Shell"
 import { BridgeLogsPage } from "./pages/BridgeLogsPage"
@@ -200,9 +195,6 @@ export const App = ({
       },
       wsFactory: (url: string) => {
         const ws = new WebSocket(url)
-        ws.addEventListener("open", () => {
-          ws.send(serializeHello(token !== "" ? token : undefined))
-        })
         return ws as unknown as { send: (d: string) => void; close: () => void }
       },
       onMessage: (raw: unknown) => {

@@ -76,6 +76,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     // emitter can reconnect after a transient blip without permanently
     // burning its WS_MAX_ATTEMPTS budget.
     attempts = 0
+    ws?.send(serializeHello(options.token))
     setStatus("open")
     options.onOpen?.()
     void event

@@ -113,20 +113,23 @@ describe("bridge (emulator)", () => {
     client.close()
   })
 
-  it("serializeHello forwards the token to the wsFactory on open", () => {
+  it("sends hello before onOpen", () => {
     const TOKEN = "secret-xyz"
     const client = createWsClient({
       url: "ws://x",
       token: TOKEN,
+      onOpen: () => {
+        client.send(JSON.stringify({ type: "editor-state-request" }))
+      },
       wsFactory: (u) => new MockWebSocket(u),
     })
     const ws = MockWebSocket.instances[0]!
     const openListener = [...(ws.listeners.get("open") ?? [])][0]
     expect(openListener).toBeDefined()
     openListener!({})
-    ws.send(serializeHello(TOKEN))
     expect(ws.sent).toEqual([
       '{"type":"hello","version":1,"token":"secret-xyz"}',
+      '{"type":"editor-state-request"}',
     ])
     client.close()
   })
