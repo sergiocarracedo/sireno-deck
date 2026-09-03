@@ -161,14 +161,12 @@ const AppContent = () => {
   const clientRef = useRef<WsClient | null>(null)
   const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
-  const compactParam =
-    typeof window === "undefined"
-      ? null
-      : new URLSearchParams(window.location.search).get("compact")
+  const initialSearch = useRef(
+    typeof window === "undefined" ? "" : window.location.search,
+  ).current
+  const compactParam = new URLSearchParams(initialSearch).get("compact")
   const deckGap = resolveDeckGap(
-    typeof window === "undefined"
-      ? undefined
-      : new URLSearchParams(window.location.search).get("gap"),
+    new URLSearchParams(initialSearch).get("gap"),
     false,
   )
   // ponytail: ignore the first `closed` after an `open` — happens during
@@ -265,7 +263,9 @@ const AppContent = () => {
             >
           )[message.deckId]
           if (surface && Array.isArray(surface.buttons)) {
-            navigate(`/decks/${message.deckId}`, { replace: true })
+            navigate(`/decks/${message.deckId}${window.location.search}`, {
+              replace: true,
+            })
             setDeck((previous) => ({
               id: message.deckId,
               name: surface.name ?? message.deckId,
