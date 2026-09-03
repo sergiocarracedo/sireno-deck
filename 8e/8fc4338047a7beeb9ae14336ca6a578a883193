@@ -1,0 +1,21 @@
+packages/cli/config-ui/index.html
+  s_1e4bd27dd13fcc::t_910dd5a2a229d5 2,8
+packages/cli/config-ui/src/index.css
+  s_1e4bd27dd13fcc::t_910dd5a2a229d5 8-45,51-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "8e8fc4338047a7beeb9ae14336ca6a578a883193",
+  "prompts": {},
+  "sessions": {
+    "s_1e4bd27dd13fcc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa3ab64aeffeh0Z0l7eY22eY83",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
