@@ -44,7 +44,10 @@ import {
 } from "@/system/providers/active-app"
 import { createKeyMacroProvider } from "@/system/providers/key-macro"
 import { createNotificationProvider } from "@/system/providers/notification"
-import { createSessionProvider } from "@/system/providers/session"
+import {
+  createNullSessionProvider,
+  createSessionProvider,
+} from "@/system/providers/session"
 import type { CommandExecutor } from "@/system/providers/shared"
 import {
   checkRequirements,
@@ -1158,11 +1161,13 @@ const startSystemProviders = async (
 
   const [activeApp, session, keyMacro, notification] = await Promise.all([
     createActiveAppProvider({ platform, executor, logger }),
-    createSessionProvider({
-      platform,
-      executor,
-      logger,
-    }),
+    options.emulator === true
+      ? createNullSessionProvider(logger)
+      : createSessionProvider({
+          platform,
+          executor,
+          logger,
+        }),
     createKeyMacroProvider({ platform, executor, env, logger, extraFsProbe }),
     createNotificationProvider({
       platform,
