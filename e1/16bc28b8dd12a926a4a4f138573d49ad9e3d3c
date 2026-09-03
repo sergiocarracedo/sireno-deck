@@ -1,0 +1,84 @@
+packages/cli/config-ui/src/pages/ButtonConfigEditor.tsx
+  s_76439d10b7754e::t_c251f5a7345ee8 113-131
+  s_76439d10b7754e::t_fd2017d224f4c7 289,308-309
+  s_76439d10b7754e::t_19c6c330696390 37-38,192-199,249-250,305-306,333-334
+  s_76439d10b7754e::t_3ee64cfaa8482d 23,181,287-288
+  s_76439d10b7754e::t_c81b3c52ecae76 5,41-70,73-75,78-112,132-137,290-294,297-304,307
+  s_76439d10b7754e::t_d04682b223ac0f 71-72,76-77,295-296
+  s_76439d10b7754e::t_3846ec16a11c60 310-312
+  s_76439d10b7754e::t_a05abe58e41e7a 517-518
+  s_76439d10b7754e::t_6a51d0691ffb60 39-40
+packages/cli/frontend/src/components/Deck.tsx
+  s_76439d10b7754e::t_ef204916db8d95 3-4
+  s_76439d10b7754e::t_4c59bc2aafa4f6 90,355-361,364
+  s_76439d10b7754e::t_a1b97c7f449fc9 432
+  s_76439d10b7754e::t_2fe141ec928c65 89,365,367-368
+packages/cli/src/index.ts
+  s_76439d10b7754e::t_6f5d6273360ba5 3-4,8,13
+packages/cli/frontend/src/App.tsx
+  s_76439d10b7754e::t_c4baefad6640ec 164-167
+  s_76439d10b7754e::t_b6fd5b308d9838 279-280
+  s_76439d10b7754e::t_2fe141ec928c65 22,168-173,381,390
+  s_76439d10b7754e::t_4c59bc2aafa4f6 382-389
+packages/cli/config-ui/src/App.tsx
+  s_76439d10b7754e::t_9f61da2f558f29 7-8
+  s_76439d10b7754e::t_a1b97c7f449fc9 332-336
+packages/cli/config-ui/src/pages/ConfigPage.tsx
+  s_76439d10b7754e::t_a1b97c7f449fc9 48-51
+  s_76439d10b7754e::t_9f61da2f558f29 52,56
+packages/cli/src/device/__tests__/models.test.ts
+  s_76439d10b7754e::t_72ac104eff8304 3-9,32-40
+  s_76439d10b7754e::t_57ae7bc0d27ba6 41
+packages/cli/config-ui/src/__tests__/DeckFrame.test.tsx
+  s_76439d10b7754e::t_72ac104eff8304 98-112
+packages/cli/src/api/protocol-internal.ts
+  s_76439d10b7754e::t_5604767e4ec1a8 351-360,455,494-496
+packages/cli/src/render/protocol.ts
+  s_76439d10b7754e::t_5604767e4ec1a8 24,53
+packages/cli/src/config/mutation.ts
+  s_76439d10b7754e::t_33afad2bd35feb 6,59,170-183
+  s_76439d10b7754e::t_10e02cd6a31387 15-21
+packages/cli/config-ui/src/__tests__/EditorPage.test.tsx
+  s_76439d10b7754e::t_9a7e8a3ed4db9c 85
+packages/cli/src/render/editor-handler.ts
+  s_76439d10b7754e::t_0b09874bcbed35 138-148
+  s_76439d10b7754e::t_ccc574a539ca3a 137,149-150
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_76439d10b7754e::t_4c59bc2aafa4f6 151-164
+packages/cli/src/builtin-addons/core/buttons/change-deck/config.ts
+  s_76439d10b7754e::t_3ee64cfaa8482d 8
+packages/cli/src/device/models.ts
+  s_76439d10b7754e::t_6f5d6273360ba5 35-51,54-55
+  s_76439d10b7754e::t_a1b97c7f449fc9 52-53
+packages/cli/config-ui/src/pages/EditorPage.tsx
+  s_76439d10b7754e::t_3866e9c6a16749 367,376-379,383-386,390-393,404-434
+  s_76439d10b7754e::t_3ee64cfaa8482d 2,368-375,380-382,387-389,394-399
+  s_76439d10b7754e::t_3b482d78085fbc 349,352
+packages/cli/config-ui/src/DeckFrame.tsx
+  s_76439d10b7754e::t_3b482d78085fbc 249
+  s_76439d10b7754e::t_d12036fef309b1 123,132
+  s_76439d10b7754e::t_4c59bc2aafa4f6 113-122,124
+  s_76439d10b7754e::t_2fe141ec928c65 3-9,24,48,149-154,242
+  s_76439d10b7754e::t_a1b97c7f449fc9 285-289
+  s_76439d10b7754e::t_3ee64cfaa8482d 299
+  s_76439d10b7754e::t_9f61da2f558f29 10,250-273,275-284,290-295
+packages/cli/config-ui/src/SidePanel.tsx
+  s_76439d10b7754e::t_3ee64cfaa8482d 80
+  s_76439d10b7754e::t_df2f9548c49147 42,44,60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "e116bc28b8dd12a926a4a4f138573d49ad9e3d3c",
+  "prompts": {},
+  "sessions": {
+    "s_76439d10b7754e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f986a6cf4ffeF2m9HADXaJ4Bjh",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
