@@ -1,0 +1,23 @@
+packages/cli/config-ui/src/bridge.ts
+  s_1e4bd27dd13fcc::t_83c443aed5fde5 79
+packages/cli/config-ui/src/__tests__/bridge.test.ts
+  s_1e4bd27dd13fcc::t_83c443aed5fde5 116,121-123,132
+packages/cli/config-ui/src/App.tsx
+  s_1e4bd27dd13fcc::t_e9f0d531d60cf8 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "2f8f721d7179a6526bd2517ba4bb83d19991cdac",
+  "prompts": {},
+  "sessions": {
+    "s_1e4bd27dd13fcc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa3ab64aeffeh0Z0l7eY22eY83",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
