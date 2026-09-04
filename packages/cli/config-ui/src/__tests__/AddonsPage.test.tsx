@@ -180,13 +180,14 @@ describe("AddonsPage", () => {
     expect(coreText).not.toContain("main 🔒")
   })
 
-  it("marks per-element internal buttons with 🔒 even inside a builtin addon", () => {
+  it("hides internal buttons and decks", () => {
     const { container } = render(<AddonsPage addonInventory={inventory} />)
     const section = Array.from(container.querySelectorAll("section")).find(
       (s) =>
         s.querySelector("h3")?.textContent?.startsWith("internal-settings"),
     )
     expect(section).toBeDefined()
-    expect(section?.textContent).toContain("🔒")
+    expect(screen.queryByTitle("internal-settings:brightness-up")).toBeNull()
+    expect(screen.queryByTitle("internal-settings:settings")).toBeNull()
   })
 })

@@ -167,6 +167,7 @@ export const decksListMessageSchema = baseServerMessage
       z.object({
         id: z.string(),
         name: z.string(),
+        addonIndex: z.number().int().nonnegative(),
         icon: z.string().optional(),
       }),
     ),
@@ -436,21 +437,51 @@ export const addonsInventoryMessageSchema = baseServerMessage
     addons: z.array(
       z.object({
         name: z.string(),
+        addonIndex: z.number().int().nonnegative(),
         path: z.string().optional(),
         internal: z.boolean().default(false),
         source: z.string(),
         buttonTypes: z.array(
-          z.object({ type: z.string(), internal: z.boolean().default(false) }),
+          z
+            .object({
+              type: z.string(),
+              internal: z.boolean().default(false),
+              generated: z.boolean().default(false),
+              defaultConfig: z.unknown().optional(),
+            })
+            .strict(),
         ),
         defaultButton: z.string().nullable().optional(),
+        defaultConfig: z.unknown().optional(),
         decks: z.array(
-          z.object({
-            id: z.string(),
-            isOverlay: z.boolean().default(false),
-            paginated: z.boolean().default(false),
-            buttons: z.number().int().nonnegative().default(0),
-            internal: z.boolean().default(false),
-          }),
+          z
+            .object({
+              id: z.string(),
+              sourceId: z.string().optional(),
+              generated: z.boolean().default(false),
+              pageIndex: z.number().int().nonnegative().default(0),
+              isOverlay: z.boolean(),
+              paginated: z.boolean(),
+              buttons: z.array(
+                z
+                  .object({
+                    type: z.string(),
+                    generated: z.boolean().default(false),
+                    position: z.number().int().nonnegative().optional(),
+                    config: z.unknown().optional(),
+                  })
+                  .strict(),
+              ),
+              internal: z.boolean().default(false),
+              addonIndex: z.number().int().nonnegative().optional(),
+              overrideKey: z.string().optional(),
+              overrideFields: z
+                .array(
+                  z.enum(["name", "icon", "autoShow", "trigger", "config"]),
+                )
+                .default([]),
+            })
+            .strict(),
         ),
       }),
     ),

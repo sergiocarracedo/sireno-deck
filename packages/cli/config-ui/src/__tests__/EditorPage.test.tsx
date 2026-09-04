@@ -52,7 +52,21 @@ const inventory: AddonInventory = {
       source: "builtin",
       buttonTypes: [{ type: "test-addon:action", internal: false }],
       defaultButton: "test-addon:action",
-      decks: [],
+      decks: [
+        {
+          id: "test-addon:generated",
+          sourceId: "test-addon:generated",
+          generated: true,
+          pageIndex: 0,
+          isOverlay: true,
+          paginated: false,
+          buttons: [{ type: "test-addon:action", position: 0 }],
+          internal: false,
+          addonIndex: 3,
+          overrideKey: "test-addon:generated",
+          overrideFields: ["name", "icon", "autoShow", "trigger", "config"],
+        },
+      ],
     },
   ],
 }
@@ -166,6 +180,31 @@ describe("EditorPage", () => {
     expect(
       screen.queryByRole("button", { name: "test-addon:action" }),
     ).not.toBeInTheDocument()
+  })
+
+  it("targets generated deck overrides with the addon owner", () => {
+    const ws = client()
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        addonInventory={inventory}
+      />,
+    )
+    fireEvent.click(screen.getByRole("tab", { name: "Decks" }))
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Edit override for test-addon:generated",
+      }),
+    )
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+      kind: "set-addon-deck-override",
+      addonIndex: 3,
+      deckId: "test-addon:generated",
+      override: {},
+    })
   })
 
   it("wires the existing DeckFrame into the editor preview", () => {

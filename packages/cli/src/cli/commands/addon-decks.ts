@@ -48,6 +48,10 @@ const resolveTriggerWindowNames = (trigger: unknown): string[] | undefined => {
   return undefined
 }
 
+const hasTrigger = (trigger: unknown): boolean =>
+  resolveTriggerProcessNames(trigger) !== undefined ||
+  resolveTriggerWindowNames(trigger) !== undefined
+
 const isActionMap = (
   v: unknown,
 ): v is { tap?: string; dbltap?: string; hold?: string } => {
@@ -142,7 +146,7 @@ const mapAddonDeckToRuntimeDeck = (
         projectionId: p.deckId,
         pageIndex: p.pageIndex,
         paginated: true,
-        isOverlay: gdeck.isOverlay === true,
+        isOverlay: gdeck.isOverlay === true || hasTrigger(gdeck.trigger),
         editable: false,
         addonOwner: {
           addonIndex,
@@ -213,7 +217,7 @@ const mapAddonDeckToRuntimeDeck = (
       sourceDeckId: id,
       projectionId: id,
       pageIndex: 0,
-      isOverlay: gdeck.isOverlay === true,
+      isOverlay: gdeck.isOverlay === true || hasTrigger(gdeck.trigger),
       editable: false,
       addonOwner: {
         addonIndex,
@@ -225,7 +229,7 @@ const mapAddonDeckToRuntimeDeck = (
   ]
 }
 
-const collectAddonDefaultButtonConfig = (
+export const collectAddonDefaultButtonConfig = (
   registry: AddonRegistry,
   userDecks: ReadonlyArray<RuntimeDeck>,
   logger: pino.Logger,

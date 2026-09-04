@@ -398,6 +398,22 @@ export const EditorPage = ({
                 </Tabs.ListContainer>
               </Tabs>
             </div>
+            <div className="space-y-1">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                YAML sources
+              </h2>
+              {state.sources
+                .filter((source) => /\.(?:yaml|yml)$/i.test(source))
+                .map((source) => (
+                  <div
+                    key={source}
+                    className="truncate rounded border border-neutral-800 px-3 py-2 font-mono text-xs text-neutral-400"
+                    title={source}
+                  >
+                    {source}
+                  </div>
+                ))}
+            </div>
             {paletteTab === "buttons" ? (
               <div role="tabpanel" aria-label="Buttons" className="space-y-3">
                 <div className="space-y-1">
@@ -476,23 +492,44 @@ export const EditorPage = ({
                             config: { deck: deck.id, label: deck.id },
                           }
                           return (
-                            <button
-                              key={deck.id}
-                              type="button"
-                              draggable
-                              onDragStart={(event) =>
-                                dragStart(event, { kind: "palette", button })
-                              }
-                              onClick={() =>
-                                insertAt(
-                                  button,
-                                  selectedPosition ?? buttons.length,
-                                )
-                              }
-                              className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-amber-300 hover:border-amber-400"
-                            >
-                              {deck.id}
-                            </button>
+                            <div key={deck.id} className="flex gap-1">
+                              <button
+                                type="button"
+                                draggable
+                                onDragStart={(event) =>
+                                  dragStart(event, { kind: "palette", button })
+                                }
+                                onClick={() =>
+                                  insertAt(
+                                    button,
+                                    selectedPosition ?? buttons.length,
+                                  )
+                                }
+                                className="min-h-10 min-w-0 flex-1 rounded border border-neutral-800 px-3 text-left text-sm text-amber-300 hover:border-amber-400"
+                              >
+                                {deck.id}
+                              </button>
+                              {deck.generated === true &&
+                              deck.addonIndex !== undefined &&
+                              deck.overrideKey !== undefined ? (
+                                <button
+                                  type="button"
+                                  aria-label={`Edit override for ${deck.id}`}
+                                  onClick={() => {
+                                    sendMutation({
+                                      kind: "set-addon-deck-override",
+                                      addonIndex: deck.addonIndex,
+                                      deckId: deck.overrideKey,
+                                      override: {},
+                                    })
+                                    setMessage("Saving addon override…")
+                                  }}
+                                  className="min-h-10 rounded border border-neutral-800 px-2 text-xs text-sky-300 hover:border-sky-400"
+                                >
+                                  Edit
+                                </button>
+                              ) : null}
+                            </div>
                           )
                         })}
                     </div>

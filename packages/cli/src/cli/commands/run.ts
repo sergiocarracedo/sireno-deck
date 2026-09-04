@@ -99,7 +99,10 @@ import {
 } from "@/outputClient"
 import type { AddonInventoryEntry } from "@/api/protocol-internal"
 import { loadDeviceConfig } from "@/util/device-config"
-import { materializeAddonDecks } from "./addon-decks"
+import {
+  collectAddonDefaultButtonConfig,
+  materializeAddonDecks,
+} from "./addon-decks"
 import {
   collectBuiltinAddonRegistry,
   type ScannedAddon,
@@ -1259,29 +1262,83 @@ export const addonSpecFromScanned = (s: ScannedAddon) => ({
   defaultButton: s.defaultButton,
 })
 
+const addonOverrideFields: Array<
+  "name" | "icon" | "autoShow" | "trigger" | "config"
+> = ["name", "icon", "autoShow", "trigger", "config"]
+
 // ponytail: shape a ScannedAddon into the AddonsPage inventory entry the
 // emulator renders. Mirrors the AddonsPage TypeScript shape so the WS
 // message can flow straight into a prop without further mapping.
 export const addonInventoryFromScanned = (
   s: ScannedAddon,
-): AddonInventoryEntry => ({
-  name: s.name,
-  ...(s.path !== undefined ? { path: s.path } : {}),
-  internal: s.internal === true,
-  source: s.source,
-  buttonTypes: Object.entries(s.buttonTypes).map(([type, info]) => ({
-    type,
-    internal: info.internal,
-  })),
-  defaultButton: s.defaultButton ?? null,
-  decks: s.decks.map((d) => ({
-    id: d.id,
-    isOverlay: false,
-    paginated: d.hasTrigger,
-    buttons: d.buttons,
-    internal: d.internal,
-  })),
-})
+  addonIndex = 0,
+  materializedDecks: ReadonlyArray<RuntimeDeck> = [],
+  defaultConfig?: unknown,
+): AddonInventoryEntry => {
+  const generatedDecks = materializedDecks.filter(
+    (deck) => deck.addonOwner?.addonName === s.name,
+  )
+  const generatedIds = new Set(
+    generatedDecks.map((deck) => deck.sourceDeckId ?? deck.id),
+  )
+  const sourceDecks = s.decks
+    .filter(
+      (deck) => !deck.id.endsWith(":__multi__") && !generatedIds.has(deck.id),
+    )
+    .map((deck) => ({
+      id: deck.id,
+      generated: false,
+      pageIndex: 0,
+      isOverlay: deck.isOverlay === true || deck.hasTrigger,
+      paginated: deck.paginated,
+      buttons: [],
+      internal: deck.internal,
+      addonIndex,
+      overrideKey: deck.id,
+      overrideFields: addonOverrideFields,
+    }))
+  const decks = [
+    ...sourceDecks,
+    ...generatedDecks.map((deck) => ({
+      id: deck.id,
+      sourceId: deck.sourceDeckId,
+      generated: true,
+      pageIndex: deck.pageIndex ?? 0,
+      isOverlay: deck.isOverlay === true || deck.isOverlayDeck === true,
+      paginated: deck.paginated === true,
+      buttons: deck.buttons.map((button) => ({
+        type: button.type,
+        generated: true,
+        ...(button.position !== undefined ? { position: button.position } : {}),
+        ...(button.config !== undefined ? { config: button.config } : {}),
+      })),
+      internal:
+        s.decks.find((source) => source.id === deck.sourceDeckId)?.internal ??
+        false,
+      addonIndex: deck.addonOwner?.addonIndex ?? addonIndex,
+      overrideKey: deck.addonOwner?.overrideKey ?? deck.sourceDeckId ?? deck.id,
+      overrideFields: addonOverrideFields,
+    })),
+  ]
+  return {
+    name: s.name,
+    addonIndex,
+    ...(s.path !== undefined ? { path: s.path } : {}),
+    internal: s.internal === true,
+    source: s.source,
+    buttonTypes: Object.entries(s.buttonTypes).map(([type, info]) => ({
+      type,
+      internal: info.internal,
+      generated: false,
+      ...(info.defaultConfig !== undefined
+        ? { defaultConfig: info.defaultConfig }
+        : {}),
+    })),
+    defaultButton: s.defaultButton ?? null,
+    ...(defaultConfig !== undefined ? { defaultConfig } : {}),
+    decks,
+  }
+}
 
 const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
   const registry = await collectBuiltinAddonRegistry()
@@ -1637,9 +1694,22 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     // addons (from config.yml `addons:`) join here. --emulator mode never
     // binds the start-mode HTTP API on 3939, so this is the only path.
     bridge.setAddonInventory(
-      [...addonBundle.scanned, ...externalScanned].map(
-        addonInventoryFromScanned,
-      ),
+      (() => {
+        const defaultConfigs = collectAddonDefaultButtonConfig(
+          loadedConfig!.registry,
+          decks ?? [],
+          logger,
+        )
+        return [...addonBundle!.scanned, ...externalScanned].map(
+          (addon, addonIndex) =>
+            addonInventoryFromScanned(
+              addon,
+              addonIndex,
+              decks ?? [],
+              defaultConfigs.get(addon.name),
+            ),
+        )
+      })(),
     )
 
     const mainDeckId = mainDeck?.id ?? "main"

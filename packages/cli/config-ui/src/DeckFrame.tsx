@@ -305,6 +305,7 @@ export const DeckFrame = ({
                   aria-pressed={isPressed}
                   onMouseDown={() => handleDown(i)}
                   onMouseUp={() => handleUp(i)}
+                  onClick={() => onSelectPosition?.(i)}
                   onMouseLeave={(e) => {
                     if (e.buttons === 1) handleUp(i)
                   }}
