@@ -1,0 +1,27 @@
+packages/cli/config-ui/src/__tests__/DeckFrame.test.tsx
+  s_b12bbca6642f21::t_599057536a95d6 134,137
+  s_b12bbca6642f21::t_dd537c16eee88c 147,149,151-156,158-170,173-195
+  s_b12bbca6642f21::t_a02afb614da29a 148,150,157,172
+  s_b12bbca6642f21::t_495eb7a38b7eeb 171
+packages/cli/config-ui/src/__tests__/EditorPage.test.tsx
+  s_b12bbca6642f21::t_dd537c16eee88c 100-101,125-126,267-268,316-317
+  s_b12bbca6642f21::t_74464c5f029ccb 232-253,358-359
+packages/cli/config-ui/src/DeckFrame.tsx
+  s_b12bbca6642f21::t_599057536a95d6 247,304-306,309
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "45bd47ef439a092a02701bcaceb7a2932ee4b45f",
+  "prompts": {},
+  "sessions": {
+    "s_b12bbca6642f21": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9339f002ffeDZYHD4T8Gl79vp",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
