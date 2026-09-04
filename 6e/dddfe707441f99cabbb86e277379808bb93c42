@@ -1,0 +1,63 @@
+packages/cli/src/cli/commands/run.ts
+  s_137ce48ddd6e27::t_8939bf971f633f 1561-1566
+  s_137ce48ddd6e27::t_1f0b8fe80753a2 1622,1728-1731,1766,1768,1809,1966,1982-1985,1987-1989,1991-1999,2001-2005,2010-2012,2017-2020,2025-2032,2038-2040,2044-2051,2063-2064,2074-2083
+  s_137ce48ddd6e27::t_92aa49c1895b71 1642,1938
+  s_137ce48ddd6e27::t_f1400031c51a6a 1990,2052-2056,2059-2061
+  s_137ce48ddd6e27::t_04e3a5420bd538 1767
+  s_137ce48ddd6e27::t_ece9c9d4f28ced 272
+  s_137ce48ddd6e27::t_c0d10374ac7e8a 1772,1854,1979-1981,2006-2009,2013-2016,2021-2024,2033-2037,2041-2043,2057-2058,2070-2073,2112-2116
+  s_137ce48ddd6e27::t_e1136d676dac1f 2131
+  s_137ce48ddd6e27::t_4dc86b7287a353 1986,2062,2065-2069
+  s_137ce48ddd6e27::t_5de7c3620cd441 2135-2144
+  s_137ce48ddd6e27::t_f841011f65c588 1733
+  s_137ce48ddd6e27::t_7e2a218e9906a3 1732,1753,1802,2000
+  s_137ce48ddd6e27::t_7acf8bfb560640 26
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_137ce48ddd6e27::t_9dab578a6e65f4 76-93
+packages/cli/src/util/__tests__/config-diff.test.ts
+  s_137ce48ddd6e27::t_f1400031c51a6a 4,70-89
+packages/cli/src/config/config-diff.ts
+  s_137ce48ddd6e27::t_f1400031c51a6a 39-42
+  s_137ce48ddd6e27::t_355f1fc7551d1f 8-17,43
+  s_137ce48ddd6e27::t_1f0b8fe80753a2 48-54
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_137ce48ddd6e27::t_c0d10374ac7e8a 747-749,762-765
+  s_137ce48ddd6e27::t_0e9698752ff76e 325-326,334-338
+  s_137ce48ddd6e27::t_0703972d3f0d4b 333
+  s_137ce48ddd6e27::t_f1400031c51a6a 34,277
+  s_137ce48ddd6e27::t_8939bf971f633f 27,382-386
+  s_137ce48ddd6e27::t_ece9c9d4f28ced 722-746,750-761,766-769
+packages/cli/src/util/config-diff.ts
+  s_137ce48ddd6e27::t_0407f8807d7c6a 2-5,8-9,12
+  s_137ce48ddd6e27::t_ca810dcbda473e 10-11,16
+  s_137ce48ddd6e27::t_7acf8bfb560640 14-15
+packages/cli/src/render/__tests__/editor-handler.test.ts
+  s_137ce48ddd6e27::t_9dab578a6e65f4 135-188
+packages/cli/src/render/ws-bridge.ts
+  s_137ce48ddd6e27::t_1f0b8fe80753a2 50,73,165,262-263
+  s_1ce4499fbb9647::t_c0451992772326 264
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6edddfe707441f99cabbb86e277379808bb93c42",
+  "prompts": {},
+  "sessions": {
+    "s_137ce48ddd6e27": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f935728a2ffeAtZJK63aKlvYiz",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_1ce4499fbb9647": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f93e9d203ffeS7AeRjWhFabm4A",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
