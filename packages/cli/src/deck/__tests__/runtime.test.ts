@@ -27,6 +27,38 @@ describe("createRuntime", () => {
     expect(runtime.getActiveDeckId()).toBe("main")
   })
 
+  it("exposes editor surfaces from runtime-owned metadata", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        sourceDeckId: "main",
+        editable: true,
+        buttons: [
+          {
+            id: "b",
+            type: "core:action",
+            position: 0,
+            sourceTarget: {
+              sourcePath: "/config.yml",
+              sourceDeckId: "main",
+              sourceButtonIndex: 0,
+              sourceButtonPath: "decks.main.buttons[0]",
+              fingerprint: "revision-fingerprint",
+              capability: "update",
+            },
+          },
+        ],
+      }),
+    ])
+
+    expect(runtime.getEditorSurfaces({ revision: 3 })[0]).toMatchObject({
+      sourceDeckId: "main",
+      editable: true,
+      buttons: [{ sourceTarget: { sourceButtonIndex: 0 } }],
+    })
+  })
+
   it("navigateToDeck pushes to nav stack", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),

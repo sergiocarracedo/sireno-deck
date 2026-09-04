@@ -1,5 +1,12 @@
 import { exec } from "node:child_process"
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { createHash } from "node:crypto"
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from "node:fs"
 import { homedir, networkInterfaces } from "node:os"
 import {
   basename,
@@ -776,12 +783,15 @@ const buildRuntime = (
 ): LoadConfigAndThemeResult => {
   const { logger } = options
   const { config, registry, theme, themeDir } = loaded
+  const sourcePath = realpathSync(loaded.configPath)
+  const sourceFingerprint = createHash("sha256")
+    .update(readFileSync(sourcePath, "utf8"))
+    .digest("hex")
 
   const decks: RuntimeDeck[] = Object.entries(config.decks).flatMap(
     ([id, d]) => {
-      const objectButtons = d.buttons.filter(
-        (b): b is Exclude<(typeof d.buttons)[number], string> =>
-          typeof b !== "string",
+      const objectButtons = d.buttons.flatMap((b, sourceButtonIndex) =>
+        typeof b === "string" ? [] : [{ ...b, sourceButtonIndex }],
       )
       // ponytail: recompute from snapshot every keyCount change — prior state
       // is stale the moment keyCount differs. positionButtons is the
@@ -802,6 +812,14 @@ const buildRuntime = (
           ? { variant: b.variant }
           : {}),
         ...(b.buttonColor !== undefined ? { buttonColor: b.buttonColor } : {}),
+        sourceTarget: {
+          sourcePath,
+          sourceDeckId: id,
+          sourceButtonIndex: b.sourceButtonIndex,
+          sourceButtonPath: `decks.${id}.buttons[${b.sourceButtonIndex}]`,
+          fingerprint: sourceFingerprint,
+          capability: "update" as const,
+        },
       }))
       const processNames =
         d.trigger?.process_name !== undefined
@@ -816,6 +834,11 @@ const buildRuntime = (
             : [d.trigger.window_name]
           : undefined
       const sharedDeckFields = {
+        sourceDeckId: id,
+        editable: true,
+        isOverlay:
+          (processNames?.length ?? 0) > 0 || (windowNames?.length ?? 0) > 0,
+        paginated: d.paginated === true || runtimeButtons.length > keyCount - 1,
         isMain: id === "main",
         ...(processNames !== undefined ? { processNames } : {}),
         ...(windowNames !== undefined ? { windowNames } : {}),
@@ -837,6 +860,7 @@ const buildRuntime = (
               type,
               config,
               buttonColor,
+              sourceTarget,
               id: _btnId,
               ...rest
             } = b as {
@@ -851,6 +875,7 @@ const buildRuntime = (
                 | "magenta"
                 | "amber"
                 | "lime"
+              sourceTarget?: RuntimeDeck["buttons"][number]["sourceTarget"]
               id?: string
             }
             const mergedConfig = {
@@ -864,6 +889,7 @@ const buildRuntime = (
               type,
               ...(position !== undefined ? { position } : {}),
               ...(buttonColor !== undefined ? { buttonColor } : {}),
+              ...(sourceTarget !== undefined ? { sourceTarget } : {}),
               ...(Object.keys(mergedConfig).length > 0
                 ? { config: mergedConfig }
                 : {}),
@@ -873,6 +899,8 @@ const buildRuntime = (
             id: p.deckId,
             name: d.name ?? id,
             buttons: mappedButtons,
+            projectionId: p.deckId,
+            pageIndex: p.pageIndex,
             ...sharedDeckFields,
           }
         })
@@ -882,6 +910,8 @@ const buildRuntime = (
           id,
           name: d.name ?? id,
           buttons: runtimeButtons,
+          projectionId: id,
+          pageIndex: 0,
           ...sharedDeckFields,
         },
       ]
@@ -1976,6 +2006,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           active: theme.name === currentLoadedConfig.theme.name,
         })),
         buttonSchemas: serializeButtonSchemas(currentLoadedConfig.registry),
+        surfaces: runtime!.getEditorSurfaces({
+          keyCount: descriptor!.keyCount,
+        }),
       }),
       validateConfig: (buttonType, config) =>
         validateButton(

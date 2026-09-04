@@ -38,6 +38,14 @@ export {
 } from "./system-back-injection"
 export { parseMacro } from "./macro-parse"
 export {
+  describeEditorSurfaces,
+  type EditorAddonOwner,
+  type EditorMutationCapability,
+  type EditorSourceTarget,
+  type EditorSurfaceButton,
+  type EditorSurfaceDescriptor,
+} from "./editor-surfaces"
+export {
   isSystemButtonType,
   SYSTEM_BUTTON_TYPES,
   type SystemButtonType,

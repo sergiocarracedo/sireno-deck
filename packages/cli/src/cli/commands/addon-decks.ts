@@ -64,6 +64,8 @@ const mapAddonDeckToRuntimeDeck = (
   id: string,
   gdeck: AddonGeneratedDeck,
   keyCount: number,
+  addonIndex: number,
+  addonName: string,
 ): RuntimeDeck[] => {
   if ((gdeck.buttons ?? []).length > keyCount - 1) {
     // ponytail: positionButtons guarantees every button has a unique position
@@ -136,6 +138,18 @@ const mapAddonDeckToRuntimeDeck = (
         ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
         processNames: resolveTriggerProcessNames(gdeck.trigger),
         windowNames: resolveTriggerWindowNames(gdeck.trigger),
+        sourceDeckId: id,
+        projectionId: p.deckId,
+        pageIndex: p.pageIndex,
+        paginated: true,
+        isOverlay: gdeck.isOverlay === true,
+        editable: false,
+        addonOwner: {
+          addonIndex,
+          addonName,
+          overrideKey: id,
+          capabilities: ["set-addon-deck-override"],
+        },
       }
     })
   }
@@ -196,6 +210,17 @@ const mapAddonDeckToRuntimeDeck = (
       ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
       processNames: resolveTriggerProcessNames(gdeck.trigger),
       windowNames: resolveTriggerWindowNames(gdeck.trigger),
+      sourceDeckId: id,
+      projectionId: id,
+      pageIndex: 0,
+      isOverlay: gdeck.isOverlay === true,
+      editable: false,
+      addonOwner: {
+        addonIndex,
+        addonName,
+        overrideKey: id,
+        capabilities: ["set-addon-deck-override"],
+      },
     },
   ]
 }
@@ -301,7 +326,7 @@ export const materializeAddonDecks = (
   const userDeckIds = new Set(userDecks.map((d) => d.id))
   const addonDecks: RuntimeDeck[] = []
 
-  for (const addon of registry.listAddons()) {
+  for (const [addonIndex, addon] of registry.listAddons().entries()) {
     if (addon.decks === undefined) continue
     // ponytail: phase 11 — pre-aggregate addon-wide config overrides and
     // per-deck overrides so each entry sees its merged view.
@@ -395,7 +420,14 @@ export const materializeAddonDecks = (
           )
         }
         addonDecks.push(
-          ...mapAddonDeckToRuntimeDeck(registry, id, effectiveGdeck, keyCount),
+          ...mapAddonDeckToRuntimeDeck(
+            registry,
+            id,
+            effectiveGdeck,
+            keyCount,
+            addonIndex,
+            addon.name,
+          ),
         )
       }
     }

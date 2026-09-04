@@ -1,6 +1,6 @@
-import { z } from "zod"
-
 import { ButtonDefSchema, DeckDefSchema } from "@/config/schemas"
+
+import { z } from "zod"
 
 export const PROTOCOL_VERSION = 1
 
@@ -107,6 +107,48 @@ export const deckConfigMessageSchema = baseServerMessage
     hasOverlayDeckAvailable: z.boolean().default(false),
     overlayDeckIcon: z.string().nullable().default(null),
     overlayDeckName: z.string().nullable().default(null),
+  })
+  .strict()
+
+const editorSourceTargetSchema = z
+  .object({
+    sourcePath: z.string().min(1),
+    sourceDeckId: z.string().min(1),
+    sourceButtonIndex: z.number().int().nonnegative(),
+    sourceButtonPath: z.string().min(1),
+    fingerprint: z.string().min(1),
+    capability: z.enum(["update", "delete", "reorder"]),
+  })
+  .strict()
+
+const editorSurfaceSchema = z
+  .object({
+    id: z.string().min(1),
+    sourceDeckId: z.string().min(1),
+    projectionId: z.string().min(1),
+    pageIndex: z.number().int().nonnegative(),
+    isOverlay: z.boolean(),
+    editable: z.boolean(),
+    addonOwner: z
+      .object({
+        addonIndex: z.number().int().nonnegative(),
+        addonName: z.string().min(1),
+        overrideKey: z.string().min(1),
+        capabilities: z.array(z.string()).readonly(),
+      })
+      .strict()
+      .nullable(),
+    reservedPositions: z.array(z.number().int().nonnegative()),
+    buttons: z.array(
+      z
+        .object({
+          id: z.string().min(1),
+          type: z.string().min(1),
+          position: z.number().int(),
+          sourceTarget: editorSourceTargetSchema.nullable(),
+        })
+        .strict(),
+    ),
   })
   .strict()
 
@@ -323,6 +365,7 @@ export const editorStateMessageSchema = baseServerMessage
     buttonSchemas: z
       .record(z.string(), z.record(z.string(), z.unknown()))
       .default({}),
+    surfaces: z.array(editorSurfaceSchema).default([]),
     canUndo: z.boolean(),
   })
   .strict()
@@ -491,6 +534,7 @@ export type SubscribeChannelsMessage = z.infer<
 export type IframeReloadMessage = z.infer<typeof iframeReloadMessageSchema>
 export type RootButtonMutation = z.infer<typeof rootButtonMutationSchema>
 export type EditorStateMessage = z.infer<typeof editorStateMessageSchema>
+export type EditorSurfaceMessage = z.infer<typeof editorSurfaceSchema>
 export type EditorValidationRequestMessage = z.infer<
   typeof editorValidationRequestMessageSchema
 >
