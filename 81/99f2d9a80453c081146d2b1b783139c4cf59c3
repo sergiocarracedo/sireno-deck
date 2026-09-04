@@ -1,0 +1,45 @@
+packages/cli/src/config/__tests__/mutation.test.ts
+  s_a3ae22bd0473d9::t_eddeb804f197f1 160
+  s_a3ae22bd0473d9::t_42b1042d100c8f 158-159,161-171
+packages/cli/src/api/protocol-internal.ts
+  s_a3ae22bd0473d9::t_2265d1e7e7ee12 332-338
+packages/cli/src/config/schemas.ts
+  s_a3ae22bd0473d9::t_977c364f16e7f5 88
+  s_a3ae22bd0473d9::t_2265d1e7e7ee12 86-87,89-93,102-104
+packages/cli/src/config/mutation.ts
+  s_a3ae22bd0473d9::t_2265d1e7e7ee12 50,320-323,334
+  s_a3ae22bd0473d9::t_bc6d08119d0623 339-341,345-353
+  s_a3ae22bd0473d9::t_eddeb804f197f1 342-344
+packages/cli/config-ui/src/pages/EditorPage.tsx
+  s_a3ae22bd0473d9::t_bc6d08119d0623 168-171
+  s_a3ae22bd0473d9::t_eddeb804f197f1 18-27,174-179,189-193,196-208,211-217,219-225,228-258,290-306,309-321,324-338,373-374,536-541,884-888,891-893,915-922,934-936
+  s_a3ae22bd0473d9::t_5df36ca95360c6 394,928-933,937-949
+  s_a3ae22bd0473d9::t_d1476e6d035e47 881
+  s_a3ae22bd0473d9::t_16a22af0bceacd 261,263-289,307-308,322-323,339-342
+  s_a3ae22bd0473d9::t_e886e9be503bcd 534-535,542-548,882-883,889-890,894-895,910-914,923-924,926-927,950
+  s_a3ae22bd0473d9::t_ca4dab2afca933 386-393,395-399,925
+  s_a3ae22bd0473d9::t_fcfe81165b1cc3 116-167,172-173,180-188,194-195,209-210,218,226-227,259-260
+  s_a3ae22bd0473d9::t_03d07d47a3ccb7 262
+packages/cli/config-ui/src/__tests__/EditorPage.test.tsx
+  s_a3ae22bd0473d9::t_9aeda1cd0e9abb 312-335,339
+  s_a3ae22bd0473d9::t_5df36ca95360c6 336-338
+  s_a3ae22bd0473d9::t_eddeb804f197f1 271-276
+  s_a3ae22bd0473d9::t_ea46c404c5d764 253-270,277-281,291-311
+  s_a3ae22bd0473d9::t_96d15df566d36d 282-290
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "8199f2d9a80453c081146d2b1b783139c4cf59c3",
+  "prompts": {},
+  "sessions": {
+    "s_a3ae22bd0473d9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f93488b3affe8znsT35ChzwBjU",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
