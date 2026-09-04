@@ -1,0 +1,56 @@
+packages/cli/src/cli/commands/addon-decks.ts
+  s_a9ece5404f6c5d::t_2b23f4aacacdc0 149,220
+  s_a9ece5404f6c5d::t_c2c364f6653fc2 51-54
+  s_a9ece5404f6c5d::t_5011cd8c77b235 232
+packages/cli/config-ui/src/__tests__/AddonsPage.test.tsx
+  s_a9ece5404f6c5d::t_893749b283340c 190-191
+  s_a9ece5404f6c5d::t_8da807a131d59a 183
+packages/cli/src/cli/commands/run.ts
+  s_a9ece5404f6c5d::t_a5ffb84b4e4a84 103-105,1276,1697-1712
+  s_a9ece5404f6c5d::t_158499c4c7a2ca 1265-1268,1298,1320
+  s_a9ece5404f6c5d::t_2b23f4aacacdc0 1281-1283,1286,1315-1317,1324,1326-1328,1330-1338
+  s_a9ece5404f6c5d::t_71e0a7d6680c98 1311,1325
+  s_a9ece5404f6c5d::t_210887f30328ec 1285,1287,1329,1339
+  s_a9ece5404f6c5d::t_62c12a5b0da366 1274-1275,1277-1280,1284,1288-1297,1299-1310,1312-1314,1318-1319,1321-1323,1340-1341
+  s_a9ece5404f6c5d::t_84af9b78f956cd 102
+packages/cli/src/cli/commands/addon-registry.ts
+  s_a9ece5404f6c5d::t_1d12563493166b 14-15,37
+packages/cli/config-ui/src/pages/AddonsPage.tsx
+  s_a9ece5404f6c5d::t_2b23f4aacacdc0 194,201-210,216-222
+  s_a9ece5404f6c5d::t_70e8005e368fd0 6-7,21,27
+  s_a9ece5404f6c5d::t_532d16e28bab92 10-17,33-34
+  s_a9ece5404f6c5d::t_1fb68e31f2f0d3 5,19-20,28,39
+  s_a9ece5404f6c5d::t_c490eb38c90b93 199-200,211-215,223
+packages/cli/config-ui/src/pages/EditorPage.tsx
+  s_a9ece5404f6c5d::t_d093ce27a8cfdf 401-416
+  s_a9ece5404f6c5d::t_82825c0e891c24 495-532
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_a9ece5404f6c5d::t_b7ee3c2d05cf12 129-159
+packages/cli/config-ui/src/DeckFrame.tsx
+  s_a9ece5404f6c5d::t_d093ce27a8cfdf 308
+packages/cli/src/api/protocol-internal.ts
+  s_a9ece5404f6c5d::t_4ca90290e2ae16 170,469
+  s_a9ece5404f6c5d::t_2b23f4aacacdc0 479-481
+  s_a9ece5404f6c5d::t_06c6453151e1fd 445-452,455,457-468,470-478,482-484
+  s_a9ece5404f6c5d::t_bb38f5072a6ece 440
+packages/cli/config-ui/src/__tests__/EditorPage.test.tsx
+  s_a9ece5404f6c5d::t_5f2f741fd977a2 55-69,185-196,200-207
+  s_a9ece5404f6c5d::t_73c8f316207eb0 197-199
+  s_a9ece5404f6c5d::t_86cdaeb867742d 208-209
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "1ef9a13f55172e4ceae3dea4525d89e448c60db7",
+  "prompts": {},
+  "sessions": {
+    "s_a9ece5404f6c5d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f940e28f5ffedimn1RNpV0W0D6",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
