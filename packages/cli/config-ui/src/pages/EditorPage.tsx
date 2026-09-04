@@ -857,7 +857,6 @@ export const EditorPage = ({
                   deckId={activeDeckId}
                   token={token}
                   onGesture={onGesture}
-                  onSelectPosition={selectPosition}
                   onKeyAction={keyAction}
                   fitToContainer
                   onDropPosition={(position, event) => dropAt(event, position)}

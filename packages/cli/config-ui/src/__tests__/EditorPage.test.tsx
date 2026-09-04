@@ -97,7 +97,8 @@ describe("EditorPage", () => {
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
     fireEvent.click(screen.getByRole("menuitem", { name: "Copy" }))
-    fireEvent.click(screen.getByTestId("deck-key-2"))
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 2" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.click(screen.getByRole("button", { name: "Paste button" }))
 
     const message = JSON.parse(ws.sent.at(-1) ?? "{}") as {
@@ -121,7 +122,8 @@ describe("EditorPage", () => {
         device={DEVICE_MODELS.find((model) => model.id === "mk2")}
       />,
     )
-    fireEvent.click(screen.getByTestId("deck-key-0"))
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.change(screen.getByLabelText("Command"), {
       target: { value: "whoami" },
     })
@@ -227,6 +229,28 @@ describe("EditorPage", () => {
     )
   })
 
+  it("keeps the selected button stable during preview interaction", () => {
+    const ws = client()
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.pointerDown(screen.getByTestId("deck-key-1"))
+    fireEvent.pointerUp(screen.getByTestId("deck-key-1"))
+
+    expect(screen.getByLabelText("Command")).toHaveValue("date")
+    expect(ws.sent.some((message) => message.includes("editor-mutate"))).toBe(
+      false,
+    )
+  })
+
   it("inserts a palette button at an empty selected position", () => {
     const ws = client()
     vi.spyOn(window, "confirm").mockReturnValue(true)
@@ -240,7 +264,8 @@ describe("EditorPage", () => {
         device={DEVICE_MODELS.find((model) => model.id === "mk2")}
       />,
     )
-    fireEvent.click(screen.getByTestId("deck-key-4"))
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 4" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.click(screen.getByRole("button", { name: "test-addon:action" }))
 
     expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
@@ -288,7 +313,8 @@ describe("EditorPage", () => {
         device={DEVICE_MODELS.find((model) => model.id === "mk2")}
       />,
     )
-    fireEvent.click(screen.getByTestId("deck-key-0"))
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.change(screen.getByLabelText("Label"), {
       target: { value: "Run command" },
     })
@@ -329,7 +355,8 @@ describe("EditorPage", () => {
         device={DEVICE_MODELS.find((model) => model.id === "mk2")}
       />,
     )
-    fireEvent.click(screen.getByTestId("deck-key-0"))
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
 
     expect(screen.getByLabelText("Label")).toBeDisabled()
     expect(screen.getByRole("button", { name: "Save button" })).toBeDisabled()

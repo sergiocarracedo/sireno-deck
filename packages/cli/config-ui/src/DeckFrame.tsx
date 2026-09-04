@@ -28,7 +28,6 @@ export interface DeckFrameProps {
     gesture: "tap" | "dbl-tap" | "hold"
   }) => void
   readonly onDropPosition?: (position: number, event: React.DragEvent) => void
-  readonly onSelectPosition?: (position: number) => void
   readonly onKeyAction?: (
     position: number,
     action: "edit" | "copy" | "duplicate" | "up" | "down" | "delete",
@@ -48,7 +47,6 @@ export const DeckFrame = ({
   gap = true,
   onGesture,
   onDropPosition,
-  onSelectPosition,
   onKeyAction,
   fitToContainer = false,
   onIframeRef,
@@ -246,7 +244,7 @@ export const DeckFrame = ({
             const isPressed = pressedIndex === i
             const editorControls =
               onKeyAction === undefined ? null : (
-                <div className="pointer-events-none absolute top-0 right-0 z-20 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100">
+                <div className="pointer-events-none absolute top-0 right-0 z-20 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100 [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100">
                   <Dropdown>
                     <Button
                       type="button"
@@ -303,12 +301,12 @@ export const DeckFrame = ({
                   data-key-index={i}
                   aria-label={`Key ${i}`}
                   aria-pressed={isPressed}
-                  onMouseDown={() => handleDown(i)}
-                  onMouseUp={() => handleUp(i)}
-                  onClick={() => onSelectPosition?.(i)}
-                  onMouseLeave={(e) => {
+                  onPointerDown={() => handleDown(i)}
+                  onPointerUp={() => handleUp(i)}
+                  onPointerLeave={(e) => {
                     if (e.buttons === 1) handleUp(i)
                   }}
+                  onPointerCancel={() => handleUp(i)}
                   onDragOver={
                     onDropPosition === undefined
                       ? undefined
