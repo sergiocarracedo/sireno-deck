@@ -788,10 +788,10 @@ const runFirstRunCheckIfNeeded = async (
   const probed = await probeSystemForFirstRun(options)
   if (probed === null) return true
   const { summary } = probed
-  const missing =
-    summary.missingCapabilities.length > 0 ||
-    summary.udevMissing ||
-    summary.configMissing
+  // Optional host integrations (clipboard and active-app detection) are not
+  // startup requirements. Hardware readiness is checked by preflight after
+  // this informational probe; config and udev are the only setup blockers.
+  const missing = summary.udevMissing || summary.configMissing
   if (!missing) return true
 
   if (process.env["SIRENO_SKIP_WIZARD"]) {
@@ -836,9 +836,7 @@ const runFirstRunCheckIfNeeded = async (
   const reprobed = await probeSystemForFirstRun(options)
   if (reprobed === null) return false
   const stillMissing =
-    reprobed.summary.missingCapabilities.length > 0 ||
-    reprobed.summary.udevMissing ||
-    reprobed.summary.configMissing
+    reprobed.summary.udevMissing || reprobed.summary.configMissing
   if (stillMissing) {
     logger.warn(
       { lines: reprobed.summary.lines },

@@ -506,7 +506,7 @@ describe("start first-run wizard hook", () => {
     expect(process.exitCode).toBe(0)
   })
 
-  it("does not exit non-zero when wizard resolves all missing capabilities", async () => {
+  it("does not block on optional capability gaps", async () => {
     summarizeReportMock
       .mockReturnValueOnce(capabilityMissingSummary())
       .mockReturnValueOnce(happySummary())
@@ -522,7 +522,8 @@ describe("start first-run wizard hook", () => {
     })
     await awaitFork()
     await startPromise
-    expect(systemRequirementsMock).toHaveBeenCalledTimes(1)
+    expect(inquirerConfirmMock).not.toHaveBeenCalled()
+    expect(systemRequirementsMock).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(0)
   })
 })
