@@ -464,14 +464,13 @@ describe("start first-run wizard hook", () => {
       homeDir: "/home",
       logger: silentLogger(),
     })
-    await awaitFork()
     await startPromise
     expect(inquirerConfirmMock).not.toHaveBeenCalled()
     expect(systemRequirementsMock).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(1)
   })
 
-  it("runs the wizard when config is missing and user accepts", async () => {
+  it("does not start when the accepted wizard leaves requirements missing", async () => {
     setSummary(configMissingSummary())
     setSummary(configMissingSummary())
     setTty(true)
@@ -483,14 +482,13 @@ describe("start first-run wizard hook", () => {
       homeDir: "/home",
       logger: silentLogger(),
     })
-    await awaitFork()
     await startPromise
     expect(inquirerConfirmMock).toHaveBeenCalledTimes(1)
     expect(systemRequirementsMock).toHaveBeenCalledTimes(1)
     expect(process.exitCode).toBe(1)
   })
 
-  it("skips the wizard when user declines", async () => {
+  it("starts after the user declines the wizard", async () => {
     setSummary(configMissingSummary())
     setTty(true)
     inquirerConfirmMock.mockResolvedValueOnce(false)

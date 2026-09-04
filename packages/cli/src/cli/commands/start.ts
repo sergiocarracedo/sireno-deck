@@ -784,22 +784,22 @@ const probeSystemForFirstRun = async (
 const runFirstRunCheckIfNeeded = async (
   options: StartOptions,
   logger: pino.Logger,
-): Promise<void> => {
+): Promise<boolean> => {
   const probed = await probeSystemForFirstRun(options)
-  if (probed === null) return
+  if (probed === null) return true
   const { summary } = probed
   const missing =
     summary.missingCapabilities.length > 0 ||
     summary.udevMissing ||
     summary.configMissing
-  if (!missing) return
+  if (!missing) return true
 
   if (process.env["SIRENO_SKIP_WIZARD"]) {
     logger.warn(
       { lines: summary.lines },
       "start: some requirements still missing — run `sirenodeck system-requirements` to fix",
     )
-    return
+    return false
   }
 
   if (!process.stdin.isTTY) {
@@ -808,7 +808,7 @@ const runFirstRunCheckIfNeeded = async (
       "start: missing requirements and no TTY — run `sirenodeck system-requirements` interactively to fix",
     )
     process.exitCode = 1
-    return
+    return false
   }
 
   const shouldRunWizard = await confirm({
@@ -821,7 +821,7 @@ const runFirstRunCheckIfNeeded = async (
       { lines: summary.lines },
       "start: requirements missing — continuing anyway. Run `sirenodeck system-requirements` later to fix.",
     )
-    return
+    return true
   }
 
   await systemRequirements({
@@ -834,7 +834,7 @@ const runFirstRunCheckIfNeeded = async (
   })
 
   const reprobed = await probeSystemForFirstRun(options)
-  if (reprobed === null) return
+  if (reprobed === null) return false
   const stillMissing =
     reprobed.summary.missingCapabilities.length > 0 ||
     reprobed.summary.udevMissing ||
@@ -845,7 +845,9 @@ const runFirstRunCheckIfNeeded = async (
       "start: some requirements still missing — exiting",
     )
     process.exitCode = 1
+    return false
   }
+  return true
 }
 
 const start = async (options: StartOptions): Promise<void> => {
@@ -864,7 +866,7 @@ const start = async (options: StartOptions): Promise<void> => {
     return
   }
 
-  await runFirstRunCheckIfNeeded(options, logger)
+  if (!(await runFirstRunCheckIfNeeded(options, logger))) return
 
   await onboardCodingAgents(resolveConfigPath(options).path)
 

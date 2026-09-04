@@ -173,6 +173,7 @@ const startCommand: CommandModule<object, StartArgs> = {
       // without reading the full log history.
       const logSnapshot = snapshotDaemonLog()
       const logPath = join(resolveDaemonPaths().runtimeDir, "service.log")
+      const startRequestedAt = Date.now()
       const startPromise = start(options)
       const outcome: StartOutcome = await waitForFullStart({
         port: options.port ?? 52937,
@@ -180,6 +181,7 @@ const startCommand: CommandModule<object, StartArgs> = {
         runtimeTimeoutMs: 30_000,
         logPath,
         logSnapshot,
+        notBefore: startRequestedAt,
       })
       // ponytail: print events the daemon emitted between the snapshot
       // and now, BEFORE the success/failure line — operator's eye

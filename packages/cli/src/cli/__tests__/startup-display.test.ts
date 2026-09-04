@@ -62,6 +62,23 @@ describe("waitForRuntimeState", () => {
     expect(result).not.toBeNull()
     expect(result!.configUiUrl).toBe("http://127.0.0.1:52938")
   })
+
+  it("ignores runtime state from before the current start", async () => {
+    const oldState = {
+      configUiUrl: "http://127.0.0.1:52938",
+      wsUrl: "ws://127.0.0.1:52937",
+      frontendUrl: "http://127.0.0.1:5180",
+      lanHost: "127.0.0.1",
+      addresses: [],
+      emulatorMode: true,
+      remote: false,
+      startedAt: 10,
+    }
+    const newState = { ...oldState, emulatorMode: false, startedAt: 20 }
+    readRuntimeStateMock.mockReturnValueOnce(oldState).mockReturnValue(newState)
+    const result = await waitForRuntimeState(200, 20)
+    expect(result).toMatchObject({ emulatorMode: false, startedAt: 20 })
+  })
 })
 
 describe("waitForPortFree", () => {

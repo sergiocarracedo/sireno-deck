@@ -120,11 +120,17 @@ export class DaemonNotReadyError extends Error {
 // have stabilized). Returns the parsed state, or `null` on timeout.
 export const waitForRuntimeState = async (
   timeoutMs: number = RUNTIME_STATE_TIMEOUT_MS,
+  notBefore?: number,
 ): Promise<RuntimeState | null> => {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     const state = readRuntimeState()
-    if (state !== null) return state
+    if (
+      state !== null &&
+      (notBefore === undefined || state.startedAt >= notBefore)
+    ) {
+      return state
+    }
     await new Promise((r) => setTimeout(r, READY_INTERVAL_MS))
   }
   return null
@@ -360,6 +366,7 @@ export interface WaitForStartOptions {
   readonly runtimeTimeoutMs: number
   readonly logPath: string
   readonly logSnapshot: DaemonLogSnapshot
+  readonly notBefore?: number
 }
 
 export const waitForFullStart = async (
@@ -374,7 +381,7 @@ export const waitForFullStart = async (
   }
   const runtimeReady = tcpReady
   const state = runtimeReady
-    ? await waitForRuntimeState(options.runtimeTimeoutMs)
+    ? await waitForRuntimeState(options.runtimeTimeoutMs, options.notBefore)
     : null
   const events = readDaemonEventsFromSnapshot(
     options.logPath,
