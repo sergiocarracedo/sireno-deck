@@ -18,8 +18,10 @@ const socket = () => {
 
 const service = (): ConfigMutationService => ({
   sources: () => ["config.yml"],
+  sourceDescriptors: () => [],
   readSource: () => "",
   isEditableSource: () => true,
+  writeAsset: vi.fn(async () => undefined),
   apply: vi.fn(async () => undefined),
   undo: vi.fn(async () => true),
   canUndo: vi.fn(() => true),

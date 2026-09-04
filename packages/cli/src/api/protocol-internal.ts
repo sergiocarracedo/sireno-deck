@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { ButtonDefSchema } from "@/config/schemas"
+import { ButtonDefSchema, DeckDefSchema } from "@/config/schemas"
 
 export const PROTOCOL_VERSION = 1
 
@@ -277,6 +277,13 @@ const rootButtonMutationSchema = z.discriminatedUnion("kind", [
       deckId: z.string().min(1),
       from: z.number().int().nonnegative(),
       to: z.number().int().nonnegative(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("create-deck"),
+      deckId: z.string().min(1),
+      deck: DeckDefSchema,
     })
     .strict(),
   z.object({ kind: z.literal("set-theme"), theme: z.string().min(1) }).strict(),

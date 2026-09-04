@@ -80,6 +80,9 @@ describe("config mutation", () => {
     writeFileSync(nonYaml, "not config\n")
     writeFileSync(path, `decks: !include ${nonYaml}\n`)
     expect(service.isEditableSource(nonYaml)).toBe(false)
+    expect(
+      service.sourceDescriptors().some((source) => source.path === nonYaml),
+    ).toBe(false)
   })
 
   it("edits an included YAML source and undoes it", async () => {
@@ -113,5 +116,43 @@ describe("config mutation", () => {
     const written = readFileSync(path, "utf8")
     expect(written).toContain("name: Tools")
     expect(written).toContain("autoShow: true")
+  })
+
+  it("describes only canonical YAML sources and rejects stale source edits", async () => {
+    const path = fixture("decks:\n  main:\n    buttons: !include buttons.yml\n")
+    const included = join(join(path, ".."), "buttons.yml")
+    writeFileSync(included, "- type: core:action\n")
+    const service = createConfigMutationService({ configPath: path })
+
+    const descriptors = service.sourceDescriptors()
+    expect(descriptors.map((source) => source.path)).toEqual([path, included])
+    expect(descriptors.map((source) => source.kind)).toEqual([
+      "root",
+      "include",
+    ])
+    expect(descriptors.every((source) => source.editable)).toBe(true)
+
+    writeFileSync(included, "- type: core:settings\n")
+    await expect(
+      service.apply({
+        kind: "edit-source",
+        path: included,
+        content: "- type: core:action\n",
+      }),
+    ).rejects.toThrow(/changed outside the editor/)
+  })
+
+  it("creates a complete deck and keeps its id outside button data", async () => {
+    const path = fixture()
+    const service = createConfigMutationService({ configPath: path })
+    await service.apply({
+      kind: "create-deck",
+      deckId: "tools",
+      deck: { name: "Tools", buttons: [] },
+    })
+    const written = readFileSync(path, "utf8")
+    expect(written).toContain("tools:")
+    expect(written).toContain("name: Tools")
+    expect(written).not.toContain("id:")
   })
 })

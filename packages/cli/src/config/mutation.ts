@@ -12,6 +12,7 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs"
+import { createHash } from "node:crypto"
 import {
   basename,
   dirname,
@@ -20,22 +21,32 @@ import {
   resolve as resolvePath,
 } from "node:path"
 
-import { parseDocument, YAMLSeq } from "yaml"
+import { parseDocument, YAMLMap, YAMLSeq } from "yaml"
 
 import { expandButtonReferences } from "./reference-expander"
 import { discoverIncludeGraph, resolveIncludes } from "./include-resolver"
 import {
   AddonDeckOverrideSchema,
   ButtonDefSchema,
+  DeckDefSchema,
   RawConfigSchema,
   type RawButtonDef,
+  type RawDeckDef,
 } from "./schemas"
+
+export interface ConfigSourceDescriptor {
+  readonly path: string
+  readonly kind: "root" | "include"
+  readonly editable: true
+  readonly fingerprint: string
+}
 
 export type RootButtonMutation =
   | { kind: "add"; deckId: string; button: RawButtonDef; index?: number }
   | { kind: "update"; deckId: string; index: number; button: RawButtonDef }
   | { kind: "delete"; deckId: string; index: number }
   | { kind: "reorder"; deckId: string; from: number; to: number }
+  | { kind: "create-deck"; deckId: string; deck: RawDeckDef }
   | { kind: "set-theme"; theme: string }
   | {
       kind: "set-addon-deck-override"
@@ -54,7 +65,8 @@ export class ConfigMutationError extends Error {
 
 export interface ConfigMutationService {
   readonly sources: () => string[]
-  readonly readSource: (path: string) => string
+  readonly sourceDescriptors: () => ConfigSourceDescriptor[]
+  readonly readSource: (path: string, fingerprint?: string) => string
   readonly isEditableSource: (path: string) => boolean
   readonly writeAsset: (filename: string, data: string) => Promise<void>
   readonly apply: (mutation: RootButtonMutation) => Promise<void>
@@ -70,6 +82,9 @@ const canonical = (path: string): string => {
   const absolute = resolvePath(path)
   return existsSync(absolute) ? realpathSync(absolute) : absolute
 }
+
+const fingerprint = (content: string): string =>
+  createHash("sha256").update(content).digest("hex")
 
 const atomicWrite = (path: string, content: string): void => {
   const dir = dirname(path)
@@ -144,13 +159,48 @@ export const createConfigMutationService = ({
     throw new ConfigMutationError(`Config source is not YAML: ${rootPath}`)
   }
   const history: Array<string | { path: string; content: string }> = []
+  const knownFingerprints = new Map<string, string>()
   let queue = Promise.resolve()
   const run = (task: () => void): Promise<void> => {
     const result = queue.then(task, task)
     queue = result.catch(() => undefined)
     return result
   }
-  const sources = (): string[] => discoverIncludeGraph(rootPath)
+  const sourceDescriptors = (): ConfigSourceDescriptor[] =>
+    discoverIncludeGraph(rootPath)
+      .filter(yamlSource)
+      .map((path, index) => {
+        const content = readFileSync(path, "utf8")
+        return {
+          path,
+          kind: index === 0 ? "root" : "include",
+          editable: true,
+          fingerprint: fingerprint(content),
+        }
+      })
+  const sources = (): string[] =>
+    sourceDescriptors().map((descriptor) => descriptor.path)
+  for (const descriptor of sourceDescriptors())
+    knownFingerprints.set(descriptor.path, descriptor.fingerprint)
+
+  const assertUnchanged = (path: string): void => {
+    const expected = knownFingerprints.get(path)
+    if (expected === undefined) return
+    const actual = fingerprint(readFileSync(path, "utf8"))
+    if (actual !== expected)
+      throw new ConfigMutationError(
+        `Source changed outside the editor: ${path}`,
+      )
+  }
+  const assertAllUnchanged = (): void => {
+    for (const path of knownFingerprints.keys()) assertUnchanged(path)
+  }
+  const refreshFingerprints = (): void => {
+    const current = sourceDescriptors()
+    knownFingerprints.clear()
+    for (const descriptor of current)
+      knownFingerprints.set(descriptor.path, descriptor.fingerprint)
+  }
   const isEditableSource = (path: string): boolean => {
     if (!yamlSource(path)) return false
     return sources().includes(canonical(path))
@@ -158,13 +208,22 @@ export const createConfigMutationService = ({
 
   return {
     sources,
-    readSource: (path) => {
+    sourceDescriptors,
+    readSource: (path, expectedFingerprint) => {
       const sourcePath = canonical(path)
       if (!isEditableSource(sourcePath))
         throw new ConfigMutationError(
           `Source is not an editable included YAML: ${sourcePath}`,
         )
-      return readFileSync(sourcePath, "utf8")
+      const content = readFileSync(sourcePath, "utf8")
+      if (
+        expectedFingerprint !== undefined &&
+        fingerprint(content) !== expectedFingerprint
+      )
+        throw new ConfigMutationError(
+          `Source changed outside the editor: ${sourcePath}`,
+        )
+      return content
     },
     isEditableSource,
     writeAsset: async (filename, data) => {
@@ -190,6 +249,7 @@ export const createConfigMutationService = ({
               `Source is not an editable included YAML: ${sourcePath}`,
             )
           }
+          assertAllUnchanged()
           const sourceDocument = parseDocument(mutation.content)
           if (sourceDocument.errors.length > 0)
             throw new ConfigMutationError("Invalid YAML source")
@@ -202,8 +262,10 @@ export const createConfigMutationService = ({
             throw error
           }
           history.push({ path: sourcePath, content: beforeSource })
+          refreshFingerprints()
           return
         }
+        assertAllUnchanged()
         const before = readFileSync(rootPath, "utf8")
         const document = parseDocument(before, { keepSourceTokens: true })
         if (document.errors.length > 0) {
@@ -254,6 +316,23 @@ export const createConfigMutationService = ({
               document.createNode(mutation.override),
             )
           }
+        } else if (mutation.kind === "create-deck") {
+          if (mutation.deckId.length === 0) {
+            throw new ConfigMutationError("Deck id must not be empty")
+          }
+          if (!DeckDefSchema.safeParse(mutation.deck).success) {
+            throw new ConfigMutationError("Invalid deck definition")
+          }
+          const decks = document.getIn(["decks"], true)
+          if (!(decks instanceof YAMLMap)) {
+            throw new ConfigMutationError("decks must be a YAML map")
+          }
+          if (decks.has(mutation.deckId)) {
+            throw new ConfigMutationError(
+              `Deck id already exists: ${mutation.deckId}`,
+            )
+          }
+          decks.set(mutation.deckId, document.createNode(mutation.deck))
         } else {
           const buttons = buttonSequence(document, mutation.deckId)
           if (mutation.kind === "add") {
@@ -283,6 +362,7 @@ export const createConfigMutationService = ({
         validate(after, rootPath)
         atomicWrite(rootPath, after)
         history.push(before)
+        refreshFingerprints()
       }),
     undo: () => {
       let undone = false
@@ -290,12 +370,15 @@ export const createConfigMutationService = ({
         const before = history.at(-1)
         if (before === undefined) return
         if (typeof before === "object") {
+          assertAllUnchanged()
           atomicWrite(before.path, before.content)
         } else {
+          assertAllUnchanged()
           atomicWrite(rootPath, before)
         }
         history.pop()
         undone = true
+        refreshFingerprints()
       }).then(() => undone)
     },
     canUndo: () => history.length > 0,
