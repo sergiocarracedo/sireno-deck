@@ -233,7 +233,7 @@ export const DeckFrame = ({
           data-deck={deckId}
           data-key-count={keyCount}
           data-columns={columns}
-          className="absolute inset-0 grid p-4"
+          className="absolute inset-0 z-10 grid p-4 pointer-events-none"
           style={{
             gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE_PX}px)`,
             gridTemplateRows: `repeat(${Math.ceil(keyCount / columns)}, ${BUTTON_SIZE_PX}px)`,
@@ -273,10 +273,10 @@ export const DeckFrame = ({
                         {(
                           [
                             ["edit", "Edit/select"],
-                            ["copy", "Copy"],
+                            ["copy", "Copy config"],
                             ["duplicate", "Duplicate"],
-                            ["up", "Move up"],
-                            ["down", "Move down"],
+                            ["up", "Previous position"],
+                            ["down", "Next position"],
                             ["delete", "Delete"],
                           ] as const
                         ).map(([action, label]) => (
@@ -321,7 +321,7 @@ export const DeckFrame = ({
                     "h-full w-full rounded-lg border",
                     "bg-gradient-to-br from-black/40 via-black/20 to-white/5",
                     "border-white/10",
-                    "transition-all duration-200",
+                    "pointer-events-auto transition-all duration-200",
                     "hover:from-black/20 hover:via-black/0 hover:to-white/10 hover:border-white/25",
                     isPressed
                       ? "from-white/60 via-white/30 to-white/10 border-white/60 shadow-[0_0_18px_rgba(255,255,255,0.5)] scale-[0.96]"

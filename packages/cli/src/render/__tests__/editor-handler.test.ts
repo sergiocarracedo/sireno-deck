@@ -21,6 +21,7 @@ const service = (): ConfigMutationService => ({
   sourceDescriptors: () => [],
   readSource: () => "",
   isEditableSource: () => true,
+  validateSource: () => [],
   writeAsset: vi.fn(async () => undefined),
   apply: vi.fn(async () => undefined),
   undo: vi.fn(async () => true),
@@ -185,5 +186,41 @@ describe("editor WS handler", () => {
     const reconnect = socket()
     handler.onConnection(reconnect.socket)
     expect(JSON.parse(reconnect.sent[0]!)).toMatchObject({ revision: 1 })
+  })
+
+  it("validates proposed source content", () => {
+    const { socket: client, sent } = socket()
+    const mutations = service()
+    vi.spyOn(mutations, "validateSource").mockReturnValue(["invalid config"])
+    const handler = createEditorMessageHandler({
+      mutationService: mutations,
+      getState: () => ({
+        config: {},
+        sources: [],
+        sourceContents: {},
+        themes: [],
+      }),
+      broadcast: vi.fn(),
+    })
+    handler.onMessage(
+      {
+        type: "editor-source-validation-request",
+        requestId: "source-validation-1",
+        revision: 0,
+        path: "/tmp/source.yaml",
+        content: "decks: {}",
+      },
+      client,
+    )
+    expect(mutations.validateSource).toHaveBeenCalledWith(
+      "/tmp/source.yaml",
+      "decks: {}",
+    )
+    expect(JSON.parse(sent[0]!)).toEqual({
+      type: "editor-source-validation-result",
+      requestId: "source-validation-1",
+      valid: false,
+      errors: ["invalid config"],
+    })
   })
 })

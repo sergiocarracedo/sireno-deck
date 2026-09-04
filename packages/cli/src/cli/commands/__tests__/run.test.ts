@@ -31,7 +31,11 @@ vi.mock("@/system/providers/active-app", () => ({
 }))
 vi.mock("@/system/providers/session", () => ({
   createSessionProvider: vi.fn(),
-  createNullSessionProvider: vi.fn(),
+  createNullSessionProvider: vi.fn(() => ({
+    start: vi.fn(async () => undefined),
+    stop: vi.fn(async () => undefined),
+    getState: vi.fn(() => "active"),
+  })),
 }))
 vi.mock("@/system/providers/key-macro", () => ({
   createKeyMacroProvider: vi.fn(),

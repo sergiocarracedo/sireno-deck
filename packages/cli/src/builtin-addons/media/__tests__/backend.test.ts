@@ -76,11 +76,6 @@ const playing = (currentTime: number, totalTime: number): MediaStatus => ({
   muted: false,
 })
 
-const paused = (currentTime: number, totalTime: number): MediaStatus => ({
-  ...playing(currentTime, totalTime),
-  playStatus: "pause",
-})
-
 describe("media backend", () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -106,6 +101,28 @@ describe("media backend", () => {
     expect(result.progress).toBe(15) // 30/200 * 100
     expect(result.currentTime).toBe(30)
     expect(result.totalTime).toBe(200)
+
+    backend.onUnload!(ctx)
+  })
+
+  it("poller returns advancing currentTime for the same track", async () => {
+    let currentTime = 30
+    const provider = makeProvider(async () => playing(currentTime, 200))
+    createMediaProviderMock.mockReturnValue(provider)
+
+    const { globalService } = await import("../backend")
+    const backend = globalService as unknown as BackendGlobalBackend
+    const { ctx } = makeCtx()
+    backend.onLoad!(ctx)
+
+    const first = (await backend.pollers![0]!.poll(ctx)) as MediaPlayerState
+    currentTime = 31
+    const second = (await backend.pollers![0]!.poll(ctx)) as MediaPlayerState
+
+    expect(first.title).toBe(second.title)
+    expect(first.currentTime).toBe(30)
+    expect(second.currentTime).toBe(31)
+    expect(second.progress).toBeGreaterThan(first.progress)
 
     backend.onUnload!(ctx)
   })

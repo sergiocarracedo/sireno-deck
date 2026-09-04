@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Tabs } from "@heroui/react"
+import { Button, Input, Tabs } from "@heroui/react"
 
 import type { DeviceModelSpec } from "@sirenodeck/cli"
 
@@ -22,9 +22,27 @@ type Config = {
       label?: string
       columns?: number
       rows?: number
+      icon?: string
+      background?: string
+      paginated?: boolean
+      autoShow?: boolean
+      trigger?: {
+        process_name?: string | string[]
+        window_name?: string | string[]
+      }
       buttons?: Button[]
     }
   >
+}
+
+interface DeckDraft {
+  name: string
+  icon: string
+  background: string
+  paginated: boolean
+  autoShow: boolean
+  processName: string
+  windowName: string
 }
 
 export interface ThemeOption {
@@ -61,6 +79,7 @@ export interface EditorPageProps {
     position: number
     gesture: "tap" | "dbl-tap" | "hold"
   }) => void
+  readonly onDeckSelect?: (deckId: string) => void
   readonly themes?: readonly ThemeOption[]
   readonly validation?: ValidationState | null
 }
@@ -349,6 +368,7 @@ export const EditorPage = ({
   device,
   token,
   onGesture,
+  onDeckSelect,
   themes = [],
   validation = null,
 }: EditorPageProps) => {
@@ -357,15 +377,40 @@ export const EditorPage = ({
   const [selectedPosition, setSelectedPosition] = useState<number | null>(null)
   const [clipboard, setClipboard] = useState<Button | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [pendingButton, setPendingButton] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
+  const [pendingPosition, setPendingPosition] = useState<number | null>(null)
+  const [newPage, setNewPage] = useState(false)
+  const [newPageId, setNewPageId] = useState("")
+  const [newPageName, setNewPageName] = useState("")
+  const [newPageIcon, setNewPageIcon] = useState("")
+  const [newPageBackground, setNewPageBackground] = useState("")
+  const [newPagePaginated, setNewPagePaginated] = useState(false)
+  const [positionUnset, setPositionUnset] = useState(false)
+  const [pendingRequestId, setPendingRequestId] = useState<string | null>(null)
+  const [deckDraft, setDeckDraft] = useState<DeckDraft | null>(null)
+  const [creatingDeck, setCreatingDeck] = useState(false)
+  const [newDeckId, setNewDeckId] = useState("")
+  const [newDeckName, setNewDeckName] = useState("")
 
   useEffect(() => {
     wsClient?.send(JSON.stringify({ type: "editor-state-request" }))
   }, [wsClient])
 
   useEffect(() => {
-    if (result !== null)
-      setMessage(result.ok ? "Saved" : (result.error ?? "Edit failed"))
-  }, [result])
+    if (result === null) return
+    setMessage(result.ok ? "Saved" : (result.error ?? "Edit failed"))
+    if (result.requestId !== pendingRequestId) return
+    if (result.ok) {
+      if (newPage) setDeckId(newPageId.trim())
+      setPendingButton(null)
+      setPendingPosition(null)
+      setNewPage(false)
+      setPendingRequestId(null)
+    }
+  }, [newPage, newPageId, pendingRequestId, result])
 
   const config = (state?.config ?? {}) as Config
   const decks = Object.entries(config.decks ?? {})
@@ -374,7 +419,39 @@ export const EditorPage = ({
     activeDeckId === null ? undefined : config.decks?.[activeDeckId]
   const buttons =
     activeDeckId === null ? [] : (config.decks?.[activeDeckId]?.buttons ?? [])
+  const pageMatch = activeDeckId?.match(/^(.+)-p(\d+)$/)
+  const pageBase = pageMatch?.[1] ?? activeDeckId
+  const pageNumber =
+    pageMatch === null || pageMatch === undefined ? 1 : Number(pageMatch[2])
+  const previousPage =
+    pageNumber > 1 ? `${pageBase}-p${pageNumber - 1}` : pageBase
+  const nextPage = `${pageBase}-p${pageNumber + 1}`
+  const hasPreviousPage =
+    previousPage !== activeDeckId && decks.some(([id]) => id === previousPage)
+  const hasNextPage = decks.some(([id]) => id === nextPage)
   const positions = buttonPositions(buttons)
+
+  useEffect(() => {
+    if (activeDeckId === null || activeDeck === undefined) {
+      setDeckDraft(null)
+      return
+    }
+    const processName = activeDeck.trigger?.process_name
+    const windowName = activeDeck.trigger?.window_name
+    setDeckDraft({
+      name: activeDeck.name ?? activeDeckId,
+      icon: activeDeck.icon ?? "",
+      background: activeDeck.background ?? "",
+      paginated: activeDeck.paginated === true,
+      autoShow: activeDeck.autoShow === true,
+      processName: Array.isArray(processName)
+        ? processName.join(", ")
+        : (processName ?? ""),
+      windowName: Array.isArray(windowName)
+        ? windowName.join(", ")
+        : (windowName ?? ""),
+    })
+  }, [activeDeckId, state?.revision])
   const firstFreePosition = (): number => {
     const used = new Set(positions)
     for (let position = 0; position < (device?.keyCount ?? 15); position += 1) {
@@ -397,6 +474,19 @@ export const EditorPage = ({
           (type) => type.type === selectedType && type.generated === true,
         ),
       ) === true)
+  const deckOptions = [
+    ...decks.map(([id, deck]) => ({ id, name: deck.name ?? id })),
+    ...(addonInventory?.addons ?? []).flatMap((addon) =>
+      addon.internal
+        ? []
+        : addon.decks
+            .filter((deck) => !deck.internal)
+            .map((deck) => ({ id: deck.id, name: deck.id })),
+    ),
+  ].filter(
+    (deck, index, all) =>
+      all.findIndex((item) => item.id === deck.id) === index,
+  )
   const [paletteTab, setPaletteTab] = useState<"buttons" | "decks" | "themes">(
     "buttons",
   )
@@ -411,17 +501,19 @@ export const EditorPage = ({
     }
   }, [activeDeckId, selectedIndex, selectedPosition, state?.revision])
 
-  const sendMutation = (mutation: Record<string, unknown>): void => {
-    if (state === null) return
+  const sendMutation = (mutation: Record<string, unknown>): string | null => {
+    if (state === null) return null
+    const requestId = nextRequestId()
     wsClient?.send(
       JSON.stringify({
         type: "editor-mutate",
-        requestId: nextRequestId(),
+        requestId,
         revision: state.revision,
         mutation,
       }),
     )
     setMessage("Saving…")
+    return requestId
   }
 
   const selectPosition = (position: number): void => {
@@ -430,21 +522,19 @@ export const EditorPage = ({
     setSelectedIndex(index === -1 ? null : index)
   }
 
-  const insertAt = (
+  const beginInsert = (
     button: Record<string, unknown>,
-    position: number,
+    position?: number,
   ): void => {
-    if (activeDeckId === null) return
-    const index = positions.indexOf(position)
-    if (index >= 0 && !window.confirm(`Overwrite key ${position}?`)) return
-    sendMutation({
-      kind: index >= 0 ? "update" : "add",
-      deckId: activeDeckId,
-      ...(index >= 0 ? { index } : { index: buttons.length }),
-      button: { ...button, position },
-    })
-    setSelectedPosition(position)
-    setSelectedIndex(index >= 0 ? index : null)
+    setPendingButton(button)
+    setPendingPosition(position ?? null)
+    setPositionUnset(false)
+    setNewPage(false)
+    setNewPageId(activeDeckId === null ? "page-2" : `${activeDeckId}-p2`)
+    setNewPageName(
+      `${config.decks?.[activeDeckId ?? ""]?.name ?? activeDeckId ?? "Deck"} 2`,
+    )
+    setSelectedIndex(null)
   }
 
   const add = (index?: number): void => {
@@ -452,19 +542,14 @@ export const EditorPage = ({
     const button =
       clipboard === null ? { type: "core:action", config: {} } : clipboard
     if (selectedPosition !== null)
-      return insertAt(
+      return beginInsert(
         isButton(button) ? button : { type: button, config: {} },
         selectedPosition,
       )
-    sendMutation({
-      kind: "add",
-      deckId: activeDeckId,
-      index,
-      button: {
-        ...(isButton(button) ? button : { type: button }),
-        position: firstFreePosition(),
-      },
-    })
+    beginInsert(
+      isButton(button) ? button : { type: button },
+      index === undefined ? undefined : firstFreePosition(),
+    )
   }
 
   const dropAt = (event: React.DragEvent, index: number): void => {
@@ -472,7 +557,7 @@ export const EditorPage = ({
     if (activeDeckId === null) return
     const data = readDragData(event)
     if (data?.kind === "palette") {
-      insertAt(data.button, index)
+      beginInsert(data.button, index)
     } else if (data?.kind === "existing" && data.index !== index) {
       sendMutation({
         kind: "reorder",
@@ -506,7 +591,12 @@ export const EditorPage = ({
     } else {
       const to = action === "up" ? index - 1 : index + 1
       if (to >= 0 && to < buttons.length)
-        sendMutation({ kind: "reorder", deckId: activeDeckId, from: index, to })
+        sendMutation({
+          kind: "move-position",
+          deckId: activeDeckId,
+          from: index,
+          to,
+        })
     }
   }
 
@@ -544,6 +634,52 @@ export const EditorPage = ({
   const saveDeck = (deck: Record<string, unknown>): void => {
     if (activeDeckId === null) return
     sendMutation({ kind: "update-deck", deckId: activeDeckId, deck })
+  }
+  const addPending = (config: Record<string, unknown>): void => {
+    if (activeDeckId === null || pendingButton === null) return
+    const position = newPage
+      ? 0
+      : positionUnset
+        ? undefined
+        : (pendingPosition ?? firstFreePosition())
+    const targetDeckId = newPage ? newPageId.trim() : activeDeckId
+    if (
+      targetDeckId.length === 0 ||
+      (newPage && newPageName.trim().length === 0)
+    )
+      return
+    const index =
+      newPage || position === undefined ? -1 : positions.indexOf(position)
+    if (index >= 0 && !window.confirm(`Replace key ${position}?`)) return
+    const nextConfig =
+      pendingButton.type === "core:change-deck" && newPage
+        ? { ...config, deck: targetDeckId }
+        : config
+    const requestId = sendMutation({
+      kind: "add-button",
+      deckId: activeDeckId,
+      ...(index >= 0 && !newPage ? { replaceIndex: index } : {}),
+      ...(newPage
+        ? {
+            index: 0,
+            newDeck: {
+              id: targetDeckId,
+              name: newPageName.trim(),
+              ...(newPageIcon.trim() ? { icon: newPageIcon.trim() } : {}),
+              ...(newPageBackground.trim()
+                ? { background: newPageBackground.trim() }
+                : {}),
+              ...(newPagePaginated ? { paginated: true } : {}),
+            },
+          }
+        : { index: index >= 0 ? index : buttons.length }),
+      button: {
+        ...pendingButton,
+        config: nextConfig,
+        ...(position === undefined ? {} : { position }),
+      },
+    })
+    setPendingRequestId(requestId)
   }
 
   const undo = (): void => {
@@ -597,40 +733,24 @@ export const EditorPage = ({
                 ? "Waiting for editor state…"
                 : `Revision ${state.revision}`)}
           </span>
-          <button
+          <Button
             type="button"
             onClick={undo}
-            disabled={!state?.canUndo}
-            className="min-h-10 rounded border border-neutral-700 px-3 text-sm hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-40"
+            isDisabled={!state?.canUndo}
+            variant="tertiary"
           >
             Undo
-          </button>
+          </Button>
         </div>
       </header>
       {state === null ? (
         <p className="text-sm text-neutral-400">Loading configured decks…</p>
       ) : (
         <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(12rem,16rem)_minmax(20rem,1fr)_minmax(18rem,1fr)]">
-          <aside aria-label="Editor palette" className="min-w-0">
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              Editing deck
-            </h2>
-            <select
-              aria-label="Editing deck"
-              value={activeDeckId ?? ""}
-              onChange={(event) => {
-                setDeckId(event.target.value)
-                setSelectedIndex(null)
-                setSelectedPosition(null)
-              }}
-              className="mb-3 min-h-10 w-full rounded border border-neutral-800 bg-neutral-950 px-3 text-sm"
-            >
-              {decks.map(([id, deck]) => (
-                <option key={id} value={id}>
-                  {deck.name ?? id}
-                </option>
-              ))}
-            </select>
+          <aside
+            aria-label="Editor palette"
+            className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
+          >
             <div className="mb-3">
               <Tabs
                 selectedKey={paletteTab}
@@ -684,37 +804,36 @@ export const EditorPage = ({
             {paletteTab === "buttons" ? (
               <div role="tabpanel" aria-label="Buttons" className="space-y-3">
                 <div className="space-y-1">
-                  {addonInventory?.addons.map((addon) => (
-                    <div key={addon.name} className="space-y-1">
-                      <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                        {addon.name}
-                      </h2>
-                      {addon.buttonTypes
-                        .filter((bt) => !bt.internal)
-                        .map((bt) => (
-                          <button
-                            key={bt.type}
-                            type="button"
-                            draggable
-                            onDragStart={(event) =>
-                              dragStart(event, {
-                                kind: "palette",
-                                button: { type: bt.type, config: {} },
-                              })
-                            }
-                            onClick={() =>
-                              insertAt(
-                                { type: bt.type, config: {} },
-                                selectedPosition ?? buttons.length,
-                              )
-                            }
-                            className="block min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
-                          >
-                            {bt.type}
-                          </button>
-                        ))}
-                    </div>
-                  )) ?? (
+                  {addonInventory?.addons
+                    .filter((addon) => !addon.internal)
+                    .map((addon) => (
+                      <div key={addon.name} className="space-y-1">
+                        <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                          {addon.name}
+                        </h2>
+                        {addon.buttonTypes
+                          .filter((bt) => !bt.internal)
+                          .map((bt) => (
+                            <button
+                              key={bt.type}
+                              type="button"
+                              draggable
+                              onDragStart={(event) =>
+                                dragStart(event, {
+                                  kind: "palette",
+                                  button: { type: bt.type, config: {} },
+                                })
+                              }
+                              onClick={() =>
+                                beginInsert({ type: bt.type, config: {} })
+                              }
+                              className="block min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
+                            >
+                              {bt.type}
+                            </button>
+                          ))}
+                      </div>
+                    )) ?? (
                     <p className="text-xs text-neutral-500">
                       No addon types received.
                     </p>
@@ -726,6 +845,53 @@ export const EditorPage = ({
                 <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
                   Configured decks
                 </h2>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onPress={() => setCreatingDeck((value) => !value)}
+                >
+                  {creatingDeck ? "Cancel new deck" : "Create deck"}
+                </Button>
+                {creatingDeck && (
+                  <div className="grid gap-2 rounded-lg border border-neutral-800 p-3">
+                    <Input
+                      aria-label="New deck ID"
+                      label="ID"
+                      value={newDeckId}
+                      onChange={(event) => setNewDeckId(event.target.value)}
+                    />
+                    <Input
+                      aria-label="New deck name"
+                      label="Name"
+                      value={newDeckName}
+                      onChange={(event) => setNewDeckName(event.target.value)}
+                    />
+                    <Button
+                      type="button"
+                      variant="primary"
+                      isDisabled={newDeckId.trim().length === 0}
+                      onPress={() => {
+                        const id = newDeckId.trim()
+                        const requestId = sendMutation({
+                          kind: "create-deck",
+                          deck: {
+                            id,
+                            ...(newDeckName.trim()
+                              ? { name: newDeckName.trim() }
+                              : {}),
+                          },
+                        })
+                        if (requestId !== null) {
+                          setCreatingDeck(false)
+                          setNewDeckId("")
+                          setNewDeckName("")
+                        }
+                      }}
+                    >
+                      Save deck
+                    </Button>
+                  </div>
+                )}
                 {decks.map(([id, deck]) => (
                   <button
                     key={id}
@@ -734,6 +900,7 @@ export const EditorPage = ({
                       setDeckId(id)
                       setSelectedIndex(null)
                       setSelectedPosition(null)
+                      onDeckSelect?.(id)
                     }}
                     aria-pressed={id === activeDeckId}
                     className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm aria-pressed:border-sky-400 aria-pressed:bg-sky-500/15"
@@ -836,7 +1003,10 @@ export const EditorPage = ({
               </div>
             )}
           </aside>
-          <section aria-labelledby="preview-title" className="min-w-0">
+          <section
+            aria-labelledby="preview-title"
+            className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
+          >
             <h2
               id="preview-title"
               className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500"
@@ -868,14 +1038,342 @@ export const EditorPage = ({
               </p>
             )}
           </section>
-          <section aria-labelledby="button-config-title" className="min-w-0">
+          <section
+            aria-labelledby="deck-config-title"
+            className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 lg:col-span-2"
+          >
+            <h2
+              id="deck-config-title"
+              className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500"
+            >
+              Active deck
+            </h2>
+            {activeDeckId === null ? (
+              <p className="text-sm text-neutral-500">No deck selected.</p>
+            ) : deckDraft === null ? (
+              <p className="text-sm text-neutral-500">
+                Addon-provided decks are read-only here; edit their configured
+                overrides in YAML.
+              </p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <p className="text-sm text-neutral-300 sm:col-span-2">
+                  <span className="block text-xs uppercase tracking-wider text-neutral-500">
+                    ID
+                  </span>
+                  <code>{activeDeckId}</code>
+                </p>
+                <p className="text-sm text-neutral-300">
+                  <span className="block text-xs uppercase tracking-wider text-neutral-500">
+                    Buttons
+                  </span>
+                  {buttons.length}
+                </p>
+                {(hasPreviousPage || hasNextPage) && (
+                  <div className="flex gap-2 sm:col-span-2">
+                    <Button
+                      type="button"
+                      variant="tertiary"
+                      isDisabled={!hasPreviousPage}
+                      onPress={() => {
+                        if (!hasPreviousPage) return
+                        setDeckId(previousPage)
+                        onDeckSelect?.(previousPage)
+                      }}
+                    >
+                      Previous page
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="tertiary"
+                      isDisabled={!hasNextPage}
+                      onPress={() => {
+                        if (!hasNextPage) return
+                        setDeckId(nextPage)
+                        onDeckSelect?.(nextPage)
+                      }}
+                    >
+                      Next page
+                    </Button>
+                  </div>
+                )}
+                <p className="text-sm text-neutral-300 sm:col-span-2">
+                  <span className="block text-xs uppercase tracking-wider text-neutral-500">
+                    Name
+                  </span>
+                  <Input
+                    aria-label="Deck name"
+                    value={deckDraft.name}
+                    onChange={(event) =>
+                      setDeckDraft({ ...deckDraft, name: event.target.value })
+                    }
+                  />
+                </p>
+                <Input
+                  aria-label="Deck icon"
+                  label="Icon"
+                  value={deckDraft.icon}
+                  onChange={(event) =>
+                    setDeckDraft({ ...deckDraft, icon: event.target.value })
+                  }
+                />
+                <Input
+                  aria-label="Deck background"
+                  label="Background"
+                  value={deckDraft.background}
+                  onChange={(event) =>
+                    setDeckDraft({
+                      ...deckDraft,
+                      background: event.target.value,
+                    })
+                  }
+                />
+                <Input
+                  aria-label="Trigger process"
+                  label="Trigger process"
+                  placeholder="chrome, slack"
+                  value={deckDraft.processName}
+                  onChange={(event) =>
+                    setDeckDraft({
+                      ...deckDraft,
+                      processName: event.target.value,
+                    })
+                  }
+                />
+                <Input
+                  aria-label="Trigger window"
+                  label="Trigger window"
+                  value={deckDraft.windowName}
+                  onChange={(event) =>
+                    setDeckDraft({
+                      ...deckDraft,
+                      windowName: event.target.value,
+                    })
+                  }
+                />
+                <label className="flex items-center gap-2 text-sm text-neutral-300">
+                  <input
+                    type="checkbox"
+                    checked={deckDraft.paginated}
+                    onChange={(event) =>
+                      setDeckDraft({
+                        ...deckDraft,
+                        paginated: event.target.checked,
+                      })
+                    }
+                  />{" "}
+                  Paginated
+                </label>
+                <label className="flex items-center gap-2 text-sm text-neutral-300">
+                  <input
+                    type="checkbox"
+                    checked={deckDraft.autoShow}
+                    onChange={(event) =>
+                      setDeckDraft({
+                        ...deckDraft,
+                        autoShow: event.target.checked,
+                      })
+                    }
+                  />{" "}
+                  Auto show overlay
+                </label>
+                <Button
+                  type="button"
+                  variant="primary"
+                  onPress={() => {
+                    if (activeDeckId === null) return
+                    const process = deckDraft.processName
+                      .split(",")
+                      .map((value) => value.trim())
+                      .filter(Boolean)
+                    const window = deckDraft.windowName
+                      .split(",")
+                      .map((value) => value.trim())
+                      .filter(Boolean)
+                    sendMutation({
+                      kind: "update-deck",
+                      deckId: activeDeckId,
+                      patch: {
+                        name: deckDraft.name,
+                        icon: deckDraft.icon || null,
+                        background: deckDraft.background || null,
+                        paginated: deckDraft.paginated,
+                        autoShow: deckDraft.autoShow,
+                        trigger:
+                          process.length || window.length
+                            ? {
+                                ...(process.length === 1
+                                  ? { process_name: process[0] }
+                                  : process.length
+                                    ? { process_name: process }
+                                    : {}),
+                                ...(window.length === 1
+                                  ? { window_name: window[0] }
+                                  : window.length
+                                    ? { window_name: window }
+                                    : {}),
+                              }
+                            : null,
+                      },
+                    })
+                  }}
+                >
+                  Save deck
+                </Button>
+              </div>
+            )}
+          </section>
+          <section
+            aria-labelledby="button-config-title"
+            className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
+          >
             <h2
               id="button-config-title"
               className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500"
             >
               Selected button
             </h2>
-            {selected === undefined ? (
+            {selected !== undefined && (
+              <div className="mb-3 flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-neutral-500">
+                <span className="rounded border border-neutral-800 px-2 py-1">
+                  type: {isButton(selected) ? String(selected.type) : selected}
+                </span>
+                <span className="rounded border border-neutral-800 px-2 py-1">
+                  position:{" "}
+                  {selectedPosition === null ? "none" : selectedPosition + 1}
+                </span>
+              </div>
+            )}
+            {pendingButton !== null ? (
+              <div className="space-y-3">
+                <div className="rounded-lg border border-sky-500/30 bg-sky-500/5 p-3">
+                  <p className="text-sm font-medium text-sky-200">Add button</p>
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Choose a position, configure the button, then add it.
+                  </p>
+                </div>
+                <div className="grid grid-cols-5 gap-1 rounded-lg border border-neutral-800 p-3">
+                  {Array.from(
+                    { length: device?.keyCount ?? 15 },
+                    (_, position) => {
+                      const occupied = positions.includes(position)
+                      return (
+                        <button
+                          key={position}
+                          type="button"
+                          aria-label={`Position ${position}${occupied ? " occupied" : " empty"}`}
+                          aria-pressed={pendingPosition === position}
+                          onClick={() => {
+                            if (position === (device?.keyCount ?? 15) - 1) {
+                              setPendingPosition(null)
+                              setPositionUnset(true)
+                            } else {
+                              setPendingPosition(position)
+                              setPositionUnset(false)
+                            }
+                            setNewPage(false)
+                          }}
+                          className={`h-[30px] w-[30px] rounded border text-xs ${positionUnset && position === (device?.keyCount ?? 15) - 1 ? "border-sky-400 bg-sky-500/20" : pendingPosition === position ? "border-sky-400 bg-sky-500/20" : occupied ? "border-amber-500/50 text-amber-300" : "border-neutral-800 text-neutral-500 hover:border-sky-400"}`}
+                        >
+                          {position === (device?.keyCount ?? 15) - 1
+                            ? "∅"
+                            : position + 1}
+                        </button>
+                      )
+                    },
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPendingPosition(firstFreePosition())
+                      setNewPage(false)
+                    }}
+                    className="rounded border border-neutral-700 px-3 py-2 text-xs hover:border-sky-400"
+                  >
+                    First available
+                  </button>
+                  {pendingButton.type === "core:change-deck" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewPage(true)
+                        setPendingPosition(0)
+                      }}
+                      className="rounded border border-neutral-700 px-3 py-2 text-xs hover:border-sky-400"
+                    >
+                      Add new page
+                    </button>
+                  )}
+                </div>
+                {newPage && (
+                  <div className="grid gap-2 rounded-lg border border-neutral-800 p-3">
+                    <label className="grid gap-1 text-xs text-neutral-400">
+                      Page ID
+                      <input
+                        value={newPageId}
+                        onChange={(event) => setNewPageId(event.target.value)}
+                        className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
+                      />
+                    </label>
+                    <label className="grid gap-1 text-xs text-neutral-400">
+                      Page name
+                      <input
+                        value={newPageName}
+                        onChange={(event) => setNewPageName(event.target.value)}
+                        className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
+                      />
+                    </label>
+                    <label className="grid gap-1 text-xs text-neutral-400">
+                      Icon source
+                      <input
+                        placeholder="icon://layout-grid"
+                        value={newPageIcon}
+                        onChange={(event) => setNewPageIcon(event.target.value)}
+                        className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
+                      />
+                    </label>
+                    <label className="grid gap-1 text-xs text-neutral-400">
+                      Background
+                      <input
+                        value={newPageBackground}
+                        onChange={(event) =>
+                          setNewPageBackground(event.target.value)
+                        }
+                        className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
+                      />
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-neutral-400">
+                      <input
+                        type="checkbox"
+                        checked={newPagePaginated}
+                        onChange={(event) =>
+                          setNewPagePaginated(event.target.checked)
+                        }
+                      />{" "}
+                      Paginated page
+                    </label>
+                  </div>
+                )}
+                <ButtonConfigEditor
+                  key={`pending:${pendingButton.type as string}`}
+                  wsClient={wsClient}
+                  revision={state?.revision ?? 0}
+                  buttonType={String(pendingButton.type ?? "")}
+                  config={pendingButton.config ?? {}}
+                  schema={
+                    state?.buttonSchemas?.[String(pendingButton.type ?? "")]
+                  }
+                  validation={validation}
+                  deckOptions={deckOptions}
+                  saveLabel="Add button"
+                  actionsInHeader
+                  onCancel={() => setPendingButton(null)}
+                  onSave={addPending}
+                />
+              </div>
+            ) : selected === undefined ? (
               <div className="space-y-3">
                 {activeDeck !== undefined && paletteTab !== "themes" && (
                   <DeckEditor
@@ -943,6 +1441,12 @@ export const EditorPage = ({
                       ]
                     }
                     validation={validation}
+                    deckOptions={deckOptions}
+                    actionsInHeader
+                    onCancel={() => {
+                      setSelectedIndex(null)
+                      setSelectedPosition(null)
+                    }}
                     onSave={saveConfig}
                   />
                 )}

@@ -102,6 +102,23 @@ describe("config mutation", () => {
     expect(readFileSync(included, "utf8")).toContain("core:action")
   })
 
+  it("validates an edited source against the resolved root config", () => {
+    const path = fixture(
+      "decks:\n  main:\n    buttons: !include buttons.yaml\n",
+    )
+    const included = join(join(path, ".."), "buttons.yaml")
+    writeFileSync(included, "- type: core:action\n")
+    const service = createConfigMutationService({ configPath: path })
+
+    expect(service.validateSource(included, "- type: core:settings\n")).toEqual(
+      [],
+    )
+    expect(
+      service.validateSource(included, "- not-a-button: true\n"),
+    ).not.toEqual([])
+    expect(readFileSync(included, "utf8")).toContain("core:action")
+  })
+
   it("persists addon deck overrides in the addon config", async () => {
     const path = fixture(
       "addons:\n  - src: example\ndecks:\n  main:\n    buttons: []\n",
@@ -168,5 +185,97 @@ describe("config mutation", () => {
     expect(written).toContain("main:")
     expect(written).toContain("name: Updated")
     expect(written).not.toContain("id:")
+  })
+  it("creates a regular deck and its change-deck button atomically", async () => {
+    const path = fixture("decks:\n  main:\n    buttons: []\n")
+    const service = createConfigMutationService({ configPath: path })
+
+    await service.apply({
+      kind: "add-button",
+      deckId: "main",
+      button: {
+        type: "core:change-deck",
+        config: { deck: "tools", label: "Tools" },
+      },
+      newDeck: { id: "tools", name: "Tools" },
+    })
+
+    const written = readFileSync(path, "utf8")
+    expect(written).toContain("tools:")
+    expect(written).toContain("name: Tools")
+    expect(written).toContain("type: core:change-deck")
+    await service.undo()
+    expect(readFileSync(path, "utf8")).not.toContain("tools:")
+  })
+
+  it("rejects creating a deck that already exists", async () => {
+    const path = fixture(
+      "decks:\n  main:\n    buttons: []\n  tools:\n    buttons: []\n",
+    )
+    const service = createConfigMutationService({ configPath: path })
+
+    await expect(
+      service.apply({
+        kind: "add-button",
+        deckId: "main",
+        button: {
+          type: "core:change-deck",
+          config: { deck: "tools", label: "Tools" },
+        },
+        newDeck: { id: "tools" },
+      }),
+    ).rejects.toThrow("Deck already exists: tools")
+  })
+
+  it("does not let other button types create decks", async () => {
+    const path = fixture("decks:\n  main:\n    buttons: []\n")
+    const service = createConfigMutationService({ configPath: path })
+
+    await expect(
+      service.apply({
+        kind: "add-button",
+        deckId: "main",
+        button: { type: "core:action", config: {} },
+        newDeck: { id: "tools" },
+      }),
+    ).rejects.toThrow("Only core:change-deck buttons can create a deck")
+    expect(readFileSync(path, "utf8")).not.toContain("tools:")
+  })
+
+  it("creates and updates a user deck without changing its id", async () => {
+    const path = fixture("decks:\n  main:\n    buttons: []\n")
+    const service = createConfigMutationService({ configPath: path })
+
+    await service.apply({
+      kind: "create-deck",
+      deck: { id: "tools", name: "Tools" },
+    })
+    await service.apply({
+      kind: "update-deck",
+      deckId: "tools",
+      patch: { name: "Updated tools", autoShow: true },
+    })
+
+    const written = readFileSync(path, "utf8")
+    expect(written).toContain("tools:")
+    expect(written).toContain("name: Updated tools")
+    expect(written).toContain("autoShow: true")
+  })
+
+  it("moves configured buttons by swapping their physical positions", async () => {
+    const path = fixture(
+      "decks:\n  main:\n    buttons:\n      - type: core:action\n      - type: core:settings\n",
+    )
+    const service = createConfigMutationService({ configPath: path })
+    await service.apply({
+      kind: "move-position",
+      deckId: "main",
+      from: 0,
+      to: 1,
+    })
+
+    const written = readFileSync(path, "utf8")
+    expect(written).toMatch(/type: core:action[\s\S]*position: 1/)
+    expect(written).toMatch(/type: core:settings[\s\S]*position: 0/)
   })
 })

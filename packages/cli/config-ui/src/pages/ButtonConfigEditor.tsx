@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { Button, Input, ListBox, Select, Tabs, TextArea } from "@heroui/react"
 import { parse, stringify } from "yaml"
 import { Icon } from "@sirenodeck/cli"
+import * as lucideIcons from "lucide-react"
 
 import type { WsClient } from "../bridge"
 
@@ -36,30 +37,20 @@ interface ConfigFormProps {
   readonly onChange: (path: string, value: unknown) => void
   readonly wsClient: WsClient | null
   readonly revision: number
+  readonly deckOptions?: readonly { id: string; name: string }[]
 }
 
-const LUCIDE_ICONS = [
-  "activity",
-  "arrow-left",
-  "arrow-right",
-  "bot",
-  "calendar",
-  "check",
-  "chevron-down",
-  "chrome",
-  "clock",
-  "cloud",
-  "cpu",
-  "folder",
-  "globe",
-  "grid-2x2",
-  "layers",
-  "layout-grid",
-  "play",
-  "settings",
-  "sparkles",
-  "volume-2",
-] as const
+const LUCIDE_ICONS = Object.keys(lucideIcons)
+  .filter(
+    (name) =>
+      /^[A-Z]/.test(name) &&
+      name !== "createLucideIcon" &&
+      !name.endsWith("Icon") &&
+      !name.endsWith("Provider"),
+  )
+  .map((name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase())
+  .filter((name, index, names) => names.indexOf(name) === index)
+  .sort()
 
 const isIconField = (key: string, schema: JsonSchema): boolean =>
   key.toLowerCase() === "icon" ||
@@ -78,24 +69,76 @@ const IconField = ({
 }) => {
   const current = typeof value === "string" ? value : ""
   const selected = current.startsWith("icon://") ? current.slice(7) : ""
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState("")
+  const filtered = LUCIDE_ICONS.filter((name) =>
+    name.includes(query.trim().toLowerCase()),
+  ).slice(0, query.trim() === "" ? 120 : 240)
   return (
     <fieldset className="grid gap-2 rounded-lg border border-neutral-800 p-3">
       <legend className="px-1 text-sm text-neutral-300">Icon</legend>
-      <div className="grid grid-cols-5 gap-1">
-        {LUCIDE_ICONS.map((name) => (
-          <Button
-            key={name}
-            type="button"
-            size="sm"
-            variant={selected === name ? "secondary" : "tertiary"}
-            aria-label={name}
-            className="h-9 min-w-0 p-0"
-            onPress={() => onChange(`icon://${name}`)}
-          >
-            <Icon source={`icon://${name}`} size={16} />
-          </Button>
-        ))}
-      </div>
+      <Button type="button" variant="secondary" onPress={() => setOpen(true)}>
+        {selected === "" ? (
+          "Choose icon"
+        ) : (
+          <>
+            <Icon source={`icon://${selected}`} size={16} /> {selected}
+          </>
+        )}
+      </Button>
+      {open && (
+        <dialog
+          open
+          aria-label="Choose icon"
+          className="fixed inset-0 z-50 m-auto max-h-[80vh] w-[min(42rem,calc(100vw-2rem))] rounded-xl border border-neutral-700 bg-neutral-950 p-4 text-neutral-100 shadow-2xl"
+        >
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h3 className="text-sm font-semibold">Choose a Lucide icon</h3>
+            <Button
+              type="button"
+              variant="tertiary"
+              onPress={() => setOpen(false)}
+            >
+              Close
+            </Button>
+          </div>
+          <Input
+            aria-label="Search icons"
+            placeholder="Search by name"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          <div className="mt-3 grid max-h-[55vh] grid-cols-6 gap-1 overflow-auto sm:grid-cols-8">
+            {filtered.map((name) => (
+              <Button
+                key={name}
+                type="button"
+                size="sm"
+                variant={selected === name ? "secondary" : "tertiary"}
+                aria-label={name}
+                className="h-12 min-w-0 flex-col gap-0 p-1 text-[9px]"
+                onPress={() => {
+                  onChange(`icon://${name}`)
+                  setOpen(false)
+                }}
+              >
+                <Icon source={`icon://${name}`} size={18} />
+                <span className="max-w-full truncate">{name}</span>
+              </Button>
+            ))}
+          </div>
+          {filtered.length === 0 && (
+            <p className="py-6 text-center text-sm text-neutral-500">
+              No icons found.
+            </p>
+          )}
+        </dialog>
+      )}
+      {selected !== "" && (
+        <Button type="button" variant="tertiary" onPress={() => onChange("")}>
+          Clear icon
+        </Button>
+      )}
       <Input
         aria-label="Image path"
         label="Image path"
@@ -196,6 +239,7 @@ const ConfigForm = ({
   onChange,
   wsClient,
   revision,
+  deckOptions,
 }: ConfigFormProps) => {
   const variants = schema.oneOf ?? schema.anyOf
   if (variants !== undefined && variants.length > 0) {
@@ -248,6 +292,7 @@ const ConfigForm = ({
           onChange={onChange}
           wsClient={wsClient}
           revision={revision}
+          deckOptions={deckOptions}
         />
       </div>
     )
@@ -281,6 +326,35 @@ const ConfigForm = ({
       </Select>
     )
   }
+  if (path.split(".").at(-1) === "deck" && deckOptions !== undefined) {
+    return (
+      <Select
+        selectedKey={typeof value === "string" ? value : ""}
+        onSelectionChange={(key) => onChange(path, String(key))}
+        aria-label="Target deck"
+      >
+        <Select.Trigger>
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            {deckOptions.map((deck) => (
+              <ListBox.Item
+                key={deck.id}
+                id={deck.id}
+                textValue={`${deck.name} ${deck.id}`}
+              >
+                {deck.name}{" "}
+                <span className="text-xs text-neutral-500">#{deck.id}</span>
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </Select.Popover>
+      </Select>
+    )
+  }
   if (selectedSchema.type === "object" || selectedSchema.properties) {
     return (
       <div className="grid gap-3 border-l border-neutral-800 pl-3">
@@ -294,6 +368,7 @@ const ConfigForm = ({
                 onChange={(next) => onChange(`${path}.${key}`, next)}
                 wsClient={wsClient}
                 revision={revision}
+                deckOptions={deckOptions}
               />
             ) : (
               <ConfigForm
@@ -304,6 +379,7 @@ const ConfigForm = ({
                 onChange={onChange}
                 wsClient={wsClient}
                 revision={revision}
+                deckOptions={deckOptions}
               />
             ),
           )}
@@ -407,6 +483,10 @@ export interface ButtonConfigEditorProps {
   readonly schema?: JsonSchema
   readonly validation: ValidationState | null
   readonly onSave: (config: Record<string, unknown>) => void
+  readonly onCancel?: () => void
+  readonly deckOptions?: readonly { id: string; name: string }[]
+  readonly saveLabel?: string
+  readonly actionsInHeader?: boolean
 }
 
 let validationNumber = 0
@@ -419,6 +499,10 @@ export const ButtonConfigEditor = ({
   schema,
   validation,
   onSave,
+  onCancel,
+  deckOptions,
+  saveLabel = "Save button config",
+  actionsInHeader = false,
 }: ButtonConfigEditorProps) => {
   const initial =
     typeof config === "object" && config !== null && !Array.isArray(config)
@@ -455,10 +539,12 @@ export const ButtonConfigEditor = ({
     setValue(nextValue)
     setYaml(stringify(nextValue))
     setYamlError(null)
+    setRequestId("")
   }
 
   const yamlChange = (next: string): void => {
     setYaml(next)
+    setRequestId("")
     try {
       const parsed = parse(next)
       if (
@@ -490,6 +576,23 @@ export const ButtonConfigEditor = ({
 
   return (
     <div className="grid gap-3">
+      {actionsInHeader && (
+        <div className="flex justify-end gap-2">
+          {onCancel !== undefined && (
+            <Button type="button" variant="tertiary" onPress={onCancel}>
+              Cancel
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="primary"
+            isDisabled={!canSave}
+            onPress={() => onSave(value as Record<string, unknown>)}
+          >
+            {saveLabel}
+          </Button>
+        </div>
+      )}
       <Tabs aria-label="Button config editor" defaultSelectedKey="form">
         <Tabs.ListContainer>
           <Tabs.List>
@@ -516,6 +619,7 @@ export const ButtonConfigEditor = ({
               onChange={change}
               wsClient={wsClient}
               revision={revision}
+              deckOptions={deckOptions}
             />
           )}
         </Tabs.Panel>
@@ -525,18 +629,25 @@ export const ButtonConfigEditor = ({
             value={yaml}
             onChange={(event) => yamlChange(event.target.value)}
             spellCheck={false}
-            className="min-h-64 font-mono text-sm"
+            className="min-h-64 w-full resize-none font-mono text-sm"
           />
         </Tabs.Panel>
       </Tabs>
-      <Button
-        type="button"
-        variant="primary"
-        isDisabled={!canSave}
-        onPress={() => onSave(value as Record<string, unknown>)}
-      >
-        Save button config
-      </Button>
+      {!actionsInHeader && (
+        <Button
+          type="button"
+          variant="primary"
+          isDisabled={!canSave}
+          onPress={() => onSave(value as Record<string, unknown>)}
+        >
+          {saveLabel}
+        </Button>
+      )}
+      {!actionsInHeader && onCancel !== undefined && (
+        <Button type="button" variant="tertiary" onPress={onCancel}>
+          Cancel
+        </Button>
+      )}
       {errors.length > 0 && (
         <div role="alert" className="grid gap-1 text-sm text-red-300">
           {errors.map((error) => (

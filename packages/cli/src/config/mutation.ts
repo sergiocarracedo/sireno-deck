@@ -30,8 +30,11 @@ import {
   ButtonDefSchema,
   DeckDefSchema,
   RawConfigSchema,
+  UserDeckCreateSchema,
+  UserDeckUpdateSchema,
   type RawButtonDef,
   type RawDeckDef,
+  type UserDeckCreate,
 } from "./schemas"
 
 export interface ConfigSourceDescriptor {
@@ -43,11 +46,22 @@ export interface ConfigSourceDescriptor {
 
 export type RootButtonMutation =
   | { kind: "add"; deckId: string; button: RawButtonDef; index?: number }
+  | {
+      kind: "add-button"
+      deckId: string
+      button: RawButtonDef
+      index?: number
+      replaceIndex?: number
+      newDeck?: UserDeckCreate
+    }
+  | { kind: "update-deck"; deckId: string; patch: Record<string, unknown> }
+  | { kind: "create-deck"; deck: UserDeckCreate }
+  | { kind: "create-deck"; deckId: string; deck: RawDeckDef }
+  | { kind: "update-deck"; deckId: string; deck: RawDeckDef }
+  | { kind: "move-position"; deckId: string; from: number; to: number }
   | { kind: "update"; deckId: string; index: number; button: RawButtonDef }
   | { kind: "delete"; deckId: string; index: number }
   | { kind: "reorder"; deckId: string; from: number; to: number }
-  | { kind: "create-deck"; deckId: string; deck: RawDeckDef }
-  | { kind: "update-deck"; deckId: string; deck: RawDeckDef }
   | { kind: "set-theme"; theme: string }
   | {
       kind: "set-addon-deck-override"
@@ -69,6 +83,7 @@ export interface ConfigMutationService {
   readonly sourceDescriptors: () => ConfigSourceDescriptor[]
   readonly readSource: (path: string, fingerprint?: string) => string
   readonly isEditableSource: (path: string) => boolean
+  readonly validateSource: (path: string, content: string) => string[]
   readonly writeAsset: (filename: string, data: string) => Promise<void>
   readonly apply: (mutation: RootButtonMutation) => Promise<void>
   readonly undo: () => Promise<boolean>
@@ -108,10 +123,14 @@ const atomicWrite = (path: string, content: string): void => {
   }
 }
 
-const validate = (raw: string, configPath: string): void => {
+const validate = (
+  raw: string,
+  configPath: string,
+  replacements: ReadonlyMap<string, string> = new Map(),
+): void => {
   let expanded: unknown
   try {
-    const inlined = resolveIncludes(raw, configPath)
+    const inlined = resolveIncludes(raw, configPath, replacements)
     const document = parseDocument(inlined)
     if (document.errors.length > 0) {
       throw new ConfigMutationError(
@@ -227,6 +246,23 @@ export const createConfigMutationService = ({
       return content
     },
     isEditableSource,
+    validateSource: (path, content) => {
+      const sourcePath = canonical(path)
+      if (!isEditableSource(sourcePath))
+        return [`Source is not an editable included YAML: ${sourcePath}`]
+      try {
+        validate(
+          sourcePath === rootPath ? content : readFileSync(rootPath, "utf8"),
+          rootPath,
+          sourcePath === rootPath
+            ? new Map()
+            : new Map([[sourcePath, content]]),
+        )
+        return []
+      } catch (error) {
+        return [error instanceof Error ? error.message : String(error)]
+      }
+    },
     writeAsset: async (filename, data) => {
       const safeName = basename(filename).replace(/[^a-zA-Z0-9._-]/g, "_")
       if (safeName === "." || safeName === ".." || safeName.length === 0)
@@ -274,10 +310,92 @@ export const createConfigMutationService = ({
             document.errors[0]?.message ?? "Invalid YAML",
           )
         }
-        if (mutation.kind === "add" || mutation.kind === "update") {
+        if (
+          mutation.kind === "add" ||
+          mutation.kind === "add-button" ||
+          mutation.kind === "update"
+        ) {
           if (!ButtonDefSchema.safeParse(mutation.button).success) {
             throw new ConfigMutationError("Invalid button definition")
           }
+        }
+        if (mutation.kind === "create-deck") {
+          const legacy = "deckId" in mutation
+          if (
+            !(legacy
+              ? DeckDefSchema.safeParse(mutation.deck).success
+              : UserDeckCreateSchema.safeParse(mutation.deck).success)
+          )
+            throw new ConfigMutationError("Invalid new deck definition")
+          const deckId = legacy ? mutation.deckId : mutation.deck.id
+          if (document.hasIn(["decks", deckId]))
+            throw new ConfigMutationError(`Deck already exists: ${deckId}`)
+          document.setIn(["decks", deckId], {
+            ...(mutation.deck.name !== undefined
+              ? { name: mutation.deck.name }
+              : {}),
+            ...(mutation.deck.icon !== undefined
+              ? { icon: mutation.deck.icon }
+              : {}),
+            ...(mutation.deck.background !== undefined
+              ? { background: mutation.deck.background }
+              : {}),
+            ...(mutation.deck.paginated !== undefined
+              ? { paginated: mutation.deck.paginated }
+              : {}),
+            buttons: [],
+          })
+        } else if (mutation.kind === "update-deck") {
+          if (
+            "deck" in mutation
+              ? !DeckDefSchema.safeParse(mutation.deck).success
+              : !UserDeckUpdateSchema.safeParse(mutation.patch).success
+          )
+            throw new ConfigMutationError("Invalid deck update")
+          if (!document.hasIn(["decks", mutation.deckId]))
+            throw new ConfigMutationError(`Deck not found: ${mutation.deckId}`)
+          const patch = "deck" in mutation ? mutation.deck : mutation.patch
+          for (const [key, value] of Object.entries(patch)) {
+            if (value === null)
+              document.deleteIn(["decks", mutation.deckId, key])
+            else
+              document.setIn(
+                ["decks", mutation.deckId, key],
+                document.createNode(value),
+              )
+          }
+        } else if (
+          mutation.kind === "add-button" &&
+          mutation.newDeck !== undefined
+        ) {
+          if (!UserDeckCreateSchema.safeParse(mutation.newDeck).success) {
+            throw new ConfigMutationError("Invalid new deck definition")
+          }
+          if (mutation.button.type !== "core:change-deck") {
+            throw new ConfigMutationError(
+              "Only core:change-deck buttons can create a deck",
+            )
+          }
+          if (document.hasIn(["decks", mutation.newDeck.id])) {
+            throw new ConfigMutationError(
+              `Deck already exists: ${mutation.newDeck.id}`,
+            )
+          }
+          document.setIn(["decks", mutation.newDeck.id], {
+            ...(mutation.newDeck.name !== undefined
+              ? { name: mutation.newDeck.name }
+              : {}),
+            ...(mutation.newDeck.icon !== undefined
+              ? { icon: mutation.newDeck.icon }
+              : {}),
+            ...(mutation.newDeck.background !== undefined
+              ? { background: mutation.newDeck.background }
+              : {}),
+            ...(mutation.newDeck.paginated !== undefined
+              ? { paginated: mutation.newDeck.paginated }
+              : {}),
+            buttons: [],
+          })
         }
         if (mutation.kind === "set-theme") {
           if (mutation.theme.length === 0) {
@@ -318,42 +436,28 @@ export const createConfigMutationService = ({
             )
           }
         } else if (
-          mutation.kind === "create-deck" ||
-          mutation.kind === "update-deck"
+          mutation.kind !== "update-deck" &&
+          mutation.kind !== "create-deck"
         ) {
-          if (mutation.deckId.length === 0) {
-            throw new ConfigMutationError("Deck id must not be empty")
-          }
-          if (!DeckDefSchema.safeParse(mutation.deck).success) {
-            throw new ConfigMutationError("Invalid deck definition")
-          }
-          const decks = document.getIn(["decks"], true)
-          if (!(decks instanceof YAMLMap)) {
-            throw new ConfigMutationError("decks must be a YAML map")
-          }
-          if (mutation.kind === "create-deck" && decks.has(mutation.deckId)) {
-            throw new ConfigMutationError(
-              `Deck id already exists: ${mutation.deckId}`,
-            )
-          }
-          if (mutation.kind === "update-deck") {
-            const current = decks.get(mutation.deckId, true)
-            if (!(current instanceof YAMLMap))
-              throw new ConfigMutationError(
-                `Deck not found: ${mutation.deckId}`,
-              )
-            for (const key of current.items
-              .map((pair) => String(pair.key))
-              .filter((key) => !(key in mutation.deck)))
-              current.delete(key)
-            for (const [key, value] of Object.entries(mutation.deck))
-              current.set(key, document.createNode(value))
-          } else {
-            decks.set(mutation.deckId, document.createNode(mutation.deck))
-          }
-        } else {
           const buttons = buttonSequence(document, mutation.deckId)
-          if (mutation.kind === "add") {
+          if (mutation.kind === "move-position") {
+            checkIndex(mutation.from, buttons.items.length, "from")
+            checkIndex(mutation.to, buttons.items.length, "to")
+            const from = buttons.items[mutation.from]
+            const to = buttons.items[mutation.to]
+            if (!(from instanceof YAMLMap) || !(to instanceof YAMLMap))
+              throw new ConfigMutationError(
+                "Only configured buttons can move by position",
+              )
+            const fromPosition = from.get("position") ?? mutation.from
+            const toPosition = to.get("position") ?? mutation.to
+            from.set("position", toPosition)
+            to.set("position", fromPosition)
+          } else if (
+            mutation.kind === "add" ||
+            (mutation.kind === "add-button" &&
+              mutation.replaceIndex === undefined)
+          ) {
             const index = mutation.index ?? buttons.items.length
             if (
               !Number.isInteger(index) ||
@@ -366,10 +470,16 @@ export const createConfigMutationService = ({
           } else if (mutation.kind === "update") {
             checkIndex(mutation.index, buttons.items.length, "update")
             buttons.items[mutation.index] = document.createNode(mutation.button)
+          } else if (mutation.kind === "add-button") {
+            const replaceIndex = mutation.replaceIndex
+            if (replaceIndex === undefined)
+              throw new ConfigMutationError("Missing replace index")
+            checkIndex(replaceIndex, buttons.items.length, "replace")
+            buttons.items[replaceIndex] = document.createNode(mutation.button)
           } else if (mutation.kind === "delete") {
             checkIndex(mutation.index, buttons.items.length, "delete")
             buttons.items.splice(mutation.index, 1)
-          } else {
+          } else if (mutation.kind === "reorder") {
             checkIndex(mutation.from, buttons.items.length, "from")
             checkIndex(mutation.to, buttons.items.length, "to")
             const [item] = buttons.items.splice(mutation.from, 1)

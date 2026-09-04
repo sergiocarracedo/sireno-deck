@@ -10,4 +10,10 @@ export default {
   }) => {
     await methods["media:toggle"]?.()
   },
+  onDblTap: async ({ methods }) => {
+    await methods["media:previous"]?.()
+  },
+  onHold: async ({ methods }) => {
+    await methods["media:next"]?.()
+  },
 } satisfies AddonButtonTypeService

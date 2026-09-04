@@ -43,6 +43,7 @@ const processLine = (
   line: string,
   definingFilePath: string,
   visited: Set<string>,
+  replacements: ReadonlyMap<string, string>,
 ): string[] => {
   const match = line.match(INCLUDE_RE)
   if (match === null) return [line]
@@ -63,21 +64,23 @@ const processLine = (
       { message: `cycle: ${cycle}`, path: definingFilePath },
     ])
   }
-  let raw: string
-  try {
-    raw = readFileSync(includePath, "utf8")
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new IncludeResolutionError(
-        `Included file not found: ${includePath} (from ${definingFilePath})`,
-        [{ message: `not found: ${includePath}`, path: definingFilePath }],
-      )
+  let raw = replacements.get(includePath)
+  if (raw === undefined) {
+    try {
+      raw = readFileSync(includePath, "utf8")
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+        throw new IncludeResolutionError(
+          `Included file not found: ${includePath} (from ${definingFilePath})`,
+          [{ message: `not found: ${includePath}`, path: definingFilePath }],
+        )
+      }
+      throw err
     }
-    throw err
   }
   const next = new Set(visited)
   next.add(includePath)
-  const inlined = inlineIncludes(raw, includePath, next)
+  const inlined = inlineIncludes(raw, includePath, next, replacements)
   if (before.trim().length === 0) {
     return inlined.split("\n")
   }
@@ -99,11 +102,12 @@ const inlineIncludes = (
   text: string,
   definingFilePath: string,
   visited: Set<string>,
+  replacements: ReadonlyMap<string, string>,
 ): string => {
   const lines = text.split("\n")
   const out: string[] = []
   for (const line of lines) {
-    out.push(...processLine(line, definingFilePath, visited))
+    out.push(...processLine(line, definingFilePath, visited, replacements))
   }
   return out.join("\n")
 }
@@ -111,7 +115,14 @@ const inlineIncludes = (
 export const resolveIncludes = (
   text: string,
   definingFilePath: string,
-): string => inlineIncludes(text, definingFilePath, new Set([definingFilePath]))
+  replacements: ReadonlyMap<string, string> = new Map(),
+): string =>
+  inlineIncludes(
+    text,
+    definingFilePath,
+    new Set([definingFilePath]),
+    replacements,
+  )
 
 const discoverFromFile = (filePath: string, visited: Set<string>): string[] => {
   const canonicalPath = realpathSync(filePath)

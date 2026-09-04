@@ -75,7 +75,7 @@ function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
       value: "lg",
       unit: "xs",
       iconSize: 14,
-      showLabel: true,
+      showLabel: false,
       unitsClass: "max-w-[20%]",
       valueLineClass: "flex",
     },

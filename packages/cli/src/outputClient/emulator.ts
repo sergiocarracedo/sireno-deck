@@ -5,6 +5,7 @@ import type pino from "pino"
 
 import type {
   ButtonActionMessage,
+  SelectDeckMessage,
   SetDeviceMessage,
   WsMessage,
 } from "@/api/protocol-internal"
@@ -38,6 +39,9 @@ const isButtonAction = (m: WsMessage): m is ButtonActionMessage =>
 
 const isSetDevice = (m: WsMessage): m is SetDeviceMessage =>
   m.type === "set-device"
+
+const isSelectDeck = (m: WsMessage): m is SelectDeckMessage =>
+  m.type === "select-deck"
 
 const openBrowser = (
   url: string,
@@ -188,6 +192,16 @@ export class EmulatorOutputClient implements OutputClient {
     opts.bridge.setDevice(descriptor)
 
     opts.bridge.onMessage((message) => {
+      if (isSelectDeck(message)) {
+        if (opts.runtime.deckExists(message.deckId))
+          opts.runtime.navigateToDeck(message.deckId, { addToHistory: false })
+        else
+          logger.warn(
+            { deckId: message.deckId },
+            "emulator: select-deck targets unknown deck",
+          )
+        return
+      }
       if (isSetDevice(message)) {
         if (
           !VIRTUAL_MODELS.includes(

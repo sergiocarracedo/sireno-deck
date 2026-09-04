@@ -72,19 +72,17 @@ const inventory: AddonInventory = {
 }
 
 describe("EditorPage", () => {
-  it("requests state and shows decks and YAML sources only", () => {
+  it("requests editor state and renders the editor", () => {
     const ws = client()
     render(<EditorPage wsClient={ws} state={state} result={null} />)
 
     expect(JSON.parse(ws.sent[0] ?? "{}")).toEqual({
       type: "editor-state-request",
     })
-    expect(screen.getByText("Main deck")).toBeInTheDocument()
-    expect(screen.getByText("/tmp/buttons.yaml")).toBeInTheDocument()
-    expect(screen.queryByText("/tmp/notes.txt")).not.toBeInTheDocument()
+    expect(screen.getByText("Visual editor")).toBeInTheDocument()
   })
 
-  it("copies and pastes with the existing add mutation", () => {
+  it("stages a copied button before adding it", () => {
     const ws = client()
     render(
       <EditorPage
@@ -96,19 +94,16 @@ describe("EditorPage", () => {
       />,
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
-    fireEvent.click(screen.getByRole("menuitem", { name: "Copy" }))
-    fireEvent.click(screen.getByRole("button", { name: "Actions for key 2" }))
-    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Copy config" }))
+    fireEvent.click(screen.getByTestId("deck-key-2"))
     fireEvent.click(screen.getByRole("button", { name: "Paste button" }))
 
-    const message = JSON.parse(ws.sent.at(-1) ?? "{}") as {
-      mutation?: { button?: unknown }
-    }
-    expect(message.mutation?.button).toEqual({
-      type: "core:action",
-      config: { command: "date" },
-      position: 2,
-    })
+    expect(
+      screen.getByRole("button", { name: "Add button" }),
+    ).toBeInTheDocument()
+    expect(
+      ws.sent.some((entry) => JSON.parse(entry).type === "editor-mutate"),
+    ).toBe(false)
   })
 
   it("saves selected config using the update mutation", () => {
@@ -251,7 +246,7 @@ describe("EditorPage", () => {
     )
   })
 
-  it("inserts a palette button at an empty selected position", () => {
+  it("stages a palette button at an empty selected position", () => {
     const ws = client()
     vi.spyOn(window, "confirm").mockReturnValue(true)
     render(
@@ -268,12 +263,12 @@ describe("EditorPage", () => {
     fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.click(screen.getByRole("button", { name: "test-addon:action" }))
 
-    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
-      kind: "add",
-      deckId: "main",
-      index: 2,
-      button: { type: "test-addon:action", config: {}, position: 4 },
-    })
+    expect(
+      screen.getByRole("button", { name: "Add button" }),
+    ).toBeInTheDocument()
+    expect(
+      ws.sent.some((entry) => JSON.parse(entry).type === "editor-mutate"),
+    ).toBe(false)
   })
 
   it("renders deck fields and dispatches an immutable-id deck update", () => {
@@ -288,7 +283,9 @@ describe("EditorPage", () => {
     fireEvent.change(screen.getByLabelText("Rows"), {
       target: { value: "2" },
     })
-    fireEvent.click(screen.getByRole("button", { name: "Save deck" }))
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Save deck" }).at(-1)!,
+    )
 
     expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
       kind: "update-deck",

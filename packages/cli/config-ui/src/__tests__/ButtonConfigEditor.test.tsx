@@ -64,4 +64,30 @@ describe("ButtonConfigEditor", () => {
       screen.getByRole("button", { name: "Save button config" }),
     ).toBeDisabled()
   })
+
+  it("writes a selected Lucide icon into the config", () => {
+    const ws = wsClient()
+    render(
+      <ButtonConfigEditor
+        wsClient={ws}
+        revision={1}
+        buttonType="test:button"
+        config={{ icon: "" }}
+        schema={{
+          type: "object",
+          properties: { icon: { type: "string" } },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole("button", { name: "Choose icon" }))
+    fireEvent.change(screen.getByLabelText("Search icons"), {
+      target: { value: "activity" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "activity" }))
+
+    expect(screen.getByRole("button", { name: /activity/ })).toBeInTheDocument()
+  })
 })

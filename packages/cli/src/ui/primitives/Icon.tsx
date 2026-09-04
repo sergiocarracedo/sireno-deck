@@ -94,7 +94,14 @@ function toLucideExportName(name: string): string {
 
 function resolveLucideIcon(name: string): LucideIcon | undefined {
   const exportName = toLucideExportName(name)
-  return LUCIDE_ICON_EXPORTS[exportName]
+  return (
+    LUCIDE_ICON_EXPORTS[exportName] ??
+    Object.entries(LUCIDE_ICON_EXPORTS).find(
+      ([candidate]) =>
+        candidate.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase() ===
+        name.trim().toLowerCase(),
+    )?.[1]
+  )
 }
 
 /**

@@ -12,6 +12,8 @@ import {
   editorMutationMessageSchema,
   editorStateMessageSchema,
   editorUndoMessageSchema,
+  editorSourceValidationRequestMessageSchema,
+  editorSourceValidationResultMessageSchema,
 } from "../protocol"
 
 describe("ws protocol v1", () => {
@@ -120,6 +122,22 @@ describe("ws protocol v1", () => {
         type: "editor-mutate",
         requestId: "r1",
         revision: 0,
+        mutation: {
+          kind: "add-button",
+          deckId: "main",
+          button: {
+            type: "core:change-deck",
+            config: { deck: "tools", label: "Tools" },
+          },
+          newDeck: { id: "tools", name: "Tools" },
+        },
+      }).success,
+    ).toBe(true)
+    expect(
+      editorMutationMessageSchema.safeParse({
+        type: "editor-mutate",
+        requestId: "r1",
+        revision: 0,
         mutation: { kind: "delete", deckId: "main", index: 0, extra: true },
       }).success,
     ).toBe(false)
@@ -177,5 +195,24 @@ describe("ws protocol v1", () => {
       ],
     })
     expect(result.success).toBe(false)
+  })
+  it("supports strict source validation request and result messages", () => {
+    expect(
+      editorSourceValidationRequestMessageSchema.safeParse({
+        type: "editor-source-validation-request",
+        requestId: "source-1",
+        revision: 2,
+        path: "/tmp/buttons.yaml",
+        content: "- type: core:action",
+      }).success,
+    ).toBe(true)
+    expect(
+      editorSourceValidationResultMessageSchema.safeParse({
+        type: "editor-source-validation-result",
+        requestId: "source-1",
+        valid: false,
+        errors: ["invalid config"],
+      }).success,
+    ).toBe(true)
   })
 })

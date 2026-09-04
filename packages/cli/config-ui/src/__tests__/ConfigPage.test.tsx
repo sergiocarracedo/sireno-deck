@@ -1,80 +1,34 @@
 /** @vitest-environment jsdom */
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest"
-import { render, screen, waitFor } from "@testing-library/react"
+import { describe, expect, it, vi } from "vitest"
+import { fireEvent, render, screen } from "@testing-library/react"
 
 import { ConfigPage } from "../pages/ConfigPage"
 
-const mockFetch = vi.fn()
-
-beforeEach(() => {
-  vi.stubGlobal("fetch", mockFetch)
-})
-
-afterEach(() => {
-  vi.restoreAllMocks()
-})
+const wsClient = () => ({ send: vi.fn() })
 
 describe("ConfigPage", () => {
-  it("renders loading state initially", () => {
-    mockFetch.mockImplementation(() => new Promise(() => {}))
-    render(<ConfigPage configPath={null} />)
-    expect(screen.getByText("loading…")).toBeInTheDocument()
-  })
-
-  it("fetches /api/config on mount", () => {
-    mockFetch.mockImplementation(() => new Promise(() => {}))
-    render(<ConfigPage configPath={null} />)
-    expect(mockFetch).toHaveBeenCalledWith("/api/config")
-  })
-
-  it("renders config path above content when provided", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      text: () => Promise.resolve("deck:\n  name: Test"),
+  it("renders source files and validates drafts before saving", () => {
+    const ws = wsClient()
+    render(
+      <ConfigPage
+        wsClient={ws}
+        editorState={{
+          revision: 3,
+          config: {},
+          sources: ["/config.yml", "/buttons.yml"],
+          sourceContents: { "/config.yml": "decks: {}", "/buttons.yml": "[]" },
+          themes: [],
+          canUndo: false,
+        }}
+      />,
+    )
+    expect(screen.getAllByText("/config.yml")).not.toHaveLength(0)
+    expect(screen.getByText("/buttons.yml")).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText("Configuration source YAML"), {
+      target: { value: "decks: {}\n" },
     })
-    render(<ConfigPage configPath="/home/user/.config/sireno/config.yaml" />)
-    await waitFor(() => {
-      expect(screen.getByTestId("config-page-path").textContent).toBe(
-        "/home/user/.config/sireno/config.yaml",
-      )
-    })
-  })
-
-  it("renders fetched config content", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      text: () => Promise.resolve("deck:\n  name: Test"),
-    })
-    render(<ConfigPage configPath={null} />)
-    await waitFor(() => {
-      expect(screen.getByTestId("config-page").textContent).toBe(
-        "deck:\n  name: Test",
-      )
-    })
-  })
-
-  it("renders error state when fetch fails", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 404,
-    })
-    render(<ConfigPage configPath={null} />)
-    await waitFor(() => {
-      expect(screen.getByText(/Failed: HTTP 404/)).toBeInTheDocument()
-    })
-  })
-
-  it("renders without path when configPath is null", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      text: () => Promise.resolve("content"),
-    })
-    render(<ConfigPage configPath={null} />)
-    await waitFor(() => {
-      expect(screen.queryByTestId("config-page-path")).not.toBeInTheDocument()
-    })
+    expect(ws.send).toHaveBeenCalledWith(
+      expect.stringContaining("editor-source-validation-request"),
+    )
   })
 })

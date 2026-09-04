@@ -18,7 +18,7 @@ export const manifest: AddonManifestV1 = {
       frontend: mediaPlayerFrontend,
       service: {
         ...mediaPlayerBackend,
-        gestureHandlers: ["tap"] as const,
+        gestureHandlers: ["tap", "dbl-tap", "hold"] as const,
       },
     },
     "media:mute": {

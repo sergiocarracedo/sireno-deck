@@ -125,4 +125,18 @@ describe("resolveIncludes", () => {
 
     expect(out).toBe(text)
   })
+
+  it("uses an in-memory replacement for an included source", () => {
+    const included = writeYml("a.yml", "name: old\n")
+    const root = writeYml("root.yml", `payload: !include ${included}\n`)
+
+    const out = resolveIncludes(
+      `payload: !include ${included}\n`,
+      root,
+      new Map([[included, "name: new\n"]]),
+    )
+
+    expect(out).toContain("name: new")
+    expect(out).not.toContain("name: old")
+  })
 })

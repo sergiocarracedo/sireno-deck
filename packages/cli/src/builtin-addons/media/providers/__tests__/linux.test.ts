@@ -36,6 +36,30 @@ const baseResponses = (status: string) =>
   ])
 
 describe("createLinuxProvider", () => {
+  it("uses the active player consistently when multiple players exist", async () => {
+    const responses = new Map<string, string>([
+      [
+        "playerctl -a metadata --format {{ playerName }}\t{{ status }}\t{{ title }}\t{{ artist }}\t{{ album }}\t{{ mpris:length }}",
+        "chromium\tStopped\tBrowser song\tArtist\tAlbum\t100000000\nfastpotify\tPlaying\tActive song\tActive artist\tActive album\t240000000",
+      ],
+      [
+        "playerctl --player fastpotify metadata --format {{ title }}\t{{ artist }}\t{{ album }}\t{{ mpris:length }}",
+        "Active song\tActive artist\tActive album\t240000000",
+      ],
+      ["playerctl --player fastpotify position", "84.475013"],
+      ["playerctl --player fastpotify status", "Playing"],
+      ["wpctl get-volume @DEFAULT_AUDIO_SINK@", "Volume: 0.50"],
+    ])
+    const provider = createLinuxProvider({ executor: makeExecutor(responses) })
+
+    await expect(provider.getStatus()).resolves.toMatchObject({
+      track: { name: "Active song" },
+      currentTime: 84,
+      totalTime: 240,
+      playStatus: "play",
+    })
+  })
+
   it("maps Playing/Paused/Stopped to play/pause/stop", async () => {
     const provider1 = createLinuxProvider({
       executor: makeExecutor(baseResponses("Playing")),

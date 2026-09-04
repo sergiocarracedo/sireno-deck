@@ -23,24 +23,53 @@ const runWpctl = async (
   return deps.executor.run("wpctl", args, { timeoutMs: 5_000 })
 }
 
+const PLAYER_FORMAT =
+  "{{ playerName }}\t{{ status }}\t{{ title }}\t{{ artist }}\t{{ album }}\t{{ mpris:length }}"
+
+const selectPlayer = (
+  stdout: string,
+): { name: string; status: string } | null => {
+  const players = stdout
+    .trim()
+    .split("\n")
+    .map((line) => line.split("\t"))
+    .filter(([name, status]) => name && status)
+    .map(([name, status]) => ({ name: name!.trim(), status: status!.trim() }))
+
+  return (
+    players.find(({ status }) => status === "Playing" || status === "Paused") ??
+    players[0] ??
+    null
+  )
+}
+
 const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
+  const playerResult = await deps.executor.run(
+    "playerctl",
+    ["-a", "metadata", "--format", PLAYER_FORMAT],
+    { timeoutMs: METADATA_TIMEOUT_MS },
+  )
+  const selectedPlayer = selectPlayer(playerResult.stdout)
+  const playerArgs = selectedPlayer ? ["--player", selectedPlayer.name] : []
+
   const [metaResult, positionResult] = await Promise.all([
     deps.executor.run(
       "playerctl",
       [
+        ...playerArgs,
         "metadata",
         "--format",
         "{{ title }}\t{{ artist }}\t{{ album }}\t{{ mpris:length }}",
       ],
       { timeoutMs: METADATA_TIMEOUT_MS },
     ),
-    deps.executor.run("playerctl", ["position"], {
+    deps.executor.run("playerctl", [...playerArgs, "position"], {
       timeoutMs: METADATA_TIMEOUT_MS,
     }),
   ])
 
   const [playStatusResult, volumeResult] = await Promise.all([
-    deps.executor.run("playerctl", ["status"], {
+    deps.executor.run("playerctl", [...playerArgs, "status"], {
       timeoutMs: METADATA_TIMEOUT_MS,
     }),
     runWpctl(deps, ["get-volume", "@DEFAULT_AUDIO_SINK@"]),
@@ -81,7 +110,7 @@ const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
       ? parseWpctlVolumeLine(volumeResult.stdout)
       : { volume: 1, muted: false }
 
-  const statusStr = playStatusResult.stdout.trim()
+  const statusStr = selectedPlayer?.status ?? playStatusResult.stdout.trim()
   const playStatus: MediaStatus["playStatus"] =
     STATUS_MAP[statusStr as keyof typeof STATUS_MAP] ?? "unavailable"
 

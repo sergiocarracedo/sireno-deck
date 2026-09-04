@@ -135,6 +135,11 @@ export const App = ({
     valid: boolean
     errors: string[]
   } | null>(null)
+  const [editorSourceValidation, setEditorSourceValidation] = useState<{
+    requestId: string
+    valid: boolean
+    errors: string[]
+  } | null>(null)
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(() =>
     initialDeviceModel !== undefined && isKnownDeviceModel(initialDeviceModel)
       ? getDeviceModel(initialDeviceModel)
@@ -290,6 +295,20 @@ export const App = ({
               : [],
           })
         }
+        if (
+          m.type === "editor-source-validation-result" &&
+          typeof m.requestId === "string"
+        ) {
+          setEditorSourceValidation({
+            requestId: m.requestId,
+            valid: m.valid === true,
+            errors: Array.isArray(m.errors)
+              ? m.errors.filter(
+                  (error): error is string => typeof error === "string",
+                )
+              : [],
+          })
+        }
         if (typeof m.type === "string" && m.type.endsWith("error")) {
           setLastError(String(m.type))
         }
@@ -385,6 +404,10 @@ export const App = ({
     if (activeSection === "config")
       return (
         <ConfigPage
+          wsClient={clientRef.current}
+          editorState={editorState}
+          sourceValidation={editorSourceValidation}
+          mutationResult={editorResult}
           editor={
             <EditorPage
               wsClient={clientRef.current}
@@ -396,6 +419,14 @@ export const App = ({
               device={deviceModel}
               token={token}
               onGesture={sendButtonAction}
+              onDeckSelect={(selectedDeckId) =>
+                clientRef.current?.send(
+                  JSON.stringify({
+                    type: "select-deck",
+                    deckId: selectedDeckId,
+                  }),
+                )
+              }
               themes={editorState?.themes}
             />
           }
@@ -446,9 +477,21 @@ export const App = ({
       activeSection={activeSection}
       onSelect={onSelect}
       hideSidebar={deckOnly}
-      wsClient={clientRef.current}
+      pageTitle={
+        activeSection === "config"
+          ? "Config"
+          : activeSection.replaceAll("-", " ")
+      }
+      wsUrl={wsUrl}
+      frontendUrl={ENV_FRONTEND_URL}
+      connectionStatus={connectionStatus}
       emulatorMode={ENV_EMULATOR_MODE}
       devMode={ENV_DEV_MODE}
+      deviceSelector={
+        ENV_EMULATOR_MODE || ENV_REMOTE_MODE ? (
+          <DeviceSelector device={deviceModel.id} onChange={setDevice} />
+        ) : undefined
+      }
       content={
         <>
           {deckOnly ? (
@@ -516,12 +559,6 @@ export const App = ({
                   fe: {ENV_FRONTEND_URL}
                 </a>
                 <span className="flex-1" />
-                {(ENV_EMULATOR_MODE || ENV_REMOTE_MODE) && (
-                  <DeviceSelector
-                    device={deviceModel.id}
-                    onChange={setDevice}
-                  />
-                )}
               </header>
               <div className="flex flex-1 overflow-hidden">
                 <section className="flex-1 overflow-auto p-4">

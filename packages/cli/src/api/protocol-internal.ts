@@ -1,6 +1,9 @@
-import { ButtonDefSchema, DeckDefSchema } from "@/config/schemas"
-
 import { z } from "zod"
+import {
+  ButtonDefSchema,
+  DeckDefSchema,
+  UserDeckCreateSchema,
+} from "@/config/schemas"
 
 export const PROTOCOL_VERSION = 1
 
@@ -290,13 +293,44 @@ export const iframeReloadMessageSchema = baseServerMessage
   })
   .strict()
 
-const rootButtonMutationSchema = z.discriminatedUnion("kind", [
+const rootButtonMutationSchema = z.union([
   z
     .object({
       kind: z.literal("add"),
       deckId: z.string().min(1),
       button: ButtonDefSchema,
       index: z.number().int().nonnegative().optional(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("add-button"),
+      deckId: z.string().min(1),
+      button: ButtonDefSchema,
+      index: z.number().int().nonnegative().optional(),
+      replaceIndex: z.number().int().nonnegative().optional(),
+      newDeck: UserDeckCreateSchema.optional(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("update-deck"),
+      deckId: z.string().min(1),
+      patch: z.record(z.string(), z.unknown()),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("create-deck"),
+      deck: UserDeckCreateSchema,
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("move-position"),
+      deckId: z.string().min(1),
+      from: z.number().int().nonnegative(),
+      to: z.number().int().nonnegative(),
     })
     .strict(),
   z
@@ -391,6 +425,25 @@ export const editorValidationRequestMessageSchema = baseClientMessage
 export const editorValidationResultMessageSchema = baseServerMessage
   .extend({
     type: z.literal("editor-validation-result"),
+    requestId: z.string().min(1),
+    valid: z.boolean(),
+    errors: z.array(z.string()),
+  })
+  .strict()
+
+export const editorSourceValidationRequestMessageSchema = baseClientMessage
+  .extend({
+    type: z.literal("editor-source-validation-request"),
+    requestId: z.string().min(1),
+    revision: z.number().int().nonnegative(),
+    path: z.string().min(1),
+    content: z.string(),
+  })
+  .strict()
+
+export const editorSourceValidationResultMessageSchema = baseServerMessage
+  .extend({
+    type: z.literal("editor-source-validation-result"),
     requestId: z.string().min(1),
     valid: z.boolean(),
     errors: z.array(z.string()),
@@ -539,6 +592,8 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   editorStateMessageSchema,
   editorValidationRequestMessageSchema,
   editorValidationResultMessageSchema,
+  editorSourceValidationRequestMessageSchema,
+  editorSourceValidationResultMessageSchema,
   editorMutationMessageSchema,
   editorAssetWriteMessageSchema,
   editorUndoMessageSchema,
@@ -578,6 +633,12 @@ export type EditorValidationRequestMessage = z.infer<
 >
 export type EditorValidationResultMessage = z.infer<
   typeof editorValidationResultMessageSchema
+>
+export type EditorSourceValidationRequestMessage = z.infer<
+  typeof editorSourceValidationRequestMessageSchema
+>
+export type EditorSourceValidationResultMessage = z.infer<
+  typeof editorSourceValidationResultMessageSchema
 >
 export type EditorMutationMessage = z.infer<typeof editorMutationMessageSchema>
 export type EditorAssetWriteMessage = z.infer<

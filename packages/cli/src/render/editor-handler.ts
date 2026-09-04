@@ -8,6 +8,8 @@ import {
   type EditorUndoMessage,
   type EditorStateMessage,
   editorValidationResultMessageSchema,
+  editorSourceValidationResultMessageSchema,
+  type EditorSourceValidationRequestMessage,
   type EditorValidationRequestMessage,
   type WsMessage,
 } from "./protocol"
@@ -86,6 +88,25 @@ export const createEditorMessageHandler = (
     )
   }
 
+  const sourceValidationResult = (
+    socket: WebSocket,
+    request: EditorSourceValidationRequestMessage,
+  ): void => {
+    const errors = options.mutationService.validateSource(
+      request.path,
+      request.content,
+    )
+    send(
+      socket,
+      editorSourceValidationResultMessageSchema.parse({
+        type: "editor-source-validation-result",
+        requestId: request.requestId,
+        valid: errors.length === 0,
+        errors,
+      }),
+    )
+  }
+
   const apply = async (
     socket: WebSocket,
     requestId: string,
@@ -133,6 +154,10 @@ export const createEditorMessageHandler = (
       }
       if (message.type === "editor-validation-request") {
         validationResult(socket, message)
+        return
+      }
+      if (message.type === "editor-source-validation-request") {
+        sourceValidationResult(socket, message)
         return
       }
       if (message.type === "editor-asset-write") {
