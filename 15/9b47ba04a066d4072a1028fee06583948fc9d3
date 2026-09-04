@@ -1,0 +1,57 @@
+packages/cli/src/deck/__tests__/editor-surfaces.test.ts
+  s_1addd07aae651d::t_ef7ea00a38a734 52-57,80-82
+  s_1addd07aae651d::t_09145f0a25b36c 1-51,58-79,83-92
+packages/cli/src/cli/commands/run.ts
+  s_1addd07aae651d::t_0945a537e7b200 837-838,902-903,913-914
+  s_1addd07aae651d::t_d09120bff89173 863
+  s_1addd07aae651d::t_e911884487a355 839-840
+  s_1addd07aae651d::t_40b4ee8d97c832 2-9,786-789,793-794,815-822
+  s_1addd07aae651d::t_ef7ea00a38a734 841,892
+  s_1addd07aae651d::t_838f84c91e5952 878,2009-2011
+packages/cli/src/deck/index.ts
+  s_1addd07aae651d::t_da0f40b45fa301 41-47
+  s_1addd07aae651d::t_fbe17ab00422b1 40
+packages/cli/src/deck/editor-surfaces.ts
+  s_1addd07aae651d::t_5598ccad550e7f 1-37,40-87
+  s_1addd07aae651d::t_dbc6e6c539d649 39
+  s_1addd07aae651d::t_9fe51b173d873e 38
+packages/cli/src/deck/runtime/runtime.ts
+  s_1addd07aae651d::t_4ed64ace0c97a9 11
+  s_1addd07aae651d::t_ef7ea00a38a734 156-159
+  s_1addd07aae651d::t_5598ccad550e7f 12-16,40,79-83,1044-1055
+  s_1addd07aae651d::t_605893d5e2e81c 1056
+packages/cli/src/render/editor-handler.ts
+  s_1addd07aae651d::t_217e88f613a307 19,22
+packages/cli/src/cli/commands/addon-decks.ts
+  s_1addd07aae651d::t_217e88f613a307 67-68
+  s_1addd07aae651d::t_ef7ea00a38a734 141,146-152,213-223,423-430
+  s_1addd07aae651d::t_8a6f2a73532aa3 329
+  s_1addd07aae651d::t_71623c5b833042 142-145
+packages/cli/src/core/pagination.ts
+  s_1addd07aae651d::t_5598ccad550e7f 28-32
+packages/cli/src/api/protocol-internal.ts
+  s_1addd07aae651d::t_4ed64ace0c97a9 113-136,138-154,368,537
+  s_1addd07aae651d::t_5598ccad550e7f 3
+  s_1addd07aae651d::t_838f84c91e5952 137
+  s_1addd07aae651d::t_66ab36f7b5fdf2 4
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_1addd07aae651d::t_77a33f9da68b3c 30-61
+packages/cli/src/render/__tests__/protocol.test.ts
+  s_1addd07aae651d::t_91b10e74d22b5d 148-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "159b47ba04a066d4072a1028fee06583948fc9d3",
+  "prompts": {},
+  "sessions": {
+    "s_1addd07aae651d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9416a9d3ffe4yjPzwfSvwKNwx",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
