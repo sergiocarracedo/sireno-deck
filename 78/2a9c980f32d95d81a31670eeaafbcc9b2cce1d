@@ -1,0 +1,29 @@
+packages/cli/src/cli/commands/start.ts
+  s_2a45fe71f996b2::t_9ce27a1fcc914f 787,789,795,802,811,824,837,848,850,869
+packages/cli/src/cli/index.ts
+  s_2a45fe71f996b2::t_9ce27a1fcc914f 176,184
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_2a45fe71f996b2::t_938b9ab187c4d5 473,491
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_2a45fe71f996b2::t_2bc8a3eb1cb35b 65-81
+packages/cli/src/cli/startup-display.ts
+  s_2a45fe71f996b2::t_25675646dcd39d 128-131
+  s_2a45fe71f996b2::t_9ce27a1fcc914f 369,384
+  s_2a45fe71f996b2::t_2bc8a3eb1cb35b 123,132-133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "782a9c980f32d95d81a31670eeaafbcc9b2cce1d",
+  "prompts": {},
+  "sessions": {
+    "s_2a45fe71f996b2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f96f65a23ffeV7uszCIHHKKxOJ",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
