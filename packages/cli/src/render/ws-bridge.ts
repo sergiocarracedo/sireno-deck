@@ -47,6 +47,7 @@ export interface WsBridge {
   // the new value; already-connected clients aren't resent (would be
   // redundant — the page is mounting fresh anyway).
   setAddonInventory(inventory: AddonsInventoryMessage["addons"]): void
+  setActiveTheme?(theme: { name: string; version?: number }): void
   setDeckTree(tree: Omit<DeckTreeMessage, "type">): void
   broadcast(message: WsMessage): void
   registerCacheablePoller(
@@ -69,6 +70,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
     logger = createLogger({ level: "warn", component: "ws-bridge" }),
   } = options
   let { addonInventory } = options
+  let currentTheme = activeTheme
   let deckTree: Omit<DeckTreeMessage, "type"> | undefined
 
   return new Promise((resolve, reject) => {
@@ -160,7 +162,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
             version: PROTOCOL_VERSION,
             ...(currentDevice !== null ? { device: currentDevice } : {}),
             config:
-              activeTheme !== undefined ? { theme: activeTheme.name } : {},
+              currentTheme !== undefined ? { theme: currentTheme.name } : {},
           })
           socket.send(JSON.stringify(ack))
           if (currentDevice !== null) {
@@ -256,6 +258,9 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
         },
         setAddonInventory: (inventory) => {
           addonInventory = inventory
+        },
+        setActiveTheme: (theme) => {
+          currentTheme = theme
         },
         setDeckTree: (tree) => {
           deckTree = tree

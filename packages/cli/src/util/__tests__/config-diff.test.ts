@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { RawConfig } from "@/config/schemas"
-import { onlyDecksChanged } from "../config-diff"
+import { configChanged, onlyDecksChanged } from "../config-diff"
 
 const base = (): RawConfig =>
   ({
@@ -66,5 +66,25 @@ describe("onlyDecksChanged", () => {
     const next = base()
     ;(next.decks as Record<string, unknown>)["other"] = { buttons: [] }
     expect(onlyDecksChanged(prev, next)).toBe(true)
+  })
+
+  it("detects deck metadata, trigger, and pagination changes", () => {
+    const prev = base()
+    const next = base()
+    next.decks.main = {
+      ...next.decks.main!,
+      name: "Renamed",
+      paginated: true,
+      trigger: { process_name: "editor" },
+    }
+    expect(onlyDecksChanged(prev, next)).toBe(true)
+  })
+
+  it("detects theme and addon changes independently of decks", () => {
+    const prev = base()
+    const next = base()
+    ;(next as { theme?: unknown }).theme = "dark"
+    ;(next as { addons?: unknown }).addons = ["addon"]
+    expect(configChanged(prev, next)).toBe(true)
   })
 })
