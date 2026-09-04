@@ -2,8 +2,6 @@ import { connect, type Server, createServer, type Socket } from "node:net"
 
 import qrcode from "qrcode"
 
-import type pino from "pino"
-
 import { listDevices, type DeviceDescriptor } from "@/device"
 import type { AddonCheckOutcome } from "@/addon/check-runner"
 
@@ -292,7 +290,9 @@ export const printDaemonEvents = (events: ReadonlyArray<DaemonEvent>): void => {
 // URL — operators copy-paste the URL into the browser. For `--remote`
 // we use the existing QR banner (phone-friendly); for plain
 // `--emulator` we print a plain text URL — no QR/LAN section, since the daemon only binds 127.0.0.1.
-// For real (hardware) mode we print the frontend URL.
+// For real (hardware) mode we print the Config UI URL. The Config UI owns the
+// clickable preview and embeds the frontend, so the raw frontend URL is not an
+// operator-facing startup endpoint.
 export const printDaemonUrl = async (
   state: RuntimeState,
   tokenOrOutput: string | ((text: string) => void) = "",
@@ -331,14 +331,6 @@ export const printDaemonUrl = async (
     }
     write("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
   } else {
-    const url = state.frontendUrl
-    const withToken =
-      token.length > 0
-        ? `${url}${url.includes("?") ? "&" : "?"}token=${token}`
-        : url
-    if (process.env.SIRENO_DEV_MODE === "true") {
-      write(`\n  Frontend:  ${withToken}\n`)
-    }
     const configUiUrl = state.configUiUrl
     const configUiWithToken =
       token.length > 0

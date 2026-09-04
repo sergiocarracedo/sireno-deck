@@ -836,20 +836,9 @@ describe("preflight", () => {
     ).rejects.toThrow(/No Stream Deck devices found/)
   })
 
-  it("real client with no devices in non-TTY falls back to emulator", async () => {
+  it("real client with no devices in non-TTY throws instead of falling back", async () => {
     const realClient = makeFakeOutputClient("real", [])
-    const emulatorClient = makeFakeOutputClient("emulator", [
-      {
-        id: "emulator:mk2",
-        model: "mk2",
-        keyCount: 15,
-        label: "Emulator MK.2",
-        transport: "emulated",
-      },
-    ])
-    selectOutputClientMock
-      .mockReturnValueOnce(realClient)
-      .mockReturnValueOnce(emulatorClient)
+    selectOutputClientMock.mockReturnValueOnce(realClient)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: false,
@@ -868,10 +857,11 @@ describe("preflight", () => {
         homeDir: "/home",
         logger: silentLogger(),
       }
-      await preflight(opts)
-      expect(opts.emulator).toBe(true)
+      await expect(preflight(opts)).rejects.toThrow(
+        /No Stream Deck devices found/,
+      )
+      expect(opts.emulator).toBeUndefined()
       expect(realClient.validateReady).not.toHaveBeenCalled()
-      expect(emulatorClient.validateReady).toHaveBeenCalledTimes(1)
     } finally {
       Object.defineProperty(process.stdin, "isTTY", {
         value: originalIsTTY,
@@ -880,24 +870,9 @@ describe("preflight", () => {
     }
   })
 
-  it("real client with no devices in TTY prompts and falls back to emulator on confirm", async () => {
+  it("real client with no devices in TTY throws without prompting", async () => {
     const realClient = makeFakeOutputClient("real", [])
-    const emulatorClient = makeFakeOutputClient("emulator", [
-      {
-        id: "emulator:mk2",
-        model: "mk2",
-        keyCount: 15,
-        label: "Emulator MK.2",
-        transport: "emulated",
-      },
-    ])
-    // First selectOutputClient call → realClient. Second call (after fallback)
-    // → emulatorClient.
-    selectOutputClientMock
-      .mockReturnValueOnce(realClient)
-      .mockReturnValueOnce(emulatorClient)
-    const confirmMock = vi.fn(async () => true)
-    clackConfirmMock.mockImplementation(confirmMock)
+    selectOutputClientMock.mockReturnValueOnce(realClient)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -916,45 +891,12 @@ describe("preflight", () => {
         homeDir: "/home",
         logger: silentLogger(),
       }
-      await preflight(opts)
-      expect(confirmMock).toHaveBeenCalledWith(
-        expect.objectContaining({ initialValue: true }),
+      await expect(preflight(opts)).rejects.toThrow(
+        /No Stream Deck devices found/,
       )
-      expect(opts.emulator).toBe(true)
-      expect(selectOutputClientMock).toHaveBeenCalledTimes(2)
-      expect(selectOutputClientMock.mock.calls[1]?.[0]).toMatchObject({
-        emulator: true,
-      })
-      expect(emulatorClient.validateReady).toHaveBeenCalled()
-    } finally {
-      Object.defineProperty(process.stdin, "isTTY", {
-        value: originalIsTTY,
-        configurable: true,
-      })
-      clackConfirmMock.mockReset()
-    }
-  })
-
-  it("real client with no devices in TTY throws when user declines fallback", async () => {
-    const realClient = makeFakeOutputClient("real", [])
-    setHappyPath({ outputClient: realClient })
-    const confirmMock = vi.fn(async () => false)
-    clackConfirmMock.mockImplementation(confirmMock)
-    const originalIsTTY = process.stdin.isTTY
-    Object.defineProperty(process.stdin, "isTTY", {
-      value: true,
-      configurable: true,
-    })
-    try {
-      await expect(
-        preflight({
-          config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
-          xdgConfigHome: "/xdg",
-          homeDir: "/home",
-          logger: silentLogger(),
-        }),
-      ).rejects.toThrow(/No Stream Deck devices found/)
-      expect(confirmMock).toHaveBeenCalled()
+      expect(opts.emulator).toBeUndefined()
+      expect(clackConfirmMock).not.toHaveBeenCalled()
+      expect(realClient.validateReady).not.toHaveBeenCalled()
     } finally {
       Object.defineProperty(process.stdin, "isTTY", {
         value: originalIsTTY,
