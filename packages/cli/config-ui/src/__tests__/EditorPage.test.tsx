@@ -250,4 +250,91 @@ describe("EditorPage", () => {
       button: { type: "test-addon:action", config: {}, position: 4 },
     })
   })
+
+  it("renders deck fields and dispatches an immutable-id deck update", () => {
+    const ws = client()
+    render(<EditorPage wsClient={ws} state={state} result={null} />)
+    fireEvent.change(screen.getByLabelText("Label"), {
+      target: { value: "Updated deck" },
+    })
+    fireEvent.change(screen.getByLabelText("Columns"), {
+      target: { value: "4" },
+    })
+    fireEvent.change(screen.getByLabelText("Rows"), {
+      target: { value: "2" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Save deck" }))
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+      kind: "update-deck",
+      deckId: "main",
+      deck: {
+        name: "Updated deck",
+        columns: 4,
+        rows: 2,
+        buttons: state.config.decks.main.buttons,
+      },
+    })
+  })
+
+  it("dispatches top-level button fields without changing its position", () => {
+    const ws = client()
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByTestId("deck-key-0"))
+    fireEvent.change(screen.getByLabelText("Label"), {
+      target: { value: "Run command" },
+    })
+    fireEvent.change(screen.getByLabelText("Color"), {
+      target: { value: "green" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Save button" }))
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+      kind: "update",
+      deckId: "main",
+      index: 0,
+      button: {
+        type: "core:action",
+        config: { command: "date" },
+        label: "Run command",
+        buttonColor: "green",
+      },
+    })
+  })
+
+  it("keeps generated buttons read-only", () => {
+    render(
+      <EditorPage
+        wsClient={client()}
+        state={{
+          ...state,
+          config: {
+            decks: {
+              main: {
+                buttons: [{ type: "test:generated", generated: true }],
+              },
+            },
+          },
+        }}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByTestId("deck-key-0"))
+
+    expect(screen.getByLabelText("Label")).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Save button" })).toBeDisabled()
+    expect(
+      screen.getByText("Generated buttons are owned by their addon."),
+    ).toBeInTheDocument()
+  })
 })

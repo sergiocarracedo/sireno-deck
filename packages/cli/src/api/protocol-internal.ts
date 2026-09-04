@@ -329,6 +329,13 @@ const rootButtonMutationSchema = z.discriminatedUnion("kind", [
       deck: DeckDefSchema,
     })
     .strict(),
+  z
+    .object({
+      kind: z.literal("update-deck"),
+      deckId: z.string().min(1),
+      deck: DeckDefSchema,
+    })
+    .strict(),
   z.object({ kind: z.literal("set-theme"), theme: z.string().min(1) }).strict(),
   z
     .object({

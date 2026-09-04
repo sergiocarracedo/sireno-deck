@@ -155,4 +155,18 @@ describe("config mutation", () => {
     expect(written).toContain("name: Tools")
     expect(written).not.toContain("id:")
   })
+
+  it("updates a deck by id without allowing the id into its definition", async () => {
+    const path = fixture("decks:\n  main:\n    name: Main\n    buttons: []\n")
+    const service = createConfigMutationService({ configPath: path })
+    await service.apply({
+      kind: "update-deck",
+      deckId: "main",
+      deck: { name: "Updated", columns: 4, rows: 2, buttons: [] },
+    })
+    const written = readFileSync(path, "utf8")
+    expect(written).toContain("main:")
+    expect(written).toContain("name: Updated")
+    expect(written).not.toContain("id:")
+  })
 })

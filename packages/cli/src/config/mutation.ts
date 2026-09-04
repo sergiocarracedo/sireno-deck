@@ -47,6 +47,7 @@ export type RootButtonMutation =
   | { kind: "delete"; deckId: string; index: number }
   | { kind: "reorder"; deckId: string; from: number; to: number }
   | { kind: "create-deck"; deckId: string; deck: RawDeckDef }
+  | { kind: "update-deck"; deckId: string; deck: RawDeckDef }
   | { kind: "set-theme"; theme: string }
   | {
       kind: "set-addon-deck-override"
@@ -316,7 +317,10 @@ export const createConfigMutationService = ({
               document.createNode(mutation.override),
             )
           }
-        } else if (mutation.kind === "create-deck") {
+        } else if (
+          mutation.kind === "create-deck" ||
+          mutation.kind === "update-deck"
+        ) {
           if (mutation.deckId.length === 0) {
             throw new ConfigMutationError("Deck id must not be empty")
           }
@@ -327,12 +331,26 @@ export const createConfigMutationService = ({
           if (!(decks instanceof YAMLMap)) {
             throw new ConfigMutationError("decks must be a YAML map")
           }
-          if (decks.has(mutation.deckId)) {
+          if (mutation.kind === "create-deck" && decks.has(mutation.deckId)) {
             throw new ConfigMutationError(
               `Deck id already exists: ${mutation.deckId}`,
             )
           }
-          decks.set(mutation.deckId, document.createNode(mutation.deck))
+          if (mutation.kind === "update-deck") {
+            const current = decks.get(mutation.deckId, true)
+            if (!(current instanceof YAMLMap))
+              throw new ConfigMutationError(
+                `Deck not found: ${mutation.deckId}`,
+              )
+            for (const key of current.items
+              .map((pair) => String(pair.key))
+              .filter((key) => !(key in mutation.deck)))
+              current.delete(key)
+            for (const [key, value] of Object.entries(mutation.deck))
+              current.set(key, document.createNode(value))
+          } else {
+            decks.set(mutation.deckId, document.createNode(mutation.deck))
+          }
         } else {
           const buttons = buttonSequence(document, mutation.deckId)
           if (mutation.kind === "add") {
