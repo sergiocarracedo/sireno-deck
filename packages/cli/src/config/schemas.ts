@@ -83,6 +83,14 @@ export const ButtonDefSchema = z
      * config load.
      */
     buttonColor: ButtonColorSchema.optional(),
+    label: z.string().optional(),
+    icon: IconSourceSchema.optional(),
+    iconUrl: z.string().min(1).optional(),
+    size: z.string().optional(),
+    textSize: z.string().optional(),
+    borderRadius: z.string().optional(),
+    addon: z.string().optional(),
+    action: z.string().optional(),
   })
   .strict()
 
@@ -91,6 +99,9 @@ export const ButtonEntrySchema = z.union([ButtonDefSchema, z.string()])
 export const DeckDefSchema = z
   .object({
     name: z.string().min(1).optional(),
+    label: z.string().min(1).optional(),
+    columns: z.number().int().positive().optional(),
+    rows: z.number().int().positive().optional(),
     icon: IconSourceSchema.optional(),
     background: z.string().min(1).optional(),
     paginated: z.boolean().optional(),

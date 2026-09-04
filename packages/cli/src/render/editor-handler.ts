@@ -16,9 +16,10 @@ export interface EditorMessageHandlerOptions {
   readonly mutationService: ConfigMutationService
   readonly getState: () => Omit<
     EditorStateMessage,
-    "type" | "revision" | "canUndo" | "buttonSchemas"
+    "type" | "revision" | "canUndo" | "buttonSchemas" | "surfaces"
   > & {
     buttonSchemas?: EditorStateMessage["buttonSchemas"]
+    surfaces?: EditorStateMessage["surfaces"]
     revision?: number
   }
   readonly onChanged?: () => void | Promise<void>

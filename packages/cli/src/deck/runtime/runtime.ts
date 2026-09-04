@@ -8,6 +8,12 @@ import type { SessionProvider, SessionState } from "@/system/providers/session"
 import { getRequiredCapability } from "@/system/requirements"
 import { compileDeckMatcher } from "@/system/glob-match"
 import type { Methods } from "../methods"
+import { describeEditorSurfaces } from "../editor-surfaces"
+import type {
+  EditorAddonOwner,
+  EditorSourceTarget,
+  EditorSurfaceDescriptor,
+} from "../editor-surfaces"
 
 type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">
 
@@ -31,6 +37,7 @@ export interface RuntimeButton {
     | "magenta"
     | "amber"
     | "lime"
+  sourceTarget?: EditorSourceTarget
 }
 
 export interface RuntimeDeck {
@@ -69,6 +76,11 @@ export interface RuntimeDeck {
     buttonId?: string
     details: string
   }>
+  sourceDeckId?: string
+  projectionId?: string
+  pageIndex?: number
+  editable?: boolean
+  addonOwner?: EditorAddonOwner
 }
 
 export interface RuntimeButtonHandler {
@@ -141,6 +153,10 @@ export interface Runtime {
   getAvailableOverlayDeckName(): string | null
   getBrightness(): number
   setBrightness(value: number): void
+  getEditorSurfaces(options?: {
+    keyCount?: number
+    revision?: number
+  }): EditorSurfaceDescriptor[]
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
@@ -1024,6 +1040,19 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       if (clamped === brightness) return
       brightness = clamped
       pubSub.publish("sireno:settings:brightness", { value: clamped })
+    },
+    getEditorSurfaces: ({ keyCount = 15, revision = 0 } = {}) => {
+      return describeEditorSurfaces({
+        decks,
+        keyCount,
+        revision,
+        systemState: {
+          navStackDepth: navStack.length,
+          hasOverlayDeckAvailable: availableOverlayDeckId !== null,
+          lockActive,
+          inOverlayMode: overlayDeckId !== null,
+        },
+      })
     },
   }
 

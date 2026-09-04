@@ -52,7 +52,21 @@ const inventory: AddonInventory = {
       source: "builtin",
       buttonTypes: [{ type: "test-addon:action", internal: false }],
       defaultButton: "test-addon:action",
-      decks: [],
+      decks: [
+        {
+          id: "test-addon:generated",
+          sourceId: "test-addon:generated",
+          generated: true,
+          pageIndex: 0,
+          isOverlay: true,
+          paginated: false,
+          buttons: [{ type: "test-addon:action", position: 0 }],
+          internal: false,
+          addonIndex: 3,
+          overrideKey: "test-addon:generated",
+          overrideFields: ["name", "icon", "autoShow", "trigger", "config"],
+        },
+      ],
     },
   ],
 }
@@ -83,7 +97,8 @@ describe("EditorPage", () => {
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
     fireEvent.click(screen.getByRole("menuitem", { name: "Copy" }))
-    fireEvent.click(screen.getByTestId("deck-key-2"))
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 2" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.click(screen.getByRole("button", { name: "Paste button" }))
 
     const message = JSON.parse(ws.sent.at(-1) ?? "{}") as {
@@ -107,7 +122,8 @@ describe("EditorPage", () => {
         device={DEVICE_MODELS.find((model) => model.id === "mk2")}
       />,
     )
-    fireEvent.click(screen.getByTestId("deck-key-0"))
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.change(screen.getByLabelText("Command"), {
       target: { value: "whoami" },
     })
@@ -168,6 +184,31 @@ describe("EditorPage", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("targets generated deck overrides with the addon owner", () => {
+    const ws = client()
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        addonInventory={inventory}
+      />,
+    )
+    fireEvent.click(screen.getByRole("tab", { name: "Decks" }))
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Edit override for test-addon:generated",
+      }),
+    )
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+      kind: "set-addon-deck-override",
+      addonIndex: 3,
+      deckId: "test-addon:generated",
+      override: {},
+    })
+  })
+
   it("wires the existing DeckFrame into the editor preview", () => {
     render(
       <EditorPage
@@ -188,6 +229,28 @@ describe("EditorPage", () => {
     )
   })
 
+  it("keeps the selected button stable during preview interaction", () => {
+    const ws = client()
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.pointerDown(screen.getByTestId("deck-key-1"))
+    fireEvent.pointerUp(screen.getByTestId("deck-key-1"))
+
+    expect(screen.getByLabelText("Command")).toHaveValue("date")
+    expect(ws.sent.some((message) => message.includes("editor-mutate"))).toBe(
+      false,
+    )
+  })
+
   it("inserts a palette button at an empty selected position", () => {
     const ws = client()
     vi.spyOn(window, "confirm").mockReturnValue(true)
@@ -201,7 +264,8 @@ describe("EditorPage", () => {
         device={DEVICE_MODELS.find((model) => model.id === "mk2")}
       />,
     )
-    fireEvent.click(screen.getByTestId("deck-key-4"))
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 4" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.click(screen.getByRole("button", { name: "test-addon:action" }))
 
     expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
@@ -210,5 +274,94 @@ describe("EditorPage", () => {
       index: 2,
       button: { type: "test-addon:action", config: {}, position: 4 },
     })
+  })
+
+  it("renders deck fields and dispatches an immutable-id deck update", () => {
+    const ws = client()
+    render(<EditorPage wsClient={ws} state={state} result={null} />)
+    fireEvent.change(screen.getByLabelText("Label"), {
+      target: { value: "Updated deck" },
+    })
+    fireEvent.change(screen.getByLabelText("Columns"), {
+      target: { value: "4" },
+    })
+    fireEvent.change(screen.getByLabelText("Rows"), {
+      target: { value: "2" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Save deck" }))
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+      kind: "update-deck",
+      deckId: "main",
+      deck: {
+        name: "Updated deck",
+        columns: 4,
+        rows: 2,
+        buttons: state.config.decks.main.buttons,
+      },
+    })
+  })
+
+  it("dispatches top-level button fields without changing its position", () => {
+    const ws = client()
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.change(screen.getByLabelText("Label"), {
+      target: { value: "Run command" },
+    })
+    fireEvent.change(screen.getByLabelText("Color"), {
+      target: { value: "green" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Save button" }))
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+      kind: "update",
+      deckId: "main",
+      index: 0,
+      button: {
+        type: "core:action",
+        config: { command: "date" },
+        label: "Run command",
+        buttonColor: "green",
+      },
+    })
+  })
+
+  it("keeps generated buttons read-only", () => {
+    render(
+      <EditorPage
+        wsClient={client()}
+        state={{
+          ...state,
+          config: {
+            decks: {
+              main: {
+                buttons: [{ type: "test:generated", generated: true }],
+              },
+            },
+          },
+        }}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+
+    expect(screen.getByLabelText("Label")).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Save button" })).toBeDisabled()
+    expect(
+      screen.getByText("Generated buttons are owned by their addon."),
+    ).toBeInTheDocument()
   })
 })

@@ -15,7 +15,16 @@ import {
 type Button = Record<string, unknown> | string
 type Config = {
   theme?: string | { src: string; global?: boolean }
-  decks?: Record<string, { name?: string; buttons?: Button[] }>
+  decks?: Record<
+    string,
+    {
+      name?: string
+      label?: string
+      columns?: number
+      rows?: number
+      buttons?: Button[]
+    }
+  >
 }
 
 export interface ThemeOption {
@@ -104,6 +113,233 @@ const buttonPositions = (buttons: Button[]): number[] => {
   })
 }
 
+const fieldValue = (button: Button, field: string): string => {
+  if (!isButton(button)) return ""
+  const value = button[field]
+  return value === undefined || value === null ? "" : String(value)
+}
+
+const EditorField = ({
+  label,
+  value,
+  type = "text",
+  disabled = false,
+  onChange,
+}: {
+  readonly label: string
+  readonly value: string
+  readonly type?: "text" | "number" | "url"
+  readonly disabled?: boolean
+  readonly onChange: (value: string) => void
+}) => (
+  <label className="grid gap-1 text-sm text-neutral-300">
+    {label}
+    <input
+      aria-label={label}
+      type={type}
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value)}
+      className="min-h-10 rounded border border-neutral-800 bg-neutral-950 px-3 text-sm disabled:opacity-50"
+    />
+  </label>
+)
+
+const ButtonAppearanceEditor = ({
+  button,
+  types,
+  readOnly,
+  onSave,
+}: {
+  readonly button: Button
+  readonly types: string[]
+  readonly readOnly: boolean
+  readonly onSave: (button: Record<string, unknown>) => void
+}) => {
+  const initial = isButton(button) ? button : { type: button }
+  const [value, setValue] = useState<Record<string, unknown>>(initial)
+  useEffect(() => setValue(initial), [button])
+  const set = (key: string, next: string): void =>
+    setValue((current) => ({
+      ...current,
+      [key]: next.length === 0 ? undefined : next,
+    }))
+  const select = (key: string, next: string): void =>
+    setValue((current) => ({
+      ...current,
+      [key]: next.length === 0 ? undefined : next,
+    }))
+  return (
+    <div className="grid gap-3">
+      <EditorField
+        label="Label"
+        value={fieldValue(value, "label")}
+        disabled={readOnly}
+        onChange={(next) => set("label", next)}
+      />
+      <label className="grid gap-1 text-sm text-neutral-300">
+        Addon/action
+        <select
+          aria-label="Addon/action"
+          value={fieldValue(value, "type")}
+          disabled={readOnly}
+          onChange={(event) => select("type", event.target.value)}
+          className="min-h-10 rounded border border-neutral-800 bg-neutral-950 px-3"
+        >
+          {types.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+      </label>
+      <EditorField
+        label="Icon"
+        value={fieldValue(value, "icon")}
+        disabled={readOnly}
+        onChange={(next) => set("icon", next)}
+      />
+      <EditorField
+        label="Icon URL"
+        value={fieldValue(value, "iconUrl")}
+        type="url"
+        disabled={readOnly}
+        onChange={(next) => set("iconUrl", next)}
+      />
+      <label className="grid gap-1 text-sm text-neutral-300">
+        Color
+        <select
+          aria-label="Color"
+          value={fieldValue(value, "buttonColor")}
+          disabled={readOnly}
+          onChange={(event) => select("buttonColor", event.target.value)}
+          className="min-h-10 rounded border border-neutral-800 bg-neutral-950 px-3"
+        >
+          <option value="">Default</option>
+          {["blue", "green", "purple", "cyan", "magenta", "amber", "lime"].map(
+            (color) => (
+              <option key={color} value={color}>
+                {color}
+              </option>
+            ),
+          )}
+        </select>
+      </label>
+      <EditorField
+        label="Size"
+        value={fieldValue(value, "size")}
+        disabled={readOnly}
+        onChange={(next) => set("size", next)}
+      />
+      <EditorField
+        label="Text size"
+        value={fieldValue(value, "textSize")}
+        disabled={readOnly}
+        onChange={(next) => set("textSize", next)}
+      />
+      <EditorField
+        label="Border radius"
+        value={fieldValue(value, "borderRadius")}
+        disabled={readOnly}
+        onChange={(next) => set("borderRadius", next)}
+      />
+      <button
+        type="button"
+        disabled={readOnly}
+        onClick={() => onSave(value)}
+        className="min-h-10 rounded bg-sky-600 px-3 text-sm disabled:opacity-50"
+      >
+        Save button
+      </button>
+      {readOnly && (
+        <p className="text-xs text-amber-300">
+          Generated buttons are owned by their addon.
+        </p>
+      )}
+    </div>
+  )
+}
+
+const DeckEditor = ({
+  deck,
+  theme,
+  themeOptions,
+  onSave,
+  onTheme,
+}: {
+  readonly deck: Config["decks"] extends Record<string, infer T> ? T : never
+  readonly theme: string
+  readonly themeOptions: readonly ThemeOption[]
+  readonly onSave: (deck: Record<string, unknown>) => void
+  readonly onTheme: (theme: string) => void
+}) => {
+  const [value, setValue] = useState(() => ({
+    label: deck.label ?? deck.name ?? "",
+    columns: deck.columns === undefined ? "" : String(deck.columns),
+    rows: deck.rows === undefined ? "" : String(deck.rows),
+  }))
+  useEffect(() => {
+    setValue({
+      label: deck.label ?? deck.name ?? "",
+      columns: deck.columns === undefined ? "" : String(deck.columns),
+      rows: deck.rows === undefined ? "" : String(deck.rows),
+    })
+  }, [deck])
+  return (
+    <div className="grid gap-3">
+      <EditorField
+        label="Label"
+        value={value.label}
+        onChange={(label) => setValue((current) => ({ ...current, label }))}
+      />
+      <EditorField
+        label="Columns"
+        type="number"
+        value={value.columns}
+        onChange={(columns) => setValue((current) => ({ ...current, columns }))}
+      />
+      <EditorField
+        label="Rows"
+        type="number"
+        value={value.rows}
+        onChange={(rows) => setValue((current) => ({ ...current, rows }))}
+      />
+      <label className="grid gap-1 text-sm text-neutral-300">
+        Theme
+        <select
+          aria-label="Theme"
+          value={theme}
+          onChange={(event) => onTheme(event.target.value)}
+          className="min-h-10 rounded border border-neutral-800 bg-neutral-950 px-3"
+        >
+          {(themeOptions.length === 0 ? [{ name: theme }] : themeOptions).map(
+            (option) => (
+              <option key={option.name} value={option.name}>
+                {option.name}
+              </option>
+            ),
+          )}
+        </select>
+      </label>
+      <button
+        type="button"
+        onClick={() =>
+          onSave({
+            ...deck,
+            name: value.label || undefined,
+            label: undefined,
+            columns: value.columns === "" ? undefined : Number(value.columns),
+            rows: value.rows === "" ? undefined : Number(value.rows),
+          })
+        }
+        className="min-h-10 rounded bg-sky-600 px-3 text-sm"
+      >
+        Save deck
+      </button>
+    </div>
+  )
+}
+
 export const EditorPage = ({
   wsClient,
   state,
@@ -134,6 +370,8 @@ export const EditorPage = ({
   const config = (state?.config ?? {}) as Config
   const decks = Object.entries(config.decks ?? {})
   const activeDeckId = deckId ?? decks[0]?.[0] ?? null
+  const activeDeck =
+    activeDeckId === null ? undefined : config.decks?.[activeDeckId]
   const buttons =
     activeDeckId === null ? [] : (config.decks?.[activeDeckId]?.buttons ?? [])
   const positions = buttonPositions(buttons)
@@ -145,6 +383,20 @@ export const EditorPage = ({
     return positions.length
   }
   const selected = selectedIndex === null ? undefined : buttons[selectedIndex]
+  const selectedType =
+    selected === undefined
+      ? null
+      : isButton(selected) && typeof selected.type === "string"
+        ? selected.type
+        : String(selected)
+  const selectedGenerated =
+    selected !== undefined &&
+    ((isButton(selected) && selected.generated === true) ||
+      addonInventory?.addons.some((addon) =>
+        addon.buttonTypes.some(
+          (type) => type.type === selectedType && type.generated === true,
+        ),
+      ) === true)
   const [paletteTab, setPaletteTab] = useState<"buttons" | "decks" | "themes">(
     "buttons",
   )
@@ -279,6 +531,21 @@ export const EditorPage = ({
     })
   }
 
+  const saveButton = (button: Record<string, unknown>): void => {
+    if (activeDeckId === null || selectedIndex === null) return
+    sendMutation({
+      kind: "update",
+      deckId: activeDeckId,
+      index: selectedIndex,
+      button,
+    })
+  }
+
+  const saveDeck = (deck: Record<string, unknown>): void => {
+    if (activeDeckId === null) return
+    sendMutation({ kind: "update-deck", deckId: activeDeckId, deck })
+  }
+
   const undo = (): void => {
     if (state === null) return
     wsClient?.send(
@@ -398,6 +665,22 @@ export const EditorPage = ({
                 </Tabs.ListContainer>
               </Tabs>
             </div>
+            <div className="space-y-1">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                YAML sources
+              </h2>
+              {state.sources
+                .filter((source) => /\.(?:yaml|yml)$/i.test(source))
+                .map((source) => (
+                  <div
+                    key={source}
+                    className="truncate rounded border border-neutral-800 px-3 py-2 font-mono text-xs text-neutral-400"
+                    title={source}
+                  >
+                    {source}
+                  </div>
+                ))}
+            </div>
             {paletteTab === "buttons" ? (
               <div role="tabpanel" aria-label="Buttons" className="space-y-3">
                 <div className="space-y-1">
@@ -476,23 +759,44 @@ export const EditorPage = ({
                             config: { deck: deck.id, label: deck.id },
                           }
                           return (
-                            <button
-                              key={deck.id}
-                              type="button"
-                              draggable
-                              onDragStart={(event) =>
-                                dragStart(event, { kind: "palette", button })
-                              }
-                              onClick={() =>
-                                insertAt(
-                                  button,
-                                  selectedPosition ?? buttons.length,
-                                )
-                              }
-                              className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-amber-300 hover:border-amber-400"
-                            >
-                              {deck.id}
-                            </button>
+                            <div key={deck.id} className="flex gap-1">
+                              <button
+                                type="button"
+                                draggable
+                                onDragStart={(event) =>
+                                  dragStart(event, { kind: "palette", button })
+                                }
+                                onClick={() =>
+                                  insertAt(
+                                    button,
+                                    selectedPosition ?? buttons.length,
+                                  )
+                                }
+                                className="min-h-10 min-w-0 flex-1 rounded border border-neutral-800 px-3 text-left text-sm text-amber-300 hover:border-amber-400"
+                              >
+                                {deck.id}
+                              </button>
+                              {deck.generated === true &&
+                              deck.addonIndex !== undefined &&
+                              deck.overrideKey !== undefined ? (
+                                <button
+                                  type="button"
+                                  aria-label={`Edit override for ${deck.id}`}
+                                  onClick={() => {
+                                    sendMutation({
+                                      kind: "set-addon-deck-override",
+                                      addonIndex: deck.addonIndex,
+                                      deckId: deck.overrideKey,
+                                      override: {},
+                                    })
+                                    setMessage("Saving addon override…")
+                                  }}
+                                  className="min-h-10 rounded border border-neutral-800 px-2 text-xs text-sky-300 hover:border-sky-400"
+                                >
+                                  Edit
+                                </button>
+                              ) : null}
+                            </div>
                           )
                         })}
                     </div>
@@ -553,7 +857,6 @@ export const EditorPage = ({
                   deckId={activeDeckId}
                   token={token}
                   onGesture={onGesture}
-                  onSelectPosition={selectPosition}
                   onKeyAction={keyAction}
                   fitToContainer
                   onDropPosition={(position, event) => dropAt(event, position)}
@@ -574,6 +877,21 @@ export const EditorPage = ({
             </h2>
             {selected === undefined ? (
               <div className="space-y-3">
+                {activeDeck !== undefined && paletteTab !== "themes" && (
+                  <DeckEditor
+                    deck={activeDeck}
+                    theme={
+                      typeof config.theme === "string"
+                        ? config.theme
+                        : (config.theme?.src ?? "default")
+                    }
+                    themeOptions={themes}
+                    onSave={saveDeck}
+                    onTheme={(theme) =>
+                      sendMutation({ kind: "set-theme", theme })
+                    }
+                  />
+                )}
                 <p className="text-sm text-neutral-500">
                   Select a preview position to edit its configuration.
                 </p>
@@ -588,26 +906,47 @@ export const EditorPage = ({
                 )}
               </div>
             ) : (
-              <ButtonConfigEditor
-                key={`${activeDeckId}:${selectedIndex}:${state?.revision ?? 0}`}
-                wsClient={wsClient}
-                revision={state?.revision ?? 0}
-                buttonType={
-                  isButton(selected) && typeof selected.type === "string"
-                    ? selected.type
-                    : String(selected)
-                }
-                config={isButton(selected) ? selected.config : {}}
-                schema={
-                  state?.buttonSchemas?.[
-                    isButton(selected) && typeof selected.type === "string"
-                      ? selected.type
-                      : String(selected)
-                  ]
-                }
-                validation={validation}
-                onSave={saveConfig}
-              />
+              <div className="grid gap-4">
+                <ButtonAppearanceEditor
+                  button={selected}
+                  types={[
+                    ...new Set([
+                      ...(addonInventory?.addons.flatMap((addon) =>
+                        addon.buttonTypes
+                          .filter((type) => !type.internal)
+                          .map((type) => type.type),
+                      ) ?? []),
+                      isButton(selected) && typeof selected.type === "string"
+                        ? selected.type
+                        : String(selected),
+                    ]),
+                  ]}
+                  readOnly={selectedGenerated}
+                  onSave={saveButton}
+                />
+                {!selectedGenerated && (
+                  <ButtonConfigEditor
+                    key={`${activeDeckId}:${selectedIndex}:${state?.revision ?? 0}`}
+                    wsClient={wsClient}
+                    revision={state?.revision ?? 0}
+                    buttonType={
+                      isButton(selected) && typeof selected.type === "string"
+                        ? selected.type
+                        : String(selected)
+                    }
+                    config={isButton(selected) ? selected.config : {}}
+                    schema={
+                      state?.buttonSchemas?.[
+                        isButton(selected) && typeof selected.type === "string"
+                          ? selected.type
+                          : String(selected)
+                      ]
+                    }
+                    validation={validation}
+                    onSave={saveConfig}
+                  />
+                )}
+              </div>
             )}
           </section>
         </div>

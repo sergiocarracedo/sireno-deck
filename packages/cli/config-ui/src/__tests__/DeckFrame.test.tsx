@@ -131,10 +131,10 @@ describe("DeckFrame (emulator)", () => {
       const { getByTestId, rerender } = render(<Wrapper />)
       const key = getByTestId("deck-key-3")
 
-      fireEvent.mouseDown(key)
+      fireEvent.pointerDown(key)
       // parent re-renders between down and up — the detector must survive
       rerender(<Wrapper />)
-      fireEvent.mouseUp(key)
+      fireEvent.pointerUp(key)
 
       vi.advanceTimersByTime(500)
       expect(onGesture).toHaveBeenCalledWith({
@@ -143,6 +143,55 @@ describe("DeckFrame (emulator)", () => {
         position: 3,
         gesture: "tap",
       })
+    })
+
+    it("delivers touch gestures without invoking edit controls", () => {
+      const onGesture = vi.fn()
+      const onKeyAction = vi.fn()
+      const { getByTestId } = render(
+        <DeckFrame
+          frontendUrl="http://127.0.0.1:5180"
+          deckId="main"
+          device={mk2}
+          onGesture={onGesture}
+          onKeyAction={onKeyAction}
+        />,
+      )
+      const key = getByTestId("deck-key-4")
+
+      fireEvent.pointerDown(key, { pointerType: "touch" })
+      fireEvent.pointerUp(key, { pointerType: "touch" })
+      vi.advanceTimersByTime(500)
+
+      expect(onGesture).toHaveBeenCalledWith({
+        type: "button-action",
+        deckId: "main",
+        position: 4,
+        gesture: "tap",
+      })
+      expect(onKeyAction).not.toHaveBeenCalled()
+    })
+
+    it("does not dispatch a preview drag as an edit action", () => {
+      const onGesture = vi.fn()
+      const onKeyAction = vi.fn()
+      const { getByTestId } = render(
+        <DeckFrame
+          frontendUrl="http://127.0.0.1:5180"
+          deckId="main"
+          device={mk2}
+          onGesture={onGesture}
+          onKeyAction={onKeyAction}
+        />,
+      )
+      const key = getByTestId("deck-key-2")
+
+      fireEvent.pointerDown(key, { buttons: 1 })
+      fireEvent.pointerLeave(key, { buttons: 1 })
+      fireEvent.pointerUp(key)
+
+      expect(onGesture).not.toHaveBeenCalled()
+      expect(onKeyAction).not.toHaveBeenCalled()
     })
   })
 })

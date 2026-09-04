@@ -25,6 +25,11 @@ export interface PaginateOptions {
   readonly pageSize?: number
 }
 
+export const paginationReservedPositions = (
+  keyCount: number,
+  paginated: boolean,
+): number[] => (paginated && keyCount > 1 ? [keyCount - 2] : [])
+
 const buildPageItem = <T>(id: string, value: T): PaginatedItem<T> => ({
   id,
   value,

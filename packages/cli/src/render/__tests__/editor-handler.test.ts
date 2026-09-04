@@ -18,8 +18,10 @@ const socket = () => {
 
 const service = (): ConfigMutationService => ({
   sources: () => ["config.yml"],
+  sourceDescriptors: () => [],
   readSource: () => "",
   isEditableSource: () => true,
+  writeAsset: vi.fn(async () => undefined),
   apply: vi.fn(async () => undefined),
   undo: vi.fn(async () => true),
   canUndo: vi.fn(() => true),
@@ -129,5 +131,59 @@ describe("editor WS handler", () => {
       valid: false,
       errors: ["config is required"],
     })
+  })
+
+  it("serializes concurrent mutations and reconnects at the latest revision", async () => {
+    const mutations = service()
+    const broadcast = vi.fn()
+    const first = socket()
+    const second = socket()
+    const handler = createEditorMessageHandler({
+      mutationService: mutations,
+      getState: () => ({
+        config: {},
+        sources: [],
+        sourceContents: {},
+        themes: [],
+      }),
+      broadcast,
+    })
+
+    handler.onMessage(
+      {
+        type: "editor-mutate",
+        requestId: "first",
+        revision: 0,
+        mutation: { kind: "delete", deckId: "main", index: 0 },
+      },
+      first.socket,
+    )
+    handler.onMessage(
+      {
+        type: "editor-mutate",
+        requestId: "second",
+        revision: 0,
+        mutation: { kind: "delete", deckId: "main", index: 0 },
+      },
+      second.socket,
+    )
+    await vi.waitFor(() => expect(second.sent).toHaveLength(2))
+
+    expect(mutations.apply).toHaveBeenCalledOnce()
+    expect(JSON.parse(first.sent.at(-1)!)).toMatchObject({
+      requestId: "first",
+      ok: true,
+      revision: 1,
+    })
+    expect(JSON.parse(second.sent[0]!)).toMatchObject({
+      requestId: "second",
+      ok: false,
+      error: "stale editor revision",
+      revision: 1,
+    })
+
+    const reconnect = socket()
+    handler.onConnection(reconnect.socket)
+    expect(JSON.parse(reconnect.sent[0]!)).toMatchObject({ revision: 1 })
   })
 })

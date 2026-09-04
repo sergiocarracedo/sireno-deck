@@ -73,6 +73,24 @@ describe("ws bridge", () => {
     }
   })
 
+  it("reconnects with the refreshed theme metadata", async () => {
+    bridge = await startWsBridge({
+      expectedToken: "",
+      activeTheme: { name: "default" },
+    })
+    bridge.setActiveTheme?.({ name: "dark", version: 2 })
+    const socket = await openClient(bridge.port)
+    const ack = await new Promise<unknown>((resolve) => {
+      socket.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString())
+        if (parsed.type === "hello-ack") resolve(parsed)
+      })
+      setTimeout(() => resolve(null), 200)
+    })
+    expect(ack).toMatchObject({ config: { theme: "dark" } })
+    socket.close()
+  })
+
   it("setDevice broadcasts device-info to connected clients", async () => {
     bridge = await startWsBridge({ expectedToken: "" })
     const socket = await openClient(bridge.port)

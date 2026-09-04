@@ -24,12 +24,14 @@ vi.mock("@/config/validation", () => ({
   validateFull: vi.fn(),
   isFullValid: vi.fn(),
   formatFullIssues: vi.fn(),
+  serializeButtonSchemas: vi.fn(() => ({})),
 }))
 vi.mock("@/system/providers/active-app", () => ({
   createActiveAppProvider: vi.fn(),
 }))
 vi.mock("@/system/providers/session", () => ({
   createSessionProvider: vi.fn(),
+  createNullSessionProvider: vi.fn(),
 }))
 vi.mock("@/system/providers/key-macro", () => ({
   createKeyMacroProvider: vi.fn(),
@@ -272,6 +274,7 @@ const setHappyPath = (
       }),
       listAddons: () => [],
       listButtonTypes: () => [],
+      listThemes: () => [],
       getAddon: () => undefined,
     }
   })
@@ -319,12 +322,20 @@ const setHappyPath = (
     },
   })
   const fakeRuntime = {
+    setDecks: vi.fn(),
+    getActiveDeckId: vi.fn(() => "main"),
     setActiveAppProvider: vi.fn(),
     setSessionProvider: vi.fn(),
     setGestureListener: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
     invalidate: vi.fn(),
     getActiveDeck: vi.fn(() => undefined),
+    getEditorSurfaces: vi.fn(() => []),
+    getOverlay: vi.fn(() => null),
+    hasOverlayDeckAvailable: vi.fn(() => false),
+    getAvailableOverlayDeckIcon: vi.fn(() => null),
+    getAvailableOverlayDeckName: vi.fn(() => null),
+    isLockActive: vi.fn(() => false),
     navStackDepth: vi.fn(() => 1),
     dispatchGesture: vi.fn(),
   }
@@ -368,6 +379,11 @@ const setHappyPath = (
   ;(
     sessionMod as unknown as { createSessionProvider: ReturnType<typeof vi.fn> }
   ).createSessionProvider.mockResolvedValue(nullProvider())
+  ;(
+    sessionMod as unknown as {
+      createNullSessionProvider: ReturnType<typeof vi.fn>
+    }
+  ).createNullSessionProvider.mockResolvedValue(nullProvider())
   ;(
     keyMacroMod as unknown as {
       createKeyMacroProvider: ReturnType<typeof vi.fn>
@@ -703,6 +719,54 @@ describe("run", () => {
     await runPromise
   })
 
+  it("refreshes a changed deck with one normal deck-config broadcast", async () => {
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    let configCall = 0
+    loaderMock.mockImplementation(() => {
+      configCall += 1
+      return {
+        config:
+          configCall === 1
+            ? { decks: { main: { buttons: [] } } }
+            : { decks: { main: { name: "Updated", buttons: [] } } },
+        configDir: "/dir",
+      }
+    })
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const runtime = (
+      (deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> })
+        .createDeckRuntime.mock.results[0]!.value as {
+        runtime: Record<string, unknown>
+      }
+    ).runtime
+    ;(runtime.getActiveDeck as ReturnType<typeof vi.fn>).mockReturnValue({
+      id: "main",
+      name: "Main",
+      buttons: [],
+    })
+    configChangeCallback!()
+    await vi.waitFor(() => expect(capturedBridge!.broadcast).toHaveBeenCalled())
+    const deckFrames = capturedBridge!.broadcast.mock.calls.filter(
+      ([message]) => (message as { type?: string }).type === "deck-config",
+    )
+    expect(deckFrames).toHaveLength(1)
+    expect(deckFrames[0]![0]).toMatchObject({
+      type: "deck-config",
+      deckId: "main",
+    })
+    signals.trigger()
+    await runPromise
+  })
+
   it("supervised child crash resolves the pipeline's done promise", async () => {
     const outputClient = setHappyPath()
     const signals = makeFakeSignals()
@@ -772,20 +836,9 @@ describe("preflight", () => {
     ).rejects.toThrow(/No Stream Deck devices found/)
   })
 
-  it("real client with no devices in non-TTY falls back to emulator", async () => {
+  it("real client with no devices in non-TTY throws instead of falling back", async () => {
     const realClient = makeFakeOutputClient("real", [])
-    const emulatorClient = makeFakeOutputClient("emulator", [
-      {
-        id: "emulator:mk2",
-        model: "mk2",
-        keyCount: 15,
-        label: "Emulator MK.2",
-        transport: "emulated",
-      },
-    ])
-    selectOutputClientMock
-      .mockReturnValueOnce(realClient)
-      .mockReturnValueOnce(emulatorClient)
+    selectOutputClientMock.mockReturnValueOnce(realClient)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: false,
@@ -804,10 +857,11 @@ describe("preflight", () => {
         homeDir: "/home",
         logger: silentLogger(),
       }
-      await preflight(opts)
-      expect(opts.emulator).toBe(true)
+      await expect(preflight(opts)).rejects.toThrow(
+        /No Stream Deck devices found/,
+      )
+      expect(opts.emulator).toBeUndefined()
       expect(realClient.validateReady).not.toHaveBeenCalled()
-      expect(emulatorClient.validateReady).toHaveBeenCalledTimes(1)
     } finally {
       Object.defineProperty(process.stdin, "isTTY", {
         value: originalIsTTY,
@@ -816,24 +870,9 @@ describe("preflight", () => {
     }
   })
 
-  it("real client with no devices in TTY prompts and falls back to emulator on confirm", async () => {
+  it("real client with no devices in TTY throws without prompting", async () => {
     const realClient = makeFakeOutputClient("real", [])
-    const emulatorClient = makeFakeOutputClient("emulator", [
-      {
-        id: "emulator:mk2",
-        model: "mk2",
-        keyCount: 15,
-        label: "Emulator MK.2",
-        transport: "emulated",
-      },
-    ])
-    // First selectOutputClient call → realClient. Second call (after fallback)
-    // → emulatorClient.
-    selectOutputClientMock
-      .mockReturnValueOnce(realClient)
-      .mockReturnValueOnce(emulatorClient)
-    const confirmMock = vi.fn(async () => true)
-    clackConfirmMock.mockImplementation(confirmMock)
+    selectOutputClientMock.mockReturnValueOnce(realClient)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -852,45 +891,12 @@ describe("preflight", () => {
         homeDir: "/home",
         logger: silentLogger(),
       }
-      await preflight(opts)
-      expect(confirmMock).toHaveBeenCalledWith(
-        expect.objectContaining({ initialValue: true }),
+      await expect(preflight(opts)).rejects.toThrow(
+        /No Stream Deck devices found/,
       )
-      expect(opts.emulator).toBe(true)
-      expect(selectOutputClientMock).toHaveBeenCalledTimes(2)
-      expect(selectOutputClientMock.mock.calls[1]?.[0]).toMatchObject({
-        emulator: true,
-      })
-      expect(emulatorClient.validateReady).toHaveBeenCalled()
-    } finally {
-      Object.defineProperty(process.stdin, "isTTY", {
-        value: originalIsTTY,
-        configurable: true,
-      })
-      clackConfirmMock.mockReset()
-    }
-  })
-
-  it("real client with no devices in TTY throws when user declines fallback", async () => {
-    const realClient = makeFakeOutputClient("real", [])
-    setHappyPath({ outputClient: realClient })
-    const confirmMock = vi.fn(async () => false)
-    clackConfirmMock.mockImplementation(confirmMock)
-    const originalIsTTY = process.stdin.isTTY
-    Object.defineProperty(process.stdin, "isTTY", {
-      value: true,
-      configurable: true,
-    })
-    try {
-      await expect(
-        preflight({
-          config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
-          xdgConfigHome: "/xdg",
-          homeDir: "/home",
-          logger: silentLogger(),
-        }),
-      ).rejects.toThrow(/No Stream Deck devices found/)
-      expect(confirmMock).toHaveBeenCalled()
+      expect(opts.emulator).toBeUndefined()
+      expect(clackConfirmMock).not.toHaveBeenCalled()
+      expect(realClient.validateReady).not.toHaveBeenCalled()
     } finally {
       Object.defineProperty(process.stdin, "isTTY", {
         value: originalIsTTY,

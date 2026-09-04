@@ -145,4 +145,37 @@ describe("ws protocol v1", () => {
       }).success,
     ).toBe(true)
   })
+
+  it("editor surfaces reject incomplete source targets", () => {
+    const result = editorStateMessageSchema.safeParse({
+      type: "editor-state",
+      revision: 1,
+      config: { decks: {} },
+      sources: [],
+      sourceContents: {},
+      themes: [],
+      canUndo: false,
+      surfaces: [
+        {
+          id: "main",
+          sourceDeckId: "main",
+          projectionId: "main",
+          pageIndex: 0,
+          isOverlay: false,
+          editable: true,
+          addonOwner: null,
+          reservedPositions: [],
+          buttons: [
+            {
+              id: "b",
+              type: "core:action",
+              position: 0,
+              sourceTarget: { sourcePath: "/config.yml" },
+            },
+          ],
+        },
+      ],
+    })
+    expect(result.success).toBe(false)
+  })
 })

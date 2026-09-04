@@ -1,6 +1,6 @@
-import { z } from "zod"
+import { ButtonDefSchema, DeckDefSchema } from "@/config/schemas"
 
-import { ButtonDefSchema } from "@/config/schemas"
+import { z } from "zod"
 
 export const PROTOCOL_VERSION = 1
 
@@ -110,6 +110,48 @@ export const deckConfigMessageSchema = baseServerMessage
   })
   .strict()
 
+const editorSourceTargetSchema = z
+  .object({
+    sourcePath: z.string().min(1),
+    sourceDeckId: z.string().min(1),
+    sourceButtonIndex: z.number().int().nonnegative(),
+    sourceButtonPath: z.string().min(1),
+    fingerprint: z.string().min(1),
+    capability: z.enum(["update", "delete", "reorder"]),
+  })
+  .strict()
+
+const editorSurfaceSchema = z
+  .object({
+    id: z.string().min(1),
+    sourceDeckId: z.string().min(1),
+    projectionId: z.string().min(1),
+    pageIndex: z.number().int().nonnegative(),
+    isOverlay: z.boolean(),
+    editable: z.boolean(),
+    addonOwner: z
+      .object({
+        addonIndex: z.number().int().nonnegative(),
+        addonName: z.string().min(1),
+        overrideKey: z.string().min(1),
+        capabilities: z.array(z.string()).readonly(),
+      })
+      .strict()
+      .nullable(),
+    reservedPositions: z.array(z.number().int().nonnegative()),
+    buttons: z.array(
+      z
+        .object({
+          id: z.string().min(1),
+          type: z.string().min(1),
+          position: z.number().int(),
+          sourceTarget: editorSourceTargetSchema.nullable(),
+        })
+        .strict(),
+    ),
+  })
+  .strict()
+
 export const stateMessageSchema = baseServerMessage
   .extend({
     type: z.literal("state"),
@@ -125,6 +167,7 @@ export const decksListMessageSchema = baseServerMessage
       z.object({
         id: z.string(),
         name: z.string(),
+        addonIndex: z.number().int().nonnegative(),
         icon: z.string().optional(),
       }),
     ),
@@ -279,6 +322,20 @@ const rootButtonMutationSchema = z.discriminatedUnion("kind", [
       to: z.number().int().nonnegative(),
     })
     .strict(),
+  z
+    .object({
+      kind: z.literal("create-deck"),
+      deckId: z.string().min(1),
+      deck: DeckDefSchema,
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("update-deck"),
+      deckId: z.string().min(1),
+      deck: DeckDefSchema,
+    })
+    .strict(),
   z.object({ kind: z.literal("set-theme"), theme: z.string().min(1) }).strict(),
   z
     .object({
@@ -316,6 +373,7 @@ export const editorStateMessageSchema = baseServerMessage
     buttonSchemas: z
       .record(z.string(), z.record(z.string(), z.unknown()))
       .default({}),
+    surfaces: z.array(editorSurfaceSchema).default([]),
     canUndo: z.boolean(),
   })
   .strict()
@@ -386,21 +444,51 @@ export const addonsInventoryMessageSchema = baseServerMessage
     addons: z.array(
       z.object({
         name: z.string(),
+        addonIndex: z.number().int().nonnegative(),
         path: z.string().optional(),
         internal: z.boolean().default(false),
         source: z.string(),
         buttonTypes: z.array(
-          z.object({ type: z.string(), internal: z.boolean().default(false) }),
+          z
+            .object({
+              type: z.string(),
+              internal: z.boolean().default(false),
+              generated: z.boolean().default(false),
+              defaultConfig: z.unknown().optional(),
+            })
+            .strict(),
         ),
         defaultButton: z.string().nullable().optional(),
+        defaultConfig: z.unknown().optional(),
         decks: z.array(
-          z.object({
-            id: z.string(),
-            isOverlay: z.boolean().default(false),
-            paginated: z.boolean().default(false),
-            buttons: z.number().int().nonnegative().default(0),
-            internal: z.boolean().default(false),
-          }),
+          z
+            .object({
+              id: z.string(),
+              sourceId: z.string().optional(),
+              generated: z.boolean().default(false),
+              pageIndex: z.number().int().nonnegative().default(0),
+              isOverlay: z.boolean(),
+              paginated: z.boolean(),
+              buttons: z.array(
+                z
+                  .object({
+                    type: z.string(),
+                    generated: z.boolean().default(false),
+                    position: z.number().int().nonnegative().optional(),
+                    config: z.unknown().optional(),
+                  })
+                  .strict(),
+              ),
+              internal: z.boolean().default(false),
+              addonIndex: z.number().int().nonnegative().optional(),
+              overrideKey: z.string().optional(),
+              overrideFields: z
+                .array(
+                  z.enum(["name", "icon", "autoShow", "trigger", "config"]),
+                )
+                .default([]),
+            })
+            .strict(),
         ),
       }),
     ),
@@ -484,6 +572,7 @@ export type SubscribeChannelsMessage = z.infer<
 export type IframeReloadMessage = z.infer<typeof iframeReloadMessageSchema>
 export type RootButtonMutation = z.infer<typeof rootButtonMutationSchema>
 export type EditorStateMessage = z.infer<typeof editorStateMessageSchema>
+export type EditorSurfaceMessage = z.infer<typeof editorSurfaceSchema>
 export type EditorValidationRequestMessage = z.infer<
   typeof editorValidationRequestMessageSchema
 >

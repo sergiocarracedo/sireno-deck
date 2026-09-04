@@ -2,24 +2,41 @@ import { useEffect, useState } from "react"
 
 interface DeckInfo {
   id: string
+  sourceId?: string
+  generated?: boolean
+  pageIndex?: number
   isOverlay: boolean
   paginated: boolean
-  buttons: number
+  buttons:
+    | number
+    | Array<{
+        type: string
+        generated?: boolean
+        position?: number
+        config?: unknown
+      }>
   internal: boolean
+  addonIndex?: number
+  overrideKey?: string
+  overrideFields?: string[]
 }
 
 interface ButtonTypeInfo {
   type: string
   internal: boolean
+  generated?: boolean
+  defaultConfig?: unknown
 }
 
 export interface AddonInfo {
   name: string
-  path: string
+  addonIndex?: number
+  path?: string
   internal: boolean
   source: string
   buttonTypes: ButtonTypeInfo[]
   defaultButton: string | null
+  defaultConfig?: unknown
   decks: DeckInfo[]
 }
 
@@ -174,29 +191,36 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
               )}
             </h3>
             <span className="font-mono text-[10px] text-neutral-500">
-              {addon.path}
+              {addon.path ?? addon.source}
             </span>
           </div>
 
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {groupPaginated(addon.decks).map((deck) => (
-              <Chip
-                key={deck.id}
-                id={deck.id}
-                label={stripAddonPrefix(deck.id)}
-                tone="deck"
-                modifiers={deckModifiers(deck)}
-              />
-            ))}
-            {addon.buttonTypes.map((bt) => (
-              <Chip
-                key={bt.type}
-                id={bt.type}
-                label={stripAddonPrefix(bt.type)}
-                tone="button"
-                modifiers={bt.internal ? ["🔒"] : []}
-              />
-            ))}
+            {groupPaginated(addon.decks.filter((deck) => !deck.internal)).map(
+              (deck) => (
+                <Chip
+                  key={deck.id}
+                  id={deck.id}
+                  label={stripAddonPrefix(deck.id)}
+                  tone="deck"
+                  modifiers={[
+                    ...deckModifiers(deck),
+                    ...(deck.generated === true ? ["generated"] : []),
+                  ]}
+                />
+              ),
+            )}
+            {addon.buttonTypes
+              .filter((bt) => !bt.internal)
+              .map((bt) => (
+                <Chip
+                  key={bt.type}
+                  id={bt.type}
+                  label={stripAddonPrefix(bt.type)}
+                  tone="button"
+                  modifiers={bt.internal ? ["🔒"] : []}
+                />
+              ))}
           </div>
         </section>
       ))}

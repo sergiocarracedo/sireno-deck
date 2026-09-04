@@ -1,16 +1,16 @@
 import type { RawConfig } from "@/config/schemas"
+import {
+  configChanged as allConfigChanged,
+  decksChanged,
+} from "@/config/config-diff"
 
 export const onlyDecksChanged = (prev: RawConfig, next: RawConfig): boolean => {
-  const prevKeys = Object.keys(prev)
-  const nextKeys = Object.keys(next)
-  if (prevKeys.length !== nextKeys.length) return false
-  const prevSet = new Set(prevKeys)
-  for (const k of nextKeys) if (!prevSet.has(k)) return false
-  for (const k of prevKeys) {
-    if (k === "decks") continue
-    const key = k as keyof RawConfig
-    if (JSON.stringify(prev[key]) !== JSON.stringify(next[key])) return false
-  }
-  if (JSON.stringify(prev.decks) === JSON.stringify(next.decks)) return false
-  return true
+  return (
+    decksChanged(prev, next) &&
+    JSON.stringify({ ...prev, decks: undefined }) ===
+      JSON.stringify({ ...next, decks: undefined })
+  )
 }
+
+export const configChanged = (prev: RawConfig, next: RawConfig): boolean =>
+  allConfigChanged(prev, next)

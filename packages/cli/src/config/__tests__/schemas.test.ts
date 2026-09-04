@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  ButtonActionsSchema,
-  ButtonDefSchema,
-  RawConfigSchema,
-} from "../schemas"
+import { ButtonActionsSchema, ButtonDefSchema } from "../schemas"
 
 describe("ButtonActionsSchema", () => {
   it("accepts valid actions with tap only", () => {

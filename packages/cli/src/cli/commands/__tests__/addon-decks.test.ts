@@ -126,6 +126,37 @@ describe("materializeAddonDecks", () => {
     ])
   })
 
+  it("keeps generated surfaces addon-owned and exposes overlay metadata", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "test-addon:overlay": {
+          isOverlay: true,
+          buttons: [{ type: "test-addon:btn" }],
+        },
+      }),
+    })
+    const [deck] = materializeAddonDecks(
+      mockRegistry([addon]),
+      [],
+      silentLogger(),
+      15,
+    )
+
+    expect(deck).toMatchObject({
+      id: "test-addon:overlay",
+      sourceDeckId: "test-addon:overlay",
+      isOverlay: true,
+      editable: false,
+      addonOwner: {
+        addonIndex: 0,
+        addonName: "test-addon",
+        overrideKey: "test-addon:overlay",
+        capabilities: ["set-addon-deck-override"],
+      },
+    })
+    expect(deck?.buttons[0]?.sourceTarget).toBeUndefined()
+  })
+
   it("spreads top-level button fields into config", () => {
     const addon = fakeManifestWithDecks("emoji-selector", {
       "emoji-selector:emoji-selector": () => ({

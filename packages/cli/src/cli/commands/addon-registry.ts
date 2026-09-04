@@ -11,6 +11,8 @@ export interface ScannedDeck {
   readonly buttons: number
   readonly internal: boolean
   readonly hasTrigger: boolean
+  readonly generated?: boolean
+  readonly isOverlay?: boolean
 }
 
 export interface ScannedAddon {
@@ -32,6 +34,7 @@ export interface ScannedAddon {
 export interface ScannedButtonType {
   readonly exportName: string
   readonly internal: boolean
+  readonly defaultConfig?: unknown
 }
 
 export interface AddonFrontendRef {
