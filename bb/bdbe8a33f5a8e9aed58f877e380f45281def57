@@ -1,0 +1,231 @@
+packages/cli/src/ui/surfaces/__tests__/LabelValueListSurface.test.tsx
+  s_1ce4499fbb9647::t_9b1f97122c68bf 60,72-78
+packages/cli/src/builtin-addons/media/providers/__tests__/linux.test.ts
+  s_1ce4499fbb9647::t_a17217575a560c 39-62
+packages/cli/src/builtin-addons/media/__tests__/backend.test.ts
+  s_1ce4499fbb9647::t_1e47cd96ea0f31 108-129
+packages/cli/src/outputClient/emulator.ts
+  s_2a45fe71f996b2::t_8ccb629856ebac 8,43-45,195-204
+packages/cli/src/builtin-addons/media/index.ts
+  s_1ce4499fbb9647::t_9b1f97122c68bf 21
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_1ce4499fbb9647::t_9b1f97122c68bf 78
+packages/cli/config-ui/src/SidePanel.tsx
+  s_2a45fe71f996b2::t_df4b48ee7c91f5 4-12,15-19,26,89-90
+  s_2a45fe71f996b2::t_f3a5dc35a21fbe 86
+  s_2a45fe71f996b2::t_47555afc88f158 59-66,68
+  s_2a45fe71f996b2::t_6f380dec2e9783 51-53,95-97
+  s_2a45fe71f996b2::t_c53dc6a68c1729 20-25
+  s_2a45fe71f996b2::t_22f0aafc0e43f5 34-35,43-44,49,71,87
+packages/cli/config-ui/src/index.css
+  s_2a45fe71f996b2::t_47555afc88f158 13
+  s_2a45fe71f996b2::t_864a2d3b3dc44b 56-60
+packages/cli/src/builtin-addons/media/buttons/media-player/__tests__/backend.test.ts
+  s_1ce4499fbb9647::t_1e47cd96ea0f31 1-18
+packages/cli/config-ui/src/__tests__/EditorPage.test.tsx
+  s_2a45fe71f996b2::t_5c378d0b3a614e 102-104,266-268
+  s_2a45fe71f996b2::t_61e91171c09067 75,82
+  s_2118c0d17f73b7::t_eb3b68e53246c3 286-288
+  s_2118c0d17f73b7::t_4d8e8e788a7f52 97-98
+  s_2a45fe71f996b2::t_49ef01a0f42aa2 101,105-106,269-271
+  s_2a45fe71f996b2::t_a52caa06bb5ffa 85,249
+docs/plans/2026-09-01-visual-config-editor-plan.md
+  s_2a45fe71f996b2::t_a6f0785da27820 104-110,132-134,144-151,172-175,177-192
+  s_2a45fe71f996b2::t_0a1c0496a9b319 216-217,220-226,279,281,291,296-299,311-312
+  s_2a45fe71f996b2::t_6288147cbd911a 314,334-335,353,404-405,501-502
+  s_2a45fe71f996b2::t_e042abccab6b1e 511-512
+  s_2a45fe71f996b2::t_da2fa6953d253a 327-330,350-351,363,368-369,390-391,407,428-429,448,467-468,479-481,503-504
+  s_2a45fe71f996b2::t_3bb5f3fc59475b 249,259-260
+  s_2a45fe71f996b2::t_2d0b7b4b9fe4e7 2,4,9,12,16-47,53-82,86-102,111-131,135-143,152-171,176,193-215,218-219,227-248,250-258,261-278,280,282-290,292-295,300-310,313,315-326,331-333,336-349,352,354-362,364-367,370-389,392-403,406,408-427,430-447,449-466,469-478,482-500,505-510,513-532,536-558
+  s_2a45fe71f996b2::t_9f13bb5ae3e27e 103
+packages/cli/config-ui/src/App.tsx
+  s_2a45fe71f996b2::t_c555aca86fe12c 487,490-491
+  s_2a45fe71f996b2::t_f3a5dc35a21fbe 480-484
+  s_2a45fe71f996b2::t_b8f3a43d24c671 138-142,298-311,407-410
+  s_2a45fe71f996b2::t_8ccb629856ebac 422-426
+  s_2a45fe71f996b2::t_ec06e0f91a1cc9 427-429,485-486,492-494
+packages/cli/src/config/__tests__/include-resolver.test.ts
+  s_ada9c6673a1a87::t_676d0efd5648d7 128-141
+packages/cli/src/render/__tests__/protocol.test.ts
+  s_2a45fe71f996b2::t_bbcf4c79dec2b9 215-217
+  s_423c87b5c72919::t_fb007799dfcffc 128-131
+  s_ada9c6673a1a87::t_87d2201dadfbdb 15-16,120,199-214
+  s_423c87b5c72919::t_a1e9e251b30ee1 125-127,132-135
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_2a45fe71f996b2::t_8e62ed9265f963 37
+  s_2a45fe71f996b2::t_b904bd7319a5a9 34-36,38
+packages/cli/src/config/__tests__/mutation.test.ts
+  s_423c87b5c72919::t_fb007799dfcffc 221-224
+  s_423c87b5c72919::t_b6f5616c56ca79 229-243
+  s_2a45fe71f996b2::t_0bd441a16cda87 244-269,276-280
+  s_2a45fe71f996b2::t_7f8358905334bd 270-275
+  s_ada9c6673a1a87::t_13e6adf54a4302 113-118
+  s_423c87b5c72919::t_a1e9e251b30ee1 189-220,225-228
+  s_ada9c6673a1a87::t_676d0efd5648d7 105-112,119-121
+packages/cli/config-ui/index.html
+  s_2a45fe71f996b2::t_35a2a9f1939287 6
+packages/cli/src/render/editor-handler.ts
+  s_ada9c6673a1a87::t_0bbc8aa06b2f8b 11-12,91-109,159-160
+  s_2a45fe71f996b2::t_1aa68550e97b6b 161-162
+packages/cli/config-ui/src/pages/ConfigPage.tsx
+  s_2a45fe71f996b2::t_c81ba1314cf492 48-50
+  s_2a45fe71f996b2::t_4d5da759815aec 2-5,8-21,24-35,39-45,52-69,73-85,87-99,101,137-139,143-144,152,156-157,159-161,188,206
+  s_2a45fe71f996b2::t_c53dc6a68c1729 70-71,112,114-122,129-136,140-142,145-151,153-155,162-187,189-205
+packages/cli/src/render/__tests__/editor-handler.test.ts
+  s_ada9c6673a1a87::t_676d0efd5648d7 24,207-223
+  s_2118c0d17f73b7::t_782e3f3df48598 190-206
+  s_2a45fe71f996b2::t_bbcf4c79dec2b9 224-225
+packages/cli/frontend/index.html
+  s_2a45fe71f996b2::t_35a2a9f1939287 5
+packages/cli/config-ui/src/__tests__/ConfigPage.test.tsx
+  s_2a45fe71f996b2::t_a812175dc83fb2 3,7,10-24,26-29
+  s_2a45fe71f996b2::t_0a8eb4bc5a9459 30-32
+  s_2a45fe71f996b2::t_61e91171c09067 2,25
+packages/cli/src/render/protocol.ts
+  s_ada9c6673a1a87::t_8c7069fb430737 23-24,54-55
+packages/cli/src/config/include-resolver.ts
+  s_ada9c6673a1a87::t_13e6adf54a4302 120-125
+  s_ada9c6673a1a87::t_4c4cc46a23ba45 46,67-78,83,105,110,118-119
+packages/cli/config-ui/src/Shell.tsx
+  s_2a45fe71f996b2::t_27b6b3a1e7b26c 53
+  s_2a45fe71f996b2::t_c53dc6a68c1729 58-70
+  s_2a45fe71f996b2::t_fe8af08900714a 3,56,71,95-97
+  s_2a45fe71f996b2::t_6f380dec2e9783 77-86,88-93
+  s_2a45fe71f996b2::t_f3a5dc35a21fbe 13-16,27-30,57,72-76,87,94
+  s_2a45fe71f996b2::t_2ad3849b36b86a 2,12,26,32,54
+packages/cli/config-ui/src/pages/EditorPage.tsx
+  s_2a45fe71f996b2::t_777ec6ef89f5d6 25-32,447-452,857-868,877-882,1051-1058,1104-1110,1112-1222
+  s_2a45fe71f996b2::t_8ccb629856ebac 82,371,903
+  s_2a45fe71f996b2::t_506d47e54dba05 388-390,663-674
+  s_2a45fe71f996b2::t_dc5205e34d8acf 2,38-47,393,433-446,453-454,681,1060
+  s_2a45fe71f996b2::t_08bca82ff9b01c 394-396,848-856,869-876,883-894
+  s_2a45fe71f996b2::t_eacb596dae4fb1 477-485
+  s_2a45fe71f996b2::t_41a4ae345b5d4d 422-423,428,431,1072-1099
+  s_2a45fe71f996b2::t_4dc6f24579205b 651-652,1242-1243,1278-1280
+  s_2a45fe71f996b2::t_7f8358905334bd 424-427,429-430
+  s_2a45fe71f996b2::t_bbcf4c79dec2b9 1224-1225
+  s_2a45fe71f996b2::t_d65422eecb93a3 654-657
+  s_2a45fe71f996b2::t_fc88755dd95c40 594-599
+  s_2a45fe71f996b2::t_41f29311b76bf5 1236-1241,1244-1246
+  s_2a45fe71f996b2::t_b3ef33e5b79222 384-387,529-530,532-533,537,560,638-639,645,653,659,662,675
+  s_2a45fe71f996b2::t_728c29b5fada73 1267-1273,1276
+  s_2118c0d17f73b7::t_ebcbd61e2b06bd 1444-1449
+  s_2a45fe71f996b2::t_47555afc88f158 380-383,486-489,525,527,534-536,545,549-552,646-650,807-836,1247-1266,1274-1275,1277,1281-1296,1309-1369,1372-1376
+  s_2a45fe71f996b2::t_64d68310d20a5e 392,403-413,504-506,510,516,658,660-661,682
+  s_2a45fe71f996b2::t_d9a32ab5515c31 391,531,640-644,676-680,1041-1050,1059,1061-1071,1100-1103,1111,1223
+  s_2a45fe71f996b2::t_c53dc6a68c1729 750-753,1006-1009,1226-1229,1370-1371
+  s_2a45fe71f996b2::t_42a8555bf71142 1297-1308
+  s_2a45fe71f996b2::t_b59cebe8729aad 736,739-740,743
+  s_2a45fe71f996b2::t_8a3c039a5cb62c 683
+packages/cli/config-ui/src/__tests__/ButtonConfigEditor.test.tsx
+  s_2a45fe71f996b2::t_82f4281b7ac435 67-92
+packages/cli/src/ui/primitives/Icon.tsx
+  s_2a45fe71f996b2::t_cab0719179a01c 101-102
+  s_2a45fe71f996b2::t_45d6434cb2699e 97-100,103-104
+packages/cli/config-ui/src/pages/ButtonConfigEditor.tsx
+  s_2a45fe71f996b2::t_c2f526aa29441d 542,547
+  s_2a45fe71f996b2::t_03d3b80313b703 40,242,295,329-335,340-342,350-357,371,382,486-487,502-503,622,647-650
+  s_2a45fe71f996b2::t_45d6434cb2699e 44-47,50
+  s_2a45fe71f996b2::t_49508157c7a559 72-75,80,88-89,95-96,104,111-112,125-129,135-136
+  s_2a45fe71f996b2::t_24e6d6912797f4 48-49,76
+  s_2a45fe71f996b2::t_30f96f63d2362d 632
+  s_2a45fe71f996b2::t_44733727ceab7d 488,504
+  s_2a45fe71f996b2::t_03352e284dbb6d 6,43,51,53
+  s_2a45fe71f996b2::t_c53dc6a68c1729 581-593,636-645
+  s_2a45fe71f996b2::t_dedc3dc5c201e9 52
+  s_2a45fe71f996b2::t_bcf01bba5a69d3 489,505,579-580,594-595,646
+  s_2a45fe71f996b2::t_47555afc88f158 81-87,90-94,97-103,105-110,113-124,130-134,137-141,336-339,343-349
+packages/cli/src/config/schemas.ts
+  s_423c87b5c72919::t_a1e9e251b30ee1 114-117,121-123,218
+  s_2a45fe71f996b2::t_fd24bb6479924e 124-134,219
+  s_2a45fe71f996b2::t_92e28fb3df72c3 118-120
+packages/cli/src/api/index.ts
+  s_ada9c6673a1a87::t_0e10bf7529b794 18-19,43-44
+packages/cli/src/api/protocol-internal.ts
+  s_ada9c6673a1a87::t_8c7069fb430737 434-452,595-596,637-641
+  s_2118c0d17f73b7::t_d0307a795926fc 2-6
+  s_2118c0d17f73b7::t_2c6a3d0fe14013 296
+  s_2a45fe71f996b2::t_70d0d7f3f0c3c1 313-314,317-323,330-335
+  s_423c87b5c72919::t_a1e9e251b30ee1 305-310,312
+  s_2a45fe71f996b2::t_5143e4606b7150 311
+  s_2a45fe71f996b2::t_be3a96caa1bed5 315-316,324-329
+  s_2a45fe71f996b2::t_bbcf4c79dec2b9 642
+packages/cli/src/builtin-addons/media/providers/linux.ts
+  s_1ce4499fbb9647::t_541d2039bc35ff 29-31
+  s_1ce4499fbb9647::t_7d9ee26e95898a 26-28,32-45,47-54,59,66,72,113
+packages/cli/src/config/mutation.ts
+  s_ada9c6673a1a87::t_2f4dece64eccd5 249-254,256,260-265
+  s_2118c0d17f73b7::t_c84e2dcf831ca7 332
+  s_2a45fe71f996b2::t_777ec6ef89f5d6 334-345
+  s_423c87b5c72919::t_a1e9e251b30ee1 33,37,49-53,55-56,313-317,371-373,379-387,397-398
+  s_2a45fe71f996b2::t_3e029683c5e07e 388-396
+  s_423c87b5c72919::t_b6f5616c56ca79 374-378
+  s_2a45fe71f996b2::t_63b26c9360eef2 457-460,473
+  s_2a45fe71f996b2::t_e5306a70482834 478
+  s_2118c0d17f73b7::t_61b8213d177804 59-60,323-328,330-331,333,349-353,357-358
+  s_ada9c6673a1a87::t_13e6adf54a4302 257-259
+  s_2a45fe71f996b2::t_4dc6f24579205b 367-370
+  s_2a45fe71f996b2::t_43d035974f954a 474-477
+  s_ada9c6673a1a87::t_676d0efd5648d7 255
+  s_2a45fe71f996b2::t_bbcf4c79dec2b9 442
+  s_2a45fe71f996b2::t_70d0d7f3f0c3c1 354-356,359-366,443-448,450,452-456
+  s_2a45fe71f996b2::t_5143e4606b7150 54
+  s_2a45fe71f996b2::t_fd24bb6479924e 34,57,61
+  s_2a45fe71f996b2::t_be3a96caa1bed5 58,322,329,346-348
+  s_ada9c6673a1a87::t_a34b958a17c60e 86,126-130,133
+  s_2a45fe71f996b2::t_df228163b9fdab 439-440,482
+  s_2118c0d17f73b7::t_34d4f9496467d4 399
+packages/cli/config-ui/src/DeckFrame.tsx
+  s_2a45fe71f996b2::t_d9a32ab5515c31 276,278-279
+  s_2a45fe71f996b2::t_f3a5dc35a21fbe 236,324
+packages/cli/src/builtin-addons/media/buttons/media-player/backend.ts
+  s_1ce4499fbb9647::t_9b1f97122c68bf 13-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "bbbdbe8a33f5a8e9aed58f877e380f45281def57",
+  "prompts": {},
+  "sessions": {
+    "s_1ce4499fbb9647": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f93e9d203ffeS7AeRjWhFabm4A",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": null
+    },
+    "s_2118c0d17f73b7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f92dc5444ffeXpj7uSeenWEy3J",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_2a45fe71f996b2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f96f65a23ffeV7uszCIHHKKxOJ",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_423c87b5c72919": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f96dc5ba1ffeZcdPFnS4IUiL9M",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": null
+    },
+    "s_ada9c6673a1a87": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f94ab7a61ffeDBXe7GdWtc1X64",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": null
+    }
+  }
+}
