@@ -1,0 +1,19 @@
+packages/addons/app-shortcuts/src/decks/opencode.ts
+  s_949ba3ee498749::t_333b1561543cbc 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "3c1ec6b69f3f4c12ae0d2258f5a3dbcc966d4b7e",
+  "prompts": {},
+  "sessions": {
+    "s_949ba3ee498749": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f8f3a2e2cffeSwDTUIizB89krt",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
