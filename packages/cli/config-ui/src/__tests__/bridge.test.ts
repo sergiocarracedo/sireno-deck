@@ -6,6 +6,7 @@ import {
   computeNextBackoff,
   createWsClient,
   serializeHello,
+  type WsStatus,
 } from "../bridge"
 import type { WebSocketLike } from "../bridge"
 import { clearServiceLogs, getServiceLogs } from "../bridge-log-store"
@@ -91,6 +92,23 @@ describe("bridge (emulator)", () => {
     expect(MockWebSocket.instances).toHaveLength(1)
     vi.advanceTimersByTime(WS_BACKOFF_DELAYS_MS[0]! + 100)
     expect(MockWebSocket.instances.length).toBeGreaterThanOrEqual(2)
+    client.close()
+  })
+
+  it("stops reconnecting when the token is rejected", () => {
+    const statuses: WsStatus[] = []
+    const client = createWsClient({
+      url: "ws://x",
+      onStatus: (status) => statuses.push(status),
+      wsFactory: (u) => new MockWebSocket(u),
+    })
+    const first = MockWebSocket.instances[0]!
+    const close = [...(first.listeners.get("close") ?? [])][0]!
+    close({ code: 4001 })
+    vi.advanceTimersByTime(60_000)
+    expect(client.status()).toBe("authorization-failed")
+    expect(statuses).toContain("authorization-failed")
+    expect(MockWebSocket.instances).toHaveLength(1)
     client.close()
   })
 

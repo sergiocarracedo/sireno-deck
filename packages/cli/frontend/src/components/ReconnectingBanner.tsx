@@ -16,7 +16,12 @@ export const ReconnectingBanner = ({
   attempt,
   now,
 }: ReconnectingBannerProps) => {
-  if (status === "open" || disconnectedSince === null) return null
+  if (
+    status === "open" ||
+    status === "authorization-failed" ||
+    disconnectedSince === null
+  )
+    return null
   const elapsed = now - disconnectedSince
   if (elapsed >= 30000) return null
   return (

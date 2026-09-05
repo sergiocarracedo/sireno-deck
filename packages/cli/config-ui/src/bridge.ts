@@ -35,7 +35,12 @@ export interface WsClientOptions {
   readonly wsFactory?: (url: string) => WebSocketLike
 }
 
-export type WsStatus = "connecting" | "open" | "closed" | "failed"
+export type WsStatus =
+  | "connecting"
+  | "open"
+  | "closed"
+  | "failed"
+  | "authorization-failed"
 
 export interface WsClient {
   send(data: string): void
@@ -83,6 +88,16 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   }
 
   const onWsClose = (event: unknown): void => {
+    const closeCode =
+      typeof event === "object" && event !== null && "code" in event
+        ? (event as { code?: unknown }).code
+        : undefined
+    if (closeCode === 4001) {
+      lastErrorValue =
+        "Token mismatch — close this window and run sirenodeck config-ui again"
+      setStatus("authorization-failed")
+      return
+    }
     setStatus("closed")
     options.onClose?.()
     scheduleReconnect()

@@ -41,10 +41,9 @@ class FakeWebSocket {
   emitMessage(data: string): void {
     for (const l of this.messageListeners) l({ data } as MessageEvent)
   }
-  emitClose(): void {
+  emitClose(code = 0, reason = ""): void {
     this.readyState = FakeWebSocket.CLOSED
-    for (const l of this.closeListeners)
-      l({ code: 0, reason: "" } as CloseEvent)
+    for (const l of this.closeListeners) l({ code, reason } as CloseEvent)
   }
 }
 
@@ -100,6 +99,22 @@ describe("createWsClient", () => {
     client.close()
     vi.advanceTimersByTime(100)
     expect(FakeWebSocket.instances.length).toBe(1)
+  })
+
+  it("stops reconnecting when the token is rejected", () => {
+    vi.useFakeTimers()
+    const statuses: string[] = []
+    const client = createWsClient({
+      url: "ws://test",
+      backoffMs: [10],
+      onStatus: (status) => statuses.push(status),
+    })
+    client.connect()
+    FakeWebSocket.instances[0]!.emitClose(4001, "token mismatch")
+    vi.advanceTimersByTime(100)
+    expect(statuses).toContain("authorization-failed")
+    expect(FakeWebSocket.instances).toHaveLength(1)
+    client.close()
   })
 })
 

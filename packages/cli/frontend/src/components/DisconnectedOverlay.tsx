@@ -32,7 +32,12 @@ export const DisconnectedOverlay = ({
   lastError,
   now,
 }: DisconnectedOverlayProps) => {
-  if (status === "open" || disconnectedSince === null) return null
+  if (
+    status === "open" ||
+    status === "authorization-failed" ||
+    disconnectedSince === null
+  )
+    return null
   const elapsed = now - disconnectedSince
   if (elapsed < 30000) return null
   return (

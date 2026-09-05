@@ -5,7 +5,12 @@ import {
   type WsMessage,
 } from "@/api/protocol"
 
-export type ConnectionStatus = "connecting" | "open" | "closed" | "failed"
+export type ConnectionStatus =
+  | "connecting"
+  | "open"
+  | "closed"
+  | "failed"
+  | "authorization-failed"
 
 export interface WsClientOptions {
   url: string
@@ -117,6 +122,8 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
       if (event.code === 4001) {
         lastError =
           "Token mismatch — check that SIRENO_TOKEN matches the daemon"
+        setStatus("authorization-failed")
+        return
       } else if (event.code !== 1000 && event.code !== 0) {
         lastError =
           event.reason?.length > 0
