@@ -1,0 +1,40 @@
+packages/cli/frontend/src/components/DisconnectedOverlay.tsx
+  s_001e1d691b43db::t_aa58942519e0f1 35-40
+packages/cli/frontend/src/bridge/client.ts
+  s_001e1d691b43db::t_318957abbfc53d 8-13,125-126
+packages/cli/config-ui/src/__tests__/bridge.test.ts
+  s_001e1d691b43db::t_712c346a62b77d 9
+  s_001e1d691b43db::t_318957abbfc53d 98-114
+packages/cli/config-ui/src/bridge.ts
+  s_001e1d691b43db::t_318957abbfc53d 38-43,91-100
+packages/cli/frontend/src/bridge/__tests__/client.test.ts
+  s_001e1d691b43db::t_4fa682ff500e3f 46
+  s_001e1d691b43db::t_318957abbfc53d 103-112,114-118
+  s_001e1d691b43db::t_712c346a62b77d 44,113
+packages/cli/frontend/src/App.tsx
+  s_001e1d691b43db::t_318957abbfc53d 193-196,381-387,391-394
+  s_001e1d691b43db::t_4fa682ff500e3f 388-390
+packages/cli/config-ui/src/App.tsx
+  s_001e1d691b43db::t_318957abbfc53d 173,476-489
+  s_001e1d691b43db::t_e9e8eaa79da32d 490
+packages/cli/frontend/src/components/ReconnectingBanner.tsx
+  s_001e1d691b43db::t_aa58942519e0f1 19-24
+config.yml
+  s_001e1d691b43db::t_d21fb601a62747 18,42,49,54,56,59,67,76,79,82,85,88,93,98,100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "13060c784daa5d7500819c65478efe308ea3012e",
+  "prompts": {},
+  "sessions": {
+    "s_001e1d691b43db": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f8f3710f4ffe9C4wLIa1Dz1x2Y",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
