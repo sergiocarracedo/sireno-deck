@@ -1,0 +1,89 @@
+packages/cli/src/outputClient/__tests__/real.test.ts
+  s_a5fcd8066364ba::t_63fdebe6beb2d3 166-168,220
+  s_a5fcd8066364ba::t_aec5217bfca19f 6-14,18-43,147-165,169-219,221
+  s_a5fcd8066364ba::t_8f71ae8a68c4db 222
+packages/cli/src/system/setup-wizard/probe.ts
+  s_a5fcd8066364ba::t_622d0b5c14b307 3-6,214-216,284,384
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_a5fcd8066364ba::t_622d0b5c14b307 90,103
+  s_a5fcd8066364ba::t_3fa588ec56bc4f 182-213
+packages/cli/src/outputClient/real.ts
+  s_a5fcd8066364ba::t_cb541f3692a3fd 352
+  s_a5fcd8066364ba::t_0949b7dfcbcb9a 337-341
+  s_a5fcd8066364ba::t_63fdebe6beb2d3 367
+  s_a5fcd8066364ba::t_b01741562065b6 127-131,133-144,146,148-153,155-169,171,173-191,193-205,207-216,218,220-254,258-260,264-265,268,270,278,280-289,291-293,295-307,309-318,320-329,331,333-336,343-351,353-354
+  s_a5fcd8066364ba::t_981e8caf9d9e81 121-125,355-366,369-370
+  s_a5fcd8066364ba::t_276d6bc5c7efa8 332,342,368
+packages/cli/src/system/__tests__/requirements.test.ts
+  s_a5fcd8066364ba::t_f5e2b101cead34 46
+  s_a5fcd8066364ba::t_a18b2b59290e4d 103
+  s_a5fcd8066364ba::t_b4bab743ac9856 34,157,161,164
+  s_a5fcd8066364ba::t_9e388bba3ba7b6 117
+packages/cli/src/cli/commands/run.ts
+  s_a5fcd8066364ba::t_94170f2d42c3f3 1737-1742
+  s_2a45fe71f996b2::t_7222d6cb15cebc 865,874,896
+config.yml
+  h_31bfcf89e26281 18,42,49,54,56,59,67,76,79,82,85,88,93,98,100
+packages/cli/src/system/providers/active-app/linux.ts
+  s_a5fcd8066364ba::t_622d0b5c14b307 11,150-153
+packages/cli/src/system/providers/active-app/__tests__/linux.test.ts
+  s_a5fcd8066364ba::t_bbdedaefd5b812 92-126
+packages/cli/src/cli/startup-display.ts
+  s_a5fcd8066364ba::t_b4bab743ac9856 345-348
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_a5fcd8066364ba::t_b4bab743ac9856 173,175
+packages/cli/src/system/requirements.ts
+  s_a5fcd8066364ba::t_9e388bba3ba7b6 133
+  s_a5fcd8066364ba::t_c477bef31d6a91 67-70,126-131,135-136
+packages/cli/src/system/providers/active-app/wayland-gnome.ts
+  s_a5fcd8066364ba::t_7ff754c714a2c4 55-57
+  s_a5fcd8066364ba::t_622d0b5c14b307 8,54,58-70,79-86,88-98,102-105,125-130
+  s_a5fcd8066364ba::t_dfa998a5465a35 71-78,87,99
+  s_a5fcd8066364ba::t_b4bab743ac9856 100-101,108-122
+  s_a5fcd8066364ba::t_9e388bba3ba7b6 106-107,123-124
+  s_a5fcd8066364ba::t_04a51e5287f958 131
+packages/cli/src/system/providers/clipboard/__tests__/linux.test.ts
+  s_a5fcd8066364ba::t_f5e2b101cead34 116-138
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_2a45fe71f996b2::t_7222d6cb15cebc 467-494,503-512
+  s_2a45fe71f996b2::t_6f0c2a08da5d50 495-502
+packages/cli/src/system/providers/active-app/__tests__/wayland-gnome.test.ts
+  s_a5fcd8066364ba::t_b4bab743ac9856 119-125,131-132,138-142,146-147
+  s_a5fcd8066364ba::t_622d0b5c14b307 13,97-100,103-116
+  s_a5fcd8066364ba::t_9e388bba3ba7b6 126-130,133-137,143-145
+  s_a5fcd8066364ba::t_dfa998a5465a35 117-118,148-158
+  s_a5fcd8066364ba::t_7ff754c714a2c4 101-102
+packages/cli/src/system/providers/clipboard/linux.ts
+  s_a5fcd8066364ba::t_c477bef31d6a91 18-19,21,23,26,32,43-46,61,65,68-69,72,82,85,88,99,103,126-128,130-133,137-138
+  s_a5fcd8066364ba::t_f5e2b101cead34 153-155
+  s_a5fcd8066364ba::t_e3e4b830b20dfa 47,62-64,96,100-102,129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "eefd06e49c5220cb053e1089741a1d485475f328",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_2a45fe71f996b2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f96f65a23ffeV7uszCIHHKKxOJ",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_a5fcd8066364ba": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9271b987ffe21LY5cF9KoKod5",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
