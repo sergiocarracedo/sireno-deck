@@ -14,7 +14,7 @@ export const opencodeDeck: AddonDeckEntry = {
   paginated: true,
   autoShow: true,
   trigger: {
-    window_name: ["*opencode*", "*OpenCode*", "*opencode*"],
+    process_name: ["opencode", "opencode.exe"],
   },
   buttons: [
     action("command", "Commands", "macro://ctrl+p"),
