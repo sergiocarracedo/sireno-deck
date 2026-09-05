@@ -170,6 +170,7 @@ export const App = ({
         lastStatusRef.current = status
         setConnectionStatus(status)
         setAttempt(clientRef.current?.attemptCount() ?? 0)
+        if (status === "authorization-failed") return
         if (status === "open") {
           if (reconnectLatchTimerRef.current !== null) {
             window.clearTimeout(reconnectLatchTimerRef.current)
@@ -471,6 +472,21 @@ export const App = ({
     elapsed >= 30000
   const showBanner =
     connectionStatus !== "open" && disconnectedSince !== null && elapsed < 30000
+
+  if (connectionStatus === "authorization-failed") {
+    return (
+      <div
+        data-testid="authorization-failed"
+        className="flex min-h-screen items-center justify-center bg-neutral-950 p-6 text-center text-sm text-neutral-200"
+      >
+        <p className="max-w-md">
+          Authorization token changed. Close this window and run{" "}
+          <code className="font-mono text-sky-300">sirenodeck config-ui</code>{" "}
+          to get access again
+        </p>
+      </div>
+    )
+  }
 
   return (
     <Shell

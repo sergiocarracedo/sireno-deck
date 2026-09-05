@@ -190,6 +190,10 @@ const AppContent = () => {
         setConnectionStatus(status)
         setAttempt(client.getAttempt())
         setLastError(client.getLastError())
+        if (status === "authorization-failed") {
+          setDisconnectedSince(Date.now())
+          return
+        }
         if (status === "open") {
           if (reconnectLatchTimerRef.current !== null) {
             window.clearTimeout(reconnectLatchTimerRef.current)
@@ -374,6 +378,20 @@ const AppContent = () => {
           attempt={attempt}
           now={now}
         />
+        {connectionStatus === "authorization-failed" && (
+          <div
+            data-testid="authorization-failed"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/95 p-6 text-center"
+          >
+            <p className="max-w-md text-sm text-neutral-200">
+              Authorization token changed. Close this window and run{" "}
+              <code className="font-mono text-sky-300">
+                sirenodeck config-ui
+              </code>{" "}
+              to get access again
+            </p>
+          </div>
+        )}
         {assetsReady ? (
           <Routes>
             <Route
