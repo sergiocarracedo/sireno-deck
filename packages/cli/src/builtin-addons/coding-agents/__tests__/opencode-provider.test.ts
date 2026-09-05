@@ -68,6 +68,28 @@ describe("OpenCodeProvider", () => {
     expect(agents[0]?.providerId).toBe("opencode")
   })
 
+  it("keeps live instances when the OpenCode API is unreachable", async () => {
+    const provider = new OpenCodeProvider({
+      baseUrl: "http://x",
+      apiFactory: () =>
+        makeApi({
+          listSessions: async () => {
+            throw new Error("fetch failed")
+          },
+        }),
+    })
+
+    const agents = await provider.fetchSnapshot(new AbortController().signal)
+
+    expect(agents).toEqual([
+      expect.objectContaining({
+        instanceId: "opencode:123",
+        pid: 123,
+        status: "running",
+      }),
+    ])
+  })
+
   it("reads usage and context from OpenCode API-shaped responses", async () => {
     const usage = {
       input: 100,

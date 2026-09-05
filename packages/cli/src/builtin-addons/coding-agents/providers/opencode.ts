@@ -291,6 +291,7 @@ export class OpenCodeProvider implements AgentProvider {
 
   async fetchSnapshot(signal: AbortSignal): Promise<readonly Agent[]> {
     if (signal.aborted) return []
+    const instances = await readOpenCodeInstances()
     try {
       const [sessions, statusMap, providers] = await Promise.all([
         this.#api.listSessions(signal),
@@ -317,7 +318,6 @@ export class OpenCodeProvider implements AgentProvider {
         signal,
         contextLimits,
       )
-      const instances = await readOpenCodeInstances()
       const bySessionId = new Map(
         instances.flatMap((instance) =>
           instance.sessionId === undefined
@@ -351,7 +351,7 @@ export class OpenCodeProvider implements AgentProvider {
         "[coding-agents] opencode snapshot failed:",
         err instanceof Error ? err.message : String(err),
       )
-      return []
+      return instances.map(toInstanceAgent)
     }
   }
 

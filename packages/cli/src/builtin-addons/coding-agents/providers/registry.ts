@@ -19,6 +19,7 @@ export interface LoadProvidersDeps {
 }
 
 const DEFAULT_OPENCODE_URL = "http://127.0.0.1:4096"
+const LEGACY_OPENCODE_URL = "http://127.0.0.1:4095"
 
 export const loadProviders = async (
   config: ProviderRegistryConfig,
@@ -27,7 +28,9 @@ export const loadProviders = async (
 ): Promise<LoadProvidersResult> => {
   const providers = new Map<string, AgentProvider>()
   let spawnedChild: { kill: () => Promise<void> } | null = null
-  const opencodeUrl = config.opencodeUrl ?? DEFAULT_OPENCODE_URL
+  const configuredUrl = config.opencodeUrl ?? DEFAULT_OPENCODE_URL
+  const reachableUrl = await resolveOpencodeUrl(configuredUrl, signal)
+  const opencodeUrl = reachableUrl ?? configuredUrl
 
   try {
     providers.set("opencode", new OpenCodeProvider({ baseUrl: opencodeUrl }))
@@ -36,10 +39,7 @@ export const loadProviders = async (
     // if SDK import is broken at runtime, we just skip opencode.
   }
 
-  if (
-    !providers.has("opencode") ||
-    !(await probeOpencodeHealth(opencodeUrl, signal))
-  ) {
+  if (!providers.has("opencode") || reachableUrl === null) {
     if (!(await opencodeInstalled())) {
       // CLI not on $PATH — skip spawn entirely; requirement check
       // surfaces "opencode not installed" distinctly.
@@ -79,6 +79,20 @@ export const loadProviders = async (
   }
 
   return { providers, spawnedChild }
+}
+
+export const resolveOpencodeUrl = async (
+  preferredUrl: string,
+  signal: AbortSignal,
+): Promise<string | null> => {
+  const candidates =
+    preferredUrl === DEFAULT_OPENCODE_URL
+      ? [preferredUrl, LEGACY_OPENCODE_URL]
+      : [preferredUrl]
+  for (const url of candidates) {
+    if (await probeOpencodeHealth(url, signal)) return url
+  }
+  return null
 }
 
 const probeOpencodeHealth = async (

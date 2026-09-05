@@ -14,23 +14,19 @@ const probeOpencodeReachable = async (): Promise<{
   available: boolean
   reason?: string
 }> => {
-  try {
-    const res = await fetch("http://127.0.0.1:4096/global/health", {
-      signal: AbortSignal.timeout(2000),
-    })
-    if (!res.ok) {
-      return { available: false, reason: `HTTP ${res.status}` }
-    }
-    const body = (await res.json()) as { healthy?: boolean }
-    return body.healthy === true
-      ? { available: true }
-      : { available: false, reason: "not healthy" }
-  } catch (err) {
-    return {
-      available: false,
-      reason: err instanceof Error ? err.message : "unreachable",
+  for (const url of ["http://127.0.0.1:4096", "http://127.0.0.1:4095"]) {
+    try {
+      const res = await fetch(`${url}/global/health`, {
+        signal: AbortSignal.timeout(2000),
+      })
+      if (!res.ok) continue
+      const body = (await res.json()) as { healthy?: boolean }
+      if (body.healthy === true) return { available: true }
+    } catch {
+      // Try the other supported local server port.
     }
   }
+  return { available: false, reason: "unreachable" }
 }
 
 const probeClaudeProjectsDir = async (): Promise<{
