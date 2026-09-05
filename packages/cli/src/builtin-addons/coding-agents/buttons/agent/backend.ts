@@ -62,15 +62,20 @@ const callDismiss = (ctx: AddonButtonServiceContext<AgentConfig>): void => {
   }
 }
 
+// ponytail: tap is reserved for the frontend's PaginatedSurface page
+// cycling; hold opens the session, dbl-tap dismisses the attention notice.
 export default {
   configSchema,
-  gestureHandlers: ["tap", "hold"] as const,
+  gestureHandlers: ["tap", "hold", "dbl-tap"] as const,
   onMount: (_ctx: AddonButtonServiceContext<AgentConfig>): void => {},
-  onTap: async (ctx: AddonButtonServiceContext<AgentConfig>): Promise<void> => {
+  onTap: (_ctx: AddonButtonServiceContext<AgentConfig>): void => {},
+  onHold: async (
+    ctx: AddonButtonServiceContext<AgentConfig>,
+  ): Promise<void> => {
     const agent = resolveSlotAgent(ctx)
     if (agent) await runFocus(ctx, agent)
   },
-  onHold: (ctx: AddonButtonServiceContext<AgentConfig>): void => {
+  onDblTap: (ctx: AddonButtonServiceContext<AgentConfig>): void => {
     callDismiss(ctx)
   },
   dispose: (_ctx: AddonButtonServiceContext<AgentConfig>): void => {},

@@ -38,6 +38,7 @@ interface AgentLike {
   contextTokens?: number
   contextPercent?: number
   createdAt?: number
+  updatedAt?: number
   lastMessagePreview?: string
 }
 
@@ -70,7 +71,13 @@ const DOT_COLOR: Record<string, string> = {
 const agentAt = (snapshot: SnapshotLike, slot: number): AgentLike | null => {
   const all: AgentLike[] = []
   for (const list of Object.values(snapshot.byProvider ?? {})) all.push(...list)
-  all.sort((x, y) => (y.createdAt ?? 0) - (x.createdAt ?? 0) || 0)
+  // keep in sync with byCreatedDesc in shared/snapshot.ts so the slot a tile
+  // renders matches the slot the backend resolves for gestures
+  all.sort(
+    (x, y) =>
+      (y.createdAt ?? 0) - (x.createdAt ?? 0) ||
+      (y.updatedAt ?? 0) - (x.updatedAt ?? 0),
+  )
   return all[slot] ?? null
 }
 

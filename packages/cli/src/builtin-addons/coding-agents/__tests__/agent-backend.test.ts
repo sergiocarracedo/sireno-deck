@@ -57,7 +57,13 @@ const makeCtx = (snap: AgentsSnapshot, slot: number) => {
 }
 
 describe("coding-agents agent button backend", () => {
-  it("focus tap spawns a terminal resuming the opencode session", async () => {
+  it("declares tap, hold, and dbl-tap gesture handlers", () => {
+    expect(agentBackend.gestureHandlers).toContain("tap")
+    expect(agentBackend.gestureHandlers).toContain("hold")
+    expect(agentBackend.gestureHandlers).toContain("dbl-tap")
+  })
+
+  it("tap is a no-op — the frontend uses tap for page changes", async () => {
     const snap = snapshot([
       {
         sessionId: "abc",
@@ -68,6 +74,20 @@ describe("coding-agents agent button backend", () => {
     ])
     const { ctx, run } = makeCtx(snap, 0)
     await agentBackend.onTap?.(ctx)
+    expect(run).not.toHaveBeenCalled()
+  })
+
+  it("hold spawns a terminal resuming the opencode session", async () => {
+    const snap = snapshot([
+      {
+        sessionId: "abc",
+        providerId: "opencode",
+        directory: "/tmp/p",
+        status: "running",
+      },
+    ])
+    const { ctx, run } = makeCtx(snap, 0)
+    await agentBackend.onHold?.(ctx)
     expect(run).toHaveBeenCalledTimes(1)
     const cmd = run.mock.calls[0]?.[0] as string
     expect(cmd).toContain("opencode --session")
@@ -76,7 +96,7 @@ describe("coding-agents agent button backend", () => {
     expect(cmd).toContain("nohup")
   })
 
-  it("focus tap uses claude --resume for claude-code sessions", async () => {
+  it("hold uses claude --resume for claude-code sessions", async () => {
     const snap = snapshot([
       {
         sessionId: "xyz",
@@ -86,17 +106,36 @@ describe("coding-agents agent button backend", () => {
       },
     ])
     const { ctx, run } = makeCtx(snap, 0)
-    await agentBackend.onTap?.(ctx)
+    await agentBackend.onHold?.(ctx)
     const cmd = run.mock.calls[0]?.[0] as string
     expect(cmd).toContain("claude --resume")
     expect(cmd).toContain("xyz")
     expect(cmd).toContain("/w/d")
   })
 
+  it("dbl-tap dismisses the slot agent's attention", () => {
+    const snap = snapshot([
+      {
+        sessionId: "abc",
+        providerId: "opencode",
+        status: "waiting_for_human",
+      },
+    ])
+    const { ctx } = makeCtx(snap, 0)
+    agentBackend.onDblTap?.(ctx)
+    const dismiss = (
+      ctx as unknown as {
+        methods: Record<string, ReturnType<typeof vi.fn>>
+      }
+    ).methods["coding-agents:dismissAttention"]
+    expect(dismiss).toHaveBeenCalledWith("opencode:abc")
+  })
+
   it("does nothing when the slot has no agent", async () => {
     const snap = snapshot([])
     const { ctx, run } = makeCtx(snap, 0)
     await agentBackend.onTap?.(ctx)
+    await agentBackend.onHold?.(ctx)
     expect(run).not.toHaveBeenCalled()
   })
 })

@@ -216,6 +216,92 @@ describe("OpenCodeProvider", () => {
     expect(agents[1]?.status).toBe("idle")
   })
 
+  it("derives metrics for live instances missing from the session list", async () => {
+    vi.spyOn(instances, "readOpenCodeInstances").mockResolvedValue([
+      {
+        instanceId: "opencode:123",
+        pid: 123,
+        cwd: "/tmp/project",
+        sessionId: "live-1",
+        status: "running",
+        updatedAt: Date.now(),
+      },
+    ])
+    const usage = {
+      input: 100,
+      output: 50,
+      reasoning: 25,
+      cache: { read: 10, write: 5 },
+    }
+    const sessionMessages = vi.fn(async () => [
+      {
+        info: {
+          role: "assistant",
+          tokens: usage,
+          cost: 0.5,
+          modelID: "model",
+          providerID: "provider",
+        },
+        parts: [],
+      },
+    ])
+    const api = makeApi({
+      listSessions: async () => [],
+      sessionMessages:
+        sessionMessages as unknown as OpencodeHttpApi["sessionMessages"],
+      providerModels: async () => [
+        { id: "provider", models: { model: { limit: { context: 1000 } } } },
+      ],
+    })
+    const provider = new OpenCodeProvider({
+      baseUrl: "http://x",
+      apiFactory: () => api,
+    })
+
+    const agents = await provider.fetchSnapshot(new AbortController().signal)
+
+    expect(sessionMessages).toHaveBeenCalledWith(
+      expect.any(AbortSignal),
+      "live-1",
+      6,
+    )
+    expect(agents).toHaveLength(1)
+    expect(agents[0]?.sessionId).toBe("live-1")
+    expect(agents[0]?.title).toBe("OpenCode")
+    expect(agents[0]?.contextTokens).toBe(190)
+    expect(agents[0]?.contextPercent).toBe(19)
+    expect(agents[0]?.cost).toBe(0.5)
+  })
+
+  it("does not fetch messages for instances without a sessionId", async () => {
+    vi.spyOn(instances, "readOpenCodeInstances").mockResolvedValue([
+      {
+        instanceId: "opencode:123",
+        pid: 123,
+        cwd: "/tmp/project",
+        status: "idle",
+        updatedAt: Date.now(),
+      },
+    ])
+    const sessionMessages = vi.fn(async () => [])
+    const api = makeApi({
+      listSessions: async () => [],
+      sessionMessages:
+        sessionMessages as unknown as OpencodeHttpApi["sessionMessages"],
+    })
+    const provider = new OpenCodeProvider({
+      baseUrl: "http://x",
+      apiFactory: () => api,
+    })
+
+    const agents = await provider.fetchSnapshot(new AbortController().signal)
+
+    expect(sessionMessages).not.toHaveBeenCalled()
+    expect(agents).toHaveLength(1)
+    expect(agents[0]?.sessionId).toBe("instance:opencode:123")
+    expect(agents[0]?.contextTokens).toBeUndefined()
+  })
+
   it("keeps recent idle sessions without live plugin leases", async () => {
     vi.spyOn(instances, "readOpenCodeInstances").mockResolvedValue([])
     const api = makeApi({

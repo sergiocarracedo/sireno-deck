@@ -69,6 +69,8 @@ interface MessageLike {
     readonly tokens?: TokenUsage
     readonly cost?: number
     readonly finish?: string | null
+    readonly modelID?: string
+    readonly providerID?: string
   }
   readonly finish?: string | null
   readonly cost?: number
@@ -262,6 +264,29 @@ const messageCost = (messages: ReadonlyArray<MessageLike>): number =>
     return sum + (typeof cost === "number" && Number.isFinite(cost) ? cost : 0)
   }, 0)
 
+// ponytail: the /session list omits sessions owned by other opencode
+// processes (verified live), but /session/<id>/message still answers. The
+// newest assistant message carries modelID/providerID, enough to resolve a
+// context limit and derive a percent for instance-only agents.
+const latestMessageModel = (
+  messages: ReadonlyArray<MessageLike>,
+): { providerID: string; modelID: string } | null => {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const info = messages[i]?.info
+    const providerID = info?.providerID
+    const modelID = info?.modelID
+    if (
+      typeof providerID === "string" &&
+      providerID.length > 0 &&
+      typeof modelID === "string" &&
+      modelID.length > 0
+    ) {
+      return { providerID, modelID }
+    }
+  }
+  return null
+}
+
 // ponytail: the fork's /session/status is usually empty, so live status comes
 // from the message parts; when a message-derived status is idle, fall back to
 // whatever the status map reported (map status is authoritative when present).
@@ -341,9 +366,11 @@ export class OpenCodeProvider implements AgentProvider {
       })
       return [
         ...merged,
-        ...instances
-          .filter((instance) => !represented.has(instance.instanceId))
-          .map(toInstanceAgent),
+        ...(await this.#instanceAgents(
+          instances.filter((instance) => !represented.has(instance.instanceId)),
+          contextLimits,
+          signal,
+        )),
       ]
     } catch (err) {
       if (signal.aborted) return []
@@ -353,6 +380,52 @@ export class OpenCodeProvider implements AgentProvider {
       )
       return instances.map(toInstanceAgent)
     }
+  }
+
+  // ponytail: instances whose session is missing from the /session list get
+  // their metrics (tokens, cost, context %) derived from the message
+  // endpoint, which answers even when the list omits the session.
+  async #instanceAgents(
+    instances: ReadonlyArray<OpenCodeInstance>,
+    contextLimits: ReadonlyMap<string, number>,
+    signal: AbortSignal,
+  ): Promise<readonly Agent[]> {
+    const out: Agent[] = []
+    for (const instance of instances) {
+      if (instance.sessionId === undefined || signal.aborted) {
+        out.push(toInstanceAgent(instance))
+        continue
+      }
+      try {
+        const messages = await this.#api.sessionMessages(
+          signal,
+          instance.sessionId,
+          STATUS_MESSAGE_LIMIT,
+        )
+        const contextTokens = latestAssistantTokens(messages)
+        let cost: number | undefined
+        const derivedCost = messageCost(messages)
+        if (derivedCost > 0) cost = derivedCost
+        let contextPercent: number | undefined
+        const model = latestMessageModel(messages)
+        const limit =
+          model !== null
+            ? contextLimits.get(`${model.providerID}:${model.modelID}`)
+            : undefined
+        if (contextTokens !== undefined && limit !== undefined) {
+          contextPercent = Math.round((contextTokens / limit) * 100)
+        }
+        out.push({
+          ...toInstanceAgent(instance),
+          ...(cost !== undefined ? { cost } : {}),
+          ...(contextTokens !== undefined ? { contextTokens } : {}),
+          ...(contextPercent !== undefined ? { contextPercent } : {}),
+        })
+      } catch {
+        out.push(toInstanceAgent(instance))
+      }
+    }
+    return out
   }
 
   async #withMessages(
