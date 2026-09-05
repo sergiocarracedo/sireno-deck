@@ -5,6 +5,7 @@ import type pino from "pino"
 import type { ActiveAppProvider, ActiveAppSnapshot } from "../active-app"
 import {
   logNull,
+  type CommandExecutor,
   type LinuxDbusBus,
   type LinuxDbusProxyObject,
 } from "../shared"
@@ -49,6 +50,84 @@ const isWaylandSession = (env: NodeJS.ProcessEnv): boolean => {
 export const shouldUseWaylandGnomeProvider = (
   env: NodeJS.ProcessEnv = process.env,
 ): boolean => isWaylandSession(env) && isGnomeDesktop(env)
+
+const sessionProperty = (output: string, name: string): string => {
+  const line = output
+    .split("\n")
+    .find((candidate) => candidate.startsWith(`${name}=`))
+  return line?.slice(name.length + 1) ?? ""
+}
+
+// A systemd user service does not necessarily inherit the graphical session
+// variables. Ask logind for the user's active session before falling back.
+export const hasWaylandGnomeSession = async ({
+  env = process.env,
+  executor,
+}: {
+  readonly env?: NodeJS.ProcessEnv
+  readonly executor: CommandExecutor
+}): Promise<boolean> => {
+  if (shouldUseWaylandGnomeProvider(env)) return true
+  if (
+    env["XDG_SESSION_TYPE"] !== undefined ||
+    env["WAYLAND_DISPLAY"] !== undefined ||
+    env["DISPLAY"] !== undefined ||
+    env["XDG_CURRENT_DESKTOP"] !== undefined
+  ) {
+    return false
+  }
+  if (typeof process.getuid !== "function") return false
+
+  try {
+    const sessions = await executor.run("loginctl", [
+      "show-user",
+      String(process.getuid()),
+      "--property=Sessions",
+    ])
+    if (sessions.exitCode !== 0) return false
+    const sessionIds = sessionProperty(sessions.stdout, "Sessions")
+      .split(" ")
+      .filter((id) => id.length > 0)
+    for (const sessionId of sessionIds) {
+      const session = await executor.run("loginctl", [
+        "show-session",
+        sessionId,
+        "--property=Active",
+        "--property=Type",
+        "--property=Desktop",
+      ])
+      if (session.exitCode !== 0) continue
+      if (sessionProperty(session.stdout, "Active") !== "yes") continue
+      if (sessionProperty(session.stdout, "Type") !== "wayland") continue
+      if (
+        isGnomeDesktop({
+          XDG_CURRENT_DESKTOP: sessionProperty(session.stdout, "Desktop"),
+        })
+      )
+        return true
+
+      // Ubuntu's logind session can omit Desktop. systemd's user manager
+      // retains the graphical session variables that the daemon inherits.
+      const environment = await executor.run("systemctl", [
+        "--user",
+        "show-environment",
+      ])
+      if (
+        environment.exitCode === 0 &&
+        isGnomeDesktop({
+          XDG_CURRENT_DESKTOP: sessionProperty(
+            environment.stdout,
+            "XDG_CURRENT_DESKTOP",
+          ),
+        })
+      )
+        return true
+    }
+  } catch {
+    // No logind is available in some containers and non-Linux environments.
+  }
+  return false
+}
 
 interface ProbeResult {
   bus: LinuxDbusBus

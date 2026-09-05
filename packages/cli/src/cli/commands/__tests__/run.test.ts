@@ -464,6 +464,52 @@ describe("run", () => {
     )
   })
 
+  it("preserves generic actions when paginating a large deck", async () => {
+    const outputClient = setHappyPath()
+    loaderMock.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: Array.from({ length: 15 }, (_, index) => ({
+              type: "core:action",
+              ...(index === 0 ? { actions: { tap: "echo hello" } } : {}),
+            })),
+          },
+        },
+      },
+      configDir: "/dir",
+    })
+    const signals = makeFakeSignals()
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const decks = (
+      (deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> })
+        .createDeckRuntime.mock.calls[0]![0] as {
+        decks: Array<{
+          buttons: Array<{
+            actions?: unknown
+            config?: Record<string, unknown>
+          }>
+        }>
+      }
+    ).decks
+    const button = decks[0]!.buttons.find((candidate) => candidate.actions)
+
+    expect(button?.actions).toEqual({ tap: "echo hello" })
+    expect(button?.config?.actions).toBeUndefined()
+
+    signals.trigger()
+    await runPromise
+  })
+
   it("SIGINT triggers stop() on the output handle", async () => {
     const outputClient = setHappyPath()
     const signals = makeFakeSignals()

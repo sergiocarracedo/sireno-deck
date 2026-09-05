@@ -89,6 +89,41 @@ describe("createLinuxActiveAppProvider", () => {
     await provider.stop()
   })
 
+  it("uses the GNOME extension when a service has no graphical env", async () => {
+    const iface: LinuxDbusInterface = {
+      FocusClass: async () => "Slack",
+    }
+    const bus: LinuxDbusBus = {
+      async getProxyObject() {
+        return { getInterface: () => iface }
+      },
+    }
+    const executor = makeExecutor((command, args) => {
+      if (command !== "loginctl") {
+        return { exitCode: 1, stdout: "", stderr: "" }
+      }
+      if (args[0] === "show-user") {
+        return { exitCode: 0, stdout: "Sessions=3\n", stderr: "" }
+      }
+      return {
+        exitCode: 0,
+        stdout: "Active=yes\nType=wayland\nDesktop=GNOME\n",
+        stderr: "",
+      }
+    })
+    const provider = await createLinuxActiveAppProvider({
+      dbus: bus,
+      executor,
+      logger: silentLogger(),
+      pollIntervalMs: 50,
+      env: {},
+    })
+
+    await vi.advanceTimersByTimeAsync(60)
+    await expect(provider.getActive()).resolves.toMatchObject({ name: "Slack" })
+    await provider.stop()
+  })
+
   it("falls back to /proc when D-Bus throws", async () => {
     const bus: LinuxDbusBus = {
       async getProxyObject() {

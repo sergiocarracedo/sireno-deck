@@ -87,7 +87,7 @@ describe("probeAll", () => {
     expect(report.capabilities.clipboard.missing).toEqual(["wl-copy"])
   })
 
-  it("reports clipboard preferred xclip on X11 when missing", async () => {
+  it("reports clipboard preferred wl-copy on X11 when missing", async () => {
     const executor = createExecutor([])
     const report = await probeAll({
       platform: "linux",
@@ -100,7 +100,7 @@ describe("probeAll", () => {
       readFile: () => null,
     })
     expect(report.session).toBe("x11")
-    expect(report.capabilities.clipboard.preferred).toBe("xclip")
+    expect(report.capabilities.clipboard.preferred).toBe("wl-copy")
   })
 
   it("uses extraFsProbe when which fails (stripped PATH)", async () => {
@@ -177,6 +177,38 @@ describe("probeAll", () => {
     expect(report.capabilities.activeApp.reason).toContain(
       "Window Calls Extended",
     )
+  })
+
+  it("detects the GNOME extension for a service without graphical env", async () => {
+    const fallback = createExecutor([])
+    const executor: CommandExecutor = {
+      async run(command, args) {
+        if (command !== "loginctl") return fallback.run(command, args)
+        if (args[0] === "show-user") {
+          return { exitCode: 0, stdout: "Sessions=3\n", stderr: "" }
+        }
+        return {
+          exitCode: 0,
+          stdout: "Active=yes\nType=wayland\nDesktop=GNOME\n",
+          stderr: "",
+        }
+      },
+    }
+    const report = await probeAll({
+      platform: "linux",
+      homeDir: "/home/u",
+      xdgConfigHome: "/home/u/.config",
+      env: {},
+      executor,
+      extraFsProbe: noFsProbe,
+      fileExists: () => false,
+      readFile: () => null,
+    })
+
+    expect(report.capabilities.activeApp).toMatchObject({
+      available: true,
+      preferred: "gnome-shell-extension",
+    })
   })
 
   it("detects Stream Deck via injected lsusb output", async () => {

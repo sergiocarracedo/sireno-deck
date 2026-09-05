@@ -8,6 +8,7 @@ import {
 } from "../shared"
 import {
   createWaylandGnomeProvider,
+  hasWaylandGnomeSession,
   shouldUseWaylandGnomeProvider,
 } from "./wayland-gnome"
 
@@ -146,7 +147,10 @@ const sameSnapshot = (
 export const createLinuxActiveAppProvider = async (
   deps: LinuxActiveAppDeps,
 ): Promise<ActiveAppProvider> => {
-  if (shouldUseWaylandGnomeProvider(deps.env)) {
+  if (
+    shouldUseWaylandGnomeProvider(deps.env) ||
+    (await hasWaylandGnomeSession({ env: deps.env, executor: deps.executor }))
+  ) {
     deps.logger.info(
       "active-app: detected GNOME Wayland session, using 'Window Calls Extended' provider",
     )

@@ -862,6 +862,7 @@ const buildRuntime = (
               position,
               type,
               config,
+              actions,
               buttonColor,
               sourceTarget,
               id: _btnId,
@@ -870,6 +871,7 @@ const buildRuntime = (
               position?: number
               type: string
               config?: unknown
+              actions?: RuntimeDeck["buttons"][number]["actions"]
               buttonColor?:
                 | "blue"
                 | "green"
@@ -891,6 +893,7 @@ const buildRuntime = (
               id: `${position}-${id}-${p.pageIndex}`,
               type,
               ...(position !== undefined ? { position } : {}),
+              ...(actions !== undefined ? { actions } : {}),
               ...(buttonColor !== undefined ? { buttonColor } : {}),
               ...(sourceTarget !== undefined ? { sourceTarget } : {}),
               ...(Object.keys(mergedConfig).length > 0
@@ -1731,6 +1734,12 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     )
     const serviceDecks: RuntimeDeck[] = [...decks]
     let currentLoadedConfig = loadedConfig
+    const nextMainDeckId = (
+      config: typeof currentLoadedConfig.config,
+    ): string =>
+      config.decks["main"] !== undefined
+        ? "main"
+        : (Object.keys(config.decks)[0] ?? "main")
     const requestDeckRebuild = (): void => {
       if (
         runtime === null ||
@@ -1975,13 +1984,6 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     editorMutationService = createConfigMutationService({
       configPath: loadedConfig.configPath,
     })
-
-    const nextMainDeckId = (
-      config: typeof currentLoadedConfig.config,
-    ): string =>
-      config.decks["main"] !== undefined
-        ? "main"
-        : (Object.keys(config.decks)[0] ?? "main")
 
     const refreshConfig = async (notifyEditor = true): Promise<void> => {
       const nextLoaded = await validateAndLoadConfig(options)

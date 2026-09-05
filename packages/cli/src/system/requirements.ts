@@ -64,15 +64,10 @@ const capabilityConfig: Readonly<
       "non-ASCII literal text (emoji, accented letters, CJK) needs a clipboard tool because ydotool's `type` does not handle non-BMP characters. Install the wl-clipboard package (provides wl-copy) on Wayland; xclip / xsel work on X11; macOS ships pbcopy.",
     preferred: (platform, env) => {
       if (platform === "darwin") return "pbcopy"
-      const waylandDisplay = env["WAYLAND_DISPLAY"]
-      if (
-        waylandDisplay !== undefined &&
-        waylandDisplay.length > 0 &&
-        waylandDisplay !== "0"
-      ) {
-        return "wl-copy"
-      }
-      return "xclip"
+      return env["WAYLAND_DISPLAY"] === undefined &&
+        env["DISPLAY"] !== undefined
+        ? "xclip"
+        : "wl-copy"
     },
   },
   notification: {
@@ -128,13 +123,17 @@ export const checkRequirements = async ({
   const result: Partial<Record<SystemCapability, CapabilityStatus>> = {}
 
   for (const [name, config] of Object.entries(capabilityConfig)) {
+    const commands =
+      name === "clipboard"
+        ? config.preferred(platform, env) === "xclip"
+          ? ["xclip", "xsel"]
+          : ["wl-copy"]
+        : config.commands
     const availability = await Promise.all(
-      config.commands.map((command) =>
-        probeCommand(executor, command, extraFsProbe),
-      ),
+      commands.map((command) => probeCommand(executor, command, extraFsProbe)),
     )
-    const found = config.commands.filter((_, index) => availability[index])
-    const missing = config.commands.filter((_, index) => !availability[index])
+    const found = commands.filter((_, index) => availability[index])
+    const missing = commands.filter((_, index) => !availability[index])
     result[name as SystemCapability] = {
       available: found.length > 0,
       commands: found,

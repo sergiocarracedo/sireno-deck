@@ -31,7 +31,7 @@ describe("checkRequirements", () => {
     const result = await checkRequirements({
       platform: "linux",
       executor,
-      env: {},
+      env: { DISPLAY: ":0" },
     })
     expect(result.keyMacro.available).toBe(true)
     expect(result.keyMacro.commands).toContain("ydotool")
@@ -43,7 +43,7 @@ describe("checkRequirements", () => {
     const result = await checkRequirements({
       platform: "linux",
       executor,
-      env: {},
+      env: { DISPLAY: ":0" },
     })
     expect(result.keyMacro.available).toBe(true)
     expect(result.keyMacro.commands).toContain("wtype")
@@ -100,7 +100,7 @@ describe("checkRequirements", () => {
     const result = await checkRequirements({
       platform: "linux",
       executor,
-      env: {},
+      env: { DISPLAY: ":0" },
     })
     expect(result.clipboard.available).toBe(true)
     expect(result.clipboard.preferred).toBe("xclip")
@@ -114,9 +114,7 @@ describe("checkRequirements", () => {
       env: {},
     })
     expect(result.clipboard.available).toBe(false)
-    expect(result.clipboard.missingCommands).toEqual(
-      expect.arrayContaining(["wl-copy", "xclip", "xsel", "pbcopy"]),
-    )
+    expect(result.clipboard.missingCommands).toEqual(["wl-copy"])
   })
 
   it("uses extraFsProbe as fallback when which fails (stripped PATH)", async () => {
@@ -156,14 +154,14 @@ describe("checkRequirements", () => {
   })
 
   it("formatCapabilityWarning flags missing preferred when fallback in place", async () => {
-    const executor = createExecutor(["xclip"])
+    const executor = createExecutor(["xsel"])
     const result = await checkRequirements({
       platform: "linux",
       executor,
-      env: { WAYLAND_DISPLAY: "wayland-1" },
+      env: { DISPLAY: ":0" },
     })
     const warning = formatCapabilityWarning("clipboard", result.clipboard)
-    expect(warning).toContain("wl-copy")
+    expect(warning).toContain("xclip")
   })
 
   it("formatCapabilityWarning emits missing-tools line when nothing is available", async () => {

@@ -170,8 +170,9 @@ describe("printDaemonUrl", () => {
     await printDaemonUrl(makeState({ emulatorMode: false }), "tok123", output)
     const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).not.toContain("Frontend:")
+    expect(text).toContain("\n+")
     expect(text).toContain(
-      "Config UI:  http://127.0.0.1:52938?token=tok123#/config",
+      "| Config UI: http://127.0.0.1:52938?token=tok123#/config |",
     )
   })
 

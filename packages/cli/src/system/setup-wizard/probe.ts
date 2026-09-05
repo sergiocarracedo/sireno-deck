@@ -1,6 +1,9 @@
 import { execFileSync } from "node:child_process"
 
-import { EXTENSION_INSTALL_URL } from "../providers/active-app/wayland-gnome"
+import {
+  EXTENSION_INSTALL_URL,
+  hasWaylandGnomeSession,
+} from "../providers/active-app/wayland-gnome"
 import type { CommandExecutor } from "../providers/shared"
 import { UDEV_RULES_PATH } from "./types"
 import {
@@ -183,7 +186,6 @@ const probeKeyMacro = (
 
 const probeClipboard = (
   platform: string,
-  env: NodeJS.ProcessEnv,
   executor: CommandExecutor,
   extraFsProbe?: (command: string) => boolean,
 ): Promise<CapabilityProbe> => {
@@ -207,17 +209,11 @@ const probeClipboard = (
       extraFsProbe,
     )
   }
-  const session = detectSession(env)
-  const isWayland =
-    session === "wayland" ||
-    (env["WAYLAND_DISPLAY"] !== undefined && env["WAYLAND_DISPLAY"] !== "")
   return probeCapability(
     "clipboard",
-    isWayland ? ["wl-copy"] : ["xclip", "xsel"],
-    isWayland ? "wl-copy" : "xclip",
-    isWayland
-      ? "Install wl-clipboard (provides wl-copy)."
-      : "Install xclip or xsel.",
+    ["wl-copy"],
+    "wl-copy",
+    "Install wl-clipboard (provides wl-copy).",
     executor,
     extraFsProbe,
   )
@@ -258,11 +254,6 @@ const probeNotification = (
   )
 }
 
-const isGnomeDesktop = (env: NodeJS.ProcessEnv): boolean => {
-  const desktop = env["XDG_CURRENT_DESKTOP"] ?? ""
-  return desktop.toUpperCase().includes("GNOME")
-}
-
 const probeActiveApp = async (
   platform: string,
   env: NodeJS.ProcessEnv,
@@ -290,7 +281,7 @@ const probeActiveApp = async (
     )
   }
   const session = detectSession(env)
-  if (session === "wayland" && isGnomeDesktop(env)) {
+  if (await hasWaylandGnomeSession({ env, executor })) {
     return {
       name: "activeApp",
       available: true,
@@ -390,7 +381,7 @@ export const probeAll = async (deps: ProbeDeps): Promise<SystemReport> => {
 
   const capabilities = {
     keyMacro: await probeKeyMacro(platform, executor, extraFsProbe),
-    clipboard: await probeClipboard(platform, env, executor, extraFsProbe),
+    clipboard: await probeClipboard(platform, executor, extraFsProbe),
     notification: await probeNotification(platform, executor, extraFsProbe),
     activeApp: await probeActiveApp(platform, env, executor, extraFsProbe),
   } as const

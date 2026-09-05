@@ -118,232 +118,256 @@ export class RealOutputClient implements OutputClient {
     }
     this.device = device
 
-    // ponytail: hardware-only splash — push the logo immediately after the
-    // device is connected and before Playwright/Vite takes over. pushRawImage
-    // swallows errors (non-fatal). Skipped on emulator (no pushRawImage method).
-    const splashPath = fileURLToPath(
-      new URL("../assets/logoFull.png", import.meta.url),
-    )
-    try {
-      await pushRawImage({
-        imagePath: splashPath,
-        device,
-        logger,
-      })
-    } catch (err) {
-      logger.warn(
-        { err: (err as Error).message, splashPath },
-        "real: splash push failed (non-fatal)",
-      )
-    }
-
-    opts.bridge.setDevice(descriptor)
-
-    const unsubscribeBrightness = opts.pubSub.subscribe<{
-      deckId: string
-      position: number
-      durationMs: number
-    }>("runtime:buttonError", () => {})
-    void unsubscribeBrightness
-
-    const unsubAdjust = opts.pubSub.subscribe<{
-      direction: "up" | "down"
-      value: number
-    }>("methods:adjustBrightness", ({ value }) => {
-      if (this.device === null) return
-      const current = this.deviceBrightness
-      if (value === current) return
-      this.deviceBrightness = value
-      void this.device.setBrightness(value)
-      logger.info(
-        { from: current, to: value },
-        "real mode: hardware brightness adjusted",
-      )
-      opts.pubSub.publish("sireno:settings:brightness", { value })
-    })
-
-    const mainDeck = opts.decks.find((d) => d.isMain) ?? opts.decks[0]
-
-    const gestureDetector = createGestureDetector({
-      onGesture: (result) => {
-        const keyIndex = result.keyIndex ?? -1
-        const activeDeck = opts.runtime.getActiveDeck()
-        const button = activeDeck.buttons.find((b) => {
-          if (b.position === keyIndex) return true
-          const parsed = Number.parseInt(b.id, 10)
-          return Number.isFinite(parsed) && parsed === keyIndex
-        })
-        const position = button?.position ?? -1
-        logger.debug(
-          {
-            keyIndex,
-            gesture: result.kind,
-            position,
-            activeDeckId: activeDeck.id,
-            buttonId: button?.id ?? null,
-          },
-          "real mode: gesture detected",
-        )
-        if (button === undefined) {
-          logger.warn(
-            { keyIndex, activeDeckId: activeDeck.id },
-            "real mode: keyIndex not mapped to any button on active deck",
-          )
-          return
-        }
-        void opts.runtime.dispatchGesture(
-          `${activeDeck.id}:${button.id}`,
-          result.kind,
-        )
-      },
-    })
-
-    const gestureUnsubscribe = device.onKeyEvent((event) => {
-      logger.debug(
-        { keyIndex: event.keyIndex, type: event.type },
-        "real mode: key event received",
-      )
-      gestureDetector.detect({
-        type: event.type,
-        timestamp: event.timestamp,
-        keyIndex: event.keyIndex,
-      })
-    })
-    void mainDeck
-
-    let frontendUrl =
-      opts.frontendUrl ??
-      `http://127.0.0.1:${opts.port ?? DEFAULT_FRONTEND_PORT}`
     let shuttingDown = false
     let frontendSupervisor: SuperviseHandle | null = null
     let configUiSupervisor: SuperviseHandle | null = null
-    if (opts.frontendUrl === undefined) {
-      frontendSupervisor = await supervise({
-        label: "frontend vite",
+    let renderer: BrowserRenderer | null = null
+
+    try {
+      // ponytail: hardware-only splash — push the logo immediately after the
+      // device is connected and before Playwright/Vite takes over. pushRawImage
+      // swallows errors (non-fatal). Skipped on emulator (no pushRawImage method).
+      const splashPath = fileURLToPath(
+        new URL("../assets/logoFull.png", import.meta.url),
+      )
+      try {
+        await pushRawImage({
+          imagePath: splashPath,
+          device,
+          logger,
+        })
+      } catch (err) {
+        logger.warn(
+          { err: (err as Error).message, splashPath },
+          "real: splash push failed (non-fatal)",
+        )
+      }
+
+      opts.bridge.setDevice(descriptor)
+
+      const unsubscribeBrightness = opts.pubSub.subscribe<{
+        deckId: string
+        position: number
+        durationMs: number
+      }>("runtime:buttonError", () => {})
+      void unsubscribeBrightness
+
+      const unsubAdjust = opts.pubSub.subscribe<{
+        direction: "up" | "down"
+        value: number
+      }>("methods:adjustBrightness", ({ value }) => {
+        if (this.device === null) return
+        const current = this.deviceBrightness
+        if (value === current) return
+        this.deviceBrightness = value
+        void this.device.setBrightness(value)
+        logger.info(
+          { from: current, to: value },
+          "real mode: hardware brightness adjusted",
+        )
+        opts.pubSub.publish("sireno:settings:brightness", { value })
+      })
+
+      const mainDeck = opts.decks.find((d) => d.isMain) ?? opts.decks[0]
+
+      const gestureDetector = createGestureDetector({
+        onGesture: (result) => {
+          const keyIndex = result.keyIndex ?? -1
+          const activeDeck = opts.runtime.getActiveDeck()
+          const button = activeDeck.buttons.find((b) => {
+            if (b.position === keyIndex) return true
+            const parsed = Number.parseInt(b.id, 10)
+            return Number.isFinite(parsed) && parsed === keyIndex
+          })
+          const position = button?.position ?? -1
+          logger.debug(
+            {
+              keyIndex,
+              gesture: result.kind,
+              position,
+              activeDeckId: activeDeck.id,
+              buttonId: button?.id ?? null,
+            },
+            "real mode: gesture detected",
+          )
+          if (button === undefined) {
+            logger.warn(
+              { keyIndex, activeDeckId: activeDeck.id },
+              "real mode: keyIndex not mapped to any button on active deck",
+            )
+            return
+          }
+          void opts.runtime.dispatchGesture(
+            `${activeDeck.id}:${button.id}`,
+            result.kind,
+          )
+        },
+      })
+
+      const gestureUnsubscribe = device.onKeyEvent((event) => {
+        logger.debug(
+          { keyIndex: event.keyIndex, type: event.type },
+          "real mode: key event received",
+        )
+        gestureDetector.detect({
+          type: event.type,
+          timestamp: event.timestamp,
+          keyIndex: event.keyIndex,
+        })
+      })
+      void mainDeck
+
+      let frontendUrl =
+        opts.frontendUrl ??
+        `http://127.0.0.1:${opts.port ?? DEFAULT_FRONTEND_PORT}`
+      if (opts.frontendUrl === undefined) {
+        frontendSupervisor = await supervise({
+          label: "frontend vite",
+          kill: killChild,
+          delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
+          spawn: async () => {
+            const r = await spawnFrontendVite({
+              port: opts.port ?? DEFAULT_FRONTEND_PORT,
+              cwd: resolveFrontendCwd(),
+              pnpmCommand: "pnpm",
+              readyTimeoutMs: 30_000,
+              wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
+              logger,
+              themeDir: opts.themeDir,
+              configPath: opts.configPath,
+              emulatorMode: false,
+              ...(opts.onChildPid !== undefined
+                ? { onPid: opts.onChildPid }
+                : {}),
+            })
+            frontendUrl = r.url
+            return r.process
+          },
+          onGiveUp: () => opts.onChildCrash?.(),
+          isShuttingDown: () => shuttingDown,
+          logger,
+        })
+      }
+
+      let configUiUrl = `http://127.0.0.1:${DEFAULT_FRONTEND_PORT + 1}`
+      configUiSupervisor = await supervise({
+        label: "config ui vite",
         kill: killChild,
         delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
         spawn: async () => {
-          const r = await spawnFrontendVite({
-            port: opts.port ?? DEFAULT_FRONTEND_PORT,
-            cwd: resolveFrontendCwd(),
+          const r = await spawnConfigUiVite({
+            port: DEFAULT_FRONTEND_PORT + 1,
+            cwd: resolveConfigUiCwd(),
             pnpmCommand: "pnpm",
             readyTimeoutMs: 30_000,
-            wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
             logger,
-            themeDir: opts.themeDir,
+            wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
+            frontendUrl,
             configPath: opts.configPath,
             emulatorMode: false,
-            ...(opts.onChildPid !== undefined
-              ? { onPid: opts.onChildPid }
-              : {}),
+            onPid: opts.onChildPid,
           })
-          frontendUrl = r.url
+          configUiUrl = r.url
           return r.process
         },
         onGiveUp: () => opts.onChildCrash?.(),
         isShuttingDown: () => shuttingDown,
         logger,
       })
-    }
 
-    let configUiUrl = `http://127.0.0.1:${DEFAULT_FRONTEND_PORT + 1}`
-    configUiSupervisor = await supervise({
-      label: "config ui vite",
-      kill: killChild,
-      delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
-      spawn: async () => {
-        const r = await spawnConfigUiVite({
-          port: DEFAULT_FRONTEND_PORT + 1,
-          cwd: resolveConfigUiCwd(),
-          pnpmCommand: "pnpm",
-          readyTimeoutMs: 30_000,
-          logger,
-          wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
-          frontendUrl,
-          configPath: opts.configPath,
-          emulatorMode: false,
-          onPid: opts.onChildPid,
-        })
-        configUiUrl = r.url
-        return r.process
-      },
-      onGiveUp: () => opts.onChildCrash?.(),
-      isShuttingDown: () => shuttingDown,
-      logger,
-    })
+      logger.info({ frontendUrl }, "real mode: frontend URL")
 
-    logger.info({ frontendUrl }, "real mode: frontend URL")
+      renderer = new BrowserRenderer({
+        frontendUrl: `${frontendUrl}${frontendUrl.includes("?") ? "&" : "?"}compact=1`,
+        device,
+        logger,
+        ...(opts.intervalMs !== undefined
+          ? { intervalMs: opts.intervalMs }
+          : {}),
+        pubSub: opts.pubSub,
+      })
+      await renderer.start()
 
-    const renderer = new BrowserRenderer({
-      frontendUrl: `${frontendUrl}${frontendUrl.includes("?") ? "&" : "?"}compact=1`,
-      device,
-      logger,
-      ...(opts.intervalMs !== undefined ? { intervalMs: opts.intervalMs } : {}),
-      pubSub: opts.pubSub,
-    })
-    await renderer.start()
+      const frontendVitePid = frontendSupervisor?.process.pid ?? 0
+      const configUiPid = configUiSupervisor.process.pid ?? 0
+      const childPids = [frontendVitePid, configUiPid].filter((pid) => pid > 0)
 
-    const frontendVitePid = frontendSupervisor?.process.pid ?? 0
-    const configUiPid = configUiSupervisor.process.pid ?? 0
-    const childPids = [frontendVitePid, configUiPid].filter((pid) => pid > 0)
+      const state: RuntimeState = {
+        configUiUrl,
+        wsUrl: opts.bridge.url,
+        frontendUrl,
+        lanHost: opts.lanHost ?? "127.0.0.1",
+        addresses: opts.lanAddresses ?? [],
+        emulatorMode: false,
+        remote: false,
+        startedAt: Date.now(),
+        theme: opts.theme.name,
+      }
+      writeRuntimeState(state)
+      logger.info({ frontendUrl }, "real mode: runtime state written")
 
-    const state: RuntimeState = {
-      configUiUrl,
-      wsUrl: opts.bridge.url,
-      frontendUrl,
-      lanHost: opts.lanHost ?? "127.0.0.1",
-      addresses: opts.lanAddresses ?? [],
-      emulatorMode: false,
-      remote: false,
-      startedAt: Date.now(),
-      theme: opts.theme.name,
-    }
-    writeRuntimeState(state)
-    logger.info({ frontendUrl }, "real mode: runtime state written")
-
-    return {
-      descriptor,
-      frontendUrl,
-      configUiUrl,
-      wsUrl: opts.bridge.url,
-      childPids,
-      async pushBlackFrame(): Promise<void> {
-        await pushBlackFrame(device, logger)
-      },
-      async pushRawImage(filePath: string): Promise<void> {
-        try {
-          await pushRawImage({
-            imagePath: filePath,
-            device,
-            logger,
-          })
-        } catch (err) {
-          logger.warn(
-            { err: (err as Error).message, filePath },
-            "real: pushRawImage failed (non-fatal)",
-          )
-        }
-      },
-      async stop(): Promise<void> {
-        gestureUnsubscribe()
-        try {
-          await renderer.stop()
-        } finally {
+      return {
+        descriptor,
+        frontendUrl,
+        configUiUrl,
+        wsUrl: opts.bridge.url,
+        childPids,
+        async pushBlackFrame(): Promise<void> {
+          await pushBlackFrame(device, logger)
+        },
+        async pushRawImage(filePath: string): Promise<void> {
           try {
-            await device.close()
-          } catch {
-            void 0
+            await pushRawImage({
+              imagePath: filePath,
+              device,
+              logger,
+            })
+          } catch (err) {
+            logger.warn(
+              { err: (err as Error).message, filePath },
+              "real: pushRawImage failed (non-fatal)",
+            )
           }
-        }
-        if (frontendSupervisor !== null) {
-          shuttingDown = true
-          // supervisor.stop() SIGTERMs the live child (respawn-aware) and
-          // falls back to SIGKILL. The previous killChild(handle.process)
-          // captured the initial child and leaked the respawned vite.
-          await frontendSupervisor.stop()
-        }
-        await configUiSupervisor.stop()
-      },
+        },
+        stop: async (): Promise<void> => {
+          gestureUnsubscribe()
+          try {
+            await renderer?.stop()
+          } finally {
+            try {
+              await device.close()
+            } catch {
+              void 0
+            } finally {
+              this.device = null
+            }
+          }
+          if (frontendSupervisor !== null) {
+            shuttingDown = true
+            // supervisor.stop() SIGTERMs the live child (respawn-aware) and
+            // falls back to SIGKILL. The previous killChild(handle.process)
+            // captured the initial child and leaked the respawned vite.
+            await frontendSupervisor.stop()
+          }
+          await configUiSupervisor?.stop()
+        },
+      }
+    } catch (err) {
+      shuttingDown = true
+      await Promise.allSettled([
+        renderer?.stop() ?? Promise.resolve(),
+        frontendSupervisor?.stop() ?? Promise.resolve(),
+        configUiSupervisor?.stop() ?? Promise.resolve(),
+      ])
+      await pushBlackFrame(device, logger)
+      try {
+        await device.close()
+      } catch {
+        void 0
+      } finally {
+        this.device = null
+      }
+      throw err
     }
   }
 }

@@ -10,6 +10,7 @@ import {
 
 import {
   createWaylandGnomeProvider,
+  hasWaylandGnomeSession,
   shouldUseWaylandGnomeProvider,
 } from "../wayland-gnome"
 
@@ -92,6 +93,68 @@ describe("shouldUseWaylandGnomeProvider", () => {
         XDG_CURRENT_DESKTOP: "GNOME",
       }),
     ).toBe(true)
+  })
+
+  it("detects the active Wayland GNOME session through logind", async () => {
+    const executor = {
+      run: vi.fn(async (command: string, args: ReadonlyArray<string>) => {
+        if (command !== "loginctl")
+          return { exitCode: 1, stdout: "", stderr: "" }
+        if (args[0] === "show-user") {
+          return { exitCode: 0, stdout: "Sessions=3\n", stderr: "" }
+        }
+        return {
+          exitCode: 0,
+          stdout: "Active=yes\nType=wayland\nDesktop=GNOME\n",
+          stderr: "",
+        }
+      }),
+    }
+
+    await expect(hasWaylandGnomeSession({ env: {}, executor })).resolves.toBe(
+      true,
+    )
+  })
+
+  it("uses the systemd user environment when logind omits Desktop", async () => {
+    const executor = {
+      run: vi.fn(async (command: string, args: ReadonlyArray<string>) => {
+        if (command === "loginctl" && args[0] === "show-user") {
+          return { exitCode: 0, stdout: "Sessions=3\n", stderr: "" }
+        }
+        if (command === "loginctl") {
+          return {
+            exitCode: 0,
+            stdout: "Active=yes\nType=wayland\nDesktop=\n",
+            stderr: "",
+          }
+        }
+        if (command === "systemctl") {
+          return {
+            exitCode: 0,
+            stdout: "XDG_CURRENT_DESKTOP=ubuntu:GNOME\n",
+            stderr: "",
+          }
+        }
+        return { exitCode: 1, stdout: "", stderr: "" }
+      }),
+    }
+
+    await expect(hasWaylandGnomeSession({ env: {}, executor })).resolves.toBe(
+      true,
+    )
+  })
+
+  it("does not override an explicit X11 session with logind", async () => {
+    const executor = { run: vi.fn() }
+
+    await expect(
+      hasWaylandGnomeSession({
+        env: { XDG_SESSION_TYPE: "x11", XDG_CURRENT_DESKTOP: "GNOME" },
+        executor,
+      }),
+    ).resolves.toBe(false)
+    expect(executor.run).not.toHaveBeenCalled()
   })
 })
 

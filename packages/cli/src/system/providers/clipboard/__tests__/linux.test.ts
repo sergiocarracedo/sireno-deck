@@ -113,6 +113,29 @@ describe("createLinuxClipboardProvider", () => {
     await provider.stop()
   })
 
+  it("uses xclip for an X11 session", async () => {
+    const calls: Array<{ tool: string; args: string[] }> = []
+    const executor: CommandExecutor = {
+      async run(tool, args) {
+        calls.push({ tool, args: [...args] })
+        if (tool === "which" && args[0] === "xclip") {
+          return { exitCode: 0, stdout: "/usr/bin/xclip", stderr: "" }
+        }
+        return { exitCode: 0, stdout: "", stderr: "" }
+      },
+    }
+    const provider = createLinuxClipboardProvider({
+      executor,
+      env: { DISPLAY: ":0" },
+      logger: silentLogger(),
+    })
+    await provider.writeText("hello")
+    expect(calls.find((call) => call.tool === "sh")!.args[1]).toContain(
+      "xclip -selection clipboard",
+    )
+    await provider.stop()
+  })
+
   it("writeText throws ProviderError on non-zero exit", async () => {
     const executor = makeExecutor((tool, args) => {
       if (tool === "which" && args[0] === "wl-copy") {

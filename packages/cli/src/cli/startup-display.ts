@@ -342,7 +342,10 @@ export const printDaemonUrl = async (
       token.length > 0
         ? `${configUiUrl}${configUiUrl.includes("?") ? "&" : "?"}token=${token}`
         : configUiUrl
-    write(`  Config UI:  ${configUiWithToken}#/config\n`)
+    const configUi = `${configUiWithToken}#/config`
+    const content = ` Config UI: ${configUi} `
+    const border = `+${"-".repeat(content.length)}+`
+    write(`\n${border}\n|${content}|\n${border}\n`)
     write("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
   }
 }

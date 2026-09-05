@@ -15,18 +15,21 @@ export interface CreateLinuxClipboardProviderOptions {
 
 const WL_COPY_TOOL = "wl-copy"
 const WL_PASTE_TOOL = "wl-paste"
+const XCLIP_TOOL = "xclip"
+const XSEL_TOOL = "xsel"
 
-const probeWlCopy = async (
+const probeTool = async (
   executor: CommandExecutor,
+  tool: string,
   extraFsProbe?: (tool: string) => boolean,
 ): Promise<boolean> => {
-  const result = await executor.run("which", [WL_COPY_TOOL])
+  const result = await executor.run("which", [tool])
   if (result.exitCode === 0 && result.stdout.trim().length > 0) return true
   // ponytail: fallback when CLI is launched with a stripped PATH (systemd,
   // launchd, IDE runners) and `which` returns nothing even though wl-copy
   // is installed at e.g. /usr/bin. Mirror of the requirements.ts probe and
   // key-macro/linux.ts probeTool.
-  return extraFsProbe?.(WL_COPY_TOOL) === true
+  return extraFsProbe?.(tool) === true
 }
 
 const shellQuote = (value: string): string =>
@@ -37,6 +40,11 @@ export const createLinuxClipboardProvider = (
 ): ClipboardProvider => {
   const { executor, logger, timeoutMs: timeoutMsOption } = options
   const timeoutMs = timeoutMsOption ?? 500
+  const isX11 =
+    options.env?.["WAYLAND_DISPLAY"] === undefined &&
+    options.env?.["DISPLAY"] !== undefined
+  const tools = isX11 ? [XCLIP_TOOL, XSEL_TOOL] : [WL_COPY_TOOL]
+  let selectedTool = tools[0]!
   let disposed = false
 
   const stop = async (): Promise<void> => {
@@ -50,14 +58,18 @@ export const createLinuxClipboardProvider = (
     // The runtime's spawn() already drains stdio on 'exit', but the shell
     // here waits for every child in the pipeline — without `-o`, wl-copy
     // stays alive maintaining clipboard ownership and the pipe never closes.
-    const cmd = `printf '%s' ${shellQuote(text)} | ${WL_COPY_TOOL} -o`
+    const command = isX11
+      ? selectedTool === XSEL_TOOL
+        ? `printf '%s' ${shellQuote(text)} | ${XSEL_TOOL} --clipboard --input`
+        : `printf '%s' ${shellQuote(text)} | ${XCLIP_TOOL} -selection clipboard`
+      : `printf '%s' ${shellQuote(text)} | ${WL_COPY_TOOL} -o`
     const startedAt = Date.now()
     logger.info(
-      { step: "clipboard.writeText", cmd, textPreview: text.slice(0, 24) },
-      "clipboard: invoking wl-copy",
+      { step: "clipboard.writeText", command, textPreview: text.slice(0, 24) },
+      "clipboard: invoking tool",
     )
     const result = await withTimeout(
-      executor.run("sh", ["-c", cmd]),
+      executor.run("sh", ["-c", command]),
       timeoutMs + 2500,
     )
     logger.info(
@@ -67,13 +79,13 @@ export const createLinuxClipboardProvider = (
         stderr: result.stderr.trim(),
         elapsedMs: Date.now() - startedAt,
       },
-      "clipboard: wl-copy returned",
+      "clipboard: tool returned",
     )
     if (result.exitCode !== 0) {
-      logger.warn({ stderr: result.stderr.trim() }, "clipboard: wl-copy failed")
+      logger.warn({ stderr: result.stderr.trim() }, "clipboard: write failed")
       throw new ProviderError(
         "EXEC_FAILED",
-        `clipboard write failed: ${result.stderr.trim() || "unknown error"}`,
+        `clipboard write failed with ${tools.join(" or ")}: ${result.stderr.trim() || "unknown error"}`,
       )
     }
   }
@@ -81,9 +93,14 @@ export const createLinuxClipboardProvider = (
   const readText = async (): Promise<string> => {
     if (disposed) throw new Error("Clipboard provider is disposed")
     try {
+      if (!(await ensureProbed())) return ""
       const startedAt = Date.now()
       const result = await withTimeout(
-        executor.run(WL_PASTE_TOOL, []),
+        isX11
+          ? selectedTool === XSEL_TOOL
+            ? executor.run(XSEL_TOOL, ["--clipboard", "--output"])
+            : executor.run(XCLIP_TOOL, ["-selection", "clipboard", "-out"])
+          : executor.run(WL_PASTE_TOOL, []),
         timeoutMs + 2500,
       )
       logger.info(
@@ -106,12 +123,19 @@ export const createLinuxClipboardProvider = (
   let _probeOk = false
   const ensureProbed = async (): Promise<boolean> => {
     if (_probeDone) return _probeOk
-    _probeOk = await probeWlCopy(executor, options.extraFsProbe)
+    _probeOk = false
+    for (const tool of tools) {
+      if (await probeTool(executor, tool, options.extraFsProbe)) {
+        selectedTool = tool
+        _probeOk = true
+        break
+      }
+    }
     _probeDone = true
     if (!_probeOk) {
       logger.warn(
-        { tool: WL_COPY_TOOL },
-        "wl-copy not found on PATH; clipboard will throw ProviderError",
+        { tools },
+        "clipboard tool not found on PATH; clipboard will throw ProviderError",
       )
     }
     return _probeOk
@@ -126,7 +150,9 @@ export const createLinuxClipboardProvider = (
       if (!ok) {
         throw new ProviderError(
           "NOT_AVAILABLE",
-          "wl-copy not found on PATH; install the wl-clipboard package",
+          isX11
+            ? "none of xclip or xsel found on PATH"
+            : "wl-copy not found on PATH; install the wl-clipboard package",
         )
       }
       await writeText(text)
