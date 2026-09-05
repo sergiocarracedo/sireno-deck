@@ -96,41 +96,74 @@ export interface OpencodeHttpApi {
 export const OPENCODE_LOGO =
   "addon://coding-agents/assets/opencode-dark-square.svg"
 
+// ponytail: every request gets a hard timeout — the opencode serve process
+// can wedge (accepting connections, never answering) and an un-timed fetch
+// would freeze the poll loop forever (observed live: daemon count froze for
+// 25+ minutes with zero poll completions).
+const DEFAULT_REQUEST_TIMEOUT_MS = 5_000
+
+const requestSignal = (signal: AbortSignal, timeoutMs: number): AbortSignal =>
+  AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)])
+
+// Bounds any api call (including injected test doubles) so a wedged server
+// can never leave a poll pending forever. The default httpApi additionally
+// aborts the underlying fetch via requestSignal.
+const withTimeout = <T>(p: Promise<T>, timeoutMs: number): Promise<T> => {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  return Promise.race([
+    p,
+    new Promise<never>((_, reject) => {
+      timer = setTimeout(
+        () => reject(new Error("opencode request timed out")),
+        timeoutMs,
+      )
+    }),
+  ]).finally(() => {
+    if (timer !== undefined) clearTimeout(timer)
+  })
+}
+
 const requestJson = async <T>(
   baseUrl: string,
   path: string,
   signal: AbortSignal,
+  timeoutMs: number,
 ): Promise<T> => {
-  const res = await fetch(`${baseUrl}${path}`, { signal })
+  const res = await fetch(`${baseUrl}${path}`, {
+    signal: requestSignal(signal, timeoutMs),
+  })
   if (!res.ok) {
     throw new Error(`opencode ${path} → HTTP ${res.status}`)
   }
   return (await res.json()) as T
 }
 
-const httpApi = (baseUrl: string): OpencodeHttpApi => ({
-  listSessions: (signal) => requestJson(baseUrl, "/session", signal),
+const httpApi = (baseUrl: string, timeoutMs: number): OpencodeHttpApi => ({
+  listSessions: (signal) => requestJson(baseUrl, "/session", signal, timeoutMs),
   sessionStatus: (signal) =>
     requestJson<Record<string, SessionStatusEntry>>(
       baseUrl,
       "/session/status",
       signal,
+      timeoutMs,
     ),
   sessionMessages: (signal, id, limit) =>
     requestJson<ReadonlyArray<MessageLike>>(
       baseUrl,
       `/session/${encodeURIComponent(id)}/message?limit=${limit}`,
       signal,
+      timeoutMs,
     ),
   providerModels: async (signal) => {
     const response = await requestJson<{ all?: readonly ProviderLike[] }>(
       baseUrl,
       "/provider",
       signal,
+      timeoutMs,
     )
     return response.all ?? []
   },
-  eventStream: async (signal) => streamEvents(baseUrl, signal),
+  eventStream: async (signal) => streamEvents(baseUrl, signal, timeoutMs),
 })
 
 // ponytail: minimal SSE reader over fetch's streaming body. opencode
@@ -138,6 +171,7 @@ const httpApi = (baseUrl: string): OpencodeHttpApi => ({
 async function* streamEvents(
   baseUrl: string,
   signal: AbortSignal,
+  timeoutMs: number,
 ): AsyncIterable<OpencodeEvent | unknown> {
   // ponytail: the anomalyco fork serves the event stream at /event;
   // v1.x uses /global/events. Either path can 200 with an HTML fallback, so
@@ -145,7 +179,7 @@ async function* streamEvents(
   for (const path of ["/event", "/global/events"] as const) {
     try {
       const attempt = await fetch(`${baseUrl}${path}`, {
-        signal,
+        signal: requestSignal(signal, timeoutMs),
         headers: { Accept: "text/event-stream" },
       })
       if (!attempt.ok || attempt.body === null) continue
@@ -301,16 +335,19 @@ export class OpenCodeProvider implements AgentProvider {
   readonly logoPath = OPENCODE_LOGO
 
   readonly #api: OpencodeHttpApi
-  readonly #apiFactory: (baseUrl: string) => OpencodeHttpApi
+  readonly #apiFactory: (baseUrl: string, timeoutMs: number) => OpencodeHttpApi
   readonly #recentWindowMs: number
+  readonly #requestTimeoutMs: number
 
   constructor(opts: {
     baseUrl: string
-    apiFactory?: (baseUrl: string) => OpencodeHttpApi
+    apiFactory?: (baseUrl: string, timeoutMs: number) => OpencodeHttpApi
     recentWindowMs?: number
+    requestTimeoutMs?: number
   }) {
+    this.#requestTimeoutMs = opts.requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS
     this.#apiFactory = opts.apiFactory ?? httpApi
-    this.#api = this.#apiFactory(opts.baseUrl)
+    this.#api = this.#apiFactory(opts.baseUrl, this.#requestTimeoutMs)
     this.#recentWindowMs = opts.recentWindowMs ?? RECENT_WINDOW_MS
   }
 
@@ -319,10 +356,13 @@ export class OpenCodeProvider implements AgentProvider {
     const instances = await readOpenCodeInstances()
     try {
       const [sessions, statusMap, providers] = await Promise.all([
-        this.#api.listSessions(signal),
-        this.#api.sessionStatus(signal),
-        this.#api.providerModels?.(signal).catch(() => []) ??
-          Promise.resolve([]),
+        withTimeout(this.#api.listSessions(signal), this.#requestTimeoutMs),
+        withTimeout(this.#api.sessionStatus(signal), this.#requestTimeoutMs),
+        withTimeout(
+          this.#api.providerModels?.(signal).catch(() => []) ??
+            Promise.resolve([]),
+          this.#requestTimeoutMs,
+        ).catch(() => [] as readonly ProviderLike[]),
       ])
       const contextLimits = new Map<string, number>()
       for (const provider of providers) {
@@ -397,10 +437,13 @@ export class OpenCodeProvider implements AgentProvider {
         continue
       }
       try {
-        const messages = await this.#api.sessionMessages(
-          signal,
-          instance.sessionId,
-          STATUS_MESSAGE_LIMIT,
+        const messages = await withTimeout(
+          this.#api.sessionMessages(
+            signal,
+            instance.sessionId,
+            STATUS_MESSAGE_LIMIT,
+          ),
+          this.#requestTimeoutMs,
         )
         const contextTokens = latestAssistantTokens(messages)
         let cost: number | undefined
@@ -445,10 +488,9 @@ export class OpenCodeProvider implements AgentProvider {
           : undefined
       if (status !== "waiting_for_human") {
         try {
-          const messages = await this.#api.sessionMessages(
-            signal,
-            s.id,
-            STATUS_MESSAGE_LIMIT,
+          const messages = await withTimeout(
+            this.#api.sessionMessages(signal, s.id, STATUS_MESSAGE_LIMIT),
+            this.#requestTimeoutMs,
           )
           status = combineStatus(fromMap, statusFromMessages(messages))
           contextTokens = latestAssistantTokens(messages) ?? contextTokens

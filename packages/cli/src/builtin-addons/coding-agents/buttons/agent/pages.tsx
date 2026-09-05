@@ -20,6 +20,31 @@ interface AgentPageProps {
 const value = (n: number | undefined, suffix = ""): string =>
   typeof n === "number" && Number.isFinite(n) ? `${n}${suffix}` : "---"
 
+// ponytail: compact token counts — k, M, kM (european milliard, 10^9),
+// MM (european billion, 10^12).
+const TOKEN_UNITS: ReadonlyArray<[number, string]> = [
+  [1_000_000_000_000, "MM"],
+  [1_000_000_000, "kM"],
+  [1_000_000, "M"],
+  [1_000, "k"],
+]
+
+export const formatTokens = (tokens: number | undefined): string => {
+  if (typeof tokens !== "number" || !Number.isFinite(tokens)) return "---"
+  let n = tokens
+  for (const [factor, unit] of TOKEN_UNITS) {
+    if (Math.abs(n) < factor) continue
+    const scaled = n / factor
+    if (Math.round(scaled) >= 1000) continue
+    const rounded =
+      scaled >= 10 || scaled <= -10
+        ? Math.round(scaled)
+        : Math.round(scaled * 10) / 10
+    return `${rounded}${unit}`
+  }
+  return `${Math.round(n)}`
+}
+
 const formatCost = (cost: number | undefined): string =>
   typeof cost === "number" && Number.isFinite(cost) && cost >= 0
     ? `$${cost.toFixed(2)}`
@@ -78,7 +103,11 @@ export const AgentMetricsPage = ({
   <LabelValueListSurface
     lines={[
       { label: "cost", value: formatCost(cost), icon: "icon://coins" },
-      { label: "tokens", value: value(contextTokens), icon: "icon://activity" },
+      {
+        label: "tokens",
+        value: formatTokens(contextTokens),
+        icon: "icon://activity",
+      },
     ]}
   />
 )

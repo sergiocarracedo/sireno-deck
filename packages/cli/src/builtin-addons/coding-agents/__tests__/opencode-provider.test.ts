@@ -453,6 +453,23 @@ describe("OpenCodeProvider", () => {
     expect(typeof agents[0]?.createdAt).toBe("number")
   })
 
+  it("recovers when a session request hangs (timeout aborts it)", async () => {
+    mockActiveInstance("running")
+    const api = makeApi({
+      listSessions: async () => [makeSession()],
+      sessionStatus: async () => ({}),
+      sessionMessages: () => new Promise(() => {}),
+    })
+    const p = new OpenCodeProvider({
+      apiFactory: () => api,
+      baseUrl: "http://x",
+      requestTimeoutMs: 30,
+    })
+    const agents = await p.fetchSnapshot(new AbortController().signal)
+    expect(agents).toHaveLength(1)
+    expect(agents[0]?.sessionId).toBe("abc")
+  })
+
   it("subscribe calls onChange when SSE event maps to a status", async () => {
     const onChange = vi.fn()
     const api = makeApi({

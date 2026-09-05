@@ -29,6 +29,10 @@ import {
 
 export const POLLER_INTERVAL_MS = 2000
 
+// ponytail: a wedged provider (hung fetch, wedged serve process) must not
+// freeze the poll loop — race each snapshot and keep the last-known list.
+const PROVIDER_SNAPSHOT_TIMEOUT_MS = 10_000
+
 interface GlobalState {
   providers: Map<ProviderId, import("../shared/state.js").AgentProvider>
   spawnedChild: { kill: () => Promise<void> } | null
@@ -168,13 +172,20 @@ const setStateFromProviders = async (): Promise<void> => {
     "claude-code": [],
   }
   for (const [id, provider] of state.providers) {
+    const lastKnown = state.lastSnapshot.byProvider[id] ?? []
     try {
-      const agents = await provider.fetchSnapshot(
-        state.context?.signal ?? new AbortController().signal,
-      )
+      const agents = await Promise.race([
+        provider.fetchSnapshot(
+          state.context?.signal ?? new AbortController().signal,
+        ),
+        new Promise<readonly Agent[]>((resolve) =>
+          setTimeout(() => resolve(lastKnown), PROVIDER_SNAPSHOT_TIMEOUT_MS),
+        ),
+      ])
       next[id] = [...agents]
     } catch {
-      // provider transiently unavailable; keep last-known
+      // provider transiently unavailable — keep last-known (don't wipe)
+      next[id] = [...lastKnown]
     }
   }
   state.lastSnapshot = mergeSnapshot(state.lastSnapshot, next)
