@@ -1,0 +1,29 @@
+.github/workflows/release-please.yml
+  s_949ba3ee498749::t_c05a7256708330 4-5,7-10,12-15,17-20,22-25,27-30,40-43,49-65,70
+  s_949ba3ee498749::t_877cce8a800058 6,11,16,21,26,44-48
+.github/workflows/release.yml
+  s_949ba3ee498749::t_c05a7256708330 30,35,40,45,50,59
+RELEASING.md
+  s_949ba3ee498749::t_a6746e6daef085 53-61,65-71,91-93,100,102-105,107-108,128-131,133
+  s_949ba3ee498749::t_c409a731fe8353 4-5,10-11
+release-please-config.json
+  s_949ba3ee498749::t_c05a7256708330 4
+config.yml
+  s_949ba3ee498749::t_b4dbf913ff341c 18,42,49,54,56,59,67,76,79,82,85,88,93,98,100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "5fe3c67c7b8aa76595f8374ad58ca7cc3a4777a2",
+  "prompts": {},
+  "sessions": {
+    "s_949ba3ee498749": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f8f3a2e2cffeSwDTUIizB89krt",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
