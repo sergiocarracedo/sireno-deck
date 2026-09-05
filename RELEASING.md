@@ -1,14 +1,14 @@
 # Releasing
 
 Sireno Deck uses [release-please](https://github.com/googleapis/release-please) to
-bump versions and open release PRs, then GitHub Actions + npm Trusted Publishing
-to ship each package to npm.
+bump versions in a manually requested release PR, then GitHub Actions + npm
+Trusted Publishing ship each changed package to npm.
 
 ## Packages
 
 Five packages live under the [`@sirenodeck`](https://www.npmjs.com/org/sirenodeck)
-organization. Each one tracks its own version and ships independently. Release
-Please opens a separate release PR for each package with changes.
+organization. Each one tracks its own version and ships independently. A
+manual Release Please run can combine selected packages into one release PR.
 
 | Package                           | Path                            | Builds before publish? |
 | --------------------------------- | ------------------------------- | ---------------------- |
@@ -50,17 +50,25 @@ work without the frontend bundle.
 
 ```
 push to main
-  └─ CI                lint · format · typecheck · test · build
-  └─ release-please    opens/updates release PR with per-package version bumps
-merge release PR       conventional-commits title required for auto-merge
-  └─ tag pushed        e.g. @sirenodeck/cli-0.1.1
-  └─ release           detects package from tag → calls publish-npm
+  ├─ CI                lint · format · typecheck · test
+  └─ website           deploys to GitHub Pages
+
+Actions → release-please → Run workflow
+  ├─ select CLI/web, and/or any addons/themes
+  └─ release-please    opens one release PR for the selected packages
+merge release PR       manually, after reviewing the version bumps/changelog
+  ├─ tag pushed        e.g. @sirenodeck/cli-0.1.1
+  └─ release           publishes each tagged package independently
                         └─ publish-npm    npm publish --provenance --access public
 ```
 
-Release-please's auto-merge job watches the release PR's CI run and merges it
-once green, but only if the PR originates from this repo's release-please bot.
-See [`.github/workflows/auto-merge-release-please.yml`](.github/workflows/auto-merge-release-please.yml).
+`main` is the staging branch. It is safe to push there without publishing a new
+package version. The website still deploys from every relevant `main` push.
+
+The CLI/web selection releases the CLI package; the website itself is private
+and has no npm version. Multiple addons and themes can be selected in the same
+workflow run and are combined into one release PR. Packages with no releasable
+changes are omitted.
 
 ## One-time setup (npm Trusted Publishing)
 
@@ -80,23 +88,24 @@ setup page.
 
 ## Daily workflow
 
-Nothing. Just merge PRs with [Conventional Commit](https://www.conventionalcommits.org/)
-titles. Release-please reads the merged commits, figures out which packages
-changed, bumps the version, opens a release PR, and (after CI green) auto-merges
-it. Tags and npm publishes happen automatically.
+Merge PRs with [Conventional Commit](https://www.conventionalcommits.org/)
+titles. CI and the website deployment run from `main`; npm publishing only
+happens after a manually requested release PR is merged.
 
 If a release PR is sitting open with `0 packages changed`, your commits since
 the last tag don't include any changes that release-please recognizes (no
 `feat`, `fix`, `perf`, or `revert` after a 0.x bump). Use `chore` and `docs`
 freely — they don't trigger bumps but still appear in the changelog.
 
-## Manual release
+## Creating a release
 
-For an out-of-band release (e.g. recovery from a failed auto-merge):
+1. Open **Actions → release-please → Run workflow**.
+2. Select `CLI/web` and/or any addons and themes to release.
+3. Review the generated release PR and merge it manually.
+4. The resulting package tags trigger npm publishing automatically.
 
-1. Edit the version in the relevant `package.json`.
-2. Run the **Publish to npm** workflow via **Actions → publish-npm →
-   Run workflow**, providing the package name and path.
+Do not edit package versions manually. The release PR owns version bumps,
+changelogs, and the manifest update.
 
 ## Homebrew tap
 
@@ -116,6 +125,9 @@ brew install sergiocarracedo/tap/sirenodeck
 2. Add the entry to [`release-please-config.json`](release-please-config.json).
 3. Add the matching entry to [`release-please-manifest.json`](release-please-manifest.json)
    at the current version (often `0.1.0`).
-4. Add the tag pattern to [`.github/workflows/release.yml`](.github/workflows/release.yml)
+4. Add the package selection input to
+   [`.github/workflows/release-please.yml`](.github/workflows/release-please.yml)
+   and its path mapping.
+5. Add the tag pattern to [`.github/workflows/release.yml`](.github/workflows/release.yml)
    (`detect` job) so the right package path and `needs-build` flag are picked.
-5. Claim the npm name under `@sirenodeck` and configure the Trusted Publisher.
+6. Claim the npm name under `@sirenodeck` and configure the Trusted Publisher.

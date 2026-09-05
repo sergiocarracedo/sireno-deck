@@ -15,7 +15,7 @@ decks:
     name: Main Deck
     buttons:
       - position: 0
-        type: 'system-status:system-status'
+        type: "system-status:system-status"
         config:
           pages:
             - type: bars
@@ -39,24 +39,24 @@ decks:
                 - load
 
       - position: 1
-        type: 'core:change-deck'
+        type: "core:change-deck"
         config:
           deck: demo-decks-index
           icon: icon://layout-grid
           label: Demos
 
       - position: 2
-        type: 'date-time:time'
+        type: "date-time:time"
         config:
           variant: big
 
       - position: 3
-        type: 'date-time:date'
+        type: "date-time:date"
         actions:
-          tap: 'xdg-open https://calendar.google.com'
+          tap: "xdg-open https://calendar.google.com"
 
       - position: 4
-        type: 'weather:weather'
+        type: "weather:weather"
         config:
           location:
             latitude: 42.2304
@@ -64,7 +64,7 @@ decks:
             name: Vigo
 
       - position: 5
-        type: 'system-status:system-status'
+        type: "system-status:system-status"
         config:
           pages:
             - type: chart
@@ -73,31 +73,31 @@ decks:
               windowSeconds: 60
 
       - position: 6
-        type: 'media:volume:down'
+        type: "media:volume:down"
 
       - position: 7
-        type: 'media:volume:up'
+        type: "media:volume:up"
 
       - position: 8
-        type: 'media:mute'
+        type: "media:mute"
 
       - position: 9
-        type: 'emoji-selector:launcher'
+        type: "emoji-selector:launcher"
 
       - position: 10
-        type: 'pomodoro:pomodoro'
+        type: "pomodoro:pomodoro"
         config:
           durationSec: 5
 
       - position: 11
-        type: 'coding-agents:summary'
+        type: "coding-agents:summary"
         config:
           showCount: true
 
       - position: 12
-        type: 'media:player'
+        type: "media:player"
 
-      - type: 'system-status'
+      - type: "system-status"
         config:
           type: kpis
           metrics:

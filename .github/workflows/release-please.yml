@@ -1,9 +1,33 @@
 name: release-please
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      cli_web:
+        description: CLI release (website continues deploying from main)
+        type: boolean
+        required: false
+        default: false
+      addon_app_shortcuts:
+        description: App Shortcuts addon
+        type: boolean
+        required: false
+        default: false
+      addon_pomodoro:
+        description: Pomodoro addon
+        type: boolean
+        required: false
+        default: false
+      theme_neon_grids:
+        description: Neon Grids theme
+        type: boolean
+        required: false
+        default: false
+      theme_riptide:
+        description: Riptide theme
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -13,9 +37,35 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Select packages
+        env:
+          CLI_WEB: ${{ inputs.cli_web }}
+          APP_SHORTCUTS: ${{ inputs.addon_app_shortcuts }}
+          POMODORO: ${{ inputs.addon_pomodoro }}
+          NEON_GRIDS: ${{ inputs.theme_neon_grids }}
+          RIPTIDE: ${{ inputs.theme_riptide }}
+        run: |
+          selected='[]'
+          [[ "$CLI_WEB" == 'true' ]] && selected=$(jq -c '. + ["packages/cli"]' <<< "$selected")
+          [[ "$APP_SHORTCUTS" == 'true' ]] && selected=$(jq -c '. + ["packages/addons/app-shortcuts"]' <<< "$selected")
+          [[ "$POMODORO" == 'true' ]] && selected=$(jq -c '. + ["packages/addons/pomodoro"]' <<< "$selected")
+          [[ "$NEON_GRIDS" == 'true' ]] && selected=$(jq -c '. + ["packages/themes/neon-grids"]' <<< "$selected")
+          [[ "$RIPTIDE" == 'true' ]] && selected=$(jq -c '. + ["packages/themes/riptide"]' <<< "$selected")
+
+          if [[ "$selected" == '[]' ]]; then
+            echo 'Select at least one package.' >&2
+            exit 1
+          fi
+
+          jq --argjson selected "$selected" \
+            '.packages |= with_entries(select(.key as $path | $selected | index($path)))' \
+            release-please-config.json > release-please-selected-config.json
+
       - uses: googleapis/release-please-action@v5
         id: release
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          config-file: release-please-config.json
+          config-file: release-please-selected-config.json
           manifest-file: release-please-manifest.json

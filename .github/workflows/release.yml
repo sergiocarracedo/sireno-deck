@@ -27,27 +27,27 @@ jobs:
           case "$TAG" in
             '@sirenodeck/cli-'*)
                PACKAGE='@sirenodeck/cli'
-              PATH='packages/cli'
+              PACKAGE_PATH='packages/cli'
               NEEDS_BUILD='true'
               ;;
             '@sirenodeck/addon-app-shortcuts-'*)
                PACKAGE='@sirenodeck/addon-app-shortcuts'
-              PATH='packages/addons/app-shortcuts'
+              PACKAGE_PATH='packages/addons/app-shortcuts'
               NEEDS_BUILD='true'
               ;;
             '@sirenodeck/addon-pomodoro-'*)
                PACKAGE='@sirenodeck/addon-pomodoro'
-              PATH='packages/addons/pomodoro'
+              PACKAGE_PATH='packages/addons/pomodoro'
               NEEDS_BUILD='true'
               ;;
             '@sirenodeck/theme-neon-grids-'*)
                PACKAGE='@sirenodeck/theme-neon-grids'
-              PATH='packages/themes/neon-grids'
+              PACKAGE_PATH='packages/themes/neon-grids'
               NEEDS_BUILD='false'
               ;;
             '@sirenodeck/theme-riptide-'*)
                PACKAGE='@sirenodeck/theme-riptide'
-              PATH='packages/themes/riptide'
+              PACKAGE_PATH='packages/themes/riptide'
               NEEDS_BUILD='false'
               ;;
             *)
@@ -56,7 +56,7 @@ jobs:
               ;;
           esac
           echo "package=$PACKAGE" >> "$GITHUB_OUTPUT"
-          echo "package-path=$PATH" >> "$GITHUB_OUTPUT"
+          echo "package-path=$PACKAGE_PATH" >> "$GITHUB_OUTPUT"
           echo "needs-build=$NEEDS_BUILD" >> "$GITHUB_OUTPUT"
 
   publish:

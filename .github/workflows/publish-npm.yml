@@ -16,22 +16,6 @@ on:
         required: false
         type: boolean
         default: false
-  workflow_dispatch:
-    inputs:
-      package:
-        description: Publishable package name (e.g. @sirenodeck/cli)
-        required: true
-        type: string
-      package-path:
-        description: Path to the package within the repo (e.g. packages/cli)
-        required: true
-        type: string
-      needs-build:
-        description: Whether to run the package build before publishing
-        required: false
-        type: boolean
-        default: false
-
 permissions:
   contents: read
   id-token: write
