@@ -1,6 +1,6 @@
 {
   "name": "@sirenodeck/addon-app-shortcuts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Overlay decks for VS Code, OpenCode, Chrome, Claude Code, Slack, Teams, Discord, and Google Meet",
   "bugs": {
     "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
