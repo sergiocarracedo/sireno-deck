@@ -72,5 +72,6 @@ jobs:
             --repo-url=sergiocarracedo/sireno-deck \
             --target-branch=main \
             --local \
+            --local-path="$GITHUB_WORKSPACE" \
             --config-file=release-please-selected-config.json \
             --manifest-file=release-please-manifest.json
