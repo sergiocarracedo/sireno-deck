@@ -72,7 +72,7 @@ jobs:
     with:
       package: ${{ needs.detect.outputs.package }}
       package-path: ${{ needs.detect.outputs.package-path }}
-      needs-build: ${{ needs.detect.outputs.needs-build }}
+      needs-build: ${{ needs.detect.outputs.needs-build == 'true' }}
     permissions:
       contents: read
       id-token: write
