@@ -57,6 +57,10 @@ vi.mock("../http-server", () => ({
     stop: vi.fn(async () => undefined),
   })),
 }))
+vi.mock("../run", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../run")>()),
+  runPipeline: vi.fn(async () => undefined),
+}))
 vi.mock("@/util/daemon", () => ({
   writePid: vi.fn(),
   writeConfigPath: vi.fn(),
@@ -619,14 +623,10 @@ describe("start", () => {
         homeDir: "/home",
         logger: silentLogger(),
       })
-      // runInProcess awaits runPipeline().finally(...) before returning;
-      // give the microtask queue a turn to settle, then assert release ran.
-      await vi.waitFor(async () => {
-        expect(await lastRelease()).toHaveBeenCalled()
-      })
       await startPromise
+      expect(await lastRelease()).toHaveBeenCalled()
       expect(await lastRelease()).toHaveBeenCalledTimes(1)
-      expect(exitSpy).toHaveBeenCalled()
+      await vi.waitFor(() => expect(exitSpy).toHaveBeenCalled())
     } finally {
       exitSpy.mockRestore()
       delete process.env["SIRENO_DAEMON_CHILD"]
