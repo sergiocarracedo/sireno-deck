@@ -63,9 +63,13 @@ jobs:
             '.packages |= with_entries(select(.key as $path | $selected | index($path)))' \
             release-please-config.json > release-please-selected-config.json
 
-      - uses: googleapis/release-please-action@v5
-        id: release
-        with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          config-file: release-please-selected-config.json
-          manifest-file: release-please-manifest.json
+      - name: Create release pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: |
+          npx --yes release-please@17.6.0 release-pr \
+            --token="$GITHUB_TOKEN" \
+            --repo-url=sergiocarracedo/sireno-deck \
+            --target-branch=main \
+            --config-file=release-please-selected-config.json \
+            --manifest-file=release-please-manifest.json
