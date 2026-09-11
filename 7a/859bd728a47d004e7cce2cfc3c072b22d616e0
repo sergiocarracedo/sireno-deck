@@ -1,0 +1,19 @@
+.github/workflows/release-please.yml
+  s_a44fbfe0704c0d::t_dfe92aebb7c603 4-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7a859bd728a47d004e7cce2cfc3c072b22d616e0",
+  "prompts": {},
+  "sessions": {
+    "s_a44fbfe0704c0d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f72f27250ffe6UP0ouq4mWUXPh",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
