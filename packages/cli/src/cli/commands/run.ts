@@ -1237,7 +1237,7 @@ interface AddonRegistryBundle {
 // inert stub so plain Node can import it for manifest/globalService —
 // serving that artifact to the browser amputates every core-UI label.
 // Source restores vite's real host-alias resolution, so addons get the
-// full core kit (any @sirenodeck/cli/ui component). Falls back to the
+// full core kit (any @sirenodeck/sirenodeck/ui component). Falls back to the
 // dist entry when src/index.ts doesn't exist (npm-cached third-party
 // addons ship compiled output only).
 const browserFrontendMain = (entry: string): string => {

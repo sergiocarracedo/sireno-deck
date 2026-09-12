@@ -6,7 +6,7 @@ import {
   DECK_PADDING_PX,
   deckDimensions,
   type DeviceModelSpec,
-} from "@sirenodeck/cli"
+} from "@sirenodeck/sirenodeck"
 import { Dropdown, Button, Label } from "@heroui/react"
 
 import {

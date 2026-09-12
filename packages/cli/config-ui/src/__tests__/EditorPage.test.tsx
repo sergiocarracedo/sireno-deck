@@ -2,7 +2,7 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
-import { DEVICE_MODELS } from "@sirenodeck/cli"
+import { DEVICE_MODELS } from "@sirenodeck/sirenodeck"
 
 import type { WsClient } from "../bridge"
 import { EditorPage, type EditorState } from "../pages/EditorPage"

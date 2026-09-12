@@ -6,8 +6,8 @@
   "pull-request-title-pattern": "chore(${component}): release ${version}",
   "packages": {
     "packages/cli": {
-      "package-name": "@sirenodeck/cli",
-      "component": "@sirenodeck/cli",
+      "package-name": "@sirenodeck/sirenodeck",
+      "component": "@sirenodeck/sirenodeck",
       "release-type": "node",
       "include-component-in-tag": true,
       "include-v-in-tag": false,

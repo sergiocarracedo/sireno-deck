@@ -5,7 +5,7 @@ import { docsSchema } from "@astrojs/starlight/schema"
 
 const addonCategory = z.enum(["official", "community"])
 const themeCategory = z.enum(["official", "community"])
-// `source: "cli"` = bundled inside @sirenodeck/cli (ships to every user).
+// `source: "cli"` = bundled inside @sirenodeck/sirenodeck (ships to every user).
 // `source: "monorepo"` = first-party in this workspace but a separate
 // npm package (e.g. app-shortcuts, pomodoro). Homepage filters to `cli`
 // only so the "Included addons" list reflects what a vanilla install gets.

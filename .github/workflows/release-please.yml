@@ -5,32 +5,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      cli_web:
-        description: CLI release (website continues deploying from main)
-        type: boolean
-        required: false
-        default: false
-      addon_app_shortcuts:
-        description: App Shortcuts addon
-        type: boolean
-        required: false
-        default: false
-      addon_pomodoro:
-        description: Pomodoro addon
-        type: boolean
-        required: false
-        default: false
-      theme_neon_grids:
-        description: Neon Grids theme
-        type: boolean
-        required: false
-        default: false
-      theme_riptide:
-        description: Riptide theme
-        type: boolean
-        required: false
-        default: false
 
 permissions:
   contents: write

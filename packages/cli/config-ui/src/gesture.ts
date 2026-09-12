@@ -2,7 +2,7 @@ import {
   createGestureDetector,
   type GestureDetector,
   type GestureResult,
-} from "@sirenodeck/cli"
+} from "@sirenodeck/sirenodeck"
 
 export type MouseEventKind = "down" | "up"
 

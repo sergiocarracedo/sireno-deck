@@ -89,7 +89,7 @@ After any change that touches the WebSocket bridge, the session provider, the ru
 2. `pnpm test --run`
 3. Start the emulator:
    ```bash
-   pnpm --filter @sirenodeck/cli exec node bin/dev.js start --config config.yml --emulator --port 52937
+   pnpm --filter @sirenodeck/sirenodeck exec node bin/dev.js start --config config.yml --emulator --port 52937
    ```
 4. With `agent-browser`, verify both surfaces:
    ```bash

@@ -4,15 +4,15 @@ Internal docs for the `sireno` CLI package. **User-facing docs** (quickstart, co
 
 ## Scripts
 
-| Command                                   | Purpose                                                        |
-| ----------------------------------------- | -------------------------------------------------------------- |
-| `pnpm --filter @sirenodeck/cli dev`       | `node bin/dev.js` — dev CLI shim                               |
-| `pnpm --filter @sirenodeck/cli start`     | `node --import tsx src/cli/main.ts` — production-style startup |
-| `pnpm --filter @sirenodeck/cli build`     | bundles the frontend (`vite build`) and the CLI                |
-| `pnpm --filter @sirenodeck/cli test`      | `vitest run`                                                   |
-| `pnpm --filter @sirenodeck/cli typecheck` | `tsc --noEmit`                                                 |
-| `pnpm --filter @sirenodeck/cli lint`      | `oxlint src`                                                   |
-| `pnpm --filter @sirenodeck/cli format`    | `oxfmt src`                                                    |
+| Command                                          | Purpose                                                        |
+| ------------------------------------------------ | -------------------------------------------------------------- |
+| `pnpm --filter @sirenodeck/sirenodeck dev`       | `node bin/dev.js` — dev CLI shim                               |
+| `pnpm --filter @sirenodeck/sirenodeck start`     | `node --import tsx src/cli/main.ts` — production-style startup |
+| `pnpm --filter @sirenodeck/sirenodeck build`     | bundles the frontend (`vite build`) and the CLI                |
+| `pnpm --filter @sirenodeck/sirenodeck test`      | `vitest run`                                                   |
+| `pnpm --filter @sirenodeck/sirenodeck typecheck` | `tsc --noEmit`                                                 |
+| `pnpm --filter @sirenodeck/sirenodeck lint`      | `oxlint src`                                                   |
+| `pnpm --filter @sirenodeck/sirenodeck format`    | `oxfmt src`                                                    |
 
 ## Layout
 

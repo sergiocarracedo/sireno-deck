@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import { Button, Input, ListBox, Select, Tabs, TextArea } from "@heroui/react"
 import { parse, stringify } from "yaml"
-import { Icon } from "@sirenodeck/cli"
+import { Icon } from "@sirenodeck/sirenodeck"
 import * as lucideIcons from "lucide-react"
 
 import type { WsClient } from "../bridge"

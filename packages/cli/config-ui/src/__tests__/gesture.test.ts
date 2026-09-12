@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { DOUBLE_TAP_DELAY_MS, HOLD_ACTION_DELAY_MS } from "@sirenodeck/cli"
+import {
+  DOUBLE_TAP_DELAY_MS,
+  HOLD_ACTION_DELAY_MS,
+} from "@sirenodeck/sirenodeck"
 
 import {
   createEmulatorGestureDetector,

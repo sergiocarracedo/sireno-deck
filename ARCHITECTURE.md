@@ -505,7 +505,7 @@ native key events.
 Shared logic lives in `packages/cli/src/core/gesture-state.ts` — the
 constants `HOLD_ACTION_DELAY_MS = 200` and `DOUBLE_TAP_DELAY_MS = 200` are
 imported by both transports (RealOutputClient directly, the emulator SPA
-via `@sirenodeck/cli`) so any future change applies to both at once.
+via `@sirenodeck/sirenodeck`) so any future change applies to both at once.
 
 Neither the backend nor any SPA knows how another transport derives
 gestures. A change in tap-detection semantics is local to the transport

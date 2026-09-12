@@ -1,6 +1,6 @@
 {
   "name": "@sirenodeck/theme-neon-grids",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Synthwave neon-grids theme for Sireno Deck.",
   "bugs": {
     "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
@@ -25,7 +25,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@sirenodeck/cli": "^0.1.0"
+    "@sirenodeck/sirenodeck": "^0.1.0"
   },
   "sirenoTheme": true
 }

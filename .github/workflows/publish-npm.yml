@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       package:
-        description: Publishable package name (e.g. @sirenodeck/cli)
+        description: Publishable package name (e.g. @sirenodeck/sirenodeck)
         required: true
         type: string
       package-path:

@@ -1,4 +1,4 @@
-import { Icon } from "@sirenodeck/cli"
+import { Icon } from "@sirenodeck/sirenodeck"
 import type { ReactElement } from "react"
 
 import { LabelValueListSurface } from "@/ui"

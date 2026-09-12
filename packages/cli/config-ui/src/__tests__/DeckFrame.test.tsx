@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { DEVICE_MODELS } from "@sirenodeck/cli"
+import { DEVICE_MODELS } from "@sirenodeck/sirenodeck"
 
 import { fireEvent, render } from "@testing-library/react"
 

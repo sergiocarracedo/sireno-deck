@@ -20,7 +20,7 @@ if (!existsSync(cliEntry)) {
   // failing silently with `Cannot find module`.
   console.error(`sirenodeck: bundled CLI not found at ${cliEntry}`)
   console.error(
-    "Reinstall the package or run `pnpm --filter @sirenodeck/cli build`.",
+    "Reinstall the package or run `pnpm --filter @sirenodeck/sirenodeck build`.",
   )
   process.exit(1)
 }

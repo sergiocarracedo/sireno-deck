@@ -1,5 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react"
-import { Icon } from "@sirenodeck/cli"
+import { Icon } from "@sirenodeck/sirenodeck"
 
 interface ErrorBoundaryProps {
   readonly children: ReactNode

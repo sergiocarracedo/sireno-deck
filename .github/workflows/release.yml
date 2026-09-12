@@ -3,7 +3,7 @@ name: release
 on:
   push:
     tags:
-      - "@sirenodeck/*-*"
+      - "@sirenodeck/**-*"
   workflow_dispatch:
     inputs:
       tag:
@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   detect:
@@ -31,8 +32,8 @@ jobs:
           # e.g. @sirenodeck/addon-pomodoro-0.1.0
           PACKAGE=''
           case "$TAG" in
-            '@sirenodeck/cli-'*)
-               PACKAGE='@sirenodeck/cli'
+            '@sirenodeck/sirenodeck-'*)
+               PACKAGE='@sirenodeck/sirenodeck'
               PACKAGE_PATH='packages/cli'
               NEEDS_BUILD='true'
               ;;
@@ -80,7 +81,7 @@ jobs:
   homebrew:
     name: Update Homebrew tap
     needs: [detect, publish]
-    if: needs.detect.outputs.package == '@sirenodeck/cli'
+    if: needs.detect.outputs.package == '@sirenodeck/sirenodeck'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -88,9 +89,11 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
       - name: Render formula
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          VERSION="${GITHUB_REF_NAME##*-}"
-          URL="https://registry.npmjs.org/@sirenodeck/cli/-/cli-${VERSION}.tgz"
+          VERSION="${RELEASE_TAG##*-}"
+          URL="https://registry.npmjs.org/@sirenodeck/sirenodeck/-/sirenodeck-${VERSION}.tgz"
           SHA256=$(curl --fail --location "$URL" | sha256sum | cut -d' ' -f1)
           sed -e "s/VERSION/${VERSION}/g" -e "s/SHA256/${SHA256}/g" \
             packages/cli/scripts/installer/formula/sirenodeck.rb > sirenodeck.rb

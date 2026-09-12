@@ -29,7 +29,7 @@ import {
   SplitActionSurface,
   useAddonChannel,
   type AddonGestureEvent,
-} from "@sirenodeck/cli"
+} from "@sirenodeck/sirenodeck"
 import { useButtonAction } from "../bridge/use-button-action"
 import { ErrorBoundary } from "./ErrorBoundary"
 

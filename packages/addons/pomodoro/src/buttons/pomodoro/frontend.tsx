@@ -1,8 +1,8 @@
 // ponytail: core-UI contract — addons import host components via the
-// public `@sirenodeck/cli/ui/*` specifier (same as themes). The private
+// public `@sirenodeck/sirenodeck/ui/*` specifier (same as themes). The private
 // `@/` alias only resolves inside this monorepo's vite/tsx configs and
 // is what forced a null-stub shim into the bundled dist.
-import { Label } from "@sirenodeck/cli/ui/primitives/Label"
+import { Label } from "@sirenodeck/sirenodeck/ui/primitives/Label"
 
 import type {
   PomodoroButtonState,

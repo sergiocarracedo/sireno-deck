@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button, Input, Tabs } from "@heroui/react"
 
-import type { DeviceModelSpec } from "@sirenodeck/cli"
+import type { DeviceModelSpec } from "@sirenodeck/sirenodeck"
 
 import type { WsClient } from "../bridge"
 import { DeckFrame } from "../DeckFrame"

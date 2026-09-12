@@ -12,7 +12,7 @@ manual Release Please run can combine selected packages into one release PR.
 
 | Package                           | Path                            | Builds before publish? |
 | --------------------------------- | ------------------------------- | ---------------------- |
-| `@sirenodeck/cli`                 | `packages/cli`                  | Yes (tsdown)           |
+| `@sirenodeck/sirenodeck`          | `packages/cli`                  | Yes (tsdown)           |
 | `@sirenodeck/addon-app-shortcuts` | `packages/addons/app-shortcuts` | Yes                    |
 | `@sirenodeck/addon-pomodoro`      | `packages/addons/pomodoro`      | Yes                    |
 | `@sirenodeck/theme-neon-grids`    | `packages/themes/neon-grids`    | No                     |
@@ -21,7 +21,7 @@ manual Release Please run can combine selected packages into one release PR.
 Private (not published): `sirenodeck-workspace` (root), `sirenodeck-web`,
 `sirenodeck-videos`, `@sirenodeck/docs`.
 
-### `@sirenodeck/cli` build & runtime
+### `@sirenodeck/sirenodeck` build & runtime
 
 The CLI is bundled via `tsdown` into a single ESM file at `dist/main.mjs`. The
 `bin/sirenodeck.js` wrapper spawns the bundle with `process.execPath`. Native
@@ -35,7 +35,7 @@ stub due to a pre-existing config issue (`assetsInclude: ["**/*.html"]` in
 `frontend/vite.config.ts`). To enable real mode on a published install:
 
 ```sh
-# After npm install -g @sirenodeck/cli
+# After npm install -g @sirenodeck/sirenodeck
 git clone https://github.com/sergiocarracedo/sireno-deck.git
 cd sireno-deck/packages/cli
 pnpm install
@@ -57,7 +57,7 @@ Actions → release-please → Run workflow
   ├─ select CLI/web, and/or any addons/themes
   └─ release-please    opens one release PR for the selected packages
 merge release PR       manually, after reviewing the version bumps/changelog
-  ├─ tag pushed        e.g. @sirenodeck/cli-0.1.1
+  ├─ tag pushed        e.g. @sirenodeck/sirenodeck-0.1.0-alpha.0
   └─ release           publishes each tagged package independently
                         └─ publish-npm    npm publish --provenance --access public
 ```
