@@ -1,0 +1,115 @@
+packages/cli/README.md
+  s_a44fbfe0704c0d::t_e03578809c82d1 7-15
+packages/cli/docs/user/troubleshooting.mdx
+  s_a44fbfe0704c0d::t_a00a02a1aff268 22
+packages/addons/pomodoro/vitest.config.ts
+  s_a44fbfe0704c0d::t_e100551a517aef 9
+packages/addons/app-shortcuts/package.json
+  s_a44fbfe0704c0d::t_4b61d7305a6a5f 3
+packages/themes/riptide/package.json
+  s_a44fbfe0704c0d::t_4b61d7305a6a5f 3
+packages/cli/package.json
+  s_a44fbfe0704c0d::t_f11d814cdbd686 2
+  s_a44fbfe0704c0d::t_c9dbcf74a9a5db 3
+packages/web/astro/src/components/sections/InstallSection.astro
+  s_a44fbfe0704c0d::t_a00a02a1aff268 40-42
+.github/workflows/release.yml
+  s_a44fbfe0704c0d::t_f11d814cdbd686 6
+  s_a44fbfe0704c0d::t_a00a02a1aff268 16,35-36,84,96
+  s_a44fbfe0704c0d::t_502d68c9dad9ac 92-93,95
+packages/themes/neon-grids/tsconfig.json
+  s_a44fbfe0704c0d::t_f11d814cdbd686 24-25
+packages/addons/pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_a44fbfe0704c0d::t_e100551a517aef 2,5
+packages/themes/riptide/components/index.tsx
+  s_a44fbfe0704c0d::t_e03578809c82d1 3-7,9-13
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/pages.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 1
+packages/cli/docs/user/installation.mdx
+  s_a44fbfe0704c0d::t_a00a02a1aff268 24
+packages/cli/scripts/installer/formula/sirenodeck.rb
+  s_a44fbfe0704c0d::t_f11d814cdbd686 4
+packages/cli/config-ui/src/__tests__/EditorPage.test.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 5
+packages/cli/src/cli/commands/run.ts
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 1240
+packages/cli/frontend/src/components/ErrorBoundary.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 2
+package.json
+  s_a44fbfe0704c0d::t_f11d814cdbd686 8
+packages/cli/src/version.ts
+  s_a44fbfe0704c0d::t_f11d814cdbd686 1
+release-please-config.json
+  s_a44fbfe0704c0d::t_f11d814cdbd686 9-10
+packages/addons/pomodoro/tsdown.config.ts
+  s_a44fbfe0704c0d::t_e100551a517aef 33,39
+packages/cli/config-ui/src/DeckFrame.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 9
+vitest.config.ts
+  s_a44fbfe0704c0d::t_f11d814cdbd686 15-16
+release-please-manifest.json
+  s_a44fbfe0704c0d::t_f11d814cdbd686 2
+  s_a44fbfe0704c0d::t_4b61d7305a6a5f 3-6
+packages/cli/config-ui/src/__tests__/gesture.test.ts
+  s_a44fbfe0704c0d::t_e03578809c82d1 3-6
+packages/cli/docs/developer/addon-authoring.mdx
+  s_a44fbfe0704c0d::t_a00a02a1aff268 43,75,91
+packages/themes/neon-grids/package.json
+  s_a44fbfe0704c0d::t_f11d814cdbd686 28
+  s_a44fbfe0704c0d::t_4b61d7305a6a5f 3
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 5
+packages/cli/config-ui/src/pages/EditorPage.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 4
+AGENTS.md
+  s_a44fbfe0704c0d::t_a00a02a1aff268 92
+packages/cli/config-ui/src/__tests__/DeckFrame.test.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 4
+packages/web/astro/src/content.config.ts
+  s_a44fbfe0704c0d::t_a00a02a1aff268 8
+packages/addons/pomodoro/src/types/host-shims.d.ts
+  s_a44fbfe0704c0d::t_e100551a517aef 3,10
+packages/themes/neon-grids/components/index.tsx
+  s_a44fbfe0704c0d::t_8fced637a11a90 3-9,11-14
+  s_a44fbfe0704c0d::t_a00a02a1aff268 15-16
+RELEASING.md
+  s_a44fbfe0704c0d::t_a00a02a1aff268 15,24,38,60
+packages/addons/pomodoro/src/stubs/label.ts
+  s_a44fbfe0704c0d::t_e100551a517aef 1,4
+packages/cli/frontend/src/App.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 18
+packages/cli/bin/sirenodeck.js
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 23
+.github/workflows/publish-npm.yml
+  s_a44fbfe0704c0d::t_f11d814cdbd686 7
+scripts/claim-npm-names.mjs
+  s_a44fbfe0704c0d::t_f11d814cdbd686 21
+packages/cli/config-ui/src/gesture.ts
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 5
+packages/cli/config-ui/src/pages/ButtonConfigEditor.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 5
+packages/cli/frontend/src/components/Deck.tsx
+  s_a44fbfe0704c0d::t_ad325ab8d50c34 32
+ARCHITECTURE.md
+  s_a44fbfe0704c0d::t_949d897672b5d8 508
+packages/addons/pomodoro/package.json
+  s_a44fbfe0704c0d::t_4b61d7305a6a5f 3
+packages/themes/riptide/tsconfig.json
+  s_a44fbfe0704c0d::t_f11d814cdbd686 24-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1cd87146c7a9ae2378db579fb0b78f64e018b742",
+  "prompts": {},
+  "sessions": {
+    "s_a44fbfe0704c0d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f72f27250ffe6UP0ouq4mWUXPh",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
