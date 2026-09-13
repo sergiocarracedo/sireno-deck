@@ -1,0 +1,21 @@
+packages/cli/config-ui/vite.config.ts
+  s_a44fbfe0704c0d::t_59dfa17af279b5 79
+packages/cli/frontend/vite.config.ts
+  s_a44fbfe0704c0d::t_59dfa17af279b5 113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "13c26b1ed2e0714d6d63d5dc4d2e069ec4b4a545",
+  "prompts": {},
+  "sessions": {
+    "s_a44fbfe0704c0d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f72f27250ffe6UP0ouq4mWUXPh",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
