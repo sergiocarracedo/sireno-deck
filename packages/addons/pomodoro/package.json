@@ -12,7 +12,8 @@
     "directory": "packages/addons/pomodoro"
   },
   "files": [
-    "dist"
+    "dist",
+    "sirenodeck.json"
   ],
   "type": "module",
   "main": "./dist/index.js",
@@ -41,5 +42,9 @@
     "tsdown": "^0.22.14",
     "typescript": "^5.7.0",
     "vitest": "^4.1.0"
-  }
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "sirenoAddonApiVersion": 1
 }

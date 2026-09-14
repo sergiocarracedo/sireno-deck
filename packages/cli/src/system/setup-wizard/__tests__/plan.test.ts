@@ -185,9 +185,58 @@ describe("buildInstallPlan", () => {
     expect(buildInstallPlan(report)).toEqual([])
   })
 
-  it("macOS produces no capability steps because tools are built-ins", () => {
-    const report = baseReport({ platform: "darwin", packageManager: "brew" })
+  it("macOS produces no install steps when Accessibility is granted", () => {
+    // osascript et al. ship with the OS, so nothing to install — but only if
+    // the capabilities probed as available.
+    const report = baseReport({
+      platform: "darwin",
+      packageManager: "brew",
+      capabilities: {
+        ...baseReport().capabilities,
+        keyMacro: {
+          name: "keyMacro",
+          available: true,
+          missing: [],
+          preferred: "osascript",
+          reason: "macOS uses osascript.",
+        },
+        activeApp: {
+          name: "activeApp",
+          available: true,
+          missing: [],
+          preferred: "osascript",
+          reason: "macOS uses osascript.",
+        },
+      },
+    })
     expect(buildInstallPlan(report)).toEqual([])
+  })
+
+  it("macOS emits a manual Accessibility step when UI scripting is blocked", () => {
+    const report = baseReport({
+      platform: "darwin",
+      packageManager: "brew",
+      capabilities: {
+        ...baseReport().capabilities,
+        keyMacro: {
+          name: "keyMacro",
+          available: false,
+          missing: ["accessibility-permission"],
+          preferred: "osascript",
+          reason: "osascript is present but has no Accessibility permission.",
+        },
+      },
+    })
+    const plan = buildInstallPlan(report)
+    const step = plan.find((s) => s.id === "cap:darwin:accessibility")
+    expect(step).toBeDefined()
+    expect(step?.manualOnly).toBe(true)
+    // No package manager can grant a TCC permission.
+    expect(step?.packages).toEqual([])
+    expect(step?.sudo).toBe(false)
+    expect(step?.manualInstructions).toContain("Accessibility")
+    // Still no Linux-only steps on darwin.
+    expect(plan.some((s) => s.id === "udev:rules")).toBe(false)
   })
 
   it("packageManager none marks steps as manualOnly with fallback instructions", () => {

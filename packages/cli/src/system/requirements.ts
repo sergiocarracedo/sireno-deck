@@ -82,11 +82,17 @@ const capabilityConfig: Readonly<
   },
 }
 
+// ponytail: `command` is a POSIX shell builtin, not a binary — execFile can't
+// spawn it, so the old `executor.run("command", ["-v", x])` failed for EVERY
+// candidate and the probe silently degraded to the `--version` fallback (which
+// osascript, pbcopy and clip don't even support). Wrap in `sh -c`, matching
+// setup-wizard/probe.ts, and shell-quote so the argument stays one token.
 const probeCommandV = async (
   executor: CommandExecutor,
   command: string,
 ): Promise<boolean> => {
-  const result = await executor.run("command", ["-v", command])
+  const quoted = `'${command.replaceAll(`'`, `'\\''`)}'`
+  const result = await executor.run("sh", ["-c", `command -v ${quoted}`])
   return result.exitCode === 0 && result.stdout.trim().length > 0
 }
 
@@ -114,6 +120,20 @@ const probeCommand = async (
   return await probeVersion(executor, command)
 }
 
+// ponytail: the clipboard candidate list is session-dependent on Linux, so it
+// can't just be `config.commands`. The old ternary keyed off `preferred ===
+// "xclip"` and sent every other platform down the `["wl-copy"]` branch — so on
+// macOS the probe looked for a Wayland tool, never for pbcopy, and every run
+// logged "clipboard: none of wl-copy found" on a machine that ships pbcopy.
+const clipboardCandidates = (
+  platform: string,
+  preferred: string,
+): ReadonlyArray<string> => {
+  if (platform === "darwin") return ["pbcopy"]
+  if (platform === "win32") return ["clip"]
+  return preferred === "xclip" ? ["xclip", "xsel"] : ["wl-copy"]
+}
+
 export const checkRequirements = async ({
   platform,
   executor,
@@ -125,9 +145,7 @@ export const checkRequirements = async ({
   for (const [name, config] of Object.entries(capabilityConfig)) {
     const commands =
       name === "clipboard"
-        ? config.preferred(platform, env) === "xclip"
-          ? ["xclip", "xsel"]
-          : ["wl-copy"]
+        ? clipboardCandidates(platform, config.preferred(platform, env))
         : config.commands
     const availability = await Promise.all(
       commands.map((command) => probeCommand(executor, command, extraFsProbe)),

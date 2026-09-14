@@ -69,9 +69,112 @@ async function probeRam(): Promise<ProbeResult> {
   return { available: true, max: total, percentage: pct, unit: "%", value: pct }
 }
 
-// ponytail: Linux only — reads /proc/meminfo SwapTotal/SwapFree in kB.
-// Other platforms report unavailable rather than guessing.
+// ponytail: macOS has no /proc, so the Linux sysfs readers below all bailed
+// and every metric except cpu/ram/disk/uptime/load/frequency reported
+// unavailable — which is most of the default deck's first button. These
+// helpers fill in the ones macOS does expose through documented CLIs. Each
+// returns null on any parse failure so the caller can report unavailable
+// rather than a wrong number.
+const DARWIN_CMD_TIMEOUT_MS = 2_000
+
+const darwinRun = async (
+  binary: string,
+  args: ReadonlyArray<string>,
+): Promise<string | null> => {
+  try {
+    const { stdout } = await execFile(binary, [...args], {
+      timeout: DARWIN_CMD_TIMEOUT_MS,
+      signal: AbortSignal.timeout(DARWIN_CMD_TIMEOUT_MS),
+    })
+    return stdout
+  } catch {
+    return null
+  }
+}
+
+// `sysctl -n vm.swapusage` →
+// "total = 15360.00M  used = 14146.44M  free = 1213.56M  (encrypted)"
+const SWAP_FIELD = (name: string): RegExp =>
+  new RegExp(`${name}\\s*=\\s*([\\d.]+)([KMG])`, "i")
+
+const SWAP_UNIT_BYTES: Readonly<Record<string, number>> = {
+  K: 1024,
+  M: 1024 ** 2,
+  G: 1024 ** 3,
+}
+
+export const parseDarwinSwap = (
+  raw: string,
+): { totalBytes: number; usedBytes: number } | null => {
+  const total = SWAP_FIELD("total").exec(raw)
+  const used = SWAP_FIELD("used").exec(raw)
+  if (total?.[1] === undefined || used?.[1] === undefined) return null
+  const toBytes = (m: RegExpExecArray): number =>
+    Number.parseFloat(m[1]!) *
+    (SWAP_UNIT_BYTES[(m[2] ?? "M").toUpperCase()] ?? 0)
+  const totalBytes = toBytes(total)
+  const usedBytes = toBytes(used)
+  if (!Number.isFinite(totalBytes) || totalBytes <= 0) return null
+  return { totalBytes, usedBytes }
+}
+
+// `pmset -g batt` →
+// " -InternalBattery-0 (id=...)\t100%; charged; 0:00 remaining present: true"
+export const parseDarwinBattery = (raw: string): number | null => {
+  const m = /(\d{1,3})%/.exec(raw)
+  if (m?.[1] === undefined) return null
+  const pct = Number.parseInt(m[1], 10)
+  return Number.isFinite(pct) ? pct : null
+}
+
+// `netstat -ibn` — one row per interface/address. The <Link#N> rows carry the
+// per-interface totals; the address rows repeat the same counters, so summing
+// every row would double-count. Skip loopback and virtual interfaces to match
+// the Linux reader's NETWORK_IFACE_SKIP_RE.
+export const parseDarwinNetstat = (
+  raw: string,
+): { rx: number; tx: number } | null => {
+  const lines = raw.trim().split("\n")
+  const header = lines[0]?.trim().split(/\s+/) ?? []
+  const ibytes = header.indexOf("Ibytes")
+  const obytes = header.indexOf("Obytes")
+  if (ibytes === -1 || obytes === -1) return null
+  let rx = 0
+  let tx = 0
+  let counted = false
+  for (const line of lines.slice(1)) {
+    const cols = line.trim().split(/\s+/)
+    const name = cols[0]
+    if (name === undefined) continue
+    if (NETWORK_IFACE_SKIP_RE.test(name)) continue
+    // Only the <Link#N> rows, so per-address duplicates aren't summed twice.
+    if (!(cols[2] ?? "").startsWith("<Link")) continue
+    const i = Number.parseInt(cols[ibytes] ?? "", 10)
+    const o = Number.parseInt(cols[obytes] ?? "", 10)
+    if (!Number.isFinite(i) || !Number.isFinite(o)) continue
+    rx += i
+    tx += o
+    counted = true
+  }
+  return counted ? { rx, tx } : null
+}
+
+// ponytail: Linux reads /proc/meminfo SwapTotal/SwapFree in kB; macOS uses
+// sysctl vm.swapusage. Other platforms report unavailable rather than guess.
 async function probeSwap(): Promise<ProbeResult> {
+  if (process.platform === "darwin") {
+    const raw = await darwinRun("sysctl", ["-n", "vm.swapusage"])
+    const parsed = raw === null ? null : parseDarwinSwap(raw)
+    if (parsed === null) return { available: false, unit: "%" }
+    const pct = clampPercent((parsed.usedBytes / parsed.totalBytes) * 100)
+    return {
+      available: true,
+      max: parsed.totalBytes,
+      percentage: pct,
+      unit: "%",
+      value: pct,
+    }
+  }
   if (process.platform !== "linux") return { available: false, unit: "%" }
   if (!existsSync("/proc/meminfo")) return { available: false, unit: "%" }
   try {
@@ -129,7 +232,20 @@ async function probeNetwork(): Promise<ProbeResult> {
 }
 
 async function probeBattery(): Promise<ProbeResult> {
-  // Linux only: /sys/class/power_supply/BAT0/capacity
+  if (process.platform === "darwin") {
+    const raw = await darwinRun("pmset", ["-g", "batt"])
+    const pct = raw === null ? null : parseDarwinBattery(raw)
+    if (pct === null) return { available: false, unit: "%" }
+    const clamped = clampPercent(pct)
+    return {
+      available: true,
+      max: 100,
+      percentage: clamped,
+      unit: "%",
+      value: clamped,
+    }
+  }
+  // Linux: /sys/class/power_supply/BAT0/capacity
   if (process.platform !== "linux") return { available: false, unit: "%" }
   if (!existsSync("/sys/class/power_supply/BAT0/capacity")) {
     return { available: false, unit: "%" }
@@ -249,6 +365,12 @@ async function probeProcesses(): Promise<ProbeResult> {
     } catch {
       return { available: false, unit: "procs" }
     }
+  }
+  if (process.platform === "darwin") {
+    const raw = await darwinRun("ps", ["-Ao", "pid="])
+    if (raw === null) return { available: false, unit: "procs" }
+    const count = raw.split("\n").filter((l) => l.trim().length > 0).length
+    return { available: count > 0, unit: "procs", value: count }
   }
   // ponytail: no portable process count without a dep; report unavailable elsewhere.
   return { available: false, unit: "procs" }
@@ -557,14 +679,28 @@ async function readNetBytes(
   return counted ? total : null
 }
 
+// ponytail: macOS has no /sys/class/net; `netstat -ibn` carries the same
+// cumulative per-interface byte counters. Both platforms then share the
+// identical delta-over-interval logic below.
+async function readNetTotals(): Promise<{ rx: number; tx: number } | null> {
+  if (process.platform === "darwin") {
+    const raw = await darwinRun("netstat", ["-ibn"])
+    return raw === null ? null : parseDarwinNetstat(raw)
+  }
+  const rx = await readNetBytes("rx_bytes")
+  const tx = await readNetBytes("tx_bytes")
+  if (rx === null || tx === null) return null
+  return { rx, tx }
+}
+
 async function readNetworkDelta(): Promise<{
   dt: number
   rx: number
   tx: number
 } | null> {
-  const rx = await readNetBytes("rx_bytes")
-  const tx = await readNetBytes("tx_bytes")
-  if (rx === null || tx === null) return null
+  const totals = await readNetTotals()
+  if (totals === null) return null
+  const { rx, tx } = totals
   const now = Date.now()
   const prev = prevNetworkSample
   if (prev === null || rx < prev.rx || tx < prev.tx) {
@@ -577,7 +713,7 @@ async function readNetworkDelta(): Promise<{
 }
 
 async function probeNetworkRead(): Promise<ProbeResult> {
-  if (process.platform !== "linux") {
+  if (process.platform !== "linux" && process.platform !== "darwin") {
     return { available: false, unit: "B/s" }
   }
   const delta = await readNetworkDelta()
@@ -590,7 +726,7 @@ async function probeNetworkRead(): Promise<ProbeResult> {
 }
 
 async function probeNetworkWrite(): Promise<ProbeResult> {
-  if (process.platform !== "linux") {
+  if (process.platform !== "linux" && process.platform !== "darwin") {
     return { available: false, unit: "B/s" }
   }
   const delta = await readNetworkDelta()

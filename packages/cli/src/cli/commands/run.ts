@@ -1492,8 +1492,21 @@ const mergeAddonByType = (
 export const buildExternalAddonDirs = (
   addonEntries: ReadonlyArray<unknown>,
   configPath: string,
+  addonEntryPaths: ReadonlyMap<string, string> = new Map(),
 ): Map<string, string> => {
   const result = new Map<string, string>()
+  // ponytail: prefer the LOADED addons. Deriving the key from the config entry
+  // only works for local paths — an npm specifier like
+  // `@sirenodeck/addon-app-shortcuts` resolved to a non-existent
+  // `<configDir>/@sirenodeck/addon-app-shortcuts` and keyed the map on
+  // "addon-app-shortcuts", while its icons say `addon://app-shortcuts/...`.
+  // Every npm addon's icons therefore failed with "unknown addon dir".
+  // `addonEntryPaths` is keyed by manifest name and points at the real entry
+  // file, whose dirname is the `<pkg>/dist` the assets sit beside.
+  const resolvedKeys = new Set(addonEntryPaths.keys())
+  for (const [name, entryPath] of addonEntryPaths) {
+    result.set(name, dirname(entryPath))
+  }
   for (const entry of addonEntries) {
     const source =
       typeof entry === "string"
@@ -1516,7 +1529,10 @@ export const buildExternalAddonDirs = (
     // clobbering the correct dirname(frontendEntry) registration in
     // buildResolverOptions. Source-only addons keep their root.
     const base = existsSync(join(abs, "dist")) ? join(abs, "dist") : abs
-    result.set(basename(abs), base)
+    // Never let the config-entry guess override a RESOLVED addon's real dir,
+    // but keep last-wins among the guesses themselves (two entries whose paths
+    // share a basename still resolve to the later one, as before).
+    if (!resolvedKeys.has(basename(abs))) result.set(basename(abs), base)
   }
   return result
 }
@@ -1620,6 +1636,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     const externalAddonDirs = buildExternalAddonDirs(
       loadedConfig.config.addons ?? [],
       loadedConfig.configPath,
+      loadedConfig.addonEntryPaths,
     )
 
     let resolverOptions = buildResolverOptions(
@@ -2008,6 +2025,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         buildExternalAddonDirs(
           nextLoaded.config.addons ?? [],
           nextLoaded.configPath,
+          nextLoaded.addonEntryPaths,
         ),
         nextLoaded.addonEntryPaths,
       )
@@ -2023,6 +2041,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         buildExternalAddonDirs(
           nextLoaded.config.addons ?? [],
           nextLoaded.configPath,
+          nextLoaded.addonEntryPaths,
         ),
       )
       bridge!.setActiveTheme?.({ name: nextLoaded.theme.name })

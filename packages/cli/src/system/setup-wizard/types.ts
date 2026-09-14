@@ -79,6 +79,11 @@ export interface ProbeDeps {
   readonly extraFsProbe?: (command: string) => boolean
   readonly fileExists: (path: string) => boolean
   readonly readFile: (path: string) => string | null
+  // ponytail: the config the caller actually intends to run with. Without it
+  // the probe only ever stats $XDG_CONFIG_HOME/sirenodeck/config.yml, so a
+  // valid `--config ./my.yml` still reported "Config: missing" and the
+  // first-run gate refused to start the daemon.
+  readonly configPath?: string
 }
 
 export interface SystemReportSummary {

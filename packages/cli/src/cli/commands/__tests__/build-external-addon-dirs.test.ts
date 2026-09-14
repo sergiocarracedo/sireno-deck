@@ -66,4 +66,44 @@ describe("buildExternalAddonDirs", () => {
     )
     expect(dirs.get("chrome-overlay")).toBe("/q/chrome-overlay")
   })
+
+  // ponytail: npm-specifier addons. The config-entry path only ever produced
+  // a plausible key for LOCAL paths — `@sirenodeck/addon-app-shortcuts` was
+  // resolved against the config dir into a directory that does not exist and
+  // keyed on "addon-app-shortcuts", while the addon's own icons reference
+  // `addon://app-shortcuts/...`. Every npm addon's icons failed to resolve.
+  it("keys npm-specifier addons by manifest name, from the resolved entry", () => {
+    const dirs = buildExternalAddonDirs(
+      [{ src: "@sirenodeck/addon-app-shortcuts" }],
+      "/home/u/.config/sirenodeck/config.yml",
+      new Map([
+        [
+          "app-shortcuts",
+          "/home/u/.config/sirenodeck/node_modules/@sirenodeck/addon-app-shortcuts/dist/index.js",
+        ],
+      ]),
+    )
+    expect(dirs.get("app-shortcuts")).toBe(
+      "/home/u/.config/sirenodeck/node_modules/@sirenodeck/addon-app-shortcuts/dist",
+    )
+  })
+
+  it("prefers the resolved entry dir over the config-entry guess", () => {
+    const dirs = buildExternalAddonDirs(
+      [{ src: "/p/chrome-overlay" }],
+      "/anywhere/config.yml",
+      new Map([["chrome-overlay", "/real/chrome-overlay/dist/index.js"]]),
+    )
+    expect(dirs.get("chrome-overlay")).toBe("/real/chrome-overlay/dist")
+  })
+
+  it("still registers config entries that did not resolve", () => {
+    const dirs = buildExternalAddonDirs(
+      [{ src: "/p/chrome-overlay" }, { src: "/p/other-addon" }],
+      "/anywhere/config.yml",
+      new Map([["chrome-overlay", "/real/chrome-overlay/dist/index.js"]]),
+    )
+    expect(dirs.get("chrome-overlay")).toBe("/real/chrome-overlay/dist")
+    expect(dirs.get("other-addon")).toBe("/p/other-addon")
+  })
 })

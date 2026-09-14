@@ -1,7 +1,14 @@
 import { probeAll, type ProbeDeps, type SystemReport } from "."
 
-let cached: { report: SystemReport; at: number } | null = null
+let cached: { report: SystemReport; at: number; key: string } | null = null
 const DEFAULT_TTL_MS = 5_000
+
+// ponytail: the config path is the one dep that differs between two call sites
+// in the same run — the banner probes the XDG default while the first-run gate
+// probes the explicit --config. Keying on it stops the first probe's
+// "Config: missing" from being replayed to the second.
+const cacheKey = (deps: ProbeDeps): string =>
+  `${deps.platform}\u0000${deps.xdgConfigHome}\u0000${deps.configPath ?? ""}`
 
 // ponytail: single-slot TTL cache. probeAll runs subprocesses (which, sudo,
 // lsusb, ...); the startup banner and runFirstRunCheckIfNeeded both probe the
@@ -13,11 +20,12 @@ export const probeAllCached = async (
   ttlMs: number = DEFAULT_TTL_MS,
 ): Promise<SystemReport> => {
   const now = Date.now()
-  if (cached !== null && now - cached.at < ttlMs) {
+  const key = cacheKey(deps)
+  if (cached !== null && cached.key === key && now - cached.at < ttlMs) {
     return cached.report
   }
   const report = await probeAll(deps)
-  cached = { report, at: now }
+  cached = { report, at: now, key }
   return report
 }
 

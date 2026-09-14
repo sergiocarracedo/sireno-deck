@@ -58,6 +58,7 @@ import {
 import { systemRequirements } from "./system-requirements"
 import { buildStandardProbeDeps } from "@/cli/probe-deps"
 import { onboardCodingAgents } from "@/cli/coding-agents-onboarding"
+import { resolveUserPath } from "@/cli/cwd"
 
 export interface StartOptions {
   readonly config?: string
@@ -438,13 +439,14 @@ const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
   // user's ~/.config/sirenodeck/config.yml instead (the bug that made
   // --config appear to "do nothing").
   if (options.config !== undefined) {
-    if (!existsSync(options.config)) {
+    const explicit = resolveUserPath(options.config)
+    if (!existsSync(explicit)) {
       throw new Error(
-        `Config file not found: ${options.config}\n` +
+        `Config file not found: ${explicit}\n` +
           `  Fix: pass a valid --config path.`,
       )
     }
-    return { path: options.config, source: "cli" }
+    return { path: explicit, source: "cli" }
   }
   // ponytail: the daemon honors the cached pointer first so the running
   // session keeps editing the same config it was launched with. When the
@@ -769,11 +771,21 @@ const probeSystemForFirstRun = async (
   const xdgConfigHome =
     options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
   const baseDeps = buildStandardProbeDeps()
+  // ponytail: probe the config this start will actually use. `--config` and the
+  // cached daemon pointer both count; only when neither resolves does the probe
+  // fall back to the XDG default (which is also the wizard's seed target).
+  let configPath: string | undefined
+  try {
+    configPath = resolveConfigPath(options).path
+  } catch {
+    configPath = undefined
+  }
   try {
     const report = await probeAllCached({
       ...baseDeps,
       homeDir: home !== "" ? home : baseDeps.homeDir,
       xdgConfigHome,
+      ...(configPath !== undefined ? { configPath } : {}),
     })
     return { report, summary: summarizeReport(report) }
   } catch {

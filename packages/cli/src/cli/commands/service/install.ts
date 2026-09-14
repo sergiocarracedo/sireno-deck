@@ -16,9 +16,18 @@ const SERVICE_NAME = `${DAEMON_NAME}.service`
 // ponytail: ExecStart calls `start` — no flags. The systemd-started process
 // detects `INVOCATION_ID` and runs in-process, reading config + flags from
 // runtimeDir. Keeps the unit stable; config changes don't require reinstall.
+//
+// Spawn through the CURRENT node binary rather than letting the supervisor exec
+// the .js directly. bin/sirenodeck.js starts `#!/usr/bin/env node`, and
+// launchd's PATH is only /usr/bin:/bin:/usr/sbin:/sbin — a Homebrew, nvm or
+// Volta node isn't on it, so the agent died with "env: node: No such file or
+// directory" and KeepAlive respawned it forever. process.execPath is absolute
+// and always correct. Both paths are quoted because splitExec (and systemd)
+// honour quotes, and macOS install locations routinely contain spaces.
 const getExecStart = (): string => {
-  const binPath = process.argv[1] ?? `sirenodeck`
-  return `${binPath} start`
+  const script = process.argv[1]
+  if (script === undefined) return "sirenodeck start"
+  return `"${process.execPath}" "${script}" start`
 }
 
 const getTemplateVars = (): TemplateVars => {
@@ -89,8 +98,16 @@ export const installService = async (
       const content = renderTemplate(os, vars, { userLevel })
       writeFileSync(plistPath, content, { mode: 0o644 })
       logger.info({ path: plistPath }, "install: launchd plist installed")
-      execSync(`launchctl load "${plistPath}"`, { stdio: "ignore" })
-      logger.info({ service: SERVICE_NAME }, "install: loaded")
+      // ponytail: install used the legacy `launchctl load` while
+      // invokeManager drives the modern bootstrap/kickstart API. Mixing the two
+      // made the very next `start` fail — bootstrap returns EALREADY (5: Input/
+      // output error) against a service the legacy call had already loaded.
+      // Writing the plist is enough; invokeManager bootstraps it. Leaving the
+      // service un-loaded here is intentional and keeps one API in play.
+      logger.info(
+        { service: SERVICE_NAME },
+        "install: plist written — bootstrap happens on start",
+      )
     } catch (err) {
       logger.error({ err }, "install: failed to install launchd service")
       process.exitCode = 1
