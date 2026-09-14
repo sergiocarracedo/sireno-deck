@@ -1,0 +1,102 @@
+packages/cli/src/system/providers/active-app/darwin.ts
+  s_f72ad455e58094::t_efb4b85ca54006 14-36,41-43,45-46
+packages/cli/src/util/daemon.ts
+  s_f72ad455e58094::t_14913359fc79ca 129-145
+  s_f72ad455e58094::t_e0cfc71f466803 165
+packages/cli/src/system/providers/session/darwin.ts
+  s_f72ad455e58094::t_6f061e1ea1454c 15-26,28-29
+  s_f72ad455e58094::t_7472e38ccca5fc 41-43,45,47
+packages/cli/src/system/setup-wizard/config-seed.ts
+  s_f72ad455e58094::t_0aa9d29133d027 13-18,20
+packages/cli/src/cli/cwd.ts
+  s_f72ad455e58094::t_341cf0a1be2fb8 1-2,5-13,15-20,22-28
+packages/cli/src/system/providers/key-macro/darwin.ts
+  s_f72ad455e58094::t_011973be04d145 14-20,22,24-25,41-85,94-110
+packages/cli/config/starter-config.yml
+  s_f72ad455e58094::t_02ce5d36fe640c 1-54
+packages/cli/src/builtin-addons/media/providers/darwin.ts
+  s_f72ad455e58094::t_6dbbfd9c7c952c 11-49,53-137,142-148,150,158-172,175-181,183-188,192-202,205-215,219,222,225,228,231,235,238-239,242-243,246-248
+  s_f72ad455e58094::t_9a12648e73e16b 249
+packages/cli/src/builtin-addons/media/providers/__tests__/darwin.test.ts
+  s_f72ad455e58094::t_bbbddff78a2334 225-229,235
+  s_f72ad455e58094::t_875205c84a0bca 1-224,230-234,236
+packages/cli/src/system/providers/session/__tests__/darwin.test.ts
+  s_f72ad455e58094::t_39de5e5f5d230c 22-39,50,52,59,61,68-94,99,101,112,118
+packages/cli/src/cli/commands/service/install.ts
+  s_f72ad455e58094::t_b37e6a8018c769 19-26,28-30
+  s_f72ad455e58094::t_f9e6f24f02f6bb 101-110
+packages/cli/src/cli/commands/start.ts
+  s_f72ad455e58094::t_2cb46f99dd3030 442-443,445,449
+  s_f72ad455e58094::t_e966edecccfc41 774-782,788
+  s_f72ad455e58094::t_853d0a40916bf3 61
+packages/cli/src/system/setup-wizard/probe.ts
+  s_f72ad455e58094::t_778c729a1b1c99 152-205
+  s_f72ad455e58094::t_86afe6b2dba589 317-318
+  s_f72ad455e58094::t_6e5d4b194244e4 393-395,399,401-403
+  s_f72ad455e58094::t_c4f5eb223384a8 206,213,319,321,404,418,457
+packages/cli/src/system/setup-wizard/types.ts
+  s_f72ad455e58094::t_3cb729a34e2398 82-86
+packages/cli/src/cli/commands/run.ts
+  s_f72ad455e58094::t_d728c9c53bd5f9 1639
+  s_f72ad455e58094::t_7e703b6370a450 1532-1535
+  s_f72ad455e58094::t_78671ec719880b 1495,1498-1505,1507-1509
+  s_f72ad455e58094::t_d8f80e424c4b53 1506
+  s_f72ad455e58094::t_a7c8ec950c817f 2028,2044
+packages/cli/src/builtin-addons/brightness/providers/darwin.ts
+  s_f72ad455e58094::t_1bdbdde9ab77a2 16-40,49-60,67-75,78,81-82,91-102
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_f72ad455e58094::t_bbcd128bcd1a8d 369-373,694,703,716
+  s_f72ad455e58094::t_21709c6981fe88 235-247
+  s_f72ad455e58094::t_7b7efcf1ce9875 72-163,165-176,693
+  s_f72ad455e58094::t_6d975dbad46400 177,248,374,682-692,695,701-702,729
+packages/cli/src/system/setup-wizard/plan.ts
+  s_f72ad455e58094::t_309ec4ec27670f 128-146,151-156
+  s_f72ad455e58094::t_779529732b3631 157
+packages/cli/package.json
+  s_f72ad455e58094::t_faec3f38dd004c 19
+packages/cli/src/cli/commands/pipeline/helpers.ts
+  s_f72ad455e58094::t_4df7bde1bb9324 36-37,39,43
+  s_f72ad455e58094::t_d1e94c437f0dbb 6
+packages/cli/src/system/requirements.ts
+  s_f72ad455e58094::t_367751c074aa93 123-136
+  s_f72ad455e58094::t_af470532c57ba3 85-89,94-95
+  s_f72ad455e58094::t_9aa57b52275ede 148
+packages/cli/src/cli/commands/service/render-template.ts
+  s_f72ad455e58094::t_409df5abf5e5aa 83-100
+  s_f72ad455e58094::t_354cfb6f0999e1 119-123
+  s_f72ad455e58094::t_cfde80e5b384f4 1
+packages/addons/app-shortcuts/package.json
+  s_f72ad455e58094::t_5447350f919290 15-17,38-39
+packages/addons/pomodoro/package.json
+  s_f72ad455e58094::t_c0ca7f1c568388 15-16,45-49
+packages/cli/src/cli/commands/__tests__/build-external-addon-dirs.test.ts
+  s_f72ad455e58094::t_d1746b23f7f862 69-108
+packages/cli/src/system/providers/active-app/__tests__/darwin.test.ts
+  s_f72ad455e58094::t_275d0bd1b5e60a 41,46,64-103,107
+packages/cli/src/system/providers/key-macro/__tests__/darwin.test.ts
+  s_f72ad455e58094::t_cb229df2b1c07c 40,53-56,73-75,138,155,161-216
+packages/cli/src/system/setup-wizard/__tests__/plan.test.ts
+  s_f72ad455e58094::t_a69be847145e0e 188-211,215-241
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_f72ad455e58094::t_5a742ef1d84750 26-34,131,149-173
+packages/cli/src/system/setup-wizard/probe-cache.ts
+  s_f72ad455e58094::t_6ec602b7bae05a 3,6-12,23-24,28
+packages/themes/riptide/package.json
+  s_f72ad455e58094::t_523d1209f5dfa0 17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2b05666663b17fa0c2db8266d8c2972265cf426b",
+  "prompts": {},
+  "sessions": {
+    "s_f72ad455e58094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18fd43a6-283e-4d43-ac64-cd8611ab5584",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
