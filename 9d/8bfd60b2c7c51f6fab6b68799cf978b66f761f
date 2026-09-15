@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/media/checks.ts
+  s_f72ad455e58094::t_9d9297ffba87d8 43-55,61
+packages/cli/src/builtin-addons/media/providers/darwin.ts
+  s_f72ad455e58094::t_b436954c182816 191-254,256-303,315-323,326-332
+  s_f72ad455e58094::t_ff814b2895fb1e 334,338,341,344,347,350,373-391
+packages/cli/src/builtin-addons/media/__tests__/checks.test.ts
+  s_f72ad455e58094::t_c23b6386b17a22 60,63,69-81
+packages/cli/src/builtin-addons/media/providers/__tests__/darwin.test.ts
+  s_f72ad455e58094::t_b973eb440f9796 36-40,238-372
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9d8bfd60b2c7c51f6fab6b68799cf978b66f761f",
+  "prompts": {},
+  "sessions": {
+    "s_f72ad455e58094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18fd43a6-283e-4d43-ac64-cd8611ab5584",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
