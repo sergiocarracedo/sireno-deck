@@ -1,0 +1,29 @@
+packages/cli/src/addon/api.ts
+  s_f72ad455e58094::t_d93f9908ce4b0c 439-454
+packages/cli/src/cli/commands/run.ts
+  s_f72ad455e58094::t_dd431eb512868d 563-571,573-577
+packages/addons/pomodoro/sirenodeck.json
+  s_f72ad455e58094::t_18d0ad33bd2f94 5-6
+packages/addons/pomodoro/tsdown.config.ts
+  s_f72ad455e58094::t_4fe85221217fb9 3,45-80
+packages/cli/src/addon/__tests__/loader.test.ts
+  s_f72ad455e58094::t_7a5658ef7435a5 225-323
+packages/cli/src/addon/loader.ts
+  s_f72ad455e58094::t_2e31cf607ec802 39-44,79-102,265,385
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "fdfae6f3c08b94aa294a488aef909285fe171257",
+  "prompts": {},
+  "sessions": {
+    "s_f72ad455e58094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18fd43a6-283e-4d43-ac64-cd8611ab5584",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
