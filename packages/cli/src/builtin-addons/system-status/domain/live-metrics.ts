@@ -471,6 +471,7 @@ async function probeCpuVoltages(): Promise<ProbeResult> {
 const DISKSTATS_SKIP_RE =
   /^(loop|ram|dm-|md|drbd)\d*|^(sr|nbd)\d+$|^[a-z]+\d+_|^dm-/
 let prevDiskIoSample: { ts: number; sectors: number } | null = null
+let prevDarwinDiskIoSample: { ts: number; bytes: number } | null = null
 
 async function readDiskstatsSectors(): Promise<number | null> {
   if (!existsSync("/proc/diskstats")) return null
@@ -496,7 +497,55 @@ async function readDiskstatsSectors(): Promise<number | null> {
   }
 }
 
+// ponytail: macOS has no /proc/diskstats, but IOBlockStorageDriver carries the
+// equivalent cumulative counters ("Bytes (Read)" / "Bytes (Write)") per device.
+// Sum across devices — ioreg lists several and only the backing store has
+// non-zero totals — and feed the same delta-over-interval maths the Linux
+// reader uses, so both platforms report the same B/s quantity.
+export const parseDarwinDiskBytes = (raw: string): number | null => {
+  let total = 0
+  let seen = false
+  for (const m of raw.matchAll(/"Bytes \((?:Read|Write)\)"\s*=\s*(\d+)/g)) {
+    const n = Number.parseInt(m[1] ?? "", 10)
+    if (!Number.isFinite(n)) continue
+    total += n
+    seen = true
+  }
+  return seen ? total : null
+}
+
+async function readDarwinDiskBytes(): Promise<number | null> {
+  const raw = await darwinRun("ioreg", [
+    "-c",
+    "IOBlockStorageDriver",
+    "-r",
+    "-d",
+    "1",
+    "-w",
+    "0",
+  ])
+  return raw === null ? null : parseDarwinDiskBytes(raw)
+}
+
 async function probeDiskIo(): Promise<ProbeResult> {
+  if (process.platform === "darwin") {
+    const bytes = await readDarwinDiskBytes()
+    if (bytes === null) return { available: false, unit: "B/s" }
+    const now = Date.now()
+    const prev = prevDarwinDiskIoSample
+    if (prev === null || bytes < prev.bytes) {
+      prevDarwinDiskIoSample = { ts: now, bytes }
+      return { available: true, unit: "B/s", value: 0 }
+    }
+    const dtSec = Math.max(0.001, (now - prev.ts) / 1000)
+    const delta = bytes - prev.bytes
+    prevDarwinDiskIoSample = { ts: now, bytes }
+    return {
+      available: true,
+      unit: "B/s",
+      value: Math.round(delta / dtSec),
+    }
+  }
   if (process.platform !== "linux") {
     return { available: false, unit: "B/s" }
   }
@@ -603,7 +652,39 @@ async function tryNvidiaSmi(field: string): Promise<number | null> {
   }
 }
 
+// ponytail: Apple Silicon publishes GPU busy-ness in the IOAccelerator node's
+// PerformanceStatistics dict, readable by any user — no root, no private
+// framework. "Device Utilization %" is the whole-GPU figure; the Renderer/
+// Tiler entries break it down per engine.
+export const parseDarwinGpuUtilization = (raw: string): number | null => {
+  const m = /"Device Utilization %"\s*=\s*(\d+)/.exec(raw)
+  if (m?.[1] === undefined) return null
+  const pct = Number.parseInt(m[1], 10)
+  return Number.isFinite(pct) ? pct : null
+}
+
 async function probeGpuUsage(): Promise<ProbeResult> {
+  if (process.platform === "darwin") {
+    const raw = await darwinRun("ioreg", [
+      "-r",
+      "-d",
+      "1",
+      "-w",
+      "0",
+      "-c",
+      "IOAccelerator",
+    ])
+    const pct = raw === null ? null : parseDarwinGpuUtilization(raw)
+    if (pct === null) return { available: false, unit: "%" }
+    const clamped = clampPercent(pct)
+    return {
+      available: true,
+      max: 100,
+      percentage: clamped,
+      unit: "%",
+      value: clamped,
+    }
+  }
   if (process.platform !== "linux") {
     return { available: false, unit: "%" }
   }
@@ -712,11 +793,63 @@ async function readNetworkDelta(): Promise<{
   return { dt, rx: rx - prev.rx, tx: tx - prev.tx }
 }
 
+// ponytail: network-read and network-write are two metric ids over ONE pair of
+// counters. Each used to call readNetworkDelta() independently, and that call
+// consumes the baseline — so whichever ran second measured the interval since
+// the first, a few microseconds earlier, and reported ~0 B/s. A deck showing
+// both (the default config does) had one of them permanently dead, and which
+// one depended on scheduling order. Share a single delta across any calls that
+// land in the same tick; the window is far below the poll interval, so a real
+// next tick still re-samples.
+const NETWORK_DELTA_SHARE_MS = 250
+let sharedNetworkDelta: {
+  at: number
+  value: { dt: number; rx: number; tx: number } | null
+} | null = null
+let inFlightNetworkDelta: Promise<{
+  dt: number
+  rx: number
+  tx: number
+} | null> | null = null
+
+async function readSharedNetworkDelta(): Promise<{
+  dt: number
+  rx: number
+  tx: number
+} | null> {
+  const now = Date.now()
+  if (
+    sharedNetworkDelta !== null &&
+    now - sharedNetworkDelta.at < NETWORK_DELTA_SHARE_MS
+  ) {
+    return sharedNetworkDelta.value
+  }
+  // Collapse concurrent callers onto one in-flight read as well, so two
+  // probes dispatched in the same Promise.all don't both hit the counters.
+  if (inFlightNetworkDelta !== null) return inFlightNetworkDelta
+  inFlightNetworkDelta = (async () => {
+    try {
+      const value = await readNetworkDelta()
+      sharedNetworkDelta = { at: Date.now(), value }
+      return value
+    } finally {
+      inFlightNetworkDelta = null
+    }
+  })()
+  return inFlightNetworkDelta
+}
+
+export function __resetNetworkDeltaCacheForTests(): void {
+  sharedNetworkDelta = null
+  inFlightNetworkDelta = null
+  prevNetworkSample = null
+}
+
 async function probeNetworkRead(): Promise<ProbeResult> {
   if (process.platform !== "linux" && process.platform !== "darwin") {
     return { available: false, unit: "B/s" }
   }
-  const delta = await readNetworkDelta()
+  const delta = await readSharedNetworkDelta()
   if (delta === null) return { available: false, unit: "B/s" }
   return {
     available: true,
@@ -729,7 +862,7 @@ async function probeNetworkWrite(): Promise<ProbeResult> {
   if (process.platform !== "linux" && process.platform !== "darwin") {
     return { available: false, unit: "B/s" }
   }
-  const delta = await readNetworkDelta()
+  const delta = await readSharedNetworkDelta()
   if (delta === null) return { available: false, unit: "B/s" }
   return {
     available: true,
