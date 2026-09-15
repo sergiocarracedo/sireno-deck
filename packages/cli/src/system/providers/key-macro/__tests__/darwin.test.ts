@@ -91,10 +91,13 @@ describe("createDarwinKeyMacroProvider", () => {
     await provider.stop()
   })
 
-  it("sendKey('😀') invokes osascript with emoji", async () => {
-    let captured: string[] = []
+  // ponytail: AppleScript `keystroke` synthesises events against the current
+  // keyboard layout, so it cannot produce a character the layout has no key
+  // for — emoji typed nothing. Mirror the Linux provider: pasteboard + paste.
+  it("sendKey('😀') writes to the pasteboard and sends cmd+v", async () => {
+    const calls: Array<{ cmd: string; args: string[] }> = []
     const executor = makeExecutor((cmd, args) => {
-      if (cmd === "osascript") captured = [...args]
+      calls.push({ cmd, args: [...args] })
       return { exitCode: 0, stdout: "", stderr: "" }
     })
     const provider = await createDarwinKeyMacroProvider({
@@ -102,8 +105,77 @@ describe("createDarwinKeyMacroProvider", () => {
       logger: silentLogger(),
     })
     await provider.sendKey("😀")
-    expect(captured[1]).toContain('keystroke "😀"')
+
+    const pbcopy = calls.find((c) => c.args.join(" ").includes("pbcopy"))
+    expect(pbcopy).toBeDefined()
+    expect(pbcopy!.args.join(" ")).toContain("😀")
+
+    const paste = calls.find((c) => c.args.join(" ").includes('keystroke "v"'))
+    expect(paste).toBeDefined()
+    expect(paste!.args.join(" ")).toContain("command down")
+
+    // It must NOT try to type the emoji directly.
+    expect(calls.some((c) => c.args.join(" ").includes('keystroke "😀"'))).toBe(
+      false,
+    )
     await provider.stop()
+  })
+
+  it("plain ASCII text still types directly, not via the pasteboard", async () => {
+    const calls: Array<{ cmd: string; args: string[] }> = []
+    const executor = makeExecutor((cmd, args) => {
+      calls.push({ cmd, args: [...args] })
+      return { exitCode: 0, stdout: "", stderr: "" }
+    })
+    const provider = await createDarwinKeyMacroProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    await provider.sendKey("hello world")
+    expect(calls.some((c) => c.args.join(" ").includes("pbcopy"))).toBe(false)
+    expect(
+      calls.some((c) => c.args.join(" ").includes('keystroke "hello world"')),
+    ).toBe(true)
+    await provider.stop()
+  })
+
+  it("accented text routes through the pasteboard", async () => {
+    const calls: Array<{ cmd: string; args: string[] }> = []
+    const executor = makeExecutor((cmd, args) => {
+      calls.push({ cmd, args: [...args] })
+      return { exitCode: 0, stdout: "", stderr: "" }
+    })
+    const provider = await createDarwinKeyMacroProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    await provider.sendKey("adiós")
+    expect(calls.some((c) => c.args.join(" ").includes("pbcopy"))).toBe(true)
+    await provider.stop()
+  })
+
+  it("a denied Accessibility grant surfaces an actionable error, not raw osascript text", async () => {
+    // macOS reports the denial as (1002) for keystrokes / (-1719) for
+    // assistive access. The raw text told the user nothing actionable.
+    for (const stderr of [
+      "System Events got an error: osascript is not allowed to send keystrokes. (1002)",
+      "System Events got an error: osascript is not allowed assistive access. (-1719)",
+    ]) {
+      const executor = makeExecutor(() => ({
+        exitCode: 1,
+        stdout: "",
+        stderr,
+      }))
+      const provider = await createDarwinKeyMacroProvider({
+        executor,
+        logger: silentLogger(),
+      })
+      await expect(provider.sendKey("ctrl+t")).rejects.toMatchObject({
+        code: "NOT_AVAILABLE",
+        message: expect.stringContaining("Accessibility"),
+      })
+      await provider.stop()
+    }
   })
 
   it("osascript non-zero throws ProviderError", async () => {

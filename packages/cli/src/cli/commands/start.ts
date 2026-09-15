@@ -141,18 +141,38 @@ const trySs = (port: number): PortScanResult => {
   }
 }
 
+const parseLsofPids = (out: string): ReadonlyArray<number> =>
+  out
+    .split("\n")
+    .map((line) => Number.parseInt(line.trim(), 10))
+    .filter((n) => Number.isFinite(n) && n > 0)
+
 const tryLsof = (port: number): PortScanResult => {
   try {
     const out = execFileSync("lsof", [`-iTCP:${port}`, "-sTCP:LISTEN", "-t"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     })
-    const pids = out
-      .split("\n")
-      .map((line) => Number.parseInt(line.trim(), 10))
-      .filter((n) => Number.isFinite(n) && n > 0)
-    return { ok: true, pids }
+    return { ok: true, pids: parseLsofPids(out) }
   } catch (err) {
+    // ponytail: lsof exits 1 with EMPTY output when simply nothing matches the
+    // filter — its documented "no results" status, not a failure. execFileSync
+    // throws on any non-zero exit, so the common "port is free" case was being
+    // recorded as "backend unavailable". On macOS that was every call (ss and
+    // /proc/net/tcp don't exist there), so detectPortPids concluded it had no
+    // working backend at all, warned on every start, and orphan cleanup went
+    // blind — leaving stale vites holding :5180/:52937 after an unclean exit.
+    // Treat exit 1 with no stdout as a clean empty result; a missing binary
+    // (ENOENT) or any other status stays a real failure.
+    const e = err as NodeJS.ErrnoException & {
+      status?: number | null
+      stdout?: string | Buffer
+    }
+    const stdout =
+      typeof e.stdout === "string" ? e.stdout : (e.stdout?.toString() ?? "")
+    if (e.code !== "ENOENT" && e.status === 1) {
+      return { ok: true, pids: parseLsofPids(stdout) }
+    }
     return { ok: false, reason: describeExecFailure(err, "lsof") }
   }
 }

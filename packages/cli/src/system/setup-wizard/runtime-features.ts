@@ -17,24 +17,43 @@ const REASON_MAX = 40
 const truncate = (s: string): string =>
   s.length <= REASON_MAX ? s : `${s.slice(0, REASON_MAX - 1)}…`
 
-export const probeMediaAccess = async (): Promise<RuntimeFeatureProbe> => {
-  const cached =
-    process.env["PLAYWRIGHT_BROWSERS_PATH"] ??
-    join(homedir(), ".cache", "sirenodeck", "playwright")
-  if (!existsSync(cached)) {
-    return { available: false, reason: truncate("chromium not installed") }
+// ponytail: chromium can legitimately live in either of two places. The
+// first-run bootstrap pins PLAYWRIGHT_BROWSERS_PATH to
+// ~/.cache/sirenodeck/playwright, but a `playwright install` run by hand — the
+// documented fix, and what a dev checkout needs — puts it in Playwright's own
+// per-OS default. Checking only the sirenodeck path reported "not installed"
+// on a machine whose renderer was working fine.
+const playwrightDefaultBrowsersDir = (): string => {
+  switch (process.platform) {
+    case "darwin":
+      return join(homedir(), "Library", "Caches", "ms-playwright")
+    case "win32":
+      return join(process.env["LOCALAPPDATA"] ?? homedir(), "ms-playwright")
+    default:
+      return join(homedir(), ".cache", "ms-playwright")
   }
+}
+
+const hasChromium = (dir: string): boolean => {
+  if (!existsSync(dir)) return false
   try {
-    const ok = readdirSync(cached).some((e) => e.startsWith("chromium"))
-    return ok
-      ? { available: true }
-      : { available: false, reason: truncate("chromium not installed") }
-  } catch (err) {
-    return {
-      available: false,
-      reason: truncate(`browsers dir unreadable: ${String(err)}`),
-    }
+    return readdirSync(dir).some((e) => e.startsWith("chromium"))
+  } catch {
+    return false
   }
+}
+
+export const probeMediaAccess = async (): Promise<RuntimeFeatureProbe> => {
+  const explicit = process.env["PLAYWRIGHT_BROWSERS_PATH"]
+  const candidates =
+    explicit !== undefined && explicit !== ""
+      ? [explicit]
+      : [
+          join(homedir(), ".cache", "sirenodeck", "playwright"),
+          playwrightDefaultBrowsersDir(),
+        ]
+  if (candidates.some(hasChromium)) return { available: true }
+  return { available: false, reason: truncate("chromium not installed") }
 }
 
 export const probeCommandExecution = async (): Promise<RuntimeFeatureProbe> => {

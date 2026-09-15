@@ -4,6 +4,7 @@ import { ProviderError } from "../error"
 import { type CommandExecutor, withTimeout } from "../shared"
 import { type KeyMacroProvider } from "../key-macro"
 import { parseCombo } from "./parser"
+import { createDarwinClipboardProvider } from "../clipboard/darwin"
 
 export interface DarwinKeyMacroDeps {
   readonly executor: CommandExecutor
@@ -29,6 +30,34 @@ const MOD_OSASCRIPT: ReadonlyMap<string, string> = new Map([
 
 const escapeOsascriptString = (s: string): string =>
   s.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
+
+// Printable ASCII is the set AppleScript's `keystroke` can synthesise directly
+// on a standard layout; anything outside it goes through the pasteboard.
+const isPureAscii = (text: string): boolean => /^[\x20-\x7E]*$/.test(text)
+
+const CMD_V_ARGS: ReadonlyArray<string> = [
+  "-e",
+  `tell application "System Events" to keystroke "v" using {command down}`,
+]
+
+const CLIPBOARD_PRE_DELAY_MS = 60
+
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms))
+
+// macOS reports a missing Accessibility (TCC) grant two different ways
+// depending on which API the script reached: -1719 for assistive access on a UI
+// element read, 1002 for synthesising keystrokes.
+const isAccessibilityDenied = (stderr: string): boolean =>
+  stderr.includes("(-1719)") ||
+  stderr.includes("(1002)") ||
+  stderr.includes("not allowed assistive access") ||
+  stderr.includes("not allowed to send keystrokes")
+
+export const ACCESSIBILITY_ERROR =
+  "macOS blocked the keystroke: this app has no Accessibility permission. " +
+  "Open System Settings → Privacy & Security → Accessibility, enable the app " +
+  "running sirenodeck (your terminal, or SirenoDeck.app), then restart it."
 
 const KEY_ALIASES: ReadonlyMap<string, string> = new Map([
   ["plus", "+"],
@@ -120,33 +149,73 @@ export const createDarwinKeyMacroProvider = async (
   deps: DarwinKeyMacroDeps,
 ): Promise<KeyMacroProvider> => {
   deps.logger.info(
-    "Darwin key-macro provider initialised (osascript; types any UTF-8 including emoji)",
+    "Darwin key-macro provider initialised (osascript; non-ASCII pastes via pbcopy)",
   )
   const timeoutMs = deps.timeoutMs ?? 500
+  const clipboard = createDarwinClipboardProvider({
+    executor: deps.executor,
+    logger: deps.logger,
+  })
+
+  const runOsascript = async (args: ReadonlyArray<string>): Promise<void> => {
+    let result
+    try {
+      result = await withTimeout(
+        deps.executor.run("osascript", [...args]),
+        timeoutMs + 2500,
+      )
+    } catch (err) {
+      throw new ProviderError(
+        "EXEC_FAILED",
+        `osascript failed: ${(err as Error).message ?? "unknown"}`,
+      )
+    }
+    if (result.exitCode === 0) return
+    const stderr = result.stderr.trim()
+    // ponytail: a denied Accessibility grant is BY FAR the most common reason a
+    // macro fails on macOS, and the raw AppleScript text ("System Events got an
+    // error: osascript is not allowed to send keystrokes. (1002)") tells the
+    // user nothing about how to fix it — it just surfaced as an error tile on
+    // the deck. Translate both TCC error numbers into the actual remedy.
+    if (isAccessibilityDenied(stderr)) {
+      throw new ProviderError("NOT_AVAILABLE", ACCESSIBILITY_ERROR)
+    }
+    throw new ProviderError(
+      "EXEC_FAILED",
+      `osascript exited ${result.exitCode}: ${stderr}`,
+    )
+  }
+
   return {
     async sendKey(input: string) {
-      const args = buildComboArgs(input) ?? buildLiteralArgs(input)
-      try {
-        const result = await withTimeout(
-          deps.executor.run("osascript", args),
-          timeoutMs + 2500,
-        )
-        if (result.exitCode !== 0) {
-          throw new ProviderError(
-            "EXEC_FAILED",
-            `osascript exited ${result.exitCode}: ${result.stderr.trim()}`,
-          )
-        }
-      } catch (err) {
-        if (err instanceof ProviderError) throw err
-        throw new ProviderError(
-          "EXEC_FAILED",
-          `osascript failed: ${(err as Error).message ?? "unknown"}`,
-        )
+      const comboArgs = buildComboArgs(input)
+      if (comboArgs !== null) {
+        await runOsascript(comboArgs)
+        return
       }
+      if (isPureAscii(input)) {
+        await runOsascript(buildLiteralArgs(input))
+        return
+      }
+      // ponytail: non-ASCII literal text — emoji, accented letters, CJK.
+      // AppleScript's `keystroke` synthesises key events against the current
+      // keyboard layout, so it cannot produce a character the layout has no
+      // key for; emoji silently typed nothing (or the wrong glyph) despite the
+      // old log line claiming it "types any UTF-8 including emoji". Route it
+      // through the pasteboard and Cmd+V, mirroring what the Linux provider
+      // already does with wl-copy + ctrl+v for exactly the same reason.
+      deps.logger.info(
+        { step: "keyMacro.nonAscii.start", textPreview: input.slice(0, 24) },
+        "keyMacro: typing non-ASCII via pbcopy + cmd+v",
+      )
+      await clipboard.writeText(input)
+      // Give the pasteboard a moment to settle before the paste keystroke;
+      // without it the Cmd+V can fire against the previous contents.
+      await sleep(CLIPBOARD_PRE_DELAY_MS)
+      await runOsascript(CMD_V_ARGS)
     },
     async stop() {
-      return
+      await clipboard.stop()
     },
   }
 }
