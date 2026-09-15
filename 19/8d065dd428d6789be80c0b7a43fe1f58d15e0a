@@ -1,0 +1,55 @@
+packages/cli/src/cli/commands/system-requirements.ts
+  s_d5b9303784a199::t_fa968fdb04f287 16-17,19-20
+  s_d5b9303784a199::t_31374cb7c64990 30,215-266,273-275,572,614
+packages/cli/src/system/setup-wizard/plan.ts
+  s_d5b9303784a199::t_31374cb7c64990 8,133-134,136,145-146
+packages/cli/src/cli/index.ts
+  s_d5b9303784a199::t_31374cb7c64990 6,337,340,353
+packages/cli/src/cli/__tests__/index.test.ts
+  s_d5b9303784a199::t_31374cb7c64990 3-4,55-73
+  s_d5b9303784a199::t_832b7ca787d851 74
+packages/cli/src/system/setup-wizard/index.ts
+  s_d5b9303784a199::t_31374cb7c64990 17-22,31-36,42
+packages/cli/src/system/setup-wizard/__tests__/format.test.ts
+  s_d5b9303784a199::t_29ba5be340f552 357
+  s_d5b9303784a199::t_31374cb7c64990 4,10-16,28-29,37-38,46-47,55-56,105-106,114-115,123-124,132-133,273-356,358-387
+  s_d5b9303784a199::t_4269599522b81f 388
+packages/cli/src/system/setup-wizard/__tests__/open-settings.test.ts
+  s_d5b9303784a199::t_31374cb7c64990 1-53
+packages/cli/src/system/setup-wizard/format.ts
+  s_d5b9303784a199::t_eb5af5123b9c92 60-63,65,68-74,78-79,81-83
+  s_d5b9303784a199::t_31374cb7c64990 2-3,120-245
+  s_d5b9303784a199::t_29ba5be340f552 75-77
+  s_d5b9303784a199::t_3ec574eb4b516e 246
+packages/cli/src/system/setup-wizard/open-settings.ts
+  s_d5b9303784a199::t_31374cb7c64990 1-26
+packages/cli/src/system/setup-wizard/probe.ts
+  s_d5b9303784a199::t_31374cb7c64990 8-10,148-149,202-209,213-216,218,356-357
+packages/cli/src/cli/main.ts
+  s_d5b9303784a199::t_31374cb7c64990 120,154
+  s_d5b9303784a199::t_fd24c9bfdaff02 147-150
+packages/cli/src/system/setup-wizard/types.ts
+  s_d5b9303784a199::t_31374cb7c64990 19-37,40,42-44,125-133
+packages/cli/src/version.ts
+  s_d5b9303784a199::t_31374cb7c64990 2-7
+packages/cli/src/system/setup-wizard/__tests__/plan.test.ts
+  s_d5b9303784a199::t_31374cb7c64990 16-17,25-26,34-35,43-44,93-94,122-123,166-167,175-176,184-185,193-194,219-220,228-229,248-249
+packages/cli/src/system/requirements.ts
+  s_d5b9303784a199::t_31374cb7c64990 191,199-204,209,216,224,226
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "198d065dd428d6789be80c0b7a43fe1f58d15e0a",
+  "prompts": {},
+  "sessions": {
+    "s_d5b9303784a199": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc0b6a72-35c7-4578-b82d-db4e25930541",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
