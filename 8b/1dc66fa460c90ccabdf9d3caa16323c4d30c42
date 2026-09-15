@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_f72ad455e58094::t_365d5154cf881d 796-844,847
+  s_f72ad455e58094::t_281467bbecfae1 500-529,531-548
+  s_f72ad455e58094::t_6c49740de2c9a5 655-665,667-687
+  s_f72ad455e58094::t_465eea8698ee14 474,845-846,852,865
+packages/cli/src/builtin-addons/system-status/__tests__/darwin-metrics.test.ts
+  s_f72ad455e58094::t_918789ac1ace99 1-121
+  s_f72ad455e58094::t_12670056d146e9 122-123
+packages/cli/src/builtin-addons/system-status/__tests__/network-throughput-metric.test.ts
+  s_f72ad455e58094::t_89677a794947e1 36-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8b1dc66fa460c90ccabdf9d3caa16323c4d30c42",
+  "prompts": {},
+  "sessions": {
+    "s_f72ad455e58094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18fd43a6-283e-4d43-ac64-cd8611ab5584",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
