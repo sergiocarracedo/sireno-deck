@@ -560,9 +560,21 @@ const loadExternalAddonsIntoRegistry = async (
     try {
       registry.load(loaded.manifest)
       specToName.set(loaded.source.specifier, loaded.manifest.name)
-      nameToEntryPath.set(loaded.manifest.name, loaded.entryPath)
+      // ponytail: this map feeds the BROWSER (buildExternalScannedAddons →
+      // frontendEntry). Prefer the addon's dedicated browser bundle when it
+      // ships one: the Node entry has the host's UI primitives stubbed out,
+      // so rendering it in the browser draws them as nothing — that is why
+      // pomodoro's labels were blank. Falls back to the single entry.
+      nameToEntryPath.set(
+        loaded.manifest.name,
+        loaded.browserEntryPath ?? loaded.entryPath,
+      )
       logger.info(
-        { addon: loaded.manifest.name, source: loaded.source.specifier },
+        {
+          addon: loaded.manifest.name,
+          source: loaded.source.specifier,
+          separateBrowserBundle: loaded.browserEntryPath !== null,
+        },
         "addon loaded",
       )
     } catch (err) {

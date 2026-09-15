@@ -222,3 +222,102 @@ describe("loadAddons — export wrappers", () => {
 })
 
 void silentLogger
+
+// ponytail: `entry` is imported by Node, which cannot resolve the host's
+// `@sirenodeck/sirenodeck/ui/*` specifiers (.tsx sources), so a prebuilt addon
+// has to inline stubs for them. Handing that same bundle to the browser is
+// what made pomodoro's labels render as nothing. `frontendEntry` lets an addon
+// ship a second bundle for the browser with those specifiers left external.
+describe("loadAddons — frontendEntry", () => {
+  const writeWithFrontendEntry = (
+    packageName: string,
+    opts: { declare: boolean; createFile: boolean },
+  ): string => {
+    const installPath = addonNpmInstallPath(packageName, TEST_CACHE)
+    mkdirSync(installPath, { recursive: true })
+    writeFileSync(
+      join(installPath, "package.json"),
+      JSON.stringify({
+        name: packageName,
+        version: "1.0.0",
+        main: "index.js",
+        sirenoAddonApiVersion: SIRENO_ADDON_API_VERSION,
+      }),
+      "utf8",
+    )
+    writeFileSync(
+      join(installPath, "sirenodeck.json"),
+      JSON.stringify({
+        kind: "addon",
+        apiVersion: SIRENO_ADDON_API_VERSION,
+        name: packageName,
+        entry: "./index.js",
+        ...(opts.declare ? { frontendEntry: "./frontend.js" } : {}),
+      }),
+      "utf8",
+    )
+    writeFileSync(
+      join(installPath, "index.js"),
+      `module.exports = { apiVersion: ${SIRENO_ADDON_API_VERSION}, name: "${packageName}", buttonTypes: { "test:fake": {} }, decks: {} };`,
+      "utf8",
+    )
+    if (opts.createFile) {
+      writeFileSync(
+        join(installPath, "frontend.js"),
+        "export default {};",
+        "utf8",
+      )
+    }
+    return installPath
+  }
+
+  it("resolves a declared browser bundle", async () => {
+    const installPath = writeWithFrontendEntry("fe-addon", {
+      declare: true,
+      createFile: true,
+    })
+    const loadAddons = await loader()
+    const result = await loadAddons({
+      entries: ["fe-addon"],
+      configDir: "/tmp",
+      homeDir: "/tmp",
+      currentApiVersion: SIRENO_ADDON_API_VERSION,
+      cacheDir: TEST_CACHE,
+    })
+    expect(result.addons[0]?.browserEntryPath).toBe(
+      join(installPath, "./frontend.js"),
+    )
+    // The Node entry is untouched — the daemon still imports the stubbed one.
+    expect(result.addons[0]?.entryPath).toContain("index.js")
+  })
+
+  it("is null when the manifest does not declare one", async () => {
+    writeWithFrontendEntry("no-fe-addon", { declare: false, createFile: false })
+    const loadAddons = await loader()
+    const result = await loadAddons({
+      entries: ["no-fe-addon"],
+      configDir: "/tmp",
+      homeDir: "/tmp",
+      currentApiVersion: SIRENO_ADDON_API_VERSION,
+      cacheDir: TEST_CACHE,
+    })
+    // Existing addons keep the single-bundle behaviour.
+    expect(result.addons[0]?.browserEntryPath).toBeNull()
+  })
+
+  it("is null when the declared file is missing, rather than a dead path", async () => {
+    writeWithFrontendEntry("stale-fe-addon", {
+      declare: true,
+      createFile: false,
+    })
+    const loadAddons = await loader()
+    const result = await loadAddons({
+      entries: ["stale-fe-addon"],
+      configDir: "/tmp",
+      homeDir: "/tmp",
+      currentApiVersion: SIRENO_ADDON_API_VERSION,
+      cacheDir: TEST_CACHE,
+    })
+    expect(result.addons[0]?.browserEntryPath).toBeNull()
+  })
+})

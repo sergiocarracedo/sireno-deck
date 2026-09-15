@@ -436,6 +436,22 @@ export interface AddonJsonManifest {
   readonly apiVersion: 1
   readonly name: string
   readonly entry: string
+  /**
+   * Optional path (relative to the JSON file) to a SEPARATE browser bundle.
+   *
+   * ponytail: `entry` is imported by Node, which cannot resolve the host's
+   * `@sirenodeck/sirenodeck/ui/*` specifiers — they point at .tsx sources. A
+   * prebuilt addon therefore has to inline stubs for them at build time, and
+   * when that same bundle is also handed to the browser those stubs are what
+   * renders. The pomodoro addon shipped `Label = () => null` exactly this way,
+   * so its buttons drew no text at all.
+   *
+   * When set, the browser loads THIS file instead, built with the host UI
+   * specifiers left external so vite resolves them to the real components.
+   * Omitted, the loader falls back to `entry` and behaviour is unchanged, so
+   * existing addons keep working untouched.
+   */
+  readonly frontendEntry?: string
 }
 
 /** Validation schema for `AddonJsonManifest`; usable at scan time. */
