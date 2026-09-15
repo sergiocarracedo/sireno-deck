@@ -188,7 +188,119 @@ const setSystemVolume = async (
   await requireOsascript(deps, `set volume output volume ${pct}`)
 }
 
+// ponytail: `media-control` (brew install media-control) is the macOS analogue
+// of Linux's playerctl — one system-wide interface over whatever is actually
+// playing, including browsers, rather than a per-app AppleScript dictionary.
+// It wraps MediaRemote, so it sees Chrome, Safari, Spotify, Music, VLC and the
+// rest through the same Now Playing surface the media keys drive.
+//
+// Everything below the helper stays as the fallback: when media-control is not
+// installed we can still talk to the scriptable desktop players directly, so a
+// user who only uses Spotify keeps working without installing anything.
+const MEDIA_CONTROL_BIN = "media-control"
+
+export const MEDIA_CONTROL_HINT =
+  "install it with `brew install media-control` for media detection across all apps (browsers included)"
+
+interface MediaControlPayload {
+  readonly title?: string | null
+  readonly artist?: string | null
+  readonly album?: string | null
+  readonly duration?: number | null
+  readonly elapsedTime?: number | null
+  readonly elapsedTimeNow?: number | null
+  readonly playing?: boolean | null
+}
+
+export const parseMediaControlPayload = (
+  stdout: string,
+): Omit<MediaStatus, "volume" | "muted"> | null => {
+  const text = stdout.trim()
+  if (text.length === 0) return null
+  let raw: MediaControlPayload
+  try {
+    raw = JSON.parse(text) as MediaControlPayload
+  } catch {
+    return null
+  }
+  const title = typeof raw.title === "string" ? raw.title.trim() : ""
+  // No title means nothing is loaded in the Now Playing surface at all.
+  if (title.length === 0) {
+    return {
+      track: null,
+      totalTime: 0,
+      currentTime: 0,
+      playStatus: "unavailable",
+    }
+  }
+  const artist = typeof raw.artist === "string" ? raw.artist.trim() : ""
+  const album = typeof raw.album === "string" ? raw.album.trim() : ""
+  const duration = typeof raw.duration === "number" ? raw.duration : 0
+  const elapsed =
+    typeof raw.elapsedTimeNow === "number"
+      ? raw.elapsedTimeNow
+      : typeof raw.elapsedTime === "number"
+        ? raw.elapsedTime
+        : 0
+  return {
+    track: { name: title, artist, ...(album.length > 0 ? { album } : {}) },
+    totalTime: Number.isFinite(duration) ? Math.max(0, duration) : 0,
+    currentTime: Number.isFinite(elapsed) ? Math.max(0, elapsed) : 0,
+    // `playing` is the only authoritative flag; a paused track still reports a
+    // full payload, so absence of `playing` means paused rather than stopped.
+    playStatus: raw.playing === true ? "play" : "pause",
+  }
+}
+
 export const createDarwinProvider = (deps: DarwinDeps): MediaStatusProvider => {
+  // null = not probed yet, true/false = cached result of `media-control test`.
+  let helperUsable: boolean | null = null
+
+  const hasMediaControl = async (): Promise<boolean> => {
+    if (helperUsable !== null) return helperUsable
+    try {
+      // `test` reports whether the tool can operate on this macOS version —
+      // MediaRemote access has been tightened repeatedly, so a present binary
+      // is not proof of a working one.
+      const r = await deps.executor.run(MEDIA_CONTROL_BIN, ["test"], {
+        timeoutMs: 2_000,
+      })
+      helperUsable = r.exitCode === 0
+    } catch {
+      helperUsable = false
+    }
+    return helperUsable
+  }
+
+  const mediaControlStatus = async (): Promise<Omit<
+    MediaStatus,
+    "volume" | "muted"
+  > | null> => {
+    try {
+      const r = await deps.executor.run(
+        MEDIA_CONTROL_BIN,
+        ["get", "--now", "--no-artwork"],
+        { timeoutMs: 2_000 },
+      )
+      if (r.exitCode !== 0) return null
+      return parseMediaControlPayload(r.stdout)
+    } catch {
+      return null
+    }
+  }
+
+  const mediaControlCommand = async (command: string): Promise<boolean> => {
+    if (!(await hasMediaControl())) return false
+    try {
+      const r = await deps.executor.run(MEDIA_CONTROL_BIN, [command], {
+        timeoutMs: 2_000,
+      })
+      return r.exitCode === 0
+    } catch {
+      return false
+    }
+  }
+
   // Control verbs are no-ops when nothing is playing — deliberately NOT a
   // throw, so a deck press on an idle machine doesn't surface an error tile.
   const tellPlayer = async (command: string): Promise<void> => {
@@ -200,35 +312,42 @@ export const createDarwinProvider = (deps: DarwinDeps): MediaStatusProvider => {
     )
   }
 
+  /** media-control first (covers every app), scriptable players as fallback. */
+  const control = async (
+    helperCommand: string,
+    appleScriptCommand: string,
+  ): Promise<void> => {
+    if (await mediaControlCommand(helperCommand)) return
+    await tellPlayer(appleScriptCommand)
+  }
+
   return {
     async getStatus() {
-      const [player, volume] = await Promise.all([
-        activePlayer(deps),
-        readVolume(deps),
-      ])
-      if (player === null) return { ...UNAVAILABLE, ...volume }
-      const result = await runOsascript(deps, statusScript(player.app))
-      if (result.exitCode !== 0) return { ...UNAVAILABLE, ...volume }
-      return {
-        ...parsePlayerStatus(result.stdout, player.durationUnit),
-        ...volume,
+      if (await hasMediaControl()) {
+        const [status, volume] = await Promise.all([
+          mediaControlStatus(),
+          readVolume(deps),
+        ])
+        if (status !== null) return { ...status, ...volume }
+        return { ...UNAVAILABLE, ...volume }
       }
+      return legacyGetStatus(deps)
     },
 
     async play() {
-      await tellPlayer("play")
+      await control("play", "play")
     },
     async pause() {
-      await tellPlayer("pause")
+      await control("pause", "pause")
     },
     async toggle() {
-      await tellPlayer("playpause")
+      await control("toggle-play-pause", "playpause")
     },
     async next() {
-      await tellPlayer("next track")
+      await control("next-track", "next track")
     },
     async previous() {
-      await tellPlayer("previous track")
+      await control("previous-track", "previous track")
     },
 
     async setVolume(value) {
@@ -249,5 +368,24 @@ export const createDarwinProvider = (deps: DarwinDeps): MediaStatusProvider => {
         `set volume ${muted ? "without" : "with"} output muted`,
       )
     },
+  }
+}
+
+/**
+ * AppleScript-only status path, used when media-control is not installed. It
+ * can only see the scriptable desktop players, which is why media-control is
+ * preferred — but it keeps Spotify/Music users working with no extra install.
+ */
+const legacyGetStatus = async (deps: DarwinDeps): Promise<MediaStatus> => {
+  const [player, volume] = await Promise.all([
+    activePlayer(deps),
+    readVolume(deps),
+  ])
+  if (player === null) return { ...UNAVAILABLE, ...volume }
+  const result = await runOsascript(deps, statusScript(player.app))
+  if (result.exitCode !== 0) return { ...UNAVAILABLE, ...volume }
+  return {
+    ...parsePlayerStatus(result.stdout, player.durationUnit),
+    ...volume,
   }
 }

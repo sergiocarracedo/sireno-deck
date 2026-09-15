@@ -33,6 +33,11 @@ const makeExecutor = (opts: {
     async run(command, args) {
       const script = args[1] ?? ""
       calls.push({ command, script })
+      // These cases cover the AppleScript fallback, so the system-wide helper
+      // is reported as unavailable — `media-control test` exits non-zero.
+      if (command === "media-control") {
+        return { exitCode: 1, stdout: "", stderr: "not available" }
+      }
       if (script.includes("every process whose background only")) {
         return { exitCode: 0, stdout: processes.join(", "), stderr: "" }
       }
@@ -230,7 +235,140 @@ describe("provider factory wiring", () => {
       run,
     } as unknown as ProviderExecutor)
     await provider.getStatus()
-    // The darwin provider always begins by enumerating processes.
-    expect(seen[0]).toBe("osascript")
+    // The darwin provider probes the system-wide helper first; with every
+    // command failing it falls back to osascript, so both are attempted.
+    expect(seen[0]).toBe("media-control")
+    expect(seen).toContain("osascript")
+  })
+})
+
+// ponytail: media-control (brew install media-control) is the macOS analogue
+// of Linux's playerctl — a single system-wide Now Playing surface that sees
+// browsers, not just AppleScript-scriptable desktop players. Verbatim payload
+// shape from media-control 0.7.7 on macOS 26.
+const MEDIA_CONTROL_JSON = JSON.stringify({
+  playbackRate: 0,
+  album: "HELLO MONSTERS",
+  elapsedTimeNow: 107.53,
+  elapsedTime: 100.1,
+  timestamp: "2026-09-15T08:30:27Z",
+  bundleIdentifier: "com.google.Chrome",
+  title: "DREAM - Live Version",
+  duration: 224.026,
+  artist: "BABYMONSTER",
+  playing: false,
+})
+
+const makeHelperExecutor = (opts: {
+  testExit?: number
+  getStdout?: string
+  getExit?: number
+}): { executor: ProviderExecutor; calls: Array<string[]> } => {
+  const calls: Array<string[]> = []
+  const executor: ProviderExecutor = {
+    async run(command, args) {
+      calls.push([command, ...args])
+      if (command === "media-control" && args[0] === "test") {
+        return { exitCode: opts.testExit ?? 0, stdout: "", stderr: "" }
+      }
+      if (command === "media-control" && args[0] === "get") {
+        return {
+          exitCode: opts.getExit ?? 0,
+          stdout: opts.getStdout ?? MEDIA_CONTROL_JSON,
+          stderr: "",
+        }
+      }
+      if (command === "media-control") {
+        return { exitCode: 0, stdout: "", stderr: "" }
+      }
+      if ((args[1] ?? "").includes("get volume settings")) {
+        return { exitCode: 0, stdout: `44${SEP}false`, stderr: "" }
+      }
+      return { exitCode: 0, stdout: "", stderr: "" }
+    },
+  }
+  return { executor, calls }
+}
+
+describe("parseMediaControlPayload", () => {
+  it("maps a media-control payload onto MediaStatus", async () => {
+    const { parseMediaControlPayload } = await import("../darwin")
+    expect(parseMediaControlPayload(MEDIA_CONTROL_JSON)).toEqual({
+      track: {
+        name: "DREAM - Live Version",
+        artist: "BABYMONSTER",
+        album: "HELLO MONSTERS",
+      },
+      totalTime: 224.026,
+      currentTime: 107.53,
+      playStatus: "pause",
+    })
+  })
+
+  it("prefers elapsedTimeNow over the stale elapsedTime", async () => {
+    const { parseMediaControlPayload } = await import("../darwin")
+    expect(parseMediaControlPayload(MEDIA_CONTROL_JSON)?.currentTime).toBe(
+      107.53,
+    )
+  })
+
+  it("reports play when the payload says playing", async () => {
+    const { parseMediaControlPayload } = await import("../darwin")
+    const json = JSON.stringify({ title: "t", playing: true })
+    expect(parseMediaControlPayload(json)?.playStatus).toBe("play")
+  })
+
+  it("treats a missing title as nothing loaded", async () => {
+    const { parseMediaControlPayload } = await import("../darwin")
+    const out = parseMediaControlPayload(JSON.stringify({ playing: true }))
+    expect(out?.track).toBeNull()
+    expect(out?.playStatus).toBe("unavailable")
+  })
+
+  it("returns null on non-JSON output", async () => {
+    const { parseMediaControlPayload } = await import("../darwin")
+    expect(parseMediaControlPayload("not json")).toBeNull()
+  })
+})
+
+describe("createDarwinProvider with media-control", () => {
+  it("reads playback from any app without enumerating processes", async () => {
+    const { executor, calls } = makeHelperExecutor({})
+    const status = await createDarwinProvider({ executor }).getStatus()
+    expect(status.track?.name).toBe("DREAM - Live Version")
+    expect(status.volume).toBe(0.44)
+    // The helper is system-wide, so the AppleScript player hunt is skipped.
+    expect(
+      calls.some((c) => c.join(" ").includes("every process whose background")),
+    ).toBe(false)
+  })
+
+  it("routes transport commands through the helper", async () => {
+    const { executor, calls } = makeHelperExecutor({})
+    const p = createDarwinProvider({ executor })
+    await p.toggle()
+    await p.next()
+    await p.previous()
+    const flat = calls.map((c) => c.join(" "))
+    expect(flat).toContain("media-control toggle-play-pause")
+    expect(flat).toContain("media-control next-track")
+    expect(flat).toContain("media-control previous-track")
+  })
+
+  it("falls back to AppleScript players when the helper is not functional", async () => {
+    // `media-control test` exits non-zero when MediaRemote is unavailable.
+    const { executor, calls } = makeHelperExecutor({ testExit: 1 })
+    await createDarwinProvider({ executor }).getStatus()
+    expect(
+      calls.some((c) => c.join(" ").includes("every process whose background")),
+    ).toBe(true)
+  })
+
+  it("volume still comes from the system, not the helper", async () => {
+    const { executor, calls } = makeHelperExecutor({})
+    await createDarwinProvider({ executor }).volumeUp(0.1)
+    expect(calls.map((c) => c.join(" ")).join("\n")).toContain(
+      "set volume output volume 54",
+    )
   })
 })
