@@ -1,0 +1,19 @@
+packages/cli/src/cli/coding-agents-onboarding.ts
+  s_f72ad455e58094::t_94030ea70898cf 159-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "95a18d71348b3e73ea056c932ec61bef08621737",
+  "prompts": {},
+  "sessions": {
+    "s_f72ad455e58094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18fd43a6-283e-4d43-ac64-cd8611ab5584",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
