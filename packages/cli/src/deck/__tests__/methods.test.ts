@@ -306,7 +306,9 @@ describe("createMethods", () => {
       windows: "ctrl+x",
     })
     await methods.dispatch(`macro://${payload}`)
-    expect(sendKey).toHaveBeenCalledWith(platKey === "osx" ? "cmd+x" : "ctrl+x")
+    expect(sendKey).toHaveBeenCalledWith(
+      platKey === "osx" ? "meta+x" : "ctrl+x",
+    )
   })
 
   it("dispatch falls back to macro://{...} 'all' when no platform key matches", async () => {
@@ -323,8 +325,20 @@ describe("createMethods", () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
+    const platKey =
+      process.platform === "darwin"
+        ? "osx"
+        : process.platform === "win32"
+          ? "windows"
+          : "linux"
+    const withoutCurrent: Record<string, string> = {
+      osx: "cmd+k",
+      windows: "ctrl+k",
+      linux: "ctrl+k",
+    }
+    delete withoutCurrent[platKey]
     await expect(
-      methods.dispatch(`macro://${JSON.stringify({ osx: "cmd+k" })}`),
+      methods.dispatch(`macro://${JSON.stringify(withoutCurrent)}`),
     ).rejects.toThrow(/no value for platform/)
   })
 

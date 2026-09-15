@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { parseMacro } from "../macro-parse"
+import { parseMacro, resolvePlatformMacro } from "../macro-parse"
 
 describe("parseMacro", () => {
   it("parses a single combo", () => {
@@ -68,5 +68,90 @@ describe("parseMacro", () => {
 
   it("returns empty array for empty string", () => {
     expect(parseMacro("")).toEqual([])
+  })
+})
+
+describe("parsePlatformMacro / resolvePlatformMacro", () => {
+  it("keeps a plain macro working unchanged on every platform", () => {
+    for (const platform of ["darwin", "linux", "win32"]) {
+      expect(resolvePlatformMacro("ctrl+c", platform)).toBe("ctrl+c")
+    }
+  })
+
+  it("applies the override for the current OS and the default elsewhere", () => {
+    const macro = "[macos:cmd+c]ctrl+c"
+    expect(resolvePlatformMacro(macro, "darwin")).toBe("cmd+c")
+    expect(resolvePlatformMacro(macro, "linux")).toBe("ctrl+c")
+    expect(resolvePlatformMacro(macro, "win32")).toBe("ctrl+c")
+  })
+
+  it("supports several overrides in one macro", () => {
+    const macro = "[macos:cmd+x][linux:ctrl+shift+x]ctrl+x"
+    expect(resolvePlatformMacro(macro, "darwin")).toBe("cmd+x")
+    expect(resolvePlatformMacro(macro, "linux")).toBe("ctrl+shift+x")
+    // windows has no override, so it takes the default
+    expect(resolvePlatformMacro(macro, "win32")).toBe("ctrl+x")
+  })
+
+  it("treats a lone override as an override, not a replacement", () => {
+    // From the spec: [windows:A]B means A on Windows, B on macOS and Linux.
+    const macro = "[windows:MACROKEYSW]MACROKEYS2"
+    expect(resolvePlatformMacro(macro, "win32")).toBe("MACROKEYSW")
+    expect(resolvePlatformMacro(macro, "darwin")).toBe("MACROKEYS2")
+    expect(resolvePlatformMacro(macro, "linux")).toBe("MACROKEYS2")
+  })
+
+  it("accepts the common spellings of each platform", () => {
+    expect(resolvePlatformMacro("[mac:a]z", "darwin")).toBe("a")
+    expect(resolvePlatformMacro("[osx:a]z", "darwin")).toBe("a")
+    expect(resolvePlatformMacro("[darwin:a]z", "darwin")).toBe("a")
+    expect(resolvePlatformMacro("[MacOS:a]z", "darwin")).toBe("a")
+    expect(resolvePlatformMacro("[win:a]z", "win32")).toBe("a")
+    expect(resolvePlatformMacro("[windows:a]z", "win32")).toBe("a")
+  })
+
+  it("requires a default", () => {
+    expect(() => resolvePlatformMacro("[macos:cmd+c]", "darwin")).toThrow(
+      /default is required/,
+    )
+  })
+
+  it("rejects an unterminated or empty override", () => {
+    expect(() => resolvePlatformMacro("[macos:cmd+c", "darwin")).toThrow(
+      /unterminated/,
+    )
+    expect(() => resolvePlatformMacro("[macos:]ctrl+c", "darwin")).toThrow(
+      /empty/,
+    )
+  })
+
+  it("rejects a duplicate override for the same OS", () => {
+    expect(() =>
+      resolvePlatformMacro("[macos:cmd+c][mac:cmd+v]ctrl+c", "darwin"),
+    ).toThrow(/duplicate/)
+  })
+
+  it("leaves a ']' in the default alone", () => {
+    // Bracket parsing only runs while the string starts with '[', so a macro
+    // containing ']' is never misread.
+    expect(resolvePlatformMacro("ctrl+]", "linux")).toBe("ctrl+]")
+    expect(
+      resolvePlatformMacro("[macos:cmd+bracketright]ctrl+]", "darwin"),
+    ).toBe("cmd+bracketright")
+    expect(
+      resolvePlatformMacro("[macos:cmd+bracketright]ctrl+]", "linux"),
+    ).toBe("ctrl+]")
+  })
+
+  it("does not treat an unknown bracket prefix as an override", () => {
+    expect(resolvePlatformMacro("[notanos:x]ctrl+c", "linux")).toBe(
+      "[notanos:x]ctrl+c",
+    )
+  })
+
+  it("preserves multi-step macros on both sides", () => {
+    const macro = "[macos:cmd+k;cmd+w]ctrl+k;ctrl+w"
+    expect(resolvePlatformMacro(macro, "darwin")).toBe("cmd+k;cmd+w")
+    expect(resolvePlatformMacro(macro, "linux")).toBe("ctrl+k;ctrl+w")
   })
 })

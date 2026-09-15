@@ -45,17 +45,63 @@ actions:
 actions:
   tap: "macro://ctrl+c"
   tap: "macro://ctrl+shift+p"
-  tap: "macro://cmd+space"
+  tap: "macro://alt+Tab"
 ```
+
+A combo written like this is sent verbatim on every OS. When the shortcut
+differs between platforms — which for `ctrl` vs `cmd` it usually does — use a
+per-OS override instead, described next.
 
 ### Platform-Specific
 
-Different shortcuts per OS:
+Most shortcuts differ between macOS and the rest: what is `Ctrl` on Linux and
+Windows is usually `Command` on macOS. Prefix a macro with one or more
+`[os:override]` blocks to say so:
+
+```yaml
+actions:
+  tap: "macro://[macos:cmd+shift+p]ctrl+shift+p"
+```
+
+That reads as "`cmd+shift+p` on macOS, `ctrl+shift+p` everywhere else".
+
+The part **after** the last bracket is the default and is **required** — it is
+what every OS without an override runs. Without it a macro would silently do
+nothing on any platform the author forgot to list.
+
+Override only the platforms that differ; the others fall through to the
+default:
+
+```yaml
+actions:
+  # cmd+x on macOS, ctrl+shift+x on Linux, ctrl+x on Windows (the default)
+  tap: "macro://[macos:cmd+x][linux:ctrl+shift+x]ctrl+x"
+
+  # A Windows-only quirk; macOS and Linux both use the default
+  tap: "macro://[windows:alt+f4]ctrl+q"
+```
+
+Each OS may be named as `macos` (or `mac`, `osx`, `darwin`), `linux`, or
+`windows` (or `win`). Names are case-insensitive, and listing the same OS twice
+is an error.
+
+> **Note** — because `]` closes an override, a macro that needs a literal `]`
+> _inside_ one must use the key name `bracketright`:
+> `macro://[macos:cmd+bracketright]ctrl+]`. The default segment has no such
+> restriction, and a macro that does not start with `[` is never parsed for
+> overrides at all.
+
+#### JSON form (also supported)
+
+An older object form does the same job and still works. `all` is its default:
 
 ```yaml
 actions:
   tap: 'macro://{"all":"ctrl+shift+p","osx":"cmd+shift+p","windows":"ctrl+shift+p"}'
 ```
+
+Prefer the bracket form in new configuration — it needs no quoting or escaping,
+which matters in YAML.
 
 ## Delay
 
@@ -68,11 +114,29 @@ actions:
 
 ## Modifier Keys
 
-- `ctrl` or `control`
-- `alt`
-- `shift`
-- `cmd` → `Command` (macOS), `Control` (Linux)
-- `super` or `win`
+A modifier is written the same way on every OS; the provider maps it to that
+platform's physical key. Several spellings normalise to the same modifier, so
+write whichever name you think in.
+
+| Write                    | Normalises to | macOS       | Linux | Windows     |
+| ------------------------ | ------------- | ----------- | ----- | ----------- |
+| `ctrl`, `control`, `ctl` | `ctrl`        | Control (⌃) | Ctrl  | Ctrl        |
+| `alt`, `option`, `opt`   | `alt`         | Option (⌥)  | Alt   | Alt         |
+| `shift`, `shft`          | `shift`       | Shift (⇧)   | Shift | Shift       |
+| `cmd`, `command`, `meta` | `meta`        | Command (⌘) | Super | Windows key |
+| `super`, `win`           | `super`       | Command (⌘) | Super | Windows key |
+| `hyper`                  | `hyper`       | Command (⌘) | Super | Windows key |
+
+> **Careful** — `cmd` is **not** a portable way to write "the main modifier".
+> It normalises to `meta`, which is Command on macOS but the **Super / Windows
+> key** on Linux and Windows, so `macro://cmd+c` sends Super+C on Linux, not
+> Ctrl+C. When a shortcut is Command on macOS and Ctrl elsewhere, that is a
+> genuine difference between the platforms: write it with a per-OS override,
+> `macro://[macos:cmd+c]ctrl+c`.
+
+`ctrl` is a real Control on every platform, including macOS. Terminal programs
+bind Control directly (`^C`, `^R`), so a macro aimed at a terminal app should
+stay on `ctrl` and needs no macOS override.
 
 ## Key Names
 
@@ -94,6 +158,18 @@ Named keys use XKB names (case-insensitive):
 | Symbols      | `comma`, `period`, `slash`, `minus`, `plus`, `equal`, `grave`, `semicolon`, `apostrophe`, `bracketleft`, `bracketright`, `backslash` |
 
 ## Common Shortcuts
+
+Written as a single portable macro:
+
+| Action          | Macro                                         |
+| --------------- | --------------------------------------------- |
+| Copy            | `macro://[macos:cmd+c]ctrl+c`                 |
+| Paste           | `macro://[macos:cmd+v]ctrl+v`                 |
+| Save            | `macro://[macos:cmd+s]ctrl+s`                 |
+| Quit            | `macro://[macos:cmd+q][windows:alt+F4]ctrl+q` |
+| Command Palette | `macro://[macos:cmd+shift+p]ctrl+shift+p`     |
+
+The per-platform keys those expand to:
 
 | Action          | Linux          | macOS         | Windows        |
 | --------------- | -------------- | ------------- | -------------- |
