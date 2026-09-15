@@ -11,12 +11,25 @@ const createExecutor = (
   availableCommands: ReadonlyArray<string>,
 ): CommandExecutor => ({
   run: vi.fn().mockImplementation(async (command, args) => {
-    if (command === "command" && args[0] === "-v" && args.length === 2) {
-      const target = args[1]
-      if (target !== undefined && availableCommands.includes(target)) {
-        return { exitCode: 0, stdout: `/usr/bin/${target}`, stderr: "" }
+    // `command -v X` is run through `sh -c` because it is a shell builtin.
+    if (command === "sh" && args[0] === "-c" && args.length === 2) {
+      const m = /^command -v (.+)$/.exec(args[1] ?? "")
+      if (m) {
+        const target = (m[1] ?? "").replaceAll("'", "")
+        if (availableCommands.includes(target)) {
+          return { exitCode: 0, stdout: `/usr/bin/${target}`, stderr: "" }
+        }
+        return { exitCode: 1, stdout: "", stderr: "not found" }
       }
-      return { exitCode: 1, stdout: "", stderr: "not found" }
+    }
+    // macOS Accessibility (TCC) probe. "uiScripting" in availableCommands
+    // stands in for the grant being in place.
+    if (command === "osascript" && (args[1] ?? "").includes("UI elements")) {
+      return {
+        exitCode: 0,
+        stdout: availableCommands.includes("uiScripting") ? "true" : "false",
+        stderr: "",
+      }
     }
     if (args[0] === "--version" && availableCommands.includes(command)) {
       return { exitCode: 0, stdout: `${command} 1.0`, stderr: "" }
@@ -49,8 +62,8 @@ describe("checkRequirements", () => {
     expect(result.keyMacro.commands).toContain("wtype")
   })
 
-  it("reports keyMacro available when osascript is present (macOS)", async () => {
-    const executor = createExecutor(["osascript"])
+  it("reports keyMacro available when osascript is present AND Accessibility is granted (macOS)", async () => {
+    const executor = createExecutor(["osascript", "uiScripting"])
     const result = await checkRequirements({
       platform: "darwin",
       executor,
@@ -59,6 +72,38 @@ describe("checkRequirements", () => {
     expect(result.keyMacro.available).toBe(true)
     expect(result.keyMacro.commands).toContain("osascript")
     expect(result.keyMacro.preferred).toBe("osascript")
+  })
+
+  // ponytail: osascript ships with macOS, so probing for the binary alone
+  // always succeeded and the daemon booted claiming keyMacro worked while
+  // every keystroke failed with -1719/1002 and no warning was ever emitted.
+  it("reports keyMacro unavailable on macOS without the Accessibility grant", async () => {
+    const executor = createExecutor(["osascript"])
+    const result = await checkRequirements({
+      platform: "darwin",
+      executor,
+      env: {},
+    })
+    expect(result.keyMacro.available).toBe(false)
+    expect(result.keyMacro.missingCommands).toContain(
+      "accessibility-permission",
+    )
+    expect(result.keyMacro.reason).toContain("Accessibility")
+  })
+
+  it("does not apply the Accessibility gate on linux or windows", async () => {
+    const linux = await checkRequirements({
+      platform: "linux",
+      executor: createExecutor(["ydotool"]),
+      env: {},
+    })
+    expect(linux.keyMacro.available).toBe(true)
+    const win = await checkRequirements({
+      platform: "win32",
+      executor: createExecutor(["powershell"]),
+      env: {},
+    })
+    expect(win.keyMacro.available).toBe(true)
   })
 
   it("reports keyMacro available when powershell is present (Windows)", async () => {

@@ -1,6 +1,16 @@
 import type { CommandExecutor } from "./providers/shared"
+import {
+  ACCESSIBILITY_HINT,
+  hasDarwinAccessibility,
+} from "./setup-wizard/probe"
 
 export type SystemCapability = "keyMacro" | "clipboard" | "notification"
+
+/**
+ * Stand-in used in `missingCommands` when the capability is blocked by an OS
+ * permission rather than a missing binary — there is nothing to install.
+ */
+export const PERMISSION_SENTINEL = "accessibility-permission"
 
 export interface CapabilityRequirement {
   readonly name: SystemCapability
@@ -161,6 +171,28 @@ export const checkRequirements = async ({
     }
   }
 
+  // ponytail: darwin-only. `osascript` ships with macOS, so probing for the
+  // binary always succeeds and the daemon started reporting keyMacro as
+  // available while every keystroke failed with -1719/1002. The setup wizard
+  // already checks the Accessibility grant; without the same check here the
+  // runtime never warned at boot, and a tapped macro button showed a generic
+  // "action-failed" tile instead of being pre-empted with the real reason.
+  // Linux and Windows are untouched — they return before this block.
+  if (platform === "darwin") {
+    const keyMacro = result.keyMacro
+    if (
+      keyMacro?.available === true &&
+      !(await hasDarwinAccessibility(executor))
+    ) {
+      result.keyMacro = {
+        ...keyMacro,
+        available: false,
+        missingCommands: [PERMISSION_SENTINEL],
+        reason: `osascript is present but has no Accessibility permission — ${ACCESSIBILITY_HINT}`,
+      }
+    }
+  }
+
   return result as RequirementsCheckResult
 }
 
@@ -177,6 +209,12 @@ export const formatCapabilityWarning = (
       return `${name}: using ${status.commands.join(", ")} as fallback; preferred ${status.preferred} is missing — ${status.reason}`
     }
     return ""
+  }
+  // ponytail: "none of accessibility-permission found" reads like a missing
+  // binary. A denied OS permission is not something the user can install, so
+  // state it as a permission and let the reason carry the remedy.
+  if (status.missingCommands.includes(PERMISSION_SENTINEL)) {
+    return `${name}: ${status.reason}`
   }
   return `${name}: none of ${status.missingCommands.join(", ")} found — ${status.reason}`
 }
