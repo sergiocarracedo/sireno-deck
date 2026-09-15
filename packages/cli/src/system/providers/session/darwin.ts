@@ -12,12 +12,21 @@ export interface DarwinSessionDeps {
 const toState = (locked: boolean): SessionState =>
   locked ? "locked" : "unlocked"
 
-const OSASCRIPT_LOGINWINDOW = `tell application "System Events" to get running of loginwindow process`
+// ponytail: this used to ask System Events whether the `loginwindow` process
+// was running, which was wrong twice over. The script was a syntax error
+// (`loginwindow process` instead of `process "loginwindow"`), so every tick
+// exited non-zero and the state stayed "unknown" forever; and had it parsed,
+// loginwindow runs for the whole login session whether or not the screen is
+// locked, so it would have reported "locked" permanently.
+//
+// The real signal is CGSSessionScreenIsLocked in the console session
+// dictionary, which `ioreg` exposes without any Accessibility grant:
+// the key is present and true only while the screen is locked, and absent
+// entirely when unlocked.
+const IOREG_ARGS = ["-n", "Root", "-d1", "-a"] as const
 
-const parseLoginWindowResult = (raw: string): boolean => {
-  const trimmed = raw.trim().toLowerCase()
-  return trimmed === "true"
-}
+const parseScreenLocked = (raw: string): boolean =>
+  /<key>CGSSessionScreenIsLocked<\/key>\s*<true\/>/.test(raw)
 
 export const createDarwinSessionProvider = async (
   deps: DarwinSessionDeps,
@@ -29,17 +38,13 @@ export const createDarwinSessionProvider = async (
 
   const tick = async (): Promise<SessionState> => {
     try {
-      const result = await deps.executor.run(
-        "osascript",
-        ["-e", OSASCRIPT_LOGINWINDOW],
-        {
-          timeoutMs: 2_000,
-        },
-      )
+      const result = await deps.executor.run("ioreg", [...IOREG_ARGS], {
+        timeoutMs: 2_000,
+      })
       if (result.exitCode !== 0) return state
-      return toState(parseLoginWindowResult(result.stdout))
+      return toState(parseScreenLocked(result.stdout))
     } catch (err) {
-      deps.logger.debug({ err }, "session: osascript failed")
+      deps.logger.debug({ err }, "session: ioreg failed")
       return state
     }
   }

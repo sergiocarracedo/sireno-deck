@@ -126,6 +126,23 @@ const defaultDataDir = (): string => {
   }
 }
 
+// ponytail: AF_UNIX paths are capped by `sun_path` — 104 bytes on macOS/BSD,
+// 108 on Linux — and `bind()` fails with a bare EINVAL when you exceed it, with
+// nothing in the message naming the length as the cause. The macOS default
+// runtime dir (~/Library/Application Support/sirenodeck) already spends ~70 of
+// those bytes, so a long username or an XDG_RUNTIME_DIR override blows the cap.
+// Fall back to a short, uid-scoped path under the system temp dir, which is the
+// same place Linux puts it when XDG_RUNTIME_DIR is unset.
+const SUN_PATH_MAX = platform === "linux" ? 108 : 104
+
+const resolveControlSocket = (runtimeDir: string): string => {
+  const preferred = join(runtimeDir, `${DAEMON_NAME}.sock`)
+  if (platform === "win32") return preferred
+  if (Buffer.byteLength(preferred, "utf8") < SUN_PATH_MAX) return preferred
+  const uid = typeof getuid === "function" ? getuid() : 0
+  return join(tmpdir(), `${DAEMON_NAME}-${uid}.sock`)
+}
+
 export const resolveDaemonPaths = (): DaemonPaths => {
   const runtimeDir = defaultRuntimeDir()
   if (!existsSync(runtimeDir)) {
@@ -145,7 +162,7 @@ export const resolveDaemonPaths = (): DaemonPaths => {
   return {
     runtimeDir,
     pidFile: join(runtimeDir, `${DAEMON_NAME}.pid`),
-    controlSocket: join(runtimeDir, `${DAEMON_NAME}.sock`),
+    controlSocket: resolveControlSocket(runtimeDir),
     childrenFile: join(runtimeDir, `${DAEMON_NAME}.children.json`),
     // ponytail: restart-survival — files that have to outlive a reboot
     // live under dataDir (XDG_STATE_HOME). runtime-state.json is the live

@@ -1,6 +1,16 @@
 import type { CommandExecutor } from "./providers/shared"
+import {
+  ACCESSIBILITY_HINT,
+  hasDarwinAccessibility,
+} from "./setup-wizard/probe"
 
 export type SystemCapability = "keyMacro" | "clipboard" | "notification"
+
+/**
+ * Stand-in used in `missingCommands` when the capability is blocked by an OS
+ * permission rather than a missing binary — there is nothing to install.
+ */
+export const PERMISSION_SENTINEL = "accessibility-permission"
 
 export interface CapabilityRequirement {
   readonly name: SystemCapability
@@ -82,11 +92,17 @@ const capabilityConfig: Readonly<
   },
 }
 
+// ponytail: `command` is a POSIX shell builtin, not a binary — execFile can't
+// spawn it, so the old `executor.run("command", ["-v", x])` failed for EVERY
+// candidate and the probe silently degraded to the `--version` fallback (which
+// osascript, pbcopy and clip don't even support). Wrap in `sh -c`, matching
+// setup-wizard/probe.ts, and shell-quote so the argument stays one token.
 const probeCommandV = async (
   executor: CommandExecutor,
   command: string,
 ): Promise<boolean> => {
-  const result = await executor.run("command", ["-v", command])
+  const quoted = `'${command.replaceAll(`'`, `'\\''`)}'`
+  const result = await executor.run("sh", ["-c", `command -v ${quoted}`])
   return result.exitCode === 0 && result.stdout.trim().length > 0
 }
 
@@ -114,6 +130,20 @@ const probeCommand = async (
   return await probeVersion(executor, command)
 }
 
+// ponytail: the clipboard candidate list is session-dependent on Linux, so it
+// can't just be `config.commands`. The old ternary keyed off `preferred ===
+// "xclip"` and sent every other platform down the `["wl-copy"]` branch — so on
+// macOS the probe looked for a Wayland tool, never for pbcopy, and every run
+// logged "clipboard: none of wl-copy found" on a machine that ships pbcopy.
+const clipboardCandidates = (
+  platform: string,
+  preferred: string,
+): ReadonlyArray<string> => {
+  if (platform === "darwin") return ["pbcopy"]
+  if (platform === "win32") return ["clip"]
+  return preferred === "xclip" ? ["xclip", "xsel"] : ["wl-copy"]
+}
+
 export const checkRequirements = async ({
   platform,
   executor,
@@ -125,9 +155,7 @@ export const checkRequirements = async ({
   for (const [name, config] of Object.entries(capabilityConfig)) {
     const commands =
       name === "clipboard"
-        ? config.preferred(platform, env) === "xclip"
-          ? ["xclip", "xsel"]
-          : ["wl-copy"]
+        ? clipboardCandidates(platform, config.preferred(platform, env))
         : config.commands
     const availability = await Promise.all(
       commands.map((command) => probeCommand(executor, command, extraFsProbe)),
@@ -143,24 +171,59 @@ export const checkRequirements = async ({
     }
   }
 
+  // ponytail: darwin-only. `osascript` ships with macOS, so probing for the
+  // binary always succeeds and the daemon started reporting keyMacro as
+  // available while every keystroke failed with -1719/1002. The setup wizard
+  // already checks the Accessibility grant; without the same check here the
+  // runtime never warned at boot, and a tapped macro button showed a generic
+  // "action-failed" tile instead of being pre-empted with the real reason.
+  // Linux and Windows are untouched — they return before this block.
+  if (platform === "darwin") {
+    const keyMacro = result.keyMacro
+    if (
+      keyMacro?.available === true &&
+      !(await hasDarwinAccessibility(executor))
+    ) {
+      result.keyMacro = {
+        ...keyMacro,
+        available: false,
+        missingCommands: [PERMISSION_SENTINEL],
+        reason: `osascript is installed but has no Accessibility permission — ${ACCESSIBILITY_HINT}`,
+      }
+    }
+  }
+
   return result as RequirementsCheckResult
+}
+
+const CAPABILITY_LABEL: Readonly<Record<SystemCapability, string>> = {
+  keyMacro: "Key macros",
+  clipboard: "Clipboard",
+  notification: "Notifications",
 }
 
 export const formatCapabilityWarning = (
   name: SystemCapability,
   status: CapabilityStatus,
 ): string => {
+  const label = CAPABILITY_LABEL[name]
   if (status.available) {
     const missingPreferred =
       status.preferred.length > 0 &&
       !status.commands.includes(status.preferred) &&
       status.missingCommands.length > 0
     if (missingPreferred) {
-      return `${name}: using ${status.commands.join(", ")} as fallback; preferred ${status.preferred} is missing — ${status.reason}`
+      return `${label}: using ${status.commands.join(", ")} as fallback; preferred ${status.preferred} is missing — ${status.reason}`
     }
     return ""
   }
-  return `${name}: none of ${status.missingCommands.join(", ")} found — ${status.reason}`
+  // ponytail: "none of accessibility-permission found" reads like a missing
+  // binary. A denied OS permission is not something the user can install, so
+  // state it as a permission and let the reason carry the remedy.
+  if (status.missingCommands.includes(PERMISSION_SENTINEL)) {
+    return `${label}: ${status.reason}`
+  }
+  return `${label}: none of ${status.missingCommands.join(", ")} found — ${status.reason}`
 }
 
 export const getRequiredCapability = (

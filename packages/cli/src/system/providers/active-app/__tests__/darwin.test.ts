@@ -38,12 +38,12 @@ const makeExecutor = (
 const import_ = darwin
 
 describe("createDarwinActiveAppProvider", () => {
-  it("parses osascript output into ActiveAppSnapshot", async () => {
+  it("parses newline-delimited osascript output into ActiveAppSnapshot", async () => {
     const executor = makeExecutor((cmd) => {
       if (cmd === "osascript")
         return {
           exitCode: 0,
-          stdout: "Google Chrome, GitHub, 12345",
+          stdout: "Google Chrome\n12345\nGitHub",
           stderr: "",
         }
       return { exitCode: 1, stdout: "", stderr: "" }
@@ -61,10 +61,50 @@ describe("createDarwinActiveAppProvider", () => {
     await provider.stop()
   })
 
+  // Regression: the old parser split on "," so a comma in the window title
+  // shifted every field and corrupted the app name and pid.
+  it("keeps a window title that contains commas intact", async () => {
+    const executor = makeExecutor(() => ({
+      exitCode: 0,
+      stdout: "Slack\n42\nfoo, bar, baz",
+      stderr: "",
+    }))
+    const provider = await import_.createDarwinActiveAppProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    expect(await provider.getActive()).toEqual({
+      name: "Slack",
+      windowTitle: "foo, bar, baz",
+      processId: 42,
+    })
+    await provider.stop()
+  })
+
+  // Without an Accessibility grant the script's inner `try` yields an empty
+  // title; name and pid must still come through.
+  it("degrades to a null window title when the title is unavailable", async () => {
+    const executor = makeExecutor(() => ({
+      exitCode: 0,
+      stdout: "Terminal\n999\n",
+      stderr: "",
+    }))
+    const provider = await import_.createDarwinActiveAppProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    expect(await provider.getActive()).toEqual({
+      name: "Terminal",
+      windowTitle: null,
+      processId: 999,
+    })
+    await provider.stop()
+  })
+
   it("returns last snapshot on osascript failure", async () => {
     const executor = makeExecutor((cmd) => {
       if (cmd === "osascript")
-        return { exitCode: 0, stdout: "Google Chrome, GitHub, 1", stderr: "" }
+        return { exitCode: 0, stdout: "Google Chrome\n1\nGitHub", stderr: "" }
       return { exitCode: 1, stdout: "", stderr: "fail" }
     })
     const provider = await import_.createDarwinActiveAppProvider({

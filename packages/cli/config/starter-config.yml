@@ -1,0 +1,54 @@
+# sirenodeck — starter config
+#
+# This is what `sirenodeck system-requirements` seeds to
+# $XDG_CONFIG_HOME/sirenodeck/config.yml on first run. It is deliberately
+# self-contained: no `!include` directives and no `addons:` entries with
+# relative `src:` paths, because both resolve relative to THIS file and would
+# fail the moment it is copied out of the repo.
+#
+# Only built-in addons are referenced, and only metrics that work on every
+# platform. See docs/ for the full button catalog.
+theme: default
+
+logging:
+  level: info
+
+decks:
+  main:
+    name: Main Deck
+    buttons:
+      - position: 0
+        type: "date-time:time"
+        config:
+          variant: big
+
+      - position: 1
+        type: "date-time:date"
+
+      - position: 2
+        type: "system-status:system-status"
+        config:
+          pages:
+            - type: bars
+              metrics:
+                - cpu
+                - ram
+            - type: kpis
+              metrics:
+                - uptime
+                - load
+
+      - position: 3
+        type: "media:player"
+
+      - position: 4
+        type: "media:volume:down"
+
+      - position: 5
+        type: "media:volume:up"
+
+      - position: 6
+        type: "media:mute"
+
+      - position: 7
+        type: "emoji-selector:launcher"

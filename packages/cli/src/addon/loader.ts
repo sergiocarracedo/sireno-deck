@@ -36,6 +36,12 @@ export interface ResolvedExternalAddon {
   // addon's frontend + globalService. Same file exports both; one path
   // serves both import slots.
   entryPath: string
+  // ponytail: when the manifest declares `frontendEntry`, the BROWSER loads
+  // this instead of `entryPath`. The Node bundle has the host's UI primitives
+  // stubbed out (Node cannot import the host's .tsx sources), so rendering it
+  // in the browser draws those components as nothing. Null when the addon
+  // ships a single bundle, in which case callers fall back to entryPath.
+  browserEntryPath: string | null
 }
 
 export interface LoadAddonsResult {
@@ -70,7 +76,30 @@ const readJsonManifest = (root: string): AddonJsonManifest | null => {
   const name = obj["name"]
   const entry = obj["entry"]
   if (typeof name !== "string" || typeof entry !== "string") return null
-  return { kind, apiVersion: 1, name, entry }
+  // Optional; ignored entirely when absent, so older manifests are unaffected.
+  const frontendEntry = obj["frontendEntry"]
+  return {
+    kind,
+    apiVersion: 1,
+    name,
+    entry,
+    ...(typeof frontendEntry === "string" && frontendEntry.length > 0
+      ? { frontendEntry }
+      : {}),
+  }
+}
+
+// ponytail: resolve the manifest's optional `frontendEntry` against the addon
+// root. Returns null when the field is absent OR the file is missing, so a
+// stale manifest degrades to the single-bundle behaviour instead of handing
+// the browser a path that 404s.
+const resolveBrowserEntry = (
+  root: string,
+  json: AddonJsonManifest,
+): string | null => {
+  if (json.frontendEntry === undefined) return null
+  const candidate = join(root, json.frontendEntry)
+  return existsSync(candidate) ? candidate : null
 }
 
 const resolveEntryPaths = (
@@ -233,6 +262,7 @@ const loadLocalAddon = async (
     manifest: loaded.manifest,
     source: { kind: "local", specifier: source, resolvedPath: root },
     entryPath: loaded.entryPath,
+    browserEntryPath: resolveBrowserEntry(root, json),
   }
 }
 
@@ -352,6 +382,7 @@ const loadNpmAddon = async (
     manifest: loaded.manifest,
     source: { kind: "npm", specifier: source, resolvedPath: installPath },
     entryPath: loaded.entryPath,
+    browserEntryPath: resolveBrowserEntry(installPath, json),
   }
 }
 

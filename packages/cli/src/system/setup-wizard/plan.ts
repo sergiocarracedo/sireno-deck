@@ -5,6 +5,7 @@ import {
   type InstallStep,
   type PackageManager,
   type SystemReport,
+  ACCESSIBILITY_SETTINGS_URL,
   UDEV_RULES_PATH,
 } from "./types"
 
@@ -125,9 +126,38 @@ const buildGnomeExtensionStep = (): InstallStep => ({
   verifyCommand: undefined,
 })
 
+// ponytail: macOS UI scripting is gated by a TCC grant that no package manager
+// can install, so this is manual-only. Before this step the wizard had no
+// darwin branch at all — it printed "Capabilities: all present" while every
+// keystroke silently failed with -1719.
+export const DARWIN_ACCESSIBILITY_STEP_ID = "cap:darwin:accessibility"
+
+const buildDarwinAccessibilityStep = (): InstallStep => ({
+  id: DARWIN_ACCESSIBILITY_STEP_ID,
+  capability: "keyMacro",
+  title: "macOS Accessibility permission",
+  description:
+    "Key macros and window-title detection drive the UI through AppleScript, which macOS gates behind Accessibility.",
+  packageManager: "none",
+  packages: [],
+  sudo: false,
+  manualOnly: true,
+  manualInstructions: `Open the pane directly: open "${ACCESSIBILITY_SETTINGS_URL}"
+Then enable the app running sirenodeck (your terminal, or SirenoDeck.app) and restart it.
+Verify with: osascript -e 'tell application "System Events" to get UI elements enabled'  # should print true`,
+  verifyCommand: `osascript -e 'tell application "System Events" to get UI elements enabled'`,
+})
+
 export const buildInstallPlan = (report: SystemReport): InstallStep[] => {
   const steps: InstallStep[] = []
   const { platform, session, packageManager, capabilities, udev } = report
+
+  if (
+    platform === "darwin" &&
+    (!capabilities.keyMacro.available || !capabilities.activeApp.available)
+  ) {
+    steps.push(buildDarwinAccessibilityStep())
+  }
 
   if (capabilities.keyMacro.missing.length > 0 && platform === "linux") {
     steps.push(

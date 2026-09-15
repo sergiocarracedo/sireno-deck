@@ -156,7 +156,16 @@ export const onboardCodingAgents = async (
   ) {
     return false
   }
-  if (options.nonInteractive === true) return false
+  // ponytail: with no TTY nobody can answer — @clack's confirm() renders the
+  // prompt and then blocks forever on a stdin that will never produce a
+  // keypress. `start` calls this BEFORE spawning the daemon, so a piped or
+  // redirected stdin (CI, a wrapper script, `| tee`) hung the whole start and
+  // surfaced as "port 52937 did not accept connections in 30s" — a daemon that
+  // was never launched. runFirstRunCheckIfNeeded already guards this way;
+  // keep the check here so every caller inherits it.
+  if (options.nonInteractive === true || process.stdin.isTTY !== true) {
+    return false
+  }
   note(
     "The coding-agents addon can show each OpenCode terminal instance and its live state.\n\n" +
       "Sireno Deck will install a global OpenCode plugin. It reports only local process state to files owned by your user; no prompts or code are captured.",
