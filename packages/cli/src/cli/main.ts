@@ -117,7 +117,7 @@ const main = async (): Promise<void> => {
     args.indexOf("--verbose") !== -1 || args.indexOf("-v") !== -1
   const logger = createLogger({ verbose: isVerbose, json: isJson })
   installProcessGuards(logger)
-  const { scriptName, commands, packageName } = await buildCli()
+  const { scriptName, commands, packageName, version } = await buildCli()
 
   const parser = yargs(hideBin(process.argv))
     .scriptName(scriptName)
@@ -144,11 +144,14 @@ const main = async (): Promise<void> => {
       default: false,
       description: "Suppress all logs and the startup banner (silent level)",
     })
-    .demandCommand(1, "Run $0 --help to see available commands.")
+    // ponytail: yargs only expands $0 in usage/command strings, not in the
+    // demandCommand message — it printed the literal "Run 0 --help". Build the
+    // sentence from scriptName instead.
+    .demandCommand(1, `Run ${scriptName} --help to see available commands.`)
     .strict()
     .help()
     .alias("help", "h")
-    .version(packageName)
+    .version(`${packageName} ${version}`)
     .alias("version", "V")
 
   for (const cmd of commands) {

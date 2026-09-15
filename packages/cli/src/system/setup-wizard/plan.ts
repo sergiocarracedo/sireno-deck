@@ -5,6 +5,7 @@ import {
   type InstallStep,
   type PackageManager,
   type SystemReport,
+  ACCESSIBILITY_SETTINGS_URL,
   UDEV_RULES_PATH,
 } from "./types"
 
@@ -129,8 +130,10 @@ const buildGnomeExtensionStep = (): InstallStep => ({
 // can install, so this is manual-only. Before this step the wizard had no
 // darwin branch at all — it printed "Capabilities: all present" while every
 // keystroke silently failed with -1719.
+export const DARWIN_ACCESSIBILITY_STEP_ID = "cap:darwin:accessibility"
+
 const buildDarwinAccessibilityStep = (): InstallStep => ({
-  id: "cap:darwin:accessibility",
+  id: DARWIN_ACCESSIBILITY_STEP_ID,
   capability: "keyMacro",
   title: "macOS Accessibility permission",
   description:
@@ -139,7 +142,8 @@ const buildDarwinAccessibilityStep = (): InstallStep => ({
   packages: [],
   sudo: false,
   manualOnly: true,
-  manualInstructions: `Open System Settings → Privacy & Security → Accessibility, enable the app running sirenodeck (your terminal, or SirenoDeck.app), then restart it.
+  manualInstructions: `Open the pane directly: open "${ACCESSIBILITY_SETTINGS_URL}"
+Then enable the app running sirenodeck (your terminal, or SirenoDeck.app) and restart it.
 Verify with: osascript -e 'tell application "System Events" to get UI elements enabled'  # should print true`,
   verifyCommand: `osascript -e 'tell application "System Events" to get UI elements enabled'`,
 })

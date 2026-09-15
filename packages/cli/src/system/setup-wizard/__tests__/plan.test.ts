@@ -13,6 +13,8 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
     keyMacro: {
       name: "keyMacro",
       available: false,
+      toolInstalled: false,
+      permission: null,
       missing: ["ydotool", "wtype", "xdotool", "dotool"],
       preferred: "ydotool",
       reason: "Install ydotool.",
@@ -20,6 +22,8 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
     clipboard: {
       name: "clipboard",
       available: false,
+      toolInstalled: false,
+      permission: null,
       missing: ["xclip", "xsel"],
       preferred: "xclip",
       reason: "Install xclip.",
@@ -27,6 +31,8 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
     notification: {
       name: "notification",
       available: false,
+      toolInstalled: false,
+      permission: null,
       missing: ["notify-send"],
       preferred: "notify-send",
       reason: "Install libnotify.",
@@ -34,6 +40,8 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
     activeApp: {
       name: "activeApp",
       available: false,
+      toolInstalled: false,
+      permission: null,
       missing: ["xdotool", "xprop"],
       preferred: "xdotool",
       reason: "Install xdotool.",
@@ -82,6 +90,8 @@ describe("buildInstallPlan", () => {
           clipboard: {
             name: "clipboard",
             available: false,
+            toolInstalled: false,
+            permission: null,
             missing: ["wl-copy"],
             preferred: "wl-copy",
             reason: "Install wl-clipboard.",
@@ -109,6 +119,8 @@ describe("buildInstallPlan", () => {
           activeApp: {
             name: "activeApp",
             available: false,
+            toolInstalled: false,
+            permission: null,
             missing: ["xdotool"],
             preferred: "gnome-shell-extension",
             reason: "GNOME extension",
@@ -151,6 +163,8 @@ describe("buildInstallPlan", () => {
         keyMacro: {
           name: "keyMacro",
           available: true,
+          toolInstalled: true,
+          permission: null,
           missing: [],
           preferred: "ydotool",
           reason: "ok",
@@ -158,6 +172,8 @@ describe("buildInstallPlan", () => {
         clipboard: {
           name: "clipboard",
           available: true,
+          toolInstalled: true,
+          permission: null,
           missing: [],
           preferred: "xclip",
           reason: "ok",
@@ -165,6 +181,8 @@ describe("buildInstallPlan", () => {
         notification: {
           name: "notification",
           available: true,
+          toolInstalled: true,
+          permission: null,
           missing: [],
           preferred: "notify-send",
           reason: "ok",
@@ -172,6 +190,8 @@ describe("buildInstallPlan", () => {
         activeApp: {
           name: "activeApp",
           available: true,
+          toolInstalled: true,
+          permission: null,
           missing: [],
           preferred: "xdotool",
           reason: "ok",
@@ -196,6 +216,8 @@ describe("buildInstallPlan", () => {
         keyMacro: {
           name: "keyMacro",
           available: true,
+          toolInstalled: true,
+          permission: null,
           missing: [],
           preferred: "osascript",
           reason: "macOS uses osascript.",
@@ -203,6 +225,8 @@ describe("buildInstallPlan", () => {
         activeApp: {
           name: "activeApp",
           available: true,
+          toolInstalled: true,
+          permission: null,
           missing: [],
           preferred: "osascript",
           reason: "macOS uses osascript.",
@@ -221,6 +245,8 @@ describe("buildInstallPlan", () => {
         keyMacro: {
           name: "keyMacro",
           available: false,
+          toolInstalled: false,
+          permission: null,
           missing: ["accessibility-permission"],
           preferred: "osascript",
           reason: "osascript is present but has no Accessibility permission.",

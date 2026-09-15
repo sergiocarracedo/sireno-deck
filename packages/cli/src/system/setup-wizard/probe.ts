@@ -5,7 +5,9 @@ import {
   hasWaylandGnomeSession,
 } from "../providers/active-app/wayland-gnome"
 import type { CommandExecutor } from "../providers/shared"
-import { UDEV_RULES_PATH } from "./types"
+import { ACCESSIBILITY_SETTINGS_URL, UDEV_RULES_PATH } from "./types"
+
+export { ACCESSIBILITY_SETTINGS_URL } from "./types"
 import {
   type CapabilityName,
   type CapabilityProbe,
@@ -143,6 +145,8 @@ const probeCapability = async (
   return {
     name,
     available: found.length > 0,
+    toolInstalled: found.length > 0,
+    permission: null,
     missing,
     preferred,
     reason,
@@ -195,12 +199,23 @@ const probeDarwinUiScripting = async (
     extraFsProbe,
   )
   if (!base.available) return base
-  if (await hasDarwinAccessibility(executor)) return base
+  const granted = await hasDarwinAccessibility(executor)
+  const permission = {
+    label: "Accessibility",
+    granted,
+    hint: ACCESSIBILITY_HINT,
+    settingsUrl: ACCESSIBILITY_SETTINGS_URL,
+  }
+  if (granted) return { ...base, permission }
   return {
     ...base,
     available: false,
+    // toolInstalled stays true: osascript ships with macOS. Only the grant is
+    // missing, and `missing` keeps the sentinel so existing callers that gate
+    // on it (the install plan) behave as before.
+    permission,
     missing: ["accessibility-permission"],
-    reason: `osascript is present but has no Accessibility permission — ${ACCESSIBILITY_HINT}`,
+    reason: `osascript is installed but has no Accessibility permission — ${ACCESSIBILITY_HINT}`,
   }
 }
 
@@ -338,6 +353,8 @@ const probeActiveApp = async (
     return {
       name: "activeApp",
       available: true,
+      toolInstalled: true,
+      permission: null,
       missing: [],
       preferred: "gnome-shell-extension",
       reason: `Wayland GNOME requires the 'Window Calls Extended' extension (${EXTENSION_INSTALL_URL}). The wizard can detect this — install it from the GNOME extensions website and re-run.`,

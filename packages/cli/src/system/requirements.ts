@@ -188,7 +188,7 @@ export const checkRequirements = async ({
         ...keyMacro,
         available: false,
         missingCommands: [PERMISSION_SENTINEL],
-        reason: `osascript is present but has no Accessibility permission — ${ACCESSIBILITY_HINT}`,
+        reason: `osascript is installed but has no Accessibility permission — ${ACCESSIBILITY_HINT}`,
       }
     }
   }
@@ -196,17 +196,24 @@ export const checkRequirements = async ({
   return result as RequirementsCheckResult
 }
 
+const CAPABILITY_LABEL: Readonly<Record<SystemCapability, string>> = {
+  keyMacro: "Key macros",
+  clipboard: "Clipboard",
+  notification: "Notifications",
+}
+
 export const formatCapabilityWarning = (
   name: SystemCapability,
   status: CapabilityStatus,
 ): string => {
+  const label = CAPABILITY_LABEL[name]
   if (status.available) {
     const missingPreferred =
       status.preferred.length > 0 &&
       !status.commands.includes(status.preferred) &&
       status.missingCommands.length > 0
     if (missingPreferred) {
-      return `${name}: using ${status.commands.join(", ")} as fallback; preferred ${status.preferred} is missing — ${status.reason}`
+      return `${label}: using ${status.commands.join(", ")} as fallback; preferred ${status.preferred} is missing — ${status.reason}`
     }
     return ""
   }
@@ -214,9 +221,9 @@ export const formatCapabilityWarning = (
   // binary. A denied OS permission is not something the user can install, so
   // state it as a permission and let the reason carry the remedy.
   if (status.missingCommands.includes(PERMISSION_SENTINEL)) {
-    return `${name}: ${status.reason}`
+    return `${label}: ${status.reason}`
   }
-  return `${name}: none of ${status.missingCommands.join(", ")} found — ${status.reason}`
+  return `${label}: none of ${status.missingCommands.join(", ")} found — ${status.reason}`
 }
 
 export const getRequiredCapability = (

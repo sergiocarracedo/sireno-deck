@@ -1,12 +1,19 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  formatCapabilityPanel,
   formatResultLine,
   formatStepInstructions,
   stripAnsi,
   summarizeReport,
 } from "../format"
-import type { InstallStep, InstallStepResult, SystemReport } from "../types"
+import type {
+  CapabilityName,
+  CapabilityProbe,
+  InstallStep,
+  InstallStepResult,
+  SystemReport,
+} from "../types"
 
 const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
   platform: "linux",
@@ -18,6 +25,8 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
     keyMacro: {
       name: "keyMacro",
       available: true,
+      toolInstalled: true,
+      permission: null,
       missing: [],
       preferred: "ydotool",
       reason: "ok",
@@ -25,6 +34,8 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
     clipboard: {
       name: "clipboard",
       available: false,
+      toolInstalled: false,
+      permission: null,
       missing: ["wl-copy"],
       preferred: "wl-copy",
       reason: "Install wl-clipboard.",
@@ -32,6 +43,8 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
     notification: {
       name: "notification",
       available: true,
+      toolInstalled: true,
+      permission: null,
       missing: [],
       preferred: "notify-send",
       reason: "ok",
@@ -39,6 +52,8 @@ const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
     activeApp: {
       name: "activeApp",
       available: true,
+      toolInstalled: true,
+      permission: null,
       missing: [],
       preferred: "gnome-shell-extension",
       reason: "ok",
@@ -87,6 +102,8 @@ describe("summarizeReport", () => {
           keyMacro: {
             name: "keyMacro",
             available: true,
+            toolInstalled: true,
+            permission: null,
             missing: [],
             preferred: "ydotool",
             reason: "ok",
@@ -94,6 +111,8 @@ describe("summarizeReport", () => {
           clipboard: {
             name: "clipboard",
             available: true,
+            toolInstalled: true,
+            permission: null,
             missing: [],
             preferred: "wl-copy",
             reason: "ok",
@@ -101,6 +120,8 @@ describe("summarizeReport", () => {
           notification: {
             name: "notification",
             available: true,
+            toolInstalled: true,
+            permission: null,
             missing: [],
             preferred: "notify-send",
             reason: "ok",
@@ -108,6 +129,8 @@ describe("summarizeReport", () => {
           activeApp: {
             name: "activeApp",
             available: true,
+            toolInstalled: true,
+            permission: null,
             missing: [],
             preferred: "gnome-shell-extension",
             reason: "ok",
@@ -246,4 +269,120 @@ describe("formatResultLine", () => {
       ).toBe(true)
     })
   }
+})
+
+describe("formatCapabilityPanel", () => {
+  const ACCESSIBILITY_HINT =
+    "grant Accessibility to your terminal in System Settings, then restart it"
+
+  // A macOS box where osascript is installed but the Accessibility grant is
+  // denied: keyMacro and activeApp are both blocked by the SAME permission.
+  const darwinCapabilities = (): Readonly<
+    Record<CapabilityName, CapabilityProbe>
+  > => {
+    const deniedAccessibility = {
+      label: "Accessibility",
+      granted: false,
+      hint: ACCESSIBILITY_HINT,
+      settingsUrl: "x-apple.systempreferences:whatever",
+    }
+    return {
+      keyMacro: {
+        name: "keyMacro",
+        available: false,
+        toolInstalled: true,
+        permission: deniedAccessibility,
+        missing: ["accessibility-permission"],
+        preferred: "osascript",
+        reason: "osascript is installed but has no Accessibility permission",
+      },
+      clipboard: {
+        name: "clipboard",
+        available: true,
+        toolInstalled: true,
+        permission: null,
+        missing: [],
+        preferred: "pbcopy",
+        reason: "ok",
+      },
+      notification: {
+        name: "notification",
+        available: true,
+        toolInstalled: true,
+        permission: null,
+        missing: [],
+        preferred: "osascript",
+        reason: "ok",
+      },
+      activeApp: {
+        name: "activeApp",
+        available: false,
+        toolInstalled: true,
+        permission: deniedAccessibility,
+        missing: ["accessibility-permission"],
+        preferred: "osascript",
+        reason: "osascript is installed but has no Accessibility permission",
+      },
+    }
+  }
+
+  it("leads with the capability, not the tool", () => {
+    const out = stripAnsi(formatCapabilityPanel(darwinCapabilities()))
+    const firstRow = out.split("\n")[0] ?? ""
+    expect(firstRow).toContain("Key macros:")
+    // The tool is still shown, but after the capability it serves.
+    expect(firstRow.indexOf("Key macros")).toBeLessThan(
+      firstRow.indexOf("osascript"),
+    )
+    expect(out).toContain("Clipboard:")
+    expect(out).toContain("Notifications:")
+    expect(out).toContain("Active app:")
+  })
+
+  it("distinguishes a denied permission from a missing binary", () => {
+    const out = stripAnsi(formatCapabilityPanel(darwinCapabilities()))
+    // osascript ships with macOS — it must never be reported as not installed.
+    expect(out).not.toContain("not installed")
+    expect(out).toContain("installed · Accessibility not granted")
+  })
+
+  it("reports a granted permission alongside the tool", () => {
+    const caps = darwinCapabilities()
+    const granted = {
+      ...caps.keyMacro,
+      available: true,
+      permission: { ...caps.keyMacro.permission!, granted: true },
+      missing: [],
+    }
+    const out = stripAnsi(formatCapabilityPanel({ ...caps, keyMacro: granted }))
+    expect(out).toContain("installed · Accessibility granted")
+  })
+
+  it("shares one footnote between capabilities blocked by the same grant", () => {
+    const out = stripAnsi(formatCapabilityPanel(darwinCapabilities()))
+    // The hint used to be printed in full once per affected capability.
+    const hintOccurrences = out.split("then restart it").length - 1
+    expect(hintOccurrences).toBe(1)
+    // Both rows point at that single footnote.
+    expect(out.split("\n").filter((l) => l.includes("[1]")).length).toBe(3)
+  })
+
+  it("falls back to the reason for a genuinely missing tool", () => {
+    const caps = darwinCapabilities()
+    const out = stripAnsi(
+      formatCapabilityPanel({
+        ...caps,
+        clipboard: {
+          ...caps.clipboard,
+          available: false,
+          toolInstalled: false,
+          missing: ["wl-copy"],
+          preferred: "wl-copy",
+          reason: "Install the wl-clipboard package.",
+        },
+      }),
+    )
+    expect(out).toContain("not installed")
+    expect(out).toContain("Install the wl-clipboard package.")
+  })
 })
