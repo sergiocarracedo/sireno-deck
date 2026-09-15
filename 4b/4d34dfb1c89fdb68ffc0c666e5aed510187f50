@@ -1,0 +1,58 @@
+packages/cli/src/deck/methods.ts
+  s_d5b9303784a199::t_4f4911a8f06580 24,264,298-307
+packages/addons/app-shortcuts/src/decks/teams.ts
+  s_d5b9303784a199::t_aebd10309fcecd 20-21,27-35
+  s_d5b9303784a199::t_4984372738fb5f 22-26
+packages/addons/app-shortcuts/src/decks/discord.ts
+  s_d5b9303784a199::t_aebd10309fcecd 20-23,28-31
+packages/cli/src/deck/macro-parse.ts
+  s_d5b9303784a199::t_df17a3c3569730 53-119,121-123,125-155
+  s_d5b9303784a199::t_4984372738fb5f 120,124
+packages/cli/docs/user/actions.mdx
+  s_d5b9303784a199::t_e629c3f71b38c9 51-53
+packages/addons/app-shortcuts/src/decks/chrome.ts
+  s_d5b9303784a199::t_eadba4982f4787 66,70-72,77
+  s_d5b9303784a199::t_aebd10309fcecd 53-54,60-61,64-65,67-69,73-76
+  s_d5b9303784a199::t_4984372738fb5f 55-59
+packages/cli/docs/user/configuration-files.mdx
+  s_d5b9303784a199::t_f45a9642cda6ae 151
+packages/cli/src/deck/__tests__/macro-parse.test.ts
+  s_d5b9303784a199::t_f4302e68c19152 3
+  s_d5b9303784a199::t_1b76785226c5c5 73-137,144-156
+  s_d5b9303784a199::t_4984372738fb5f 138-143
+  s_d5b9303784a199::t_73ea5e092235f4 157
+packages/addons/app-shortcuts/src/__tests__/deck-macros.test.ts
+  s_d5b9303784a199::t_d63358bec59e23 1-70,75,80-115
+  s_d5b9303784a199::t_4984372738fb5f 71-74,76-79
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_d5b9303784a199::t_4984372738fb5f 309-311
+  s_d5b9303784a199::t_70f3ca91d5c325 328-339,341
+packages/addons/app-shortcuts/src/decks/google-meet.ts
+  s_d5b9303784a199::t_aebd10309fcecd 28-35
+packages/addons/app-shortcuts/src/decks/vscode.ts
+  s_d5b9303784a199::t_a372dea579881a 22,25-28,30,34,37-42
+  s_d5b9303784a199::t_4984372738fb5f 21,23-24,29,36
+packages/addons/app-shortcuts/src/decks/slack.ts
+  s_d5b9303784a199::t_aebd10309fcecd 20-27
+packages/cli/docs/reference/macro-syntax.mdx
+  s_d5b9303784a199::t_d7396872d1fe1c 57-87,93-96,103-105,117-120,129,136-139,162-163,171-172
+  s_d5b9303784a199::t_4984372738fb5f 121-128,164-170
+  s_d5b9303784a199::t_d24c828f6f5bba 48,51-54,88-92,130-135
+  s_d5b9303784a199::t_a2669c7abbd441 173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4b4d34dfb1c89fdb68ffc0c666e5aed510187f50",
+  "prompts": {},
+  "sessions": {
+    "s_d5b9303784a199": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc0b6a72-35c7-4578-b82d-db4e25930541",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
