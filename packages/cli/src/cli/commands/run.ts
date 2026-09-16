@@ -476,6 +476,7 @@ interface LoadConfigResult {
   readonly themeDir: string
   readonly addonSpecToName: ReadonlyMap<string, string>
   readonly addonEntryPaths: ReadonlyMap<string, string>
+  readonly addonBrowserEntryPaths: ReadonlyMap<string, string>
 }
 
 const loadExternalAddonsIntoRegistry = async (
@@ -488,6 +489,7 @@ const loadExternalAddonsIntoRegistry = async (
 ): Promise<{
   specToName: Map<string, string>
   nameToEntryPath: Map<string, string>
+  nameToBrowserEntryPath: Map<string, string>
 }> => {
   // ponytail: returns specifier→manifest name for addons that successfully
   // registered. The override map in buildRuntime keys on manifest name (what
@@ -496,8 +498,10 @@ const loadExternalAddonsIntoRegistry = async (
   // so the bridge can import the entry file at runtime.
   const specToName = new Map<string, string>()
   const nameToEntryPath = new Map<string, string>()
+  const nameToBrowserEntryPath = new Map<string, string>()
   const entries = config.addons ?? []
-  if (entries.length === 0) return { specToName, nameToEntryPath }
+  if (entries.length === 0)
+    return { specToName, nameToEntryPath, nameToBrowserEntryPath }
   const globalRoots = ["pnpm", "npm", "yarn"].flatMap((manager) => {
     const root = globalPackageRoot(manager as "pnpm" | "npm" | "yarn")
     return root === null ? [] : [root]
@@ -560,12 +564,15 @@ const loadExternalAddonsIntoRegistry = async (
     try {
       registry.load(loaded.manifest)
       specToName.set(loaded.source.specifier, loaded.manifest.name)
-      // ponytail: this map feeds the BROWSER (buildExternalScannedAddons →
-      // frontendEntry). Prefer the addon's dedicated browser bundle when it
-      // ships one: the Node entry has the host's UI primitives stubbed out,
-      // so rendering it in the browser draws them as nothing — that is why
-      // pomodoro's labels were blank. Falls back to the single entry.
-      nameToEntryPath.set(
+      // ponytail: two consumers, opposite needs. The DAEMON imports the Node
+      // entry (host UI stubbed, so `import()` resolves); the BROWSER gets the
+      // dedicated bundle when the addon ships one (host UI left external, so
+      // vite resolves it to the real components — that is what fixed
+      // pomodoro's blank labels). These were briefly one map set to
+      // `browserEntryPath ?? entryPath`, which handed the daemon a bundle
+      // Node cannot resolve and silently killed every addon button handler.
+      nameToEntryPath.set(loaded.manifest.name, loaded.entryPath)
+      nameToBrowserEntryPath.set(
         loaded.manifest.name,
         loaded.browserEntryPath ?? loaded.entryPath,
       )
@@ -584,7 +591,7 @@ const loadExternalAddonsIntoRegistry = async (
       )
     }
   }
-  return { specToName, nameToEntryPath }
+  return { specToName, nameToEntryPath, nameToBrowserEntryPath }
 }
 
 export const validateAndLoadConfig = async (
@@ -603,15 +610,18 @@ export const validateAndLoadConfig = async (
   // loader's only caller was the test suite, so chrome-overlay et al. were
   // never registered — builtins only. Load failures stay non-fatal (one bad
   // addon must not kill the daemon); issues are surfaced through the logger.
-  const { specToName: addonSpecToName, nameToEntryPath: addonEntryPaths } =
-    await loadExternalAddonsIntoRegistry(
-      registry,
-      config,
-      dirname(configPath),
-      options.homeDir ?? homedir(),
-      options.logger,
-      configPath,
-    )
+  const {
+    specToName: addonSpecToName,
+    nameToEntryPath: addonEntryPaths,
+    nameToBrowserEntryPath: addonBrowserEntryPaths,
+  } = await loadExternalAddonsIntoRegistry(
+    registry,
+    config,
+    dirname(configPath),
+    options.homeDir ?? homedir(),
+    options.logger,
+    configPath,
+  )
   // ponytail: dump every deck type the registry holds so the operator can
   // see at startup which addons registered and which got silently skipped.
   options.logger.info(
@@ -710,6 +720,7 @@ export const validateAndLoadConfig = async (
     themeDir,
     addonSpecToName,
     addonEntryPaths,
+    addonBrowserEntryPaths,
   }
 }
 
@@ -1264,9 +1275,11 @@ const browserFrontendMain = (entry: string): string => {
 export const addonSpecFromScanned = (s: ScannedAddon) => ({
   name: s.name,
   frontend:
-    s.frontendEntry !== null
-      ? { main: browserFrontendMain(s.frontendEntry) }
-      : undefined,
+    s.browserEntry != null
+      ? { main: browserFrontendMain(s.browserEntry) }
+      : s.frontendEntry !== null
+        ? { main: browserFrontendMain(s.frontendEntry) }
+        : undefined,
   buttons: s.types.map((t) => ({ type: t })),
   buttonTypes: Object.fromEntries(
     Object.entries(s.buttonTypes).map(([type, info]) => [
@@ -1386,6 +1399,7 @@ export const buildExternalScannedAddons = (
   builtinScanned: ReadonlyArray<ScannedAddon>,
   externalAddonDirs: ReadonlyMap<string, string>,
   externalEntryPaths: ReadonlyMap<string, string>,
+  externalBrowserEntryPaths: ReadonlyMap<string, string> = new Map(),
 ): ReadonlyArray<ScannedAddon> => {
   const builtinNames = new Set(builtinScanned.map((a) => a.name))
   const out: ScannedAddon[] = []
@@ -1395,6 +1409,7 @@ export const buildExternalScannedAddons = (
     if (types.length === 0 && (manifest.decks ?? []).length === 0) continue
     const path = externalAddonDirs.get(manifest.name) ?? ""
     const entryPath = externalEntryPaths.get(manifest.name) ?? ""
+    const browserPath = externalBrowserEntryPaths.get(manifest.name) ?? ""
     const buttonTypes: Record<string, ScannedButtonType> = {}
     for (const [type, def] of Object.entries(manifest.buttonTypes)) {
       buttonTypes[type] = {
@@ -1450,13 +1465,19 @@ export const buildExternalScannedAddons = (
     // exports both `manifest.buttonTypes` and `manifest.globalService`. A
     // third-party addon that supplies only decks gets `null` for both and
     // the bridge skips its frontend/global service wiring (today's behavior).
+    // ponytail: frontendEntry/globalServiceEntry are imported by the DAEMON
+    // (addon-handler-bridge), so they must be the Node entry. browserEntry is
+    // what vite serves. Collapsing them is what broke every addon button.
     const frontendEntry = hasButtonTypes && entryPath !== "" ? entryPath : null
     const globalServiceEntry =
       hasGlobalService && entryPath !== "" ? entryPath : null
+    const browserEntry =
+      hasButtonTypes && browserPath !== "" ? browserPath : null
     out.push({
       name: manifest.name,
       types,
       frontendEntry,
+      browserEntry,
       publishIntervalMs: manifest.publishIntervalMs ?? null,
       pollerEntry: null,
       buttonTypes,
@@ -1724,6 +1745,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       addonBundle.scanned,
       externalAddonDirs,
       loadedConfig.addonEntryPaths,
+      loadedConfig.addonBrowserEntryPaths,
     )
     publishSIRENO_ADDONS(addonBundle.scanned, externalScanned)
     options.onAddonsUpdate?.([...addonBundle.scanned, ...externalScanned])
@@ -2040,6 +2062,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           nextLoaded.addonEntryPaths,
         ),
         nextLoaded.addonEntryPaths,
+        nextLoaded.addonBrowserEntryPaths,
       )
       runtimeAddonByType.clear()
       for (const [type, ref] of mergeAddonByType(

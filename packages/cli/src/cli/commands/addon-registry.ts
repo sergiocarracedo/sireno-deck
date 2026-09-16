@@ -18,7 +18,22 @@ export interface ScannedDeck {
 export interface ScannedAddon {
   readonly name: string
   readonly types: ReadonlyArray<string>
+  /**
+   * The module the DAEMON imports (Node). Its host-UI specifiers are stubbed
+   * at build time so plain Node can load it for the manifest and global
+   * service.
+   */
   readonly frontendEntry: string | null
+  /**
+   * The module the BROWSER loads, when the addon ships a separate bundle.
+   *
+   * ponytail: these two were one field, set to `browserEntryPath ?? entryPath`.
+   * The browser bundle deliberately leaves `@sirenodeck/sirenodeck/ui/*`
+   * external, which Node cannot resolve — so the daemon's `import()` threw
+   * into a silent catch, no button handler was registered, and every tap on
+   * an addon button did nothing at all. They must stay separate.
+   */
+  readonly browserEntry?: string | null
   readonly publishIntervalMs: number | null
   readonly pollerEntry: string | null
   readonly buttonTypes: Readonly<Record<string, ScannedButtonType>>
