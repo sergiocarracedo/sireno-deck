@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/coding-agents/__tests__/backend.test.ts
+  s_d5b9303784a199::t_d7f3a2cf8bdba1 162-167
+  s_d5b9303784a199::t_e83b63df7cae04 145-161,168-177
+packages/cli/src/builtin-addons/coding-agents/global/backend.ts
+  s_d5b9303784a199::t_ce4fc486582fd2 64-65,70,73-88,92
+packages/cli/src/builtin-addons/coding-agents/decks/agents.ts
+  s_d5b9303784a199::t_d7f3a2cf8bdba1 40-41
+  s_d5b9303784a199::t_f0a6a990e20b10 26-39,42-48,50-63,66,68
+packages/cli/src/builtin-addons/coding-agents/__tests__/deck.test.ts
+  s_d5b9303784a199::t_d6ce78071c47b8 34-39,41-49,51-84,98-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "3ea0c28f19421690bb6c0f37660c56d3bd36b7f5",
+  "prompts": {},
+  "sessions": {
+    "s_d5b9303784a199": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc0b6a72-35c7-4578-b82d-db4e25930541",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
