@@ -162,11 +162,17 @@ export interface ClaudeDeriveResult {
 export const deriveClaudeStatus = (
   entries: readonly ClaudeJsonlEntry[],
   now: number = Date.now(),
+  // ponytail: some transcripts carry no timestamps at all (three exist on the
+  // reporting machine, one last touched a week ago). Falling back to `now` made
+  // them permanently "live" — always inside the recency window, always on the
+  // deck. The caller passes the file's mtime instead, which is the honest
+  // answer to "when did this session last do anything".
+  fallbackTimestamp?: number,
 ): ClaudeDeriveResult | null => {
   if (entries.length === 0) return null
 
   const last = entries[entries.length - 1]!
-  const ts = lastTimestamp(entries) ?? now
+  const ts = lastTimestamp(entries) ?? fallbackTimestamp ?? now
   let status: AgentStatus = "idle"
   let preview: string | undefined
 

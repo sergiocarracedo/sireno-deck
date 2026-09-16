@@ -42,12 +42,15 @@ describe("coding-agents manifest", () => {
 
   it("declares requirement checks", () => {
     expect(manifest.checks).toBeDefined()
-    expect(manifest.checks?.length).toBe(3)
+    expect(manifest.checks?.length).toBe(4)
     expect(manifest.checks?.[0]?.name).toBe("opencode-reachable")
     // ponytail: distinguishes "opencode CLI not on $PATH" from
     // "installed but no server running" (spawn gate in registry.ts).
     expect(manifest.checks?.[1]?.name).toBe("opencode-installed")
     expect(manifest.checks?.[2]?.name).toBe("claude-code-projects-readable")
+    // ponytail: transcripts readable is not the same as being told — the
+    // hooks check separates "guessing from file tails" from "pushed state".
+    expect(manifest.checks?.[3]?.name).toBe("claude-code-hooks")
   })
 
   it("channel name matches the shared constant", async () => {
