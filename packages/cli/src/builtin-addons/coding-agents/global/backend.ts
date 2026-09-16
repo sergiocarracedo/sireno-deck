@@ -61,16 +61,35 @@ const state: GlobalState = {
 let lastLiveCount = -1
 let rebuildTimer: ReturnType<typeof setTimeout> | null = null
 
+const REBUILD_DEBOUNCE_MS = 1500
+
 const syncLiveCountAndMaybeRebuild = (): void => {
   const count = listAgents(state.lastSnapshot).length
   setLiveCount(count)
   if (count === lastLiveCount) return
+  const wasEmpty = lastLiveCount <= 0
   lastLiveCount = count
   if (rebuildTimer !== null) clearTimeout(rebuildTimer)
+
+  // ponytail: the deck bakes one tile per live agent at materialisation time,
+  // so it is only right if a rebuild happens AFTER the first provider scan
+  // lands. The debounce below is there to absorb churn, but it also applied to
+  // the very first 0 -> N transition — and the deck is first materialised at
+  // startup when the count is still 0. Whether you got one tile or seven then
+  // depended on how the first scan raced a single debounced rebuild, which is
+  // why the deck could show a lone tile while the summary counted seven.
+  //
+  // Agents appearing from nothing is not churn; rebuild for it at once and
+  // keep the debounce for everything after.
+  if (wasEmpty && count > 0) {
+    rebuildTimer = null
+    state.context?.requestDeckRebuild?.()
+    return
+  }
   rebuildTimer = setTimeout(() => {
     rebuildTimer = null
     state.context?.requestDeckRebuild?.()
-  }, 1500)
+  }, REBUILD_DEBOUNCE_MS)
 }
 
 // ponytail: register both provider logos as WS assets (absolute paths, so no

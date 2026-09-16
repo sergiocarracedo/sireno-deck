@@ -142,3 +142,36 @@ describe("coding-agents globalService", () => {
 // forcing the test to actually invoke it.
 void makeAgent
 void makeProvider
+
+describe("deck rebuild on first agents", () => {
+  afterEach(() => {
+    const noopCtx = { signal: new AbortController().signal } as never
+    globalService.onUnload?.(noopCtx)
+    vi.useRealTimers()
+  })
+
+  // ponytail: the agents deck bakes one tile per live agent when it is
+  // materialized, and it is first materialized at startup when the count is
+  // still 0. A single debounced rebuild then had to land after the first
+  // provider scan, and when it didn't the deck showed one lone tile while the
+  // summary counted seven. Agents appearing from nothing is not churn.
+  it("rebuilds immediately when agents first appear, not after the debounce", async () => {
+    vi.useFakeTimers()
+    const { ctx } = makeCtx()
+    const requestDeckRebuild = vi.fn()
+    await globalService.onLoad?.(
+      { ...ctx, requestDeckRebuild } as never,
+      {
+        providers: [makeProvider("opencode", [makeAgent("a", "running")])],
+      } as never,
+    )
+
+    await globalService.pollers?.[0]?.poll({
+      ...ctx,
+      requestDeckRebuild,
+    } as never)
+
+    // No timer advance: the deck must already have been asked to rebuild.
+    expect(requestDeckRebuild).toHaveBeenCalled()
+  })
+})
