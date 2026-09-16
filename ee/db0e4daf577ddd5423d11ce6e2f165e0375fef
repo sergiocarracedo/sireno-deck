@@ -1,0 +1,21 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/frontend.tsx
+  s_d5b9303784a199::t_2d716de5a0e473 135-141,143
+packages/web/astro/src/content/buttonSchemas.json
+  s_d5b9303784a199::t_6e6e03e4dea33b 90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "eedb0e4daf577ddd5423d11ce6e2f165e0375fef",
+  "prompts": {},
+  "sessions": {
+    "s_d5b9303784a199": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc0b6a72-35c7-4578-b82d-db4e25930541",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
