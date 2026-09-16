@@ -98,6 +98,40 @@ describe("app-shortcuts deck macros", () => {
     }
   })
 
+  // ponytail: Discord's "Invite" button was `macro://alt`. A bare modifier is
+  // not a valid combo, so the host fell through to its TEXT path and typed the
+  // word "alt" into the focused input. Catch the whole class, not that one.
+  it("never sends a bare modifier as a macro", () => {
+    const MODIFIERS = new Set([
+      "ctrl",
+      "control",
+      "ctl",
+      "alt",
+      "option",
+      "opt",
+      "shift",
+      "shft",
+      "meta",
+      "command",
+      "cmd",
+      "super",
+      "hyper",
+      "win",
+    ])
+    for (const deck of decks) {
+      for (const [label, macro] of macrosOf(deck)) {
+        for (const platform of PLATFORMS) {
+          for (const step of resolve(macro, platform).split(";")) {
+            expect(
+              MODIFIERS.has(step.trim().toLowerCase()),
+              `${deck.id}/${label} on ${platform}: "${step.trim()}" is a bare modifier and would be typed as text`,
+            ).toBe(false)
+          }
+        }
+      }
+    }
+  })
+
   // Terminal programs take a real Control on macOS; rewriting them to cmd
   // would break every one of their bindings.
   it("leaves terminal-app decks on ctrl for macOS", () => {

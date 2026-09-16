@@ -269,9 +269,19 @@ export interface ServiceModeDeps {
   readonly isOrphaned: () => boolean
 }
 
+/** launchd job label, matching the plist written by service/install.ts. */
+const SERVICE_LABEL = "sirenodeck"
+
 export const createIsServiceMode = (deps: ServiceModeDeps) => (): boolean => {
   if (process.env["SIRENO_DAEMON_CHILD"]) return true
   if (process.env["LAUNCH_JOB_NAME"]) return deps.isOrphaned()
+  // Twin of createIsUnderServiceManager in cli/commands/spawn-daemon.ts —
+  // these must stay in lockstep. LAUNCH_JOB_NAME is the pre-10.10 variable;
+  // bootstrap/kickstart sets XPC_SERVICE_NAME to the job label instead.
+  // Matched against our own label because other launchd jobs (Terminal.app)
+  // export theirs into the shells they start.
+  const xpcName = process.env["XPC_SERVICE_NAME"]
+  if (xpcName !== undefined && xpcName.includes(SERVICE_LABEL)) return true
   // INVOCATION_ID is systemd-scoped: user-unit children always have it, and
   // it can only leak into a shell when that shell's ANCESTOR is a user unit
   // (terminal-server etc). isOrphaned() requires our DIRECT parent to be

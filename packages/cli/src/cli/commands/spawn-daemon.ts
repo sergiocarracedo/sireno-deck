@@ -25,10 +25,26 @@ export interface UnderServiceManagerDeps {
   readonly isOrphaned: () => boolean
 }
 
+/** launchd job label, matching the plist written by service/install.ts. */
+const SERVICE_LABEL = "sirenodeck"
+
 export const createIsUnderServiceManager =
   (deps: UnderServiceManagerDeps) => (): boolean => {
     if (process.env["SIRENO_DAEMON_CHILD"]) return true
     if (process.env["LAUNCH_JOB_NAME"]) return deps.isOrphaned()
+    // ponytail: LAUNCH_JOB_NAME belongs to the pre-10.10 `launchctl load`
+    // world. invokeManager drives bootstrap/kickstart, and THAT launchd sets
+    // XPC_SERVICE_NAME to the job label instead — leaving it "0" in an
+    // interactive login shell. So on macOS this predicate was always false,
+    // the daemon launchd had just started ran the full `start` path, and
+    // re-bootstrapped ITSELF: bootstrap threw, the unhandled rejection killed
+    // the process, KeepAlive respawned it, forever.
+    //
+    // Matched against our own label rather than "any non-zero value" because
+    // Terminal.app and friends are launchd jobs too, and a shell started from
+    // one can inherit their XPC_SERVICE_NAME.
+    const xpcName = process.env["XPC_SERVICE_NAME"]
+    if (xpcName !== undefined && xpcName.includes(SERVICE_LABEL)) return true
     // INVOCATION_ID is systemd-scoped; isOrphaned() requires a direct
     // systemd parent, so interactive shells (which can inherit
     // INVOCATION_ID from a unit-launched terminal) stay false. See the

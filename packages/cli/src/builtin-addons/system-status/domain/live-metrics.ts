@@ -262,7 +262,90 @@ async function probeBattery(): Promise<ProbeResult> {
 // ponytail: scan /sys/class/hwmon for CPU-package sensors and read
 // temp1_input. Skip acpitz — the thermal_zone0 fallback below covers it,
 // and acpitz often sorts first (hwmon0), shadowing k10temp/coretemp.
+// ponytail: CPU/GPU temperature and fan RPM have no unprivileged source on
+// Apple Silicon from the tools already in use here — `powermetrics` demands
+// root, and the only readable "Temperature" key in ioreg belongs to
+// AppleSmartBattery, which is the battery's, not the SoC's. `macmon` reads
+// them through IOReport without sudo ("Sudoless performance monitoring for
+// Apple Silicon", brew install macmon). It is optional: absent, these metrics
+// keep reporting unavailable exactly as before.
+//
+// Same shape as the media addon preferring `media-control` and brightness
+// preferring `brightness` — an optional helper that unlocks a platform, never
+// a hard dependency.
+interface MacmonSample {
+  readonly cpuTemp: number | null
+  readonly gpuTemp: number | null
+  readonly fanRpm: number | null
+}
+
+const MACMON_SHARE_MS = 2_000
+let sharedMacmon: { at: number; value: MacmonSample | null } | null = null
+let inFlightMacmon: Promise<MacmonSample | null> | null = null
+
+const finite = (v: unknown): number | null =>
+  typeof v === "number" && Number.isFinite(v) ? v : null
+
+export const parseMacmonSample = (raw: string): MacmonSample | null => {
+  // `macmon pipe` emits one JSON object per sample, newline delimited.
+  const line = raw.split("\n").find((l) => l.trim().startsWith("{"))
+  if (line === undefined) return null
+  let data: Record<string, unknown>
+  try {
+    data = JSON.parse(line) as Record<string, unknown>
+  } catch {
+    return null
+  }
+  const temp = (data["temp"] ?? {}) as Record<string, unknown>
+  const fans = Array.isArray(data["fans"]) ? data["fans"] : []
+  // A machine with several fans reports the fastest — the one that is doing
+  // the work. A passively cooled Mac reports an empty array, not zero.
+  let fanRpm: number | null = null
+  for (const fan of fans) {
+    const rpm = finite((fan as Record<string, unknown>)["rpm"])
+    if (rpm !== null && rpm > 0) fanRpm = Math.max(fanRpm ?? 0, rpm)
+  }
+  return {
+    cpuTemp: finite(temp["cpu_temp_avg"]),
+    gpuTemp: finite(temp["gpu_temp_avg"]),
+    fanRpm,
+  }
+}
+
+async function readMacmon(): Promise<MacmonSample | null> {
+  const now = Date.now()
+  if (sharedMacmon !== null && now - sharedMacmon.at < MACMON_SHARE_MS) {
+    return sharedMacmon.value
+  }
+  // Three metrics read one sample; collapse concurrent probes onto one spawn.
+  if (inFlightMacmon !== null) return inFlightMacmon
+  inFlightMacmon = (async () => {
+    // --samples 1 makes it exit on its own; the interval is the settle time
+    // before the first reading, well inside darwinRun's 2s ceiling.
+    const raw = await darwinRun("macmon", [
+      "pipe",
+      "--samples",
+      "1",
+      "--interval",
+      "200",
+    ])
+    const value = raw === null ? null : parseMacmonSample(raw)
+    sharedMacmon = { at: Date.now(), value }
+    return value
+  })().finally(() => {
+    inFlightMacmon = null
+  })
+  return inFlightMacmon
+}
+
 async function probeTemperature(): Promise<ProbeResult> {
+  if (process.platform === "darwin") {
+    const sample = await readMacmon()
+    const value = sample?.cpuTemp ?? null
+    return value === null
+      ? { available: false, unit: "°C" }
+      : { available: true, value, unit: "°C" }
+  }
   if (process.platform !== "linux") return { available: false, unit: "°C" }
 
   try {
@@ -382,6 +465,10 @@ async function probeProcesses(): Promise<ProbeResult> {
 // wins; otherwise the platform just doesn't expose boost and we return
 // unavailable rather than guess.
 async function probeCpuBoost(): Promise<ProbeResult> {
+  // ponytail: deliberately not implemented for darwin. Apple Silicon has no
+  // turbo toggle to report — there is no equivalent of cpufreq/boost or
+  // intel_pstate/no_turbo — so there is nothing to read, with or without
+  // macmon. Same for cpu-voltages below: no exposed voltage rail.
   if (process.platform !== "linux") {
     return { available: false, unit: "" }
   }
@@ -568,6 +655,13 @@ async function probeDiskIo(): Promise<ProbeResult> {
 // (laptops with passive cooling). Pick the first hwmon with any non-zero
 // fan reading — keeps the metric meaningful (a "0 RPM" fan isn't a fan).
 async function probeFanRpm(): Promise<ProbeResult> {
+  if (process.platform === "darwin") {
+    const sample = await readMacmon()
+    const value = sample?.fanRpm ?? null
+    return value === null
+      ? { available: false, unit: "RPM" }
+      : { available: true, value, unit: "RPM" }
+  }
   if (process.platform !== "linux") {
     return { available: false, unit: "RPM" }
   }
@@ -712,6 +806,13 @@ async function probeGpuUsage(): Promise<ProbeResult> {
 }
 
 async function probeGpuTemp(): Promise<ProbeResult> {
+  if (process.platform === "darwin") {
+    const sample = await readMacmon()
+    const value = sample?.gpuTemp ?? null
+    return value === null
+      ? { available: false, unit: "°C" }
+      : { available: true, value, unit: "°C" }
+  }
   if (process.platform !== "linux") {
     return { available: false, unit: "°C" }
   }

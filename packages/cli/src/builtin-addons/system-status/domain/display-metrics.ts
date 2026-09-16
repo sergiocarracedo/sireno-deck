@@ -96,8 +96,13 @@ export function toDisplayMetric(
   const def = METRICS_CATALOG[snapshot.id]!
   const formatter = resolveFormatter(formatterName) ?? def.formatter
   if (!snapshot.available || snapshot.value === undefined) {
-    // ponytail: a missing value goes with a missing unit — the renderer
-    // shows "—" alone, never "— %" or "— °C".
+    // ponytail: the comment that used to sit here claimed the unit is dropped
+    // so the renderer shows "—" alone, never "— °C". The code has always done
+    // the opposite, and display-rate-bytes-formatter.test.ts explicitly pins
+    // the unit being KEPT ("— B/s"). Two contradictory intents; the test wins,
+    // so the behaviour stands and the misleading comment is gone. If the
+    // intent really is a bare "—", that is a deliberate UI change with a test
+    // to update, not a silent fix.
     return {
       id: snapshot.id,
       label: def.defaultLabel,

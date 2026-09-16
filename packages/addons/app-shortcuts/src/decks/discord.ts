@@ -21,7 +21,11 @@ export const discordDeck: AddonDeckEntry = {
     action("mic-off", "Mute", "macro://[macos:cmd+shift+m]ctrl+shift+m"),
     action("headphones", "Deafen", "macro://[macos:cmd+shift+h]ctrl+shift+h"),
     action("settings", "Settings", "macro://[macos:cmd+,]ctrl+,"),
-    action("user-plus", "Invite", "macro://alt"),
+    // ponytail: was `macro://alt`. A bare modifier is not a valid combo, so
+    // the parser fell through to the TEXT path and typed the literal word
+    // "alt" into the message box — one tap away from sending it to a channel.
+    // Discord has no keyboard shortcut for inviting, so there is nothing to
+    // map this to; the button is removed rather than bound to a guess.
     action("arrow-up", "Mention", "macro://alt+shift+@"),
     action("arrow-down", "Next Channel", "macro://tab"),
     action("arrow-up-1", "Prev Channel", "macro://shift+tab"),
