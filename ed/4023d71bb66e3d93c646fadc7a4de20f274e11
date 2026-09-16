@@ -1,0 +1,39 @@
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_d5b9303784a199::t_2ca3dd60ae3bba 99-105
+packages/cli/src/cli/commands/spawn-daemon.ts
+  s_d5b9303784a199::t_05b27758eda0f7 28-30,35-47
+packages/cli/src/util/logger.ts
+  s_d5b9303784a199::t_c59dec7304602a 272-274,278-284
+packages/cli/src/cli/commands/__tests__/service-detection.test.ts
+  s_d5b9303784a199::t_c59dec7304602a 1-63
+packages/addons/app-shortcuts/src/decks/discord.ts
+  s_d5b9303784a199::t_3afbb795667c1c 24-28
+packages/cli/src/builtin-addons/system-status/__tests__/macmon-sample.test.ts
+  s_d5b9303784a199::t_2e54163b3a6206 1-55
+packages/addons/app-shortcuts/src/__tests__/deck-macros.test.ts
+  s_d5b9303784a199::t_3afbb795667c1c 101-134
+packages/cli/src/builtin-addons/system-status/README.md
+  s_d5b9303784a199::t_12b5dfc6c4060a 76-77,85
+  s_d5b9303784a199::t_f2043d5aa22046 87-116
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_d5b9303784a199::t_1dac7b2ca7693a 265-340
+  s_d5b9303784a199::t_13c6c52f69433b 342-348,468-471,658-664,809-815
+packages/cli/src/builtin-addons/system-status/manifest.ts
+  s_d5b9303784a199::t_e796587bb49215 66-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ed4023d71bb66e3d93c646fadc7a4de20f274e11",
+  "prompts": {},
+  "sessions": {
+    "s_d5b9303784a199": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc0b6a72-35c7-4578-b82d-db4e25930541",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
