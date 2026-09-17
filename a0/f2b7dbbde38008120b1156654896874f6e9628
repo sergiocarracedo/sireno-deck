@@ -1,0 +1,28 @@
+packages/cli/src/util/log-tail.ts
+  s_d5b9303784a199::t_9457cce18e9fb8 10-11,22-31,39
+packages/cli/src/cli/commands/logs.ts
+  s_d5b9303784a199::t_9457cce18e9fb8 12,17,31,37,42,57-62,70
+packages/cli/src/util/logger.ts
+  s_d5b9303784a199::t_78d691ad20310e 105-134,150-151
+  s_d5b9303784a199::t_0191436c87d382 180
+packages/cli/src/__tests__/logger-format.test.ts
+  s_d5b9303784a199::t_ee1bc779e1d564 192-239
+packages/cli/src/cli/__tests__/logs-command.test.ts
+  s_d5b9303784a199::t_ee1bc779e1d564 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a0f2b7dbbde38008120b1156654896874f6e9628",
+  "prompts": {},
+  "sessions": {
+    "s_d5b9303784a199": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc0b6a72-35c7-4578-b82d-db4e25930541",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
