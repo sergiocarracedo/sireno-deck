@@ -1,5 +1,10 @@
 import { readFileSync, realpathSync } from "node:fs"
-import { dirname, isAbsolute, resolve as resolvePath } from "node:path"
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  resolve as resolvePath,
+} from "node:path"
 
 export class IncludeResolutionError extends Error {
   readonly issues: { message: string; path?: string }[]
@@ -16,16 +21,42 @@ export class IncludeResolutionError extends Error {
 
 const INCLUDE_RE = /^(\s*)(.*?)\s*!include\s+(\S+)(.*)$/
 
+/**
+ * Resolves symlinks so two spellings of the same directory compare equal.
+ *
+ * ponytail: the containment check below is a plain string prefix, so a config
+ * reached through a symlinked parent failed it — the defining file had already
+ * been canonicalised while an absolute `!include` had not, and the two never
+ * shared a prefix. On macOS that is every config under a temp dir, since /var
+ * is a symlink to /private/var, but it applies to any symlinked config
+ * directory. Falls back to the literal path when the target does not exist yet
+ * (a missing include must be reported as missing, not as an escape attempt).
+ */
+const canonical = (p: string): string => {
+  try {
+    return realpathSync.native(p)
+  } catch {
+    try {
+      return resolvePath(realpathSync.native(dirname(p)), basename(p))
+    } catch {
+      return p
+    }
+  }
+}
+
 const resolveIncludePath = (
   pathStr: string,
   definingFilePath: string,
 ): string => {
-  const rootDir = resolvePath(dirname(definingFilePath))
-  const normalizedRoot = rootDir.endsWith("/") ? rootDir : `${rootDir}/`
   const includePath = isAbsolute(pathStr)
     ? pathStr
     : resolvePath(dirname(definingFilePath), pathStr)
-  if (!includePath.startsWith(normalizedRoot)) {
+  // Compare canonical forms, but hand back the path as written: the resolved
+  // path is what reaches the config UI and isEditableSource, and rewriting it
+  // to its realpath would change the identity of every source the editor sees.
+  const rootDir = canonical(resolvePath(dirname(definingFilePath)))
+  const normalizedRoot = rootDir.endsWith("/") ? rootDir : `${rootDir}/`
+  if (!canonical(includePath).startsWith(normalizedRoot)) {
     throw new IncludeResolutionError(
       `!include path escapes config directory: ${includePath} (from ${definingFilePath})`,
       [

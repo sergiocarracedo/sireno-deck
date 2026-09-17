@@ -1,4 +1,10 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"
+import {
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
@@ -15,7 +21,12 @@ afterEach(() => {
 const fixture = (
   rootText = "decks:\n  main:\n    buttons:\n      - type: core:action\n        position: 0\n",
 ) => {
-  const root = mkdtempSync(join(tmpdir(), "config-mutation-"))
+  // ponytail: realpath the fixture root. The service canonicalises every
+  // path it reports (mutation.ts) so a file has one identity regardless of how
+  // it was reached — and on macOS os.tmpdir() is /var/..., a symlink to
+  // /private/var/..., so comparing raw fixture paths against reported ones
+  // failed on the host while passing on Linux.
+  const root = realpathSync(mkdtempSync(join(tmpdir(), "config-mutation-")))
   roots.push(root)
   const path = join(root, "config.yml")
   writeFileSync(path, rootText)

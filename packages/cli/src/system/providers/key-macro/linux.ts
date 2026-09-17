@@ -608,6 +608,12 @@ export const createLinuxKeyMacroProvider = async (
   if (tool === YDOTOOL_TOOL) {
     try {
       clipboardProvider = createClipboardProvider({
+        // ponytail: createClipboardProvider defaults to process.platform, so
+        // the LINUX key-macro provider was handing itself a darwin clipboard
+        // (pbcopy) whenever it ran on a Mac. The per-OS providers are chosen
+        // by the caller everywhere else; pin it here too rather than letting
+        // the host OS decide what a linux provider does.
+        platform: "linux",
         executor: deps.executor,
         env: deps.env,
         logger: deps.logger,
