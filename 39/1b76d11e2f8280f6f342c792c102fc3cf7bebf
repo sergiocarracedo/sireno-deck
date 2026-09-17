@@ -1,0 +1,23 @@
+packages/cli/src/config/__tests__/include-resolver.test.ts
+  s_d5b9303784a199::t_02d87cbd76f109 152-153,159,161,163,173-176,187-189
+  s_d5b9303784a199::t_70ae74eabdfef0 1-2,143-151,154-158,160,162,164-172,177-186,190-193
+  s_d5b9303784a199::t_38b8ca886aef57 194
+packages/cli/src/config/include-resolver.ts
+  s_d5b9303784a199::t_e5715a1b53e3d0 47-49,54,57-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "391b76d11e2f8280f6f342c792c102fc3cf7bebf",
+  "prompts": {},
+  "sessions": {
+    "s_d5b9303784a199": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc0b6a72-35c7-4578-b82d-db4e25930541",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
