@@ -5,6 +5,7 @@ import type pino from "pino"
 import { createGestureDetector } from "@/core/gesture-state"
 import { pushBlackFrame } from "@/device/black-frame"
 import type { DeviceDescriptor } from "@/device/registry"
+import { createReconnectingDevice } from "@/device/reconnecting"
 import { connectStreamDeck, type StreamDeckDevice } from "@/device/stream-deck"
 import { BrowserRenderer } from "@/render/browser-renderer"
 import { pushRawImage } from "@/render/push-raw-image"
@@ -108,20 +109,39 @@ export class RealOutputClient implements OutputClient {
     const descriptor = this.descriptor
     const logger = opts.logger.child({ component: "real" })
 
-    let device: StreamDeckDevice
+    let hardware: StreamDeckDevice
     try {
-      device = await connectStreamDeck({ serial: descriptor.id })
+      hardware = await connectStreamDeck({ serial: descriptor.id })
     } catch {
       throw new Error(
         `Saved device ${descriptor.id} is no longer connected. Re-run with --config to pick another.`,
       )
     }
+
+    // ponytail: from here on the pipeline talks to a wrapper, not the raw
+    // handle. A KVM switching hosts removes the USB device, the SDK emits
+    // `error`, and with nothing subscribed that unhandled event threw straight
+    // into the daemon's uncaughtException guard — the service died with no
+    // recovery. Nothing else in the pipeline cares about USB, so only the
+    // device handle is swapped; writes are dropped while the deck is away and
+    // the keys are repainted when it returns.
+    let renderer: BrowserRenderer | null = null
+    const device = createReconnectingDevice(hardware, {
+      serial: descriptor.id,
+      connect: connectStreamDeck,
+      logger,
+      onReconnect: async (fresh) => {
+        if (this.deviceBrightness !== null) {
+          await fresh.setBrightness(this.deviceBrightness)
+        }
+        renderer?.forceRedraw()
+      },
+    })
     this.device = device
 
     let shuttingDown = false
     let frontendSupervisor: SuperviseHandle | null = null
     let configUiSupervisor: SuperviseHandle | null = null
-    let renderer: BrowserRenderer | null = null
 
     try {
       // ponytail: hardware-only splash — push the logo immediately after the

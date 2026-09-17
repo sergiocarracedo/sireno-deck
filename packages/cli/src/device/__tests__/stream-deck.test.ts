@@ -32,6 +32,12 @@ const infoWith = (overrides: {
 })
 
 const handleFor = (info: ReturnType<typeof infoWith>) => {
+  // ponytail: the SDK handle is an EventEmitter and connectStreamDeck now
+  // subscribes to its `error` event at open time — an unhandled `error` used
+  // to throw straight into the daemon's uncaughtException guard, so a KVM
+  // taking the USB device away killed the service. The mock needs the
+  // emitter surface.
+  const listeners = new Map<string, Set<(...args: unknown[]) => void>>()
   const handle = {
     MODEL: info.model,
     PRODUCT_NAME: "Stream Deck MK.2",
@@ -39,6 +45,19 @@ const handleFor = (info: ReturnType<typeof infoWith>) => {
     setBrightness: vi.fn(async () => undefined),
     fillKeyBuffer: vi.fn(async () => undefined),
     close: vi.fn(async () => undefined),
+    on: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
+      const set = listeners.get(event) ?? new Set()
+      set.add(handler)
+      listeners.set(event, set)
+      return handle
+    }),
+    off: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
+      listeners.get(event)?.delete(handler)
+      return handle
+    }),
+    emit: (event: string, ...args: unknown[]) => {
+      for (const h of listeners.get(event) ?? []) h(...args)
+    },
   }
   openMock.mockResolvedValueOnce(handle)
   return handle

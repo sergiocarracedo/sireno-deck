@@ -29,6 +29,16 @@ export interface StreamDeckDevice {
   setBrightness(value: number): Promise<void>
   fillKeyBuffer(keyIndex: number, buffer: Buffer): Promise<void>
   onKeyEvent(handler: (event: StreamDeckKeyEvent) => void): () => void
+  /**
+   * Fires when the SDK reports a transport failure — most commonly the USB
+   * device going away (unplugged, or a KVM switching the host).
+   *
+   * ponytail: the SDK declares an `error` event and nothing subscribed to it.
+   * An unhandled `error` on an EventEmitter throws, which the daemon's
+   * uncaughtException guard turned into an immediate exit — so flipping a KVM
+   * killed the service outright instead of it noticing the deck had left.
+   */
+  onError(handler: (err: unknown) => void): () => void
   close(): Promise<void>
 }
 
@@ -93,6 +103,14 @@ export const connectStreamDeck = async (
   const handle = await openStreamDeck(targetInfo.path, {})
   const descriptor = buildDescriptor(targetInfo, handle.CONTROLS)
 
+  // Baseline listener so the event always has a subscriber, even when the
+  // caller never registers one. Without it an `error` emitted between open and
+  // the caller's onError() call is still fatal.
+  const errorHandlers = new Set<(err: unknown) => void>()
+  handle.on("error", (err: unknown) => {
+    for (const h of errorHandlers) h(err)
+  })
+
   return {
     serial: descriptor.serial,
     path: descriptor.path,
@@ -122,6 +140,12 @@ export const connectStreamDeck = async (
       return () => {
         handle.off("down", onDown)
         handle.off("up", onUp)
+      }
+    },
+    onError(handler: (err: unknown) => void): () => void {
+      errorHandlers.add(handler)
+      return () => {
+        errorHandlers.delete(handler)
       }
     },
     async close(): Promise<void> {

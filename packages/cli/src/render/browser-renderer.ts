@@ -152,6 +152,19 @@ export class BrowserRenderer {
     this.running = true
   }
 
+  /**
+   * Repaints every key on the next tick.
+   *
+   * ponytail: the change tracker skips keys whose bytes have not changed, so
+   * after the hardware goes away and comes back the deck would stay blank —
+   * the tracker still holds the hashes of what the OLD handle was showing.
+   * Nothing reset it before this; `runtime:invalidate` only triggers a tick.
+   */
+  forceRedraw(): void {
+    this.tracker.reset()
+    this.debouncer.trigger()
+  }
+
   async stop(): Promise<void> {
     if (!this.running) return
     this.running = false
