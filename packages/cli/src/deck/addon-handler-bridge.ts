@@ -122,8 +122,16 @@ export const bridgeAddonServices = async (
 
       addonModules.set(addon.name, mod)
       addonGlobalServices.set(addon.name, globalService)
-    } catch {
-      // Skip addons whose global backend fails to load.
+    } catch (err) {
+      // ponytail: this used to swallow the error silently. When run.ts handed
+      // the daemon an addon's BROWSER bundle, every import here threw on an
+      // unresolvable host-UI specifier and the addon simply vanished — no
+      // global service, no handlers, no log line, and a deck button that did
+      // nothing when tapped. Whatever the cause, say so.
+      logger.error(
+        { addonName: addon.name, entry: addon.globalServiceEntry, err },
+        "addon global service failed to load",
+      )
     }
   }
 
@@ -191,6 +199,33 @@ export const bridgeAddonServices = async (
     } catch (err) {
       logger.error({ addonName, err }, `addon onLoad threw`)
     }
+
+    // ponytail: `subscriptions` has been part of the addon API since it was
+    // written (api.ts documents them as "push-based sources — file watchers,
+    // sockets") but nothing ever invoked them. coding-agents declares one, and
+    // its ClaudeCodeProvider fills its agent map ONLY inside subscribe() — so
+    // the provider reported zero Claude Code sessions forever, on a machine
+    // with eight of them open. Pollers were wired; subscriptions never were.
+    for (const subscription of globalService.subscriptions ?? []) {
+      try {
+        const handle = subscription.subscribe(ctx)
+        trackedCleanup.push(() => {
+          try {
+            handle.unsubscribe()
+          } catch (err) {
+            logger.error(
+              { addonName, channel: subscription.channel, err },
+              `addon subscription unsubscribe failed`,
+            )
+          }
+        })
+      } catch (err) {
+        logger.error(
+          { addonName, channel: subscription.channel, err },
+          `addon subscription failed to start`,
+        )
+      }
+    }
   }
 
   const deckButtonCleanup = new Map<
@@ -239,8 +274,13 @@ export const bridgeAddonServices = async (
         try {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           addonMod = (await import(addon.frontendEntry)) as AddonModule
-        } catch {
-          // Skip.
+        } catch (err) {
+          // ponytail: silence here meant a failed import surfaced only as a
+          // button that ignored taps. See the matching catch above.
+          logger.error(
+            { addonName, entry: addon.frontendEntry, err },
+            "addon button handlers failed to load",
+          )
         }
         break
       }

@@ -12,7 +12,9 @@
     "directory": "packages/addons/app-shortcuts"
   },
   "files": [
-    "dist"
+    "dist",
+    "sirenodeck.json",
+    "assets"
   ],
   "type": "module",
   "main": "./dist/index.js",
@@ -33,5 +35,6 @@
   "devDependencies": {
     "tsdown": "^0.22.14",
     "typescript": "^5.7.0"
-  }
+  },
+  "sirenoAddonApiVersion": 1
 }

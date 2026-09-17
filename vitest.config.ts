@@ -44,6 +44,15 @@ export default defineConfig({
   test: {
     globals: false,
     environment: "node",
+    // ponytail: several suites drive the real pipeline — spawning a bridge,
+    // supervisors and watchers — and then wait on it with real timers. Under
+    // vitest's default 5s these passed on an idle laptop and failed a dozen
+    // assertions the moment the machine was also running a browser and a chat
+    // app, reporting a load average as a code defect. A generous ceiling costs
+    // nothing on a green run (a passing test still finishes as fast as it can)
+    // and only shows up when something is genuinely wedged.
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     include: [
       "packages/cli/src/**/__tests__/**/*.test.{ts,tsx}",
       "packages/cli/frontend/src/**/__tests__/**/*.test.{ts,tsx}",

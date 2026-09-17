@@ -63,6 +63,34 @@ export const systemStatusManifest: AddonManifestV1 = {
       },
     ],
   },
+  checks: [
+    {
+      // ponytail: mirrors the media addon's media-control check. On Apple
+      // Silicon, CPU/GPU temperature and fan RPM have no unprivileged source
+      // from the tools already in use here — powermetrics needs root and the
+      // only readable Temperature in ioreg is the battery's. macmon reads them
+      // through IOReport without sudo. Absent, those three metrics simply stay
+      // unavailable, so this is a hint rather than a hard requirement.
+      name: "macos-sensors",
+      check: async () => {
+        if (process.platform !== "darwin") return { available: true }
+        const { execFile } = await import("node:child_process")
+        const { promisify } = await import("node:util")
+        try {
+          await promisify(execFile)("sh", ["-c", "command -v macmon"], {
+            timeout: 2_000,
+          })
+          return { available: true }
+        } catch {
+          return {
+            available: false,
+            reason:
+              "install macmon (`brew install macmon`) to report CPU/GPU temperature and fan RPM; without it those three metrics stay unavailable on Apple Silicon",
+          }
+        }
+      },
+    },
+  ],
 }
 
 export const systemStatusAddon = systemStatusManifest

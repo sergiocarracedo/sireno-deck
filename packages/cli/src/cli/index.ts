@@ -3,7 +3,7 @@ import { join } from "node:path"
 import type { ArgumentsCamelCase, CommandModule } from "yargs"
 
 import { createLogger } from "@/util/logger"
-import { PACKAGE_NAME } from "@/version"
+import { BIN_NAME, PACKAGE_NAME, VERSION } from "@/version"
 
 import { logsCommand } from "./commands/logs"
 import { reload, type ReloadOptions } from "./commands/reload"
@@ -334,9 +334,10 @@ export const buildCli = async (): Promise<{
   scriptName: string
   commands: CommandModule<object, GlobalOptions>[]
   packageName: string
+  version: string
 }> => {
   return {
-    scriptName: PACKAGE_NAME,
+    scriptName: BIN_NAME,
     commands: [
       configUiCommand,
       startCommand,
@@ -349,5 +350,6 @@ export const buildCli = async (): Promise<{
       installCommand as CommandModule<object, GlobalOptions>,
     ],
     packageName: PACKAGE_NAME,
+    version: VERSION,
   }
 }

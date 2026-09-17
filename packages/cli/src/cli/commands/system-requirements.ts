@@ -13,7 +13,11 @@ import {
   type InstallStepResult,
   type SudoRunResult,
   type SystemReport,
+  ACCESSIBILITY_SETTINGS_URL,
+  DARWIN_ACCESSIBILITY_STEP_ID,
   buildInstallPlan,
+  hasDarwinAccessibility,
+  openSettingsUrl,
   capturePassword,
   isSudoNopasswd,
   needsConfigSeed,
@@ -23,6 +27,7 @@ import {
   summarizeReport,
 } from "@/system/setup-wizard"
 import {
+  formatCapabilityPanel,
   formatResultLine,
   formatStepInstructions,
   color,
@@ -180,22 +185,6 @@ const printProbeSummary = (report: SystemReport): void => {
   note(lines.join("\n"), "Detected")
 }
 
-const capabilityLine = (cap: {
-  name: string
-  available: boolean
-  preferred: string
-  reason: string
-}): string => {
-  // ponytail: ● for installed (green), ○ for missing (red). Different shapes
-  // so the dot is greppable without color. The status text carries the
-  // install hint — `cap.reason` was already built for that purpose.
-  const mark = cap.available ? color.green("●") : color.red("○")
-  const status = cap.available
-    ? color.green("Installed")
-    : color.red(`Not installed — ${cap.reason}`)
-  return `${mark}  ${cap.preferred}: ${status} (used for ${cap.name})`
-}
-
 const reProbeCapability = async (
   step: InstallStep,
   deps: SystemRequirementsOptions,
@@ -223,12 +212,67 @@ const reProbeCapability = async (
   return fresh.capabilities[step.capability].available
 }
 
+// ponytail: the Accessibility grant is the one step no package manager can
+// perform, so the wizard used to hand the user a System Settings breadcrumb and
+// give up. macOS can deep-link straight to the pane, so offer to open it, then
+// re-probe in place — the grant takes effect immediately for processes started
+// afterwards, and re-probing here saves a whole extra wizard run.
+const runDarwinAccessibilityStep = async (
+  yesBatched: boolean,
+): Promise<InstallStepResult> => {
+  if (await hasDarwinAccessibility(realExecutor)) return "installed"
+
+  if (!yesBatched) {
+    const shouldOpen = await confirm({
+      message: "Open System Settings at Privacy & Security → Accessibility?",
+      initialValue: true,
+    })
+    if (isCancel(shouldOpen) || !shouldOpen) return "manual"
+  }
+
+  const opened = await openSettingsUrl(realExecutor, ACCESSIBILITY_SETTINGS_URL)
+  if (!opened) {
+    log.warn("Could not open System Settings automatically.")
+    return "manual"
+  }
+  log.info(
+    `Enable ${color.green(appNeedingAccessibility())} in the list that just opened.`,
+  )
+
+  // Non-interactive runs cannot wait for a human to flip the switch, so report
+  // the step as manual rather than re-probing a grant that cannot have changed.
+  if (yesBatched) return "manual"
+
+  const granted = await confirm({
+    message: "Granted? (re-checks the permission)",
+    initialValue: true,
+  })
+  if (isCancel(granted) || !granted) return "manual"
+
+  if (await hasDarwinAccessibility(realExecutor)) return "installed"
+  log.warn(
+    "Still not granted for this process — macOS applies the grant to the app that launched sirenodeck, so restart your terminal and re-run.",
+  )
+  return "manual"
+}
+
+/**
+ * Best-effort name of the app the user must tick in the Accessibility list.
+ * macOS grants TCC to the bundle hosting the process, which is the terminal,
+ * not sirenodeck itself — naming it removes the most common misstep.
+ */
+const appNeedingAccessibility = (): string =>
+  process.env["TERM_PROGRAM"] ?? "your terminal"
+
 const runInstallStep = async (
   step: InstallStep,
   yesBatched: boolean,
   logger: pino.Logger,
   deps: SystemRequirementsOptions,
 ): Promise<InstallStepResult> => {
+  if (step.id === DARWIN_ACCESSIBILITY_STEP_ID) {
+    return await runDarwinAccessibilityStep(yesBatched)
+  }
   if (step.manualOnly) return "manual"
   if (step.packages.length === 0 || step.packageManager === "none") {
     return "manual"
@@ -525,10 +569,7 @@ export const systemRequirements = async (
   // ponytail: no leading "  " here — `note()` already pads the content to the
   // title column. Adding more shifts the list right of "Capabilities" and the
   // rows wrap with the wrong indent on long lines.
-  const capLines = Object.entries(report.capabilities)
-    .map(([, cap]) => capabilityLine(cap))
-    .join("\n")
-  note(capLines, "Capabilities")
+  note(formatCapabilityPanel(report.capabilities), "Capabilities")
 
   const results: Record<string, InstallStepResult> = {}
   let anyInstalled = false
@@ -570,10 +611,7 @@ export const systemRequirements = async (
         }
       },
     })
-    const freshCaps = Object.values(freshReport.capabilities)
-      .map((cap) => capabilityLine(cap))
-      .join("\n")
-    note(freshCaps, "Capabilities")
+    note(formatCapabilityPanel(freshReport.capabilities), "Capabilities")
   }
 
   if (needsConfigSeed(report)) {

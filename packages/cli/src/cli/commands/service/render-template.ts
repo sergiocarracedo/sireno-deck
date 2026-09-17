@@ -1,3 +1,4 @@
+import { dirname } from "node:path"
 import { platform } from "node:process"
 
 export type OS = "linux" | "darwin" | "win32"
@@ -79,6 +80,24 @@ const splitExec = (execStart: string): readonly string[] => {
   return tokens
 }
 
+// ponytail: launchd hands an agent a bare PATH (/usr/bin:/bin:/usr/sbin:/sbin).
+// The daemon spawns node-based children (vite) and shells out to Homebrew tools,
+// none of which live there. Prepend the usual Homebrew prefixes and the
+// directory of the node binary launching us, so children resolve the same
+// binaries an interactive shell would.
+const darwinPathEntries = (program: string | undefined): string => {
+  const entries = [
+    ...(program !== undefined ? [dirname(program)] : []),
+    "/opt/homebrew/bin",
+    "/usr/local/bin",
+    "/usr/bin",
+    "/bin",
+    "/usr/sbin",
+    "/sbin",
+  ]
+  return [...new Set(entries)].join(":")
+}
+
 export const renderDarwinPlist = (vars: TemplateVars): string => {
   const [program, ...restArgs] = splitExec(vars.execStart)
   const lines: string[] = [
@@ -97,6 +116,11 @@ export const renderDarwinPlist = (vars: TemplateVars): string => {
     "  <true/>",
     "  <key>KeepAlive</key>",
     `  <${vars.restartPolicy === "always" ? "true" : "false"}/>`,
+    "  <key>EnvironmentVariables</key>",
+    "  <dict>",
+    "    <key>PATH</key>",
+    `    <string>${darwinPathEntries(program)}</string>`,
+    "  </dict>",
     "  <key>WorkingDirectory</key>",
     `  <string>${vars.workingDirectory}</string>`,
     "  <key>StandardOutPath</key>",

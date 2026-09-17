@@ -1,6 +1,6 @@
 import { defineConfig } from "tsdown"
 
-export default defineConfig({
+const nodeBundle = defineConfig({
   entry: ["src/index.ts"],
   format: ["esm"],
   target: "node20",
@@ -42,3 +42,39 @@ export default defineConfig({
     ).pathname,
   },
 })
+
+// ponytail: a SECOND bundle, for the browser only.
+//
+// The Node bundle above aliases `@sirenodeck/sirenodeck/ui/primitives/Label`
+// to an inert stub, because plain Node (the daemon, importing this package to
+// read its manifest) cannot resolve the host's .tsx sources. The original
+// comment assumed vite would "ignore this stub" when rendering the frontend —
+// it cannot: tsdown inlines the stub at build time, so the specifier never
+// survives into dist/index.js and the browser rendered `Label = () => null`.
+// That is why every pomodoro button drew its icon but no text.
+//
+// Here the specifier is left EXTERNAL instead, so the host's vite alias
+// resolves it to the real component in the browser. sirenodeck.json points
+// `frontendEntry` at this file; the daemon keeps loading dist/index.js.
+const browserBundle = defineConfig({
+  entry: ["src/index.ts"],
+  format: ["esm"],
+  platform: "neutral",
+  outDir: "dist",
+  dts: false,
+  // Must not clean — it would wipe the Node bundle built by the first config.
+  clean: false,
+  external: [
+    "react",
+    "react-dom",
+    "react/jsx-runtime",
+    "react/jsx-dev-runtime",
+    "zod",
+    // Resolved by the host's vite alias at runtime.
+    /^@sirenodeck\/sirenodeck\//,
+  ],
+  outExtensions: () => ({ js: ".js" }),
+  outputOptions: { entryFileNames: "frontend.js" },
+})
+
+export default [nodeBundle, browserBundle]

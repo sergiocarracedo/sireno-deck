@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { buildLogger, type GlobalOptions } from "../index"
+import { buildCli, buildLogger, type GlobalOptions } from "../index"
+import { PACKAGE_NAME } from "@/version"
 import type { ArgumentsCamelCase } from "yargs"
 
 const opts = (o: object): ArgumentsCamelCase<GlobalOptions> =>
@@ -49,5 +50,25 @@ describe("buildLogger", () => {
   it("respects --log-level silent", () => {
     const logger = buildLogger(opts({ logLevel: "silent" }))
     expect(logger.level).toBe("silent")
+  })
+})
+
+describe("buildCli", () => {
+  it("uses the runnable bin name, not the npm package name, as the script name", async () => {
+    // ponytail: scriptName drove every line of `--help`, so yargs rendered
+    // "@sirenodeck/sirenodeck start" — a string that is not a command anyone
+    // can type. The bin in package.json is `sirenodeck`.
+    const { scriptName } = await buildCli()
+    expect(scriptName).toBe("sirenodeck")
+    expect(scriptName).not.toContain("@")
+    expect(scriptName).not.toContain("/")
+  })
+
+  it("still reports the package name and a real version separately", async () => {
+    const { packageName, version } = await buildCli()
+    expect(packageName).toBe(PACKAGE_NAME)
+    // `.version()` takes the string to PRINT, so passing packageName alone
+    // made `sirenodeck -V` answer with the package name and no version.
+    expect(version).toMatch(/^\d+\.\d+\.\d+/)
   })
 })

@@ -91,9 +91,18 @@ describe("waitForPortFree", () => {
     expect(result).toBe(true)
   })
 
+  // ponytail: bind the holder to 127.0.0.1, not the wildcard. waitForPortFree
+  // probes 127.0.0.1 because that is where the daemon's own servers bind, and
+  // macOS happily grants a specific loopback bind while another socket holds
+  // the wildcard — so a wildcard holder made the port look FREE and these two
+  // tests asserted the opposite of what they measured. Verified: wildcard
+  // holder + loopback probe succeeds, loopback holder + loopback probe gives
+  // EADDRINUSE.
   it("resolves true after a bound server is closed", async () => {
     const srv: Server = createServer()
-    await new Promise<void>((resolve) => srv.listen(49198, resolve))
+    await new Promise<void>((resolve) =>
+      srv.listen(49198, "127.0.0.1", resolve),
+    )
     const promise = waitForPortFree(49198, 1_000)
     srv.close()
     const result = await promise
@@ -102,7 +111,9 @@ describe("waitForPortFree", () => {
 
   it("resolves false when port stays bound", async () => {
     const srv: Server = createServer()
-    await new Promise<void>((resolve) => srv.listen(49197, resolve))
+    await new Promise<void>((resolve) =>
+      srv.listen(49197, "127.0.0.1", resolve),
+    )
     const result = await waitForPortFree(49197, 300)
     expect(result).toBe(false)
     srv.close()

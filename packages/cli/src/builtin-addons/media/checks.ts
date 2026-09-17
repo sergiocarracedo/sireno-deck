@@ -40,13 +40,25 @@ const checkLinux = async ({
 const checkDarwin = async ({
   executor,
 }: MediaChecksDeps): Promise<AddonCheckResult> => {
-  if (await commandExists(executor, "osascript")) {
+  // ponytail: mirrors the Linux check's shape — there, playerctl is the
+  // system-wide MPRIS bridge and its absence is worth reporting. On macOS the
+  // equivalent is `media-control`: without it the provider can only talk to
+  // scriptable desktop players (Spotify, Music, TV) via AppleScript and will
+  // never see a browser, which is where most people actually play audio.
+  if (!(await commandExists(executor, "osascript"))) {
+    return {
+      available: false,
+      reason:
+        "install osascript (ships with macOS; needed for system volume control)",
+    }
+  }
+  if (await commandExists(executor, "media-control")) {
     return { available: true }
   }
   return {
     available: false,
     reason:
-      "install osascript (ships with macOS; needed for media control via Spotify AppleScript)",
+      "install media-control (`brew install media-control`) to detect playback from any app, browsers included; without it only Spotify/Music/TV are visible",
   }
 }
 

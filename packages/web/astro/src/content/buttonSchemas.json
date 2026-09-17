@@ -87,6 +87,7 @@
         },
         "addToHistory": {
           "default": true,
+          "internal": true,
           "type": "boolean"
         },
         "icon": {

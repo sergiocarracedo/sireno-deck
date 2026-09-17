@@ -11,20 +11,39 @@ export interface DarwinActiveAppDeps {
 
 const DEFAULT_POLL_MS = 1_000
 
-const APPLE_SCRIPT_GET_ACTIVE = `tell application "System Events" to get {name, name of window 1 of (first process whose frontmost is true), unix id of (first process whose frontmost is true)}`
+// ponytail: the old one-liner asked for `{name, name of window 1 of ..., unix
+// id of ...}` and had three separate faults. A bare `name` inside `tell
+// application "System Events"` resolves to System Events ITSELF, so the app
+// name was always "System Events". The result was then split on ",", so any
+// window title containing a comma shifted every field. And reading `window 1`
+// needs an Accessibility (TCC) grant — without it the whole script errors out,
+// losing the app name and pid too, even though neither needs that permission.
+//
+// Now: one script, newline-delimited, with the window title in its own `try`
+// so a missing Accessibility grant (or a window-less app) costs only the title.
+// Name and pid are lines 1 and 2; everything after is the title, so a title
+// containing the delimiter can't corrupt the fields that matter.
+const APPLE_SCRIPT_GET_ACTIVE = `tell application "System Events"
+  set p to first process whose frontmost is true
+  set n to name of p
+  set u to unix id of p
+  try
+    set w to name of window 1 of p
+  on error
+    set w to ""
+  end try
+  return n & linefeed & u & linefeed & w
+end tell`
 
 const parseOutput = (
   raw: string,
 ): { name: string; title: string; pid: number | null } | null => {
-  const trimmed = raw.trim()
-  if (trimmed.length === 0) return null
-  const parts = trimmed.split(",").map((s) => s.trim())
-  if (parts.length < 3) return null
-  const name = parts[0] ?? ""
-  const title = parts[1] ?? ""
-  const pidRaw = parts[2] ?? ""
-  const pid = Number.parseInt(pidRaw, 10)
+  if (raw.trim().length === 0) return null
+  const lines = raw.replace(/\r\n?/g, "\n").split("\n")
+  const name = (lines[0] ?? "").trim()
   if (name.length === 0) return null
+  const pid = Number.parseInt((lines[1] ?? "").trim(), 10)
+  const title = lines.slice(2).join("\n").trim()
   return { name, title, pid: Number.isFinite(pid) ? pid : null }
 }
 

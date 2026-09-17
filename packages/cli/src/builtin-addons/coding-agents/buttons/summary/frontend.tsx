@@ -132,8 +132,15 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
       count: count("waiting"),
     },
     {
+      // ponytail: this said "waiting" too, so the tile showed two identical
+      // labels differing only by dot colour and you had to know the internal
+      // status names to read your own deck. They mean different things: amber
+      // `waiting` is blocked on a rate limit or a tool stalled past 90s and
+      // will resume by itself, while this one will not move until the user
+      // acts. Only this status (and `error`) enters the attention list that
+      // makes the tile blink — see mergeSnapshot in shared/snapshot.ts.
       color: "var(--sireno-color-danger)",
-      label: "waiting",
+      label: "needs you",
       count: count("waiting_for_human"),
     },
     {

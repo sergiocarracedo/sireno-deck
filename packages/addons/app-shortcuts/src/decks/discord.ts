@@ -17,17 +17,21 @@ export const discordDeck: AddonDeckEntry = {
     process_name: ["discord", "Discord"],
   },
   buttons: [
-    action("search", "Find", "macro://ctrl+k"),
-    action("mic-off", "Mute", "macro://ctrl+shift+m"),
-    action("headphones", "Deafen", "macro://ctrl+shift+h"),
-    action("settings", "Settings", "macro://ctrl+,"),
-    action("user-plus", "Invite", "macro://alt"),
+    action("search", "Find", "macro://[macos:cmd+k]ctrl+k"),
+    action("mic-off", "Mute", "macro://[macos:cmd+shift+m]ctrl+shift+m"),
+    action("headphones", "Deafen", "macro://[macos:cmd+shift+h]ctrl+shift+h"),
+    action("settings", "Settings", "macro://[macos:cmd+,]ctrl+,"),
+    // ponytail: was `macro://alt`. A bare modifier is not a valid combo, so
+    // the parser fell through to the TEXT path and typed the literal word
+    // "alt" into the message box — one tap away from sending it to a channel.
+    // Discord has no keyboard shortcut for inviting, so there is nothing to
+    // map this to; the button is removed rather than bound to a guess.
     action("arrow-up", "Mention", "macro://alt+shift+@"),
     action("arrow-down", "Next Channel", "macro://tab"),
     action("arrow-up-1", "Prev Channel", "macro://shift+tab"),
-    action("pin", "Pinned", "macro://ctrl+p"),
-    action("smile", "Emoji", "macro://ctrl+shift+j"),
-    action("zap", "Nitro", "macro://ctrl+shift+n"),
-    action("logout", "Logout", "macro://ctrl+shift+d"),
+    action("pin", "Pinned", "macro://[macos:cmd+p]ctrl+p"),
+    action("smile", "Emoji", "macro://[macos:cmd+shift+j]ctrl+shift+j"),
+    action("zap", "Nitro", "macro://[macos:cmd+shift+n]ctrl+shift+n"),
+    action("logout", "Logout", "macro://[macos:cmd+shift+d]ctrl+shift+d"),
   ],
 }
