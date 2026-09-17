@@ -1,0 +1,36 @@
+packages/cli/src/outputClient/__tests__/real.test.ts
+  s_d5b9303784a199::t_55c043b90c067d 166-168,218-225
+packages/cli/src/outputClient/real.ts
+  s_d5b9303784a199::t_55c043b90c067d 8,112,114,120-139
+packages/cli/src/render/browser-renderer.ts
+  s_d5b9303784a199::t_55c043b90c067d 155-167
+packages/cli/src/device/__tests__/stream-deck.test.ts
+  s_d5b9303784a199::t_55c043b90c067d 35-40,48-60
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_d5b9303784a199::t_55c043b90c067d 14-25,454,504,537,564,621,663,731,765-766,771,806,819,843
+packages/cli/src/device/reconnecting.ts
+  s_d5b9303784a199::t_55c043b90c067d 1-193
+packages/cli/src/device/__tests__/reconnecting.test.ts
+  s_d5b9303784a199::t_55c043b90c067d 1-246
+packages/cli/src/device/stream-deck.ts
+  s_d5b9303784a199::t_55c043b90c067d 32-41,106-113,145-148
+  s_d5b9303784a199::t_88ff988d755d6e 149-150
+vitest.config.ts
+  s_d5b9303784a199::t_55c043b90c067d 47-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7010ca58e28b8dc674a72164b6b5d314760a2dec",
+  "prompts": {},
+  "sessions": {
+    "s_d5b9303784a199": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc0b6a72-35c7-4578-b82d-db4e25930541",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
