@@ -102,7 +102,36 @@ const FORWARDED_CONTEXT_FIELDS = [
   "reason",
 ] as const
 
-export const formatHuman = (jsonLine: string): string | null => {
+export interface FormatHumanOptions {
+  /**
+   * Prefix each line with the time it was logged.
+   *
+   * ponytail: off by default, because live startup output is read as it
+   * happens and the clock adds noise (see the comment below). `sirenodeck
+   * logs` is the opposite case — you are reading a record after the fact and
+   * "when did this happen" is the first question — so it turns this on.
+   */
+  readonly timestamps?: boolean
+}
+
+const formatLogTime = (value: unknown): string | null => {
+  // pino writes `time` as epoch millis; tolerate an ISO string too.
+  const ms =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+        ? Date.parse(value)
+        : Number.NaN
+  if (!Number.isFinite(ms)) return null
+  const d = new Date(ms)
+  const pad = (n: number, w = 2): string => String(n).padStart(w, "0")
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`
+}
+
+export const formatHuman = (
+  jsonLine: string,
+  options: FormatHumanOptions = {},
+): string | null => {
   let entry: Record<string, unknown>
   try {
     entry = JSON.parse(jsonLine) as Record<string, unknown>
@@ -118,6 +147,8 @@ export const formatHuman = (jsonLine: string): string | null => {
   // structured `time` field stays intact for forensics); the terminal only
   // needs enough info to read the line at a glance.
   const head = colorize(levelColor, level.padEnd(5))
+  const time = options.timestamps === true ? formatLogTime(entry["time"]) : null
+  const timeTag = time !== null ? `${colorize(DIM, time)} ` : ""
 
   const component =
     typeof entry["component"] === "string" ? entry["component"] : ""
@@ -146,7 +177,7 @@ export const formatHuman = (jsonLine: string): string | null => {
     }
   }
   const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
-  return `${head}${componentTag} ${msg}${ctxStr}`
+  return `${timeTag}${head}${componentTag} ${msg}${ctxStr}`
 }
 
 // ponytail: CLI startup logs (between intro/outro) should use the same
