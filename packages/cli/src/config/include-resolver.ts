@@ -44,19 +44,36 @@ const canonical = (p: string): string => {
   }
 }
 
+const isUnder = (candidate: string, root: string): boolean =>
+  candidate.startsWith(root.endsWith("/") ? root : `${root}/`)
+
 const resolveIncludePath = (
   pathStr: string,
   definingFilePath: string,
 ): string => {
+  const lexicalRoot = resolvePath(dirname(definingFilePath))
   const includePath = isAbsolute(pathStr)
     ? pathStr
-    : resolvePath(dirname(definingFilePath), pathStr)
-  // Compare canonical forms, but hand back the path as written: the resolved
-  // path is what reaches the config UI and isEditableSource, and rewriting it
-  // to its realpath would change the identity of every source the editor sees.
-  const rootDir = canonical(resolvePath(dirname(definingFilePath)))
-  const normalizedRoot = rootDir.endsWith("/") ? rootDir : `${rootDir}/`
-  if (!canonical(includePath).startsWith(normalizedRoot)) {
+    : resolvePath(lexicalRoot, pathStr)
+
+  // ponytail: containment is judged LEXICALLY, and that is the whole point.
+  // This check exists to stop `../../etc/passwd`, not to police where the
+  // user's own files live. Resolving symlinks first broke a perfectly ordinary
+  // setup — a `demos -> ../../repo/demos` symlink placed inside the config
+  // directory on purpose — by reporting the user's deliberate choice as a path
+  // traversal attempt and refusing to start the daemon.
+  //
+  // The canonical forms are still accepted, because the defining file may
+  // arrive already realpath'd while an absolute !include has not (on macOS
+  // /var is a symlink to /private/var, so this is every config under a temp
+  // dir). Any of the spellings matching is enough; `../` escapes match none.
+  const canonicalRoot = canonical(lexicalRoot)
+  const contained =
+    isUnder(includePath, lexicalRoot) ||
+    isUnder(includePath, canonicalRoot) ||
+    isUnder(canonical(includePath), canonicalRoot)
+
+  if (!contained) {
     throw new IncludeResolutionError(
       `!include path escapes config directory: ${includePath} (from ${definingFilePath})`,
       [

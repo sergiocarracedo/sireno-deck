@@ -1,5 +1,5 @@
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs"
-import { join } from "node:path"
+import { mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs"
+import { basename, join } from "node:path"
 import { tmpdir } from "node:os"
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
@@ -138,5 +138,57 @@ describe("resolveIncludes", () => {
 
     expect(out).toContain("name: new")
     expect(out).not.toContain("name: old")
+  })
+})
+
+describe("symlinks inside the config directory", () => {
+  // ponytail: this is a real setup that a canonicalising containment check
+  // broke — `~/.config/sirenodeck/demos` symlinked at the repo's demos folder,
+  // with `!include demos/demo-core.yml` in config.yml. Resolving the symlink
+  // before the prefix check put the target outside the config directory, so
+  // the daemon refused to start and reported the user's own deliberate symlink
+  // as a path traversal attempt. Containment is lexical for exactly this
+  // reason; only `../` escapes are blocked.
+  const configPath = (): string => join(workdir, "config.yml")
+
+  it("follows a symlinked subdirectory that points outside the config dir", () => {
+    const outside = mkdtempSync(join(tmpdir(), "include-resolver-outside-"))
+    try {
+      writeFileSync(join(outside, "demo-core.yml"), "name: from-demos\n")
+      symlinkSync(outside, join(workdir, "demos"))
+      const out = resolveIncludes(
+        "decks: !include demos/demo-core.yml\n",
+        configPath(),
+      )
+      expect(out).toContain("from-demos")
+    } finally {
+      rmSync(outside, { recursive: true, force: true })
+    }
+  })
+
+  it("still blocks a parent-directory escape", () => {
+    const outside = mkdtempSync(join(tmpdir(), "include-resolver-escape-"))
+    try {
+      writeFileSync(join(outside, "secret.yml"), "leaked: true\n")
+      const rel = join("..", basename(outside), "secret.yml")
+      expect(() =>
+        resolveIncludes(`decks: !include ${rel}\n`, configPath()),
+      ).toThrow(IncludeResolutionError)
+    } finally {
+      rmSync(outside, { recursive: true, force: true })
+    }
+  })
+
+  it("still blocks an absolute path outside the config dir", () => {
+    const outside = mkdtempSync(join(tmpdir(), "include-resolver-abs-"))
+    try {
+      const secret = join(outside, "secret.yml")
+      writeFileSync(secret, "leaked: true\n")
+      expect(() =>
+        resolveIncludes(`decks: !include ${secret}\n`, configPath()),
+      ).toThrow(IncludeResolutionError)
+    } finally {
+      rmSync(outside, { recursive: true, force: true })
+    }
   })
 })
