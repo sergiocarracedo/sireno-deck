@@ -30,6 +30,71 @@ const launchctl = (sub: string, args: ReadonlyArray<string>): void => {
   execFileSync("launchctl", [sub, ...args], { stdio: "ignore" })
 }
 
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * Is launchd still holding this job? `print` fails for a label it does not
+ * know, which is the only reliable "is it gone yet" signal available.
+ */
+const isJobLoaded = (uid: string, label: string): boolean => {
+  try {
+    execFileSync("launchctl", ["print", `gui/${uid}/${label}`], {
+      stdio: "ignore",
+      timeout: 5_000,
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * ponytail: `launchctl bootout` returns before launchd has finished tearing
+ * the job down. Bootstrapping straight afterwards fails with a bare I/O error,
+ * and because that threw out of `invokeManager`, a restart could end with the
+ * agent booted out and never brought back — no daemon at all, which is a worse
+ * place than it started. Wait for the label to actually disappear, then
+ * bootstrap, retrying while launchd settles. If the job turns out to be loaded
+ * already, a kickstart is the right move rather than another bootstrap.
+ */
+const bootstrapWithRetry = async (
+  uid: string,
+  plist: string,
+  label: string,
+  timeoutMs = 15_000,
+): Promise<void> => {
+  const deadline = Date.now() + timeoutMs
+  let lastError: unknown = null
+  while (Date.now() < deadline) {
+    if (isJobLoaded(uid, label)) {
+      try {
+        launchctl("enable", [`gui/${uid}/${label}`])
+      } catch {
+        // already enabled
+      }
+      launchctl("kickstart", [`gui/${uid}/${label}`])
+      return
+    }
+    try {
+      launchctl("bootstrap", [`gui/${uid}`, plist])
+      try {
+        launchctl("enable", [`gui/${uid}/${label}`])
+      } catch {
+        // already enabled
+      }
+      launchctl("kickstart", [`gui/${uid}/${label}`])
+      return
+    } catch (err) {
+      lastError = err
+      await sleep(300)
+    }
+  }
+  throw lastError instanceof Error
+    ? lastError
+    : new Error(`launchctl: could not bootstrap ${label} within ${timeoutMs}ms`)
+}
+
 const currentOS = (): "linux" | "darwin" | "win32" => {
   if (platform === "darwin") return "darwin"
   if (platform === "win32") return "win32"
@@ -89,9 +154,9 @@ export const invokeManager = async (
     )
     const uid = String(process.getuid?.() ?? 0)
     if (action === "start") {
-      launchctl("bootstrap", [`gui/${uid}`, plist])
-      launchctl("enable", [`gui/${uid}/${DAEMON_NAME}`])
-      launchctl("kickstart", [`gui/${uid}/${DAEMON_NAME}`])
+      // Same settling problem as restart: bootstrapping a label launchd is
+      // still holding throws, so go through the retry.
+      await bootstrapWithRetry(uid, plist, DAEMON_NAME)
     } else if (action === "stop") {
       launchctl("bootout", [`gui/${uid}/${DAEMON_NAME}`])
     } else if (action === "restart") {
@@ -100,8 +165,11 @@ export const invokeManager = async (
       } catch {
         // not bootstrapped — ignore
       }
-      launchctl("bootstrap", [`gui/${uid}`, plist])
-      launchctl("kickstart", [`gui/${uid}/${DAEMON_NAME}`])
+      const goneBy = Date.now() + 10_000
+      while (Date.now() < goneBy && isJobLoaded(uid, DAEMON_NAME)) {
+        await sleep(200)
+      }
+      await bootstrapWithRetry(uid, plist, DAEMON_NAME)
     } else {
       launchctl("kill", ["-SIGUSR1", `gui/${uid}/${DAEMON_NAME}`])
     }

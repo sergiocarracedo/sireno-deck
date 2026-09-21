@@ -49,7 +49,11 @@ import {
   collectBuiltinAddonRegistry,
   type ScannedAddon,
 } from "./addon-registry"
-import { ensureInstalled, invokeManager } from "./service-manager"
+import {
+  ensureInstalled,
+  invokeManager,
+  isUnitInstalled,
+} from "./service-manager"
 import { isUnderServiceManager, spawnDetached } from "./spawn-daemon"
 import { runPipeline, type RunOptions, type SignalProvider } from "./run"
 import { preflight } from "./pipeline/preflight"
@@ -521,7 +525,7 @@ const runInProcess = async (options: StartOptions): Promise<void> => {
     throw new Error(
       instance.holderPid === null
         ? "another sirenodeck daemon is already running"
-        : `another sirenodeck daemon is already running (pid ${instance.holderPid}) — stop it with \`sireno stop\` or start with --restart`,
+        : `another sirenodeck daemon is already running (pid ${instance.holderPid}) — stop it with \`sireno stop\`, or restart it with \`sireno restart\``,
     )
   }
 
@@ -939,6 +943,42 @@ const start = async (options: StartOptions): Promise<void> => {
     const action = await promptConflict(existing)
     if (action === "cancel") {
       logger.info("start cancelled")
+      return
+    }
+    // ponytail: a supervised daemon cannot be restarted by killing it. launchd
+    // with KeepAlive brings it back in about two seconds — measured — and the
+    // daemon we would spawn here loses the race for the instance lock and dies
+    // with "another sirenodeck daemon is already running". Before the lock
+    // existed the same race simply produced TWO daemons, which is how this
+    // machine ended up with one from 09:39 and another from 16:54 fighting
+    // over the same ports. The manager owns the process, so the manager is
+    // what restarts it; the config and flags go through the state files, the
+    // same way `startProduction` hands them over.
+    if (isUnitInstalled()) {
+      const resolvedRestart = resolveConfigPath(options)
+      writeConfigPath(resolvedRestart.path)
+      writeFlags(buildRuntimeFlags(options))
+      logger.info(
+        { configPath: resolvedRestart.path },
+        "start: daemon is service-managed — restarting through the service manager",
+      )
+      await invokeManager({ action: "restart", logger })
+      const deadline = Date.now() + 10_000
+      let restarted: number | null = null
+      while (Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 200))
+        const pid = readPid()
+        if (pid !== null && pid !== existing && isRunning(pid)) {
+          restarted = pid
+          break
+        }
+      }
+      logger.info(
+        { pid: restarted },
+        restarted === null
+          ? "start: service manager restarted the daemon (pid not yet visible)"
+          : "start: daemon restarted by the service manager",
+      )
       return
     }
     if (existing !== null) await stopExisting(existing, logger)
