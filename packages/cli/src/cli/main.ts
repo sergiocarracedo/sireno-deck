@@ -7,6 +7,7 @@ import { hideBin } from "yargs/helpers"
 import { buildCli } from "./index"
 import { createLogger } from "@/util/logger"
 import { terminateChildren } from "@/util/daemon"
+import { holdsInstanceLock } from "@/util/single-instance"
 import {
   DAEMON_TITLE,
   FOREGROUND_TITLE,
@@ -42,6 +43,16 @@ const killChildrenAndExit = (
 ): void => {
   if (processExitInProgress) return
   processExitInProgress = true
+  // Only the daemon that holds the instance lock owns the tracked children.
+  // Without this, a CLI whose start was refused because a daemon was already
+  // running would still run this cleanup on its way out — reading the shared
+  // children file and killing the RUNNING daemon's frontend. The start had
+  // changed nothing, but the deck went dark for as long as the daemon took to
+  // notice and respawn it.
+  if (!holdsInstanceLock()) {
+    process.exit(code)
+    return
+  }
   // ponytail: 5s grace matches the run-pipeline's pushBlackFrame + drain delay
   // so the SIGINT handler doesn't cut off the in-flight device clear writes.
   void terminateChildren({ logger, timeoutMs: 5_000 })

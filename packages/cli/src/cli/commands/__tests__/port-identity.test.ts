@@ -1,9 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const { readFileSyncMock, platformMock } = vi.hoisted(() => ({
+const { readFileSyncMock, platformMock, execFileSyncMock } = vi.hoisted(() => ({
   readFileSyncMock: vi.fn(),
   platformMock: vi.fn((): NodeJS.Platform => "linux"),
+  execFileSyncMock: vi.fn(),
 }))
+
+vi.mock("node:child_process", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:child_process")>()
+  return { ...actual, execFileSync: execFileSyncMock }
+})
 
 vi.mock("node:fs", async (importOriginal) => {
   const actual = await importOriginal<typeof import("node:fs")>()
@@ -30,6 +36,10 @@ const setProc = (path: string, contents: string): void => {
 describe("isOurDaemon", () => {
   beforeEach(() => {
     readFileSyncMock.mockReset()
+    execFileSyncMock.mockReset()
+    execFileSyncMock.mockImplementation(() => {
+      throw new Error("no ps in this test")
+    })
     platformMock.mockReturnValue("linux")
   })
   afterEach(() => {
@@ -58,8 +68,53 @@ describe("isOurDaemon", () => {
     expect(isOurDaemon(9999)).toBe(false)
   })
 
-  it("returns false on non-linux (no /proc/comm)", () => {
+  /**
+   * macOS has no /proc at all. This used to be a hard `return false` before
+   * any lookup, which did not fail safe — it failed blind: the daemon's own
+   * vite was reported as "a process that is NOT a sirenodeck child", stale
+   * daemons holding the WS port were never reaped, and the orphans that
+   * blocked the next start were left running. `ps` answers the same question.
+   */
+  it("identifies our daemon through ps when there is no /proc", () => {
     platformMock.mockReturnValue("darwin")
+    readFileSyncMock.mockImplementation(() => {
+      throw new Error("ENOENT: no /proc on darwin")
+    })
+    execFileSyncMock.mockImplementation((_bin: unknown, args: unknown) => {
+      const field = (args as string[])[3]
+      if (field === "comm=") return "sirenodeck:dm\n"
+      if (field === "command=") return "node bin/sirenodeck.js start\n"
+      return ""
+    })
+    expect(isOurDaemon(12345)).toBe(true)
+  })
+
+  it("recognises the foreground CLI that hosts an in-process daemon", () => {
+    // A Mac only ever sees `sirenodeck:cli` for a daemon started in the
+    // foreground, so matching the `:dm` title alone left it unrecognised.
+    platformMock.mockReturnValue("darwin")
+    readFileSyncMock.mockImplementation(() => {
+      throw new Error("ENOENT")
+    })
+    execFileSyncMock.mockImplementation((_bin: unknown, args: unknown) => {
+      const field = (args as string[])[3]
+      if (field === "comm=") return "sirenodeck:cli\n"
+      if (field === "command=") return "sirenodeck:cli\n"
+      return ""
+    })
+    expect(isOurDaemon(12345)).toBe(true)
+  })
+
+  it("leaves an unrelated darwin process alone", () => {
+    platformMock.mockReturnValue("darwin")
+    readFileSyncMock.mockImplementation(() => {
+      throw new Error("ENOENT")
+    })
+    execFileSyncMock.mockImplementation((_bin: unknown, args: unknown) => {
+      const field = (args as string[])[3]
+      if (field === "comm=") return "Google Chrome\n"
+      return "/Applications/Google Chrome.app\n"
+    })
     expect(isOurDaemon(12345)).toBe(false)
   })
 

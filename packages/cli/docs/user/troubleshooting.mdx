@@ -88,6 +88,48 @@ lsof -i :3939
 kill <PID>
 ```
 
+### "another sirenodeck daemon is already running"
+
+Only one daemon may run at a time. It holds a lock socket in its runtime
+directory for as long as it lives, and a second daemon refuses to start rather
+than fight it for the ports:
+
+```
+another sirenodeck daemon is already running (pid 4242) — stop it with `sireno stop`
+```
+
+The lock belongs to the kernel, not to a file Sireno maintains, so it is
+released the moment the holder dies — including a `kill -9`, a crash or a power
+cut. A leftover lock socket from a daemon that died is detected and cleared on
+the next start; there is no stale-lock timeout to wait out.
+
+If the message names a pid that is genuinely gone, that is worth reporting.
+Check first, since the usual explanation is a daemon you forgot was running:
+
+```bash
+sireno status
+ps -p <pid>
+```
+
+Until this lock existed, a second daemon could start beside the first whenever
+the pid file went missing or a liveness check misread a running daemon as dead.
+Both then bound the same ports, each reaped the other's children, and the deck
+behaved as though it were fighting itself — because it was.
+
+### Sireno says a port is held by "a process that is NOT a sirenodeck child"
+
+On macOS this used to be reported for Sireno's own frontend, because the checks
+that identify our processes read `/proc`, which macOS does not have. Every
+check therefore answered "not ours" and startup left its own orphans running.
+They now fall back to `ps`.
+
+If you still see this message, the holder really is someone else's, and Sireno
+deliberately leaves it alone. Find out whose it is before killing anything:
+
+```bash
+lsof -nP -iTCP:5180 -sTCP:LISTEN
+```
+
 ### Daemon crashes on startup
 
 ```bash

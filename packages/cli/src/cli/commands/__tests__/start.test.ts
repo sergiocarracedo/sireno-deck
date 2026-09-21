@@ -82,13 +82,25 @@ vi.mock("@/util/daemon", () => ({
     flagsFile: "/run/user/0/sirenodeck.flags.json",
   })),
   generateToken: vi.fn(() => "test-token"),
-  generateSentinel: vi.fn(() => "test-sentinel"),
   readConfigPath: vi.fn(() => null),
   removeRuntimeStateFile: vi.fn(),
   readChildren: vi.fn(() => null),
   writeChildren: vi.fn(),
   removeChildrenFile: vi.fn(),
-  SENTINEL_ENV_VAR: "SIRENO_DAEMON_SENTINEL",
+  resolveSocketPath: vi.fn(
+    (dir: string, basename = "") => `${dir}/sirenodeck${basename}.sock`,
+  ),
+}))
+// The real lock binds a unix socket; these tests only care that start's
+// sequencing honours the result, so hand it an already-acquired lock and spy
+// on the release.
+vi.mock("@/util/single-instance", () => ({
+  acquireInstanceLock: vi.fn(async () => ({
+    kind: "acquired",
+    lock: { release: vi.fn() },
+  })),
+  isSocketLive: vi.fn(async () => false),
+  instanceLockPath: vi.fn(() => "/run/user/0/sirenodeck.lock.sock"),
 }))
 vi.mock("../spawn-daemon", async (importOriginal) => {
   const actual = (await importOriginal()) as Record<string, unknown>

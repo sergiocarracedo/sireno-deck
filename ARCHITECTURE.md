@@ -58,9 +58,23 @@ frontend SPA does.
 yargs command tree.
 
 - `run` — foreground, real mode, exits when the device disconnects.
-- `start` — daemonize: write pidfile + token, start HTTP server, then run real mode.
+- `start` — daemonize: take the single-instance lock, write pidfile + token,
+  start HTTP server, then run real mode.
 - `stop` — kill the daemon by pidfile, remove token.
 - `status` — read pidfile, report.
+
+Only one daemon may exist at a time, and the pidfile is not what enforces that
+— it is a report, and a stale-prone one. The daemon binds a lock socket in its
+runtime directory (`util/single-instance.ts`) before it touches a port, a child
+or the pidfile, and holds it for its whole life. Binding is atomic, so of two
+simultaneous starts exactly one proceeds; and the kernel releases the binding
+however the holder dies, so a SIGKILL leaves nothing stale to reason about. A
+socket file left behind by a dead daemon is not a held lock: the next start
+connects to it first and only clears it when nothing answers.
+
+Ownership follows the lock. A process that does not hold it must not terminate
+the tracked children or clean the runtime dir, because those belong to the
+daemon that does — a refused start is required to change nothing at all.
 
 `start` and `run` both go through the same `runRealModePipeline` (or, in
 emulator mode, `runEmulatorLifecycle`).

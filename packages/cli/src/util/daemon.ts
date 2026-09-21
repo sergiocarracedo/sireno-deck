@@ -11,7 +11,6 @@ import {
   unlinkSync,
   writeFileSync,
 } from "node:fs"
-import { execSync } from "node:child_process"
 import { randomBytes } from "node:crypto"
 import { homedir, tmpdir } from "node:os"
 import { join } from "node:path"
@@ -135,13 +134,19 @@ const defaultDataDir = (): string => {
 // same place Linux puts it when XDG_RUNTIME_DIR is unset.
 const SUN_PATH_MAX = platform === "linux" ? 108 : 104
 
-const resolveControlSocket = (runtimeDir: string): string => {
-  const preferred = join(runtimeDir, `${DAEMON_NAME}.sock`)
+export const resolveSocketPath = (
+  runtimeDir: string,
+  basename = "",
+): string => {
+  const preferred = join(runtimeDir, `${DAEMON_NAME}${basename}.sock`)
   if (platform === "win32") return preferred
   if (Buffer.byteLength(preferred, "utf8") < SUN_PATH_MAX) return preferred
   const uid = typeof getuid === "function" ? getuid() : 0
-  return join(tmpdir(), `${DAEMON_NAME}-${uid}.sock`)
+  return join(tmpdir(), `${DAEMON_NAME}-${uid}${basename}.sock`)
 }
+
+const resolveControlSocket = (runtimeDir: string): string =>
+  resolveSocketPath(runtimeDir)
 
 export const resolveDaemonPaths = (): DaemonPaths => {
   const runtimeDir = defaultRuntimeDir()
@@ -273,44 +278,34 @@ export const removePidFile = (paths = resolveDaemonPaths()): void => {
   if (existsSync(paths.pidFile)) unlinkSync(paths.pidFile)
 }
 
-export const SENTINEL_ENV_VAR = "SIRENO_DAEMON_SENTINEL"
-
-export const generateSentinel = (pid: number): string =>
-  `sirenodeck-${pid}-${randomBytes(8).toString("hex")}`
-
-const readCmdline = (pid: number): string | null => {
-  try {
-    const raw = readFileSync(`/proc/${pid}/cmdline`, "utf8")
-    return raw.replace(/\u0000/g, " ")
-  } catch {
-    return null
-  }
-}
-
-const readCmdlinePs = (pid: number): string | null => {
-  try {
-    const out = execSync(`ps -p ${pid} -o command=`, {
-      encoding: "utf8",
-      timeout: 1000,
-    }).trim()
-    return out.length > 0 ? out : null
-  } catch {
-    return null
-  }
-}
-
+/**
+ * Liveness, and nothing else: does this pid exist and can we signal it?
+ *
+ * ponytail: this used to additionally require the target's cmdline to contain
+ * a per-daemon sentinel, which is a test it could never pass. The sentinel was
+ * written only into the daemon's OWN environment, never into its argv, and the
+ * daemon rewrites its process title to `sirenodeck:dm` — so on macOS
+ * `ps -o command=` returns that title and on Linux the argv never carried the
+ * token either. Any caller that had inherited SIRENO_DAEMON_SENTINEL from the
+ * daemon therefore saw a live daemon as dead, and the damage was not cosmetic:
+ * `stopExisting` took its "stale pid file" branch, deleted the file and
+ * returned WITHOUT killing the daemon, leaving start free to boot a second one
+ * alongside the first. Both then ran, fighting over the same ports.
+ *
+ * Liveness and identity are separate questions. This answers the first; the
+ * `isOurDaemon` fingerprint in port-identity answers the second; and the
+ * single-instance lock, not a pid comparison, is what actually keeps two
+ * daemons apart.
+ */
 export const isRunning = (pid: number): boolean => {
   if (pid <= 0) return false
   try {
     process.kill(pid, 0)
+    return true
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "EPERM") return false
+    // EPERM means the pid exists but belongs to another user — still running.
+    return (error as NodeJS.ErrnoException).code === "EPERM"
   }
-  const sentinel = process.env[SENTINEL_ENV_VAR]
-  if (!sentinel) return true
-  const cmdline = platform === "darwin" ? readCmdlinePs(pid) : readCmdline(pid)
-  if (cmdline === null) return false
-  return cmdline.includes(sentinel)
 }
 
 export const generateToken = (): string => randomBytes(32).toString("base64url")
