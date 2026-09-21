@@ -1,0 +1,32 @@
+packages/cli/docs/user/troubleshooting.mdx
+  s_9a9483663566ce::t_cd7e139b09e86e 49-80
+packages/cli/src/cli/__tests__/package-manager.test.ts
+  s_9a9483663566ce::t_937e0d044bb17d 1-4,6-11,30-88
+  s_9a9483663566ce::t_449a342659493d 89
+packages/cli/src/cli/package-manager.ts
+  s_9a9483663566ce::t_db86974a157b4b 118-119,122-129,138,141-142,144-145,156,159,161-164,168,172
+  s_9a9483663566ce::t_b5212ff88096b7 116-117,120-121,130-131,139-140,147-151,170-171
+  s_9a9483663566ce::t_b6c3fd14e0eb6e 9-26,29,44-49,56,59,61-63,133,135-137,146,152-155,158,160,165-167,169
+  s_9a9483663566ce::t_54d60d321783bf 27-28,30-43,50-55,60,134,143,157,174
+packages/cli/src/cli/commands/run.ts
+  s_9a9483663566ce::t_8275dc98987460 505,654
+  s_9a9483663566ce::t_6948b474350ac3 66,508-509,657-658
+  s_9a9483663566ce::t_04dc64760a581b 506,655
+  s_9a9483663566ce::t_a300f4540e9678 507,510,656,659
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d1000d795eae34d053eabaacb31b8724f5e856e8",
+  "prompts": {},
+  "sessions": {
+    "s_9a9483663566ce": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "349d637e-a493-452a-ba80-6a42bba11b50",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
