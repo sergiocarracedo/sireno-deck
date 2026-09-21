@@ -63,7 +63,7 @@ import {
 } from "@/system/requirements"
 import { copyThemeAssets, resolveActiveTheme } from "@/themes/loader"
 import { resolveAddonCacheDir } from "@/util/cache-paths"
-import { globalPackageRoot } from "../package-manager"
+import { probeGlobalPackageRoots } from "../package-manager"
 import { installPackage } from "./install"
 import { isNpmAddonSpec } from "@/addon/spec"
 import { confirm } from "@/cli/prompt"
@@ -502,10 +502,12 @@ const loadExternalAddonsIntoRegistry = async (
   const entries = config.addons ?? []
   if (entries.length === 0)
     return { specToName, nameToEntryPath, nameToBrowserEntryPath }
-  const globalRoots = ["pnpm", "npm", "yarn"].flatMap((manager) => {
-    const root = globalPackageRoot(manager as "pnpm" | "npm" | "yarn")
-    return root === null ? [] : [root]
-  })
+  const { roots: globalRoots, timedOut, timeoutMs } = probeGlobalPackageRoots()
+  for (const manager of timedOut)
+    logger.warn(
+      { manager, timeoutMs },
+      `addons: ${manager} did not answer within ${timeoutMs}ms and was killed — globally installed addons may not resolve`,
+    )
   let result = await loadAddons({
     entries,
     configDir,
@@ -649,10 +651,12 @@ export const validateAndLoadConfig = async (
       `Config validation failed:\n${formatFullIssues(structuralErrors)}`,
     )
   }
-  const globalRoots = ["pnpm", "npm", "yarn"].flatMap((manager) => {
-    const root = globalPackageRoot(manager as "pnpm" | "npm" | "yarn")
-    return root === null ? [] : [root]
-  })
+  const { roots: globalRoots, timedOut, timeoutMs } = probeGlobalPackageRoots()
+  for (const manager of timedOut)
+    options.logger.warn(
+      { manager, timeoutMs },
+      `themes: ${manager} did not answer within ${timeoutMs}ms and was killed — globally installed themes may not resolve`,
+    )
   const themeOptions = {
     // ponytail: theme paths in config.yml are relative to the config file's
     // directory, not to process.cwd(). `loadThemeFromPath` resolves via

@@ -46,6 +46,38 @@ sireno stop
 sireno start
 ```
 
+### Daemon hangs at startup with no output
+
+At startup Sireno asks each package manager on your `PATH` — pnpm, npm and
+yarn — where it keeps its globally installed packages, so that an addon or
+theme installed globally can be found. A package manager that never answers
+used to stop startup dead: no log line, no port, no keys lit.
+
+Each of those questions now has a ten-second deadline. A manager that misses it
+is killed and startup carries on without it, leaving a warning in the log:
+
+```bash
+sireno logs | grep "did not answer"
+```
+
+Globally installed addons and themes from that manager will not resolve, so fix
+the manager itself — checking that it answers at all is the quickest test:
+
+```bash
+pnpm root --global
+```
+
+If the command hangs, or spawns process after process, your package manager
+install is broken rather than your config. On a slow machine, or the first time
+Corepack has to prepare a manager, ten seconds can genuinely be too short:
+
+```bash
+SIRENO_PACKAGE_MANAGER_TIMEOUT_MS=30000 sireno start
+```
+
+These probes never install anything. A manager that is absent, or that declines
+to answer, is skipped in silence — only the deadline is reported.
+
 ### Port already in use
 
 ```bash
