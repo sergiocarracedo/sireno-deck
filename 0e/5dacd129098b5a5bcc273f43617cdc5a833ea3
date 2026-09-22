@@ -1,0 +1,28 @@
+packages/cli/src/cli/commands/addon-registry.ts
+  s_9f693a4d1a8676::t_d51e0078689afd 90-125,467-475
+  s_9f693a4d1a8676::t_d132de3380f312 126-151,156-159,162-175
+  s_9f693a4d1a8676::t_d87f56677cd77a 152-155,160-161
+  s_9f693a4d1a8676::t_a0c26e39c69b1c 185-191,196-198,206,259
+  s_9f693a4d1a8676::t_04a925a744f6d0 221-225
+  s_9f693a4d1a8676::t_350d128c4d768e 89
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_9f693a4d1a8676::t_22bb1159db2ddd 6,125-173
+  s_9f693a4d1a8676::t_cc7fd43b76fd18 195
+  s_9f693a4d1a8676::t_849a0d639b9aa7 174-194,196-215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "0e5dacd129098b5a5bcc273f43617cdc5a833ea3",
+  "prompts": {},
+  "sessions": {
+    "s_9f693a4d1a8676": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a285823-ea99-467d-9a84-2486991b79be",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
