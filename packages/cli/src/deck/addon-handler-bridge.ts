@@ -11,6 +11,7 @@ import type {
   AddonGlobalPoller,
 } from "@/addon/api"
 import type { ScannedAddon } from "@/cli/commands/addon-registry"
+import { BUILTIN_MANIFESTS } from "@/builtin-addons/register-builtins"
 import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
 import type { Methods } from "@/deck/methods"
@@ -45,6 +46,21 @@ type AddonModule = {
 
 const namespacedKey = (addonName: string, methodName: string): string =>
   `${addonName}:${methodName}`
+
+/**
+ * A builtin's module without going through the filesystem.
+ *
+ * ponytail: importing a builtin by path is the one thing that cannot work in a
+ * published install — the path points at TypeScript source that uses `@/`
+ * aliases, so plain node refuses it and every builtin button loses its backend.
+ * The manifests are compiled into the bundle already, so prefer the object.
+ * A third-party addon is still loaded from disk, which is correct: it is not
+ * part of this package and has a real, loadable entry file.
+ */
+const staticAddonModule = (addonName: string): AddonModule | null => {
+  const manifest = BUILTIN_MANIFESTS.get(addonName)
+  return manifest === undefined ? null : ({ manifest } as AddonModule)
+}
 
 export interface AddonBridgeHandle {
   dispose(): void
@@ -97,8 +113,10 @@ export const bridgeAddonServices = async (
     if (addon.globalServiceEntry === null) continue
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mod = (await import(addon.globalServiceEntry)) as AddonModule
+      const mod =
+        staticAddonModule(addon.name) ??
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ((await import(addon.globalServiceEntry)) as AddonModule)
       let globalService: AddonGlobalService | undefined
       if (
         typeof (mod as unknown as { globalService?: AddonGlobalService })
@@ -272,8 +290,10 @@ export const bridgeAddonServices = async (
         if (addon.name !== addonName) continue
         if (addon.frontendEntry === null) continue
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          addonMod = (await import(addon.frontendEntry)) as AddonModule
+          addonMod =
+            staticAddonModule(addon.name) ??
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ((await import(addon.frontendEntry)) as AddonModule)
         } catch (err) {
           // ponytail: silence here meant a failed import surfaced only as a
           // button that ignored taps. See the matching catch above.

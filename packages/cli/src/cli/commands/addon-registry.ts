@@ -234,7 +234,13 @@ const scanAddonDir = async (
   const pollerEntry = existsSync(join(addonDir, "poller.ts"))
     ? join(addonDir, "poller.ts")
     : null
-  const hasGlobalService = /\bglobalService\b/.test(raw)
+  // Across every source, for the same reason as the type scan: a barrel entry
+  // declares nothing itself, and `system-status` keeps its globalService in
+  // `manifest.ts`. Testing only the entry text left it with no backend at all,
+  // so its buttons rendered but never received a metric to show.
+  const hasGlobalService = allSources.some((source) =>
+    /\bglobalService\b/.test(source),
+  )
   if (types.size === 0 && pollerEntry === null && !hasGlobalService)
     return jsonScanned
   const buttonTypes: Record<string, ScannedButtonType> = {}
