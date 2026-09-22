@@ -69,15 +69,26 @@ vi.mock("@/util/daemon", () => ({
     flagsFile: "/run/user/0/sirenodeck.flags.json",
   })),
   generateToken: vi.fn(() => "test-token"),
-  generateSentinel: vi.fn(() => "test-sentinel"),
   readConfigPath: vi.fn(() => null),
   readChildren: vi.fn(() => null),
   writeChildren: vi.fn(),
   removeChildrenFile: vi.fn(),
-  SENTINEL_ENV_VAR: "SIRENO_DAEMON_SENTINEL",
+  resolveSocketPath: vi.fn(
+    (dir: string, basename = "") => `${dir}/sirenodeck${basename}.sock`,
+  ),
   writeRuntimeState: vi.fn(),
   readRuntimeState: vi.fn(() => null),
   removeRuntimeStateFile: vi.fn(),
+}))
+// The lock binds a real socket; these tests only exercise the wizard hook, so
+// stand in an already-acquired lock and a lock path nobody is listening on.
+vi.mock("@/util/single-instance", () => ({
+  acquireInstanceLock: vi.fn(async () => ({
+    kind: "acquired",
+    lock: { release: vi.fn() },
+  })),
+  isSocketLive: vi.fn(async () => false),
+  instanceLockPath: vi.fn(() => "/run/user/0/sirenodeck.lock.sock"),
 }))
 vi.mock("../spawn-daemon", async (importOriginal) => {
   const actual = (await importOriginal()) as Record<string, unknown>
@@ -383,9 +394,18 @@ const capabilityMissingSummary = (): FakeSummary => ({
 
 const awaitFork = async (): Promise<void> => {
   const { spawnDetached } = await import("../spawn-daemon")
-  await vi.waitFor(() => {
-    expect(spawnDetached).toHaveBeenCalledTimes(1)
-  })
+  // ponytail: `vi.waitFor` defaults to a one-second budget, and start spends
+  // half of it before it ever forks — `killPortListeners` sleeps 500ms by
+  // design to let SIGTERM land. That left nothing in hand for a loaded
+  // machine, so the suite reported scheduling delay as a missing fork. The
+  // ceiling matches the config's 30s testTimeout in spirit: a green run still
+  // finishes as fast as the fork arrives.
+  await vi.waitFor(
+    () => {
+      expect(spawnDetached).toHaveBeenCalledTimes(1)
+    },
+    { timeout: 10_000 },
+  )
   const mock = vi.mocked(spawnDetached).mock.results[
     vi.mocked(spawnDetached).mock.results.length - 1
   ] as { type: string; value: { child: { __triggerExit: () => void } } }

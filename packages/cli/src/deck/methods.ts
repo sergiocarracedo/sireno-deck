@@ -21,7 +21,7 @@ import { NotImplementedError } from "@/util/errors"
 
 import type { ActionExecutor, ActionExecutorOptions } from "@/action/executor"
 import type { Runtime, RuntimeDeck } from "./runtime"
-import { dispatchMacro } from "./macro-parse"
+import { dispatchMacro, resolvePlatformMacro } from "./macro-parse"
 
 const DEFAULT_BUTTON_ERROR_DURATION_MS = 5000
 
@@ -261,7 +261,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
           "dispatch: macro:// requires a value, e.g. macro://ctrl+c",
         )
       }
-      let macro = inner
+      let macro: string
       if (inner.startsWith("{")) {
         let parsed: unknown
         try {
@@ -295,6 +295,16 @@ export const createMethods = (ctx: MethodsContext): Methods => {
           )
         }
         macro = pick
+      } else {
+        // `[macos:cmd+c]ctrl+c` — per-OS overrides with a mandatory default.
+        // Plain macros contain no leading bracket and fall straight through.
+        try {
+          macro = resolvePlatformMacro(inner)
+        } catch (error) {
+          throw new NotImplementedError(
+            `dispatch: ${error instanceof Error ? error.message : String(error)}`,
+          )
+        }
       }
       await dispatchMacro(macro, { runCommand, keyMacro })
       return

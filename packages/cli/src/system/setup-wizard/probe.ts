@@ -5,7 +5,9 @@ import {
   hasWaylandGnomeSession,
 } from "../providers/active-app/wayland-gnome"
 import type { CommandExecutor } from "../providers/shared"
-import { UDEV_RULES_PATH } from "./types"
+import { ACCESSIBILITY_SETTINGS_URL, UDEV_RULES_PATH } from "./types"
+
+export { ACCESSIBILITY_SETTINGS_URL } from "./types"
 import {
   type CapabilityName,
   type CapabilityProbe,
@@ -143,9 +145,77 @@ const probeCapability = async (
   return {
     name,
     available: found.length > 0,
+    toolInstalled: found.length > 0,
+    permission: null,
     missing,
     preferred,
     reason,
+  }
+}
+
+// ponytail: on macOS the mere presence of `osascript` proves nothing — it ships
+// with the OS, so the capability probes always said "all present" while every
+// UI-scripting call failed at runtime with "osascript is not allowed assistive
+// access (-1719)". Key macros (`keystroke`/`key code`) and window-title reads
+// both need an Accessibility (TCC) grant for whichever binary hosts the script.
+// `UI elements enabled` is the documented, side-effect-free way to ask.
+export const ACCESSIBILITY_HINT =
+  "grant Accessibility to your terminal (or the SirenoDeck app) in System Settings → Privacy & Security → Accessibility, then restart it"
+
+const UI_ELEMENTS_SCRIPT = `tell application "System Events" to get UI elements enabled`
+
+export const hasDarwinAccessibility = async (
+  executor: CommandExecutor,
+): Promise<boolean> => {
+  try {
+    const result = await executor.run("osascript", ["-e", UI_ELEMENTS_SCRIPT], {
+      timeoutMs: 2_000,
+    })
+    return (
+      result.exitCode === 0 && result.stdout.trim().toLowerCase() === "true"
+    )
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Wraps a darwin capability that needs UI scripting: the binary must exist AND
+ * the Accessibility grant must be in place, otherwise the capability is
+ * reported missing with an actionable reason instead of a false "present".
+ */
+const probeDarwinUiScripting = async (
+  name: CapabilityName,
+  reason: string,
+  executor: CommandExecutor,
+  extraFsProbe?: (command: string) => boolean,
+): Promise<CapabilityProbe> => {
+  const base = await probeCapability(
+    name,
+    ["osascript"],
+    "osascript",
+    reason,
+    executor,
+    extraFsProbe,
+  )
+  if (!base.available) return base
+  const granted = await hasDarwinAccessibility(executor)
+  const permission = {
+    label: "Accessibility",
+    granted,
+    hint: ACCESSIBILITY_HINT,
+    settingsUrl: ACCESSIBILITY_SETTINGS_URL,
+  }
+  if (granted) return { ...base, permission }
+  return {
+    ...base,
+    available: false,
+    // toolInstalled stays true: osascript ships with macOS. Only the grant is
+    // missing, and `missing` keeps the sentinel so existing callers that gate
+    // on it (the install plan) behave as before.
+    permission,
+    missing: ["accessibility-permission"],
+    reason: `osascript is installed but has no Accessibility permission — ${ACCESSIBILITY_HINT}`,
   }
 }
 
@@ -155,10 +225,8 @@ const probeKeyMacro = (
   extraFsProbe?: (command: string) => boolean,
 ): Promise<CapabilityProbe> => {
   if (platform === "darwin") {
-    return probeCapability(
+    return probeDarwinUiScripting(
       "keyMacro",
-      ["osascript"],
-      "osascript",
       "macOS uses osascript for key macros.",
       executor,
       extraFsProbe,
@@ -261,11 +329,11 @@ const probeActiveApp = async (
   extraFsProbe?: (command: string) => boolean,
 ): Promise<CapabilityProbe> => {
   if (platform === "darwin") {
-    return probeCapability(
+    // Without the grant the provider still reports the app name and pid (those
+    // need no permission) but never a window title, so this is a soft miss.
+    return probeDarwinUiScripting(
       "activeApp",
-      ["osascript"],
-      "osascript",
-      "macOS uses AppleScript for active-app detection.",
+      "macOS uses AppleScript for active-app detection; window titles need Accessibility.",
       executor,
       extraFsProbe,
     )
@@ -285,6 +353,8 @@ const probeActiveApp = async (
     return {
       name: "activeApp",
       available: true,
+      toolInstalled: true,
+      permission: null,
       missing: [],
       preferred: "gnome-shell-extension",
       reason: `Wayland GNOME requires the 'Window Calls Extended' extension (${EXTENSION_INSTALL_URL}). The wizard can detect this — install it from the GNOME extensions website and re-run.`,
@@ -337,11 +407,18 @@ const probeUdev = (
   }
 }
 
+// ponytail: an explicit `--config` is the config for this run — report on THAT
+// file, not on the XDG default the user never asked for. The XDG path stays the
+// answer (and the seed target) when no explicit path was given.
 const probeConfig = (
   xdgConfigHome: string,
   fileExists: (path: string) => boolean,
+  configPath?: string,
 ): ConfigProbe => {
-  const path = `${xdgConfigHome}/sirenodeck/config.yml`
+  const path =
+    configPath !== undefined && configPath !== ""
+      ? configPath
+      : `${xdgConfigHome}/sirenodeck/config.yml`
   return { exists: fileExists(path), path }
 }
 
@@ -355,6 +432,7 @@ export const probeAll = async (deps: ProbeDeps): Promise<SystemReport> => {
     extraFsProbe,
     fileExists,
     readFile,
+    configPath,
   } = deps
 
   const session = detectSession(env)
@@ -393,7 +471,7 @@ export const probeAll = async (deps: ProbeDeps): Promise<SystemReport> => {
     readFile,
     streamDeck,
   )
-  const config = probeConfig(xdgConfigHome, fileExists)
+  const config = probeConfig(xdgConfigHome, fileExists, configPath)
 
   return {
     platform,

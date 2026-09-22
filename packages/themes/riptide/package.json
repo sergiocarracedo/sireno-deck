@@ -14,7 +14,8 @@
   "files": [
     "sirenodeck.json",
     "components.css",
-    "components"
+    "components",
+    "assets"
   ],
   "type": "module",
   "publishConfig": {

@@ -82,13 +82,30 @@ vi.mock("@/util/daemon", () => ({
     flagsFile: "/run/user/0/sirenodeck.flags.json",
   })),
   generateToken: vi.fn(() => "test-token"),
-  generateSentinel: vi.fn(() => "test-sentinel"),
   readConfigPath: vi.fn(() => null),
   removeRuntimeStateFile: vi.fn(),
   readChildren: vi.fn(() => null),
   writeChildren: vi.fn(),
   removeChildrenFile: vi.fn(),
-  SENTINEL_ENV_VAR: "SIRENO_DAEMON_SENTINEL",
+  resolveSocketPath: vi.fn(
+    (dir: string, basename = "") => `${dir}/sirenodeck${basename}.sock`,
+  ),
+}))
+// The real lock binds a unix socket; these tests only care that start's
+// sequencing honours the result, so hand it an already-acquired lock and spy
+// on the release.
+vi.mock("@/cli/prompt", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/cli/prompt")>()),
+  select: vi.fn(async () => "restart"),
+  isCancel: vi.fn(() => false),
+}))
+vi.mock("@/util/single-instance", () => ({
+  acquireInstanceLock: vi.fn(async () => ({
+    kind: "acquired",
+    lock: { release: vi.fn() },
+  })),
+  isSocketLive: vi.fn(async () => false),
+  instanceLockPath: vi.fn(() => "/run/user/0/sirenodeck.lock.sock"),
 }))
 vi.mock("../spawn-daemon", async (importOriginal) => {
   const actual = (await importOriginal()) as Record<string, unknown>
@@ -402,6 +419,50 @@ describe("start", () => {
     await startPromise
     expect(spawnDetached).toHaveBeenCalledTimes(1)
     expect(writePidMock).toHaveBeenCalledWith(99_999)
+  })
+
+  /**
+   * A daemon under launchd/systemd cannot be restarted by killing it: the
+   * supervisor brings it back within about two seconds, and the daemon this
+   * command would spawn then loses the race for the instance lock. Restarting
+   * has to go through the manager that owns the process.
+   */
+  it("restarts through the service manager instead of spawning a rival daemon", async () => {
+    setHappyPath()
+    const daemon = await import("@/util/daemon")
+    const { invokeManager } = await import("../service-manager")
+    const { spawnDetached } = await import("../spawn-daemon")
+    // A daemon is up, and it is the one the service manager owns.
+    vi.mocked(daemon.readPid).mockReturnValue(4242)
+    vi.mocked(daemon.isRunning).mockReturnValue(true)
+    const ttyDescriptor = Object.getOwnPropertyDescriptor(
+      process.stdin,
+      "isTTY",
+    )
+    Object.defineProperty(process.stdin, "isTTY", {
+      value: true,
+      configurable: true,
+    })
+
+    try {
+      await start({
+        config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+        frontendUrl: "http://x",
+        xdgConfigHome: "/xdg",
+        homeDir: "/home",
+        logger: silentLogger(),
+      })
+    } finally {
+      if (ttyDescriptor)
+        Object.defineProperty(process.stdin, "isTTY", ttyDescriptor)
+      vi.mocked(daemon.readPid).mockReturnValue(undefined as never)
+      vi.mocked(daemon.isRunning).mockReturnValue(false)
+    }
+
+    expect(invokeManager).toHaveBeenCalledWith(
+      expect.objectContaining({ action: "restart" }),
+    )
+    expect(spawnDetached).not.toHaveBeenCalled()
   })
 
   it("does not warn about the production frontend dist in dev mode", async () => {

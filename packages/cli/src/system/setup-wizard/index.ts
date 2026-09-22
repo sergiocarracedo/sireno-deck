@@ -14,7 +14,12 @@ export {
   UDEV_RULES_PATH,
 } from "./types"
 
-export { probeAll } from "./probe"
+export {
+  probeAll,
+  ACCESSIBILITY_HINT,
+  ACCESSIBILITY_SETTINGS_URL,
+  hasDarwinAccessibility,
+} from "./probe"
 export { probeAllCached, resetProbeCache } from "./probe-cache"
 export {
   probeMediaAccess,
@@ -22,13 +27,19 @@ export {
   probeInternetAccess,
   type RuntimeFeatureProbe,
 } from "./runtime-features"
-export { buildInstallPlan, needsConfigSeed } from "./plan"
 export {
+  buildInstallPlan,
+  needsConfigSeed,
+  DARWIN_ACCESSIBILITY_STEP_ID,
+} from "./plan"
+export {
+  formatCapabilityPanel,
   formatResultLine,
   formatStepInstructions,
   formatSummaryLine,
   summarizeReport,
 } from "./format"
+export { openSettingsUrl } from "./open-settings"
 export { defaultConfigSourcePath, seedDefaultConfig } from "./config-seed"
 export { isSudoNopasswd, runWithSudo, capturePassword } from "./sudo"
 export type { SudoRunResult } from "./sudo"

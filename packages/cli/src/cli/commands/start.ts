@@ -18,7 +18,6 @@ import { resolveConfigPath as resolveRunConfigPath } from "./pipeline/helpers"
 import type { ResolveConfigPathResult } from "./pipeline/helpers"
 import {
   acquireStartLock,
-  generateSentinel,
   generateToken,
   isRunning,
   pruneStaleChildren,
@@ -29,7 +28,6 @@ import {
   removeRuntimeStateFile,
   removeStartLock,
   resolveDaemonPaths,
-  SENTINEL_ENV_VAR,
   terminateChildren,
   writeChildren,
   writeConfigPath,
@@ -37,6 +35,11 @@ import {
   writePid,
   type RuntimeFlags,
 } from "@/util/daemon"
+import {
+  acquireInstanceLock,
+  instanceLockPath,
+  isSocketLive,
+} from "@/util/single-instance"
 
 import { startHttpServer, type RunningHttpServer } from "../http-server"
 import { removeDaemonControl, startDaemonControl } from "@/util/daemon-control"
@@ -46,7 +49,11 @@ import {
   collectBuiltinAddonRegistry,
   type ScannedAddon,
 } from "./addon-registry"
-import { ensureInstalled, invokeManager } from "./service-manager"
+import {
+  ensureInstalled,
+  invokeManager,
+  isUnitInstalled,
+} from "./service-manager"
 import { isUnderServiceManager, spawnDetached } from "./spawn-daemon"
 import { runPipeline, type RunOptions, type SignalProvider } from "./run"
 import { preflight } from "./pipeline/preflight"
@@ -58,6 +65,7 @@ import {
 import { systemRequirements } from "./system-requirements"
 import { buildStandardProbeDeps } from "@/cli/probe-deps"
 import { onboardCodingAgents } from "@/cli/coding-agents-onboarding"
+import { resolveUserPath } from "@/cli/cwd"
 
 export interface StartOptions {
   readonly config?: string
@@ -140,18 +148,38 @@ const trySs = (port: number): PortScanResult => {
   }
 }
 
+const parseLsofPids = (out: string): ReadonlyArray<number> =>
+  out
+    .split("\n")
+    .map((line) => Number.parseInt(line.trim(), 10))
+    .filter((n) => Number.isFinite(n) && n > 0)
+
 const tryLsof = (port: number): PortScanResult => {
   try {
     const out = execFileSync("lsof", [`-iTCP:${port}`, "-sTCP:LISTEN", "-t"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     })
-    const pids = out
-      .split("\n")
-      .map((line) => Number.parseInt(line.trim(), 10))
-      .filter((n) => Number.isFinite(n) && n > 0)
-    return { ok: true, pids }
+    return { ok: true, pids: parseLsofPids(out) }
   } catch (err) {
+    // ponytail: lsof exits 1 with EMPTY output when simply nothing matches the
+    // filter — its documented "no results" status, not a failure. execFileSync
+    // throws on any non-zero exit, so the common "port is free" case was being
+    // recorded as "backend unavailable". On macOS that was every call (ss and
+    // /proc/net/tcp don't exist there), so detectPortPids concluded it had no
+    // working backend at all, warned on every start, and orphan cleanup went
+    // blind — leaving stale vites holding :5180/:52937 after an unclean exit.
+    // Treat exit 1 with no stdout as a clean empty result; a missing binary
+    // (ENOENT) or any other status stays a real failure.
+    const e = err as NodeJS.ErrnoException & {
+      status?: number | null
+      stdout?: string | Buffer
+    }
+    const stdout =
+      typeof e.stdout === "string" ? e.stdout : (e.stdout?.toString() ?? "")
+    if (e.code !== "ENOENT" && e.status === 1) {
+      return { ok: true, pids: parseLsofPids(stdout) }
+    }
     return { ok: false, reason: describeExecFailure(err, "lsof") }
   }
 }
@@ -367,14 +395,17 @@ const killPortListeners = async (
   await new Promise((r) => setTimeout(r, 500))
 }
 
-const promptConflict = async (pid: number): Promise<"restart" | "cancel"> => {
+const promptConflict = async (
+  pid: number | null,
+): Promise<"restart" | "cancel"> => {
+  const who = pid === null ? "" : ` with pid ${pid}`
   if (!process.stdin.isTTY) {
     throw new Error(
-      `Daemon already running with pid ${pid} (non-interactive: not stopping)`,
+      `Daemon already running${who} (non-interactive: not stopping)`,
     )
   }
   const answer = await select<"restart" | "cancel">({
-    message: `Daemon already running with pid ${pid}.`,
+    message: `Daemon already running${who}.`,
     options: [
       {
         value: "restart",
@@ -438,13 +469,14 @@ const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
   // user's ~/.config/sirenodeck/config.yml instead (the bug that made
   // --config appear to "do nothing").
   if (options.config !== undefined) {
-    if (!existsSync(options.config)) {
+    const explicit = resolveUserPath(options.config)
+    if (!existsSync(explicit)) {
       throw new Error(
-        `Config file not found: ${options.config}\n` +
+        `Config file not found: ${explicit}\n` +
           `  Fix: pass a valid --config path.`,
       )
     }
-    return { path: options.config, source: "cli" }
+    return { path: explicit, source: "cli" }
   }
   // ponytail: the daemon honors the cached pointer first so the running
   // session keeps editing the same config it was launched with. When the
@@ -481,9 +513,31 @@ const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
 const runInProcess = async (options: StartOptions): Promise<void> => {
   const { logger } = options
 
+  // ponytail: the single-instance lock comes FIRST — before the start lock,
+  // before preflight, and above all before killPortListeners. Everything below
+  // this point assumes the ports, the children and the pid file belong to us;
+  // a daemon that does not hold the lock has no business cleaning any of them
+  // up, because they belong to the daemon that does. Holding the lock for the
+  // whole process lifetime is what makes a second daemon impossible rather
+  // than merely unlikely: the kernel, not a file we wrote, is the referee.
+  const instance = await acquireInstanceLock(resolveDaemonPaths(), logger)
+  if (instance.kind === "busy") {
+    throw new Error(
+      instance.holderPid === null
+        ? "another sirenodeck daemon is already running"
+        : `another sirenodeck daemon is already running (pid ${instance.holderPid}) — stop it with \`sireno stop\`, or restart it with \`sireno restart\``,
+    )
+  }
+
   const startLock = acquireStartLock()
   if (startLock === null) {
+    instance.lock.release()
     throw new Error("another start is already in progress")
+  }
+
+  const releaseAll = (): void => {
+    startLock.release()
+    instance.lock.release()
   }
 
   // ponytail: the start lock is only released by the post-runPipeline
@@ -495,9 +549,9 @@ const runInProcess = async (options: StartOptions): Promise<void> => {
   // try/catch that releases on throw, and also call release() in the
   // existing .finally so the runtime-exit path stays covered.
   try {
-    await runInProcessSetup(options, logger, startLock.release)
+    await runInProcessSetup(options, logger, releaseAll)
   } catch (err) {
-    startLock.release()
+    releaseAll()
     throw err
   }
 }
@@ -550,8 +604,6 @@ const runInProcessSetup = async (
   const token = generateToken()
   const daemonPaths = resolveDaemonPaths()
   const control = await startDaemonControl(token, daemonPaths, logger)
-  const sentinel = generateSentinel(process.pid)
-  process.env[SENTINEL_ENV_VAR] = sentinel
   process.env["SIRENO_TOKEN"] = token
   logger.info({ tokenLen: token.length }, "daemon: pid + token written")
 
@@ -769,11 +821,21 @@ const probeSystemForFirstRun = async (
   const xdgConfigHome =
     options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
   const baseDeps = buildStandardProbeDeps()
+  // ponytail: probe the config this start will actually use. `--config` and the
+  // cached daemon pointer both count; only when neither resolves does the probe
+  // fall back to the XDG default (which is also the wizard's seed target).
+  let configPath: string | undefined
+  try {
+    configPath = resolveConfigPath(options).path
+  } catch {
+    configPath = undefined
+  }
   try {
     const report = await probeAllCached({
       ...baseDeps,
       homeDir: home !== "" ? home : baseDeps.homeDir,
       xdgConfigHome,
+      ...(configPath !== undefined ? { configPath } : {}),
     })
     return { report, summary: summarizeReport(report) }
   } catch {
@@ -868,38 +930,64 @@ const start = async (options: StartOptions): Promise<void> => {
 
   await onboardCodingAgents(resolveConfigPath(options).path)
 
-  // ponytail: if a previous-session `sirenodeck:dm` daemon is still bound to
-  // the WS port (52937), reap it before spawning. The pid file is stale-
-  // prone (SIGKILL'd daemons leave it behind; crashed preflight daemons
-  // never wrote one). Identity check uses /proc/<pid>/comm === "sirenodeck:dm"
-  // cross-checked with the sirenodeck cmdline fingerprint, so unrelated
-  // processes holding 52937 (a Discord voice call, an `nc -l`, the user's
-  // own server) get left alone. The WS port is the load-bearing one —
-  // EADDRINUSE there causes the daemon's runPipeline to fail before the
-  // HTTP / frontend ports are even reached.
-  await reapStaleDaemon(options.port ?? 52937, logger)
-
-  // ponytail: clear the daemon's expected ports before spawning. This is
-  // the load-bearing fix for "the frontend port is in use by children":
-  // even when the previous daemon's children file is gone (e.g. after a
-  // SIGKILL that left orphans adopted by systemd), the port still binds
-  // the orphan. ss -ltnp → SIGTERM every listener → 500ms grace → start.
-  // Cost: bounded, no-op when the ports are free.
-  await killPortListeners(
-    options.emulator === true
-      ? [5180, 3939, 52937, 52938]
-      : [5180, 3939, 52937],
-    logger,
-  )
-
+  // ponytail: settle the "is a daemon already running?" question BEFORE any
+  // reaping. The old order reaped first and asked afterwards, which is only
+  // safe while the reap is accurate — and on macOS it was not: every identity
+  // check read /proc, found nothing, and classified the running daemon's own
+  // children as strangers. Asking first also means the answer can come from
+  // the instance lock, which is the one source that cannot be stale: a daemon
+  // holds it for exactly as long as it is alive.
   const existing = readPid()
-  if (existing !== null && isRunning(existing)) {
+  const lockHeld = await isSocketLive(instanceLockPath(resolveDaemonPaths()))
+  if (lockHeld || (existing !== null && isRunning(existing))) {
     const action = await promptConflict(existing)
     if (action === "cancel") {
       logger.info("start cancelled")
       return
     }
-    await stopExisting(existing, logger)
+    // ponytail: a supervised daemon cannot be restarted by killing it. launchd
+    // with KeepAlive brings it back in about two seconds — measured — and the
+    // daemon we would spawn here loses the race for the instance lock and dies
+    // with "another sirenodeck daemon is already running". Before the lock
+    // existed the same race simply produced TWO daemons, which is how this
+    // machine ended up with one from 09:39 and another from 16:54 fighting
+    // over the same ports. The manager owns the process, so the manager is
+    // what restarts it; the config and flags go through the state files, the
+    // same way `startProduction` hands them over.
+    if (isUnitInstalled()) {
+      const resolvedRestart = resolveConfigPath(options)
+      writeConfigPath(resolvedRestart.path)
+      writeFlags(buildRuntimeFlags(options))
+      logger.info(
+        { configPath: resolvedRestart.path },
+        "start: daemon is service-managed — restarting through the service manager",
+      )
+      await invokeManager({ action: "restart", logger })
+      const deadline = Date.now() + 10_000
+      let restarted: number | null = null
+      while (Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 200))
+        const pid = readPid()
+        if (pid !== null && pid !== existing && isRunning(pid)) {
+          restarted = pid
+          break
+        }
+      }
+      logger.info(
+        { pid: restarted },
+        restarted === null
+          ? "start: service manager restarted the daemon (pid not yet visible)"
+          : "start: daemon restarted by the service manager",
+      )
+      return
+    }
+    if (existing !== null) await stopExisting(existing, logger)
+    else
+      // The lock is held but nothing wrote a pid file. There is no process to
+      // signal by pid, so the port reap below is what clears it.
+      logger.warn(
+        "start: a daemon holds the instance lock but left no pid file — falling back to the port reap",
+      )
     removePidFile()
     removeDaemonControl(resolveDaemonPaths())
     removeRuntimeStateFile()
@@ -928,6 +1016,30 @@ const start = async (options: StartOptions): Promise<void> => {
       removeStartLock()
     }
   }
+
+  // ponytail: if a previous-session `sirenodeck:dm` daemon is still bound to
+  // the WS port (52937), reap it before spawning. The pid file is stale-
+  // prone (SIGKILL'd daemons leave it behind; crashed preflight daemons
+  // never wrote one). Identity check uses /proc/<pid>/comm === "sirenodeck:dm"
+  // cross-checked with the sirenodeck cmdline fingerprint, so unrelated
+  // processes holding 52937 (a Discord voice call, an `nc -l`, the user's
+  // own server) get left alone. The WS port is the load-bearing one —
+  // EADDRINUSE there causes the daemon's runPipeline to fail before the
+  // HTTP / frontend ports are even reached.
+  await reapStaleDaemon(options.port ?? 52937, logger)
+
+  // ponytail: clear the daemon's expected ports before spawning. This is
+  // the load-bearing fix for "the frontend port is in use by children":
+  // even when the previous daemon's children file is gone (e.g. after a
+  // SIGKILL that left orphans adopted by systemd), the port still binds
+  // the orphan. ss -ltnp → SIGTERM every listener → 500ms grace → start.
+  // Cost: bounded, no-op when the ports are free.
+  await killPortListeners(
+    options.emulator === true
+      ? [5180, 3939, 52937, 52938]
+      : [5180, 3939, 52937],
+    logger,
+  )
 
   // ponytail: a SIGKILL'd or crashed daemon leaves runtime-state.json behind
   // (no cleanup ran) — and when there was no pid file at all, the branches

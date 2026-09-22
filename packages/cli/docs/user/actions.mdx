@@ -48,8 +48,9 @@ actions:
   tap: "macro://Escape"
   tap: "macro://Up"
 
-  # Platform-specific shortcuts
-  tap: 'macro://{"all":"ctrl+shift+p","osx":"cmd+shift+p","windows":"ctrl+shift+p"}'
+  # Platform-specific shortcuts: the part after the brackets is the
+  # default and is required; each [os:...] overrides just that OS.
+  tap: "macro://[macos:cmd+shift+p]ctrl+shift+p"
 
   # Delays between steps
   tap: "macro://ctrl+a; delay(50ms); ctrl+c"

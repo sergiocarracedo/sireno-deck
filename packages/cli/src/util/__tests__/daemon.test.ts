@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import {
   acquireStartLock,
   generateToken,
+  isRunning,
   readChildren,
   removeStartLock,
   resolveDaemonPaths,
@@ -169,5 +170,38 @@ describe("acquireStartLock / removeStartLock", () => {
   it("removeStartLock is a no-op when no lock file exists", () => {
     expect(existsSync(lockPath())).toBe(false)
     expect(() => removeStartLock()).not.toThrow()
+  })
+})
+
+/**
+ * Regression cover for a check that used to report live daemons as dead.
+ * `isRunning` once required the target's cmdline to contain a per-daemon
+ * sentinel that was only ever written into the daemon's own environment, so
+ * the test could never pass; any caller that had inherited the sentinel
+ * concluded the running daemon was gone, deleted its pid file and started a
+ * second one beside it. Liveness must depend on the process, not on what the
+ * asking process happens to have in its environment.
+ */
+describe("isRunning", () => {
+  const originalSentinel = process.env["SIRENO_DAEMON_SENTINEL"]
+
+  afterEach(() => {
+    if (originalSentinel === undefined)
+      delete process.env["SIRENO_DAEMON_SENTINEL"]
+    else process.env["SIRENO_DAEMON_SENTINEL"] = originalSentinel
+  })
+
+  it("reports this very process as running", () => {
+    expect(isRunning(process.pid)).toBe(true)
+  })
+
+  it("still reports it as running when a stale sentinel is in the environment", () => {
+    process.env["SIRENO_DAEMON_SENTINEL"] = "sirenodeck-99999-deadbeef"
+    expect(isRunning(process.pid)).toBe(true)
+  })
+
+  it("rejects pids that cannot be running", () => {
+    expect(isRunning(0)).toBe(false)
+    expect(isRunning(-1)).toBe(false)
   })
 })

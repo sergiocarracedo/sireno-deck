@@ -73,8 +73,8 @@ metric channels.
 | `network-read`  | Net RX          | rate-bytes    | B/s  | kpis              | `/sys/class/net/*/statistics/rx_bytes` delta, non-loopback (Linux)                |
 | `network-write` | Net TX          | rate-bytes    | B/s  | kpis              | `/sys/class/net/*/statistics/tx_bytes` delta, non-loopback (Linux)                |
 | `battery`       | Battery         | percent       | %    | bars, chart, kpis | `/sys/class/power_supply/BAT0/capacity` (Linux)                                   |
-| `temperature`   | Temp            | count         | °C   | bars, chart, kpis | `/sys/class/thermal/thermal_zone0/temp` (Linux)                                   |
-| `gpu-temp`      | GPU Temp        | count         | °C   | bars, chart, kpis | amdgpu sysfs, fallback `nvidia-smi --query-gpu=temperature.gpu`                   |
+| `temperature`   | Temp            | count         | °C   | bars, chart, kpis | hwmon / `thermal_zone0` (Linux); `macmon` `temp.cpu_temp_avg` (macOS)             |
+| `gpu-temp`      | GPU Temp        | count         | °C   | bars, chart, kpis | amdgpu sysfs / `nvidia-smi` (Linux); `macmon` `temp.gpu_temp_avg` (macOS)         |
 | `gpu-usage`     | GPU             | percent       | %    | bars, chart, kpis | amdgpu `gpu_busy_percent`, fallback `nvidia-smi --query-gpu=utilization.gpu`      |
 | `uptime`        | Uptime          | uptime        | —    | kpis              | `os.uptime()`                                                                     |
 | `frequency`     | Freq            | frequency-ghz | GHz  | bars, chart, kpis | `os.cpus()[].speed`, fallback `/proc/cpuinfo` MHz                                 |
@@ -82,11 +82,38 @@ metric channels.
 | `processes`     | Procs           | count         | —    | kpis              | `/proc` numeric-dir count (Linux)                                                 |
 | `cpu-boost`     | Boost           | bool          | —    | kpis              | `/sys/devices/system/cpu/cpufreq/boost`, fallback `intel_pstate/no_turbo` (Linux) |
 | `cpu-voltages`  | Vcore           | count         | V    | kpis              | hwmon `in0_input` on k10temp/zenpower/coretemp/acpitz (Linux)                     |
-| `fan-rpm`       | Fan             | count         | RPM  | kpis              | hwmon `fan*_input` first non-zero reading (Linux)                                 |
+| `fan-rpm`       | Fan             | count         | RPM  | kpis              | hwmon `fan*_input` first non-zero reading (Linux); `macmon` fastest fan (macOS)   |
 
-Metrics that aren't available on the current platform (most probes are
-Linux-only) report `available: false` and the button renders a `—` for that
-slot. No silent zeros, no crashes.
+Metrics that aren't available on the current platform report
+`available: false` and the button renders a `—` for that slot. No silent
+zeros, no crashes.
+
+#### Platform coverage
+
+Most probes read Linux sysfs. macOS has no `/proc` or `/sys`, so the darwin
+paths go through documented CLIs instead — `sysctl` for swap, `pmset` for
+battery, `ps` for processes, `netstat` for network, and `ioreg` for GPU
+utilisation and disk I/O.
+
+Three metrics need a helper. CPU temperature, GPU temperature and fan RPM have
+no unprivileged source on Apple Silicon from those tools: `powermetrics`
+requires root, and the only `Temperature` key `ioreg` will hand a normal user
+belongs to `AppleSmartBattery` — the battery's, not the SoC's, so reporting it
+would be wrong rather than merely absent. [`macmon`](https://github.com/vladkens/macmon)
+reads all three through IOReport without sudo:
+
+```sh
+brew install macmon
+```
+
+It is optional and follows the same pattern as the media addon preferring
+`media-control` and brightness preferring `brightness`: present, the metrics
+report live values; absent, they stay unavailable and `system-requirements`
+names the install command.
+
+`cpu-boost` and `cpu-voltages` stay unavailable on macOS whatever is
+installed. Apple Silicon has no turbo toggle to report and no exposed voltage
+rail, so there is nothing to read — this is not a gap waiting to be filled.
 
 ### Formatters
 

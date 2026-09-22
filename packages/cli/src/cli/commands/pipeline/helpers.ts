@@ -3,7 +3,7 @@ import { homedir } from "node:os"
 import { resolve as resolvePath } from "node:path"
 
 import { findConfigPath, XDG_CONFIG_SUBDIR } from "@/config/discovery"
-import { getOriginalCwd } from "@/cli/cwd"
+import { getOriginalCwd, resolveUserPath } from "@/cli/cwd"
 
 import type { RunOptions } from "../run"
 
@@ -33,13 +33,14 @@ export const resolveConfigPath = (
   options: RunOptions,
 ): ResolveConfigPathResult => {
   if (options.config !== undefined) {
-    if (!existsSync(options.config)) {
+    const explicit = resolveUserPath(options.config)
+    if (!existsSync(explicit)) {
       throw new Error(
-        `Config file not found: ${options.config}\n` +
+        `Config file not found: ${explicit}\n` +
           `  Fix: pass a valid --config path, or remove --config to let sirenodeck auto-discover config.yml.`,
       )
     }
-    return { path: options.config, source: "cli" }
+    return { path: explicit, source: "cli" }
   }
   const cwd = getOriginalCwd()
   const home = options.homeDir ?? homedir()

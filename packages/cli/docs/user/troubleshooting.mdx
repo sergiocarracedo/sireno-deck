@@ -46,6 +46,38 @@ sireno stop
 sireno start
 ```
 
+### Daemon hangs at startup with no output
+
+At startup Sireno asks each package manager on your `PATH` — pnpm, npm and
+yarn — where it keeps its globally installed packages, so that an addon or
+theme installed globally can be found. A package manager that never answers
+used to stop startup dead: no log line, no port, no keys lit.
+
+Each of those questions now has a ten-second deadline. A manager that misses it
+is killed and startup carries on without it, leaving a warning in the log:
+
+```bash
+sireno logs | grep "did not answer"
+```
+
+Globally installed addons and themes from that manager will not resolve, so fix
+the manager itself — checking that it answers at all is the quickest test:
+
+```bash
+pnpm root --global
+```
+
+If the command hangs, or spawns process after process, your package manager
+install is broken rather than your config. On a slow machine, or the first time
+Corepack has to prepare a manager, ten seconds can genuinely be too short:
+
+```bash
+SIRENO_PACKAGE_MANAGER_TIMEOUT_MS=30000 sireno start
+```
+
+These probes never install anything. A manager that is absent, or that declines
+to answer, is skipped in silence — only the deadline is reported.
+
 ### Port already in use
 
 ```bash
@@ -54,6 +86,48 @@ lsof -i :3939
 
 # Kill the process
 kill <PID>
+```
+
+### "another sirenodeck daemon is already running"
+
+Only one daemon may run at a time. It holds a lock socket in its runtime
+directory for as long as it lives, and a second daemon refuses to start rather
+than fight it for the ports:
+
+```
+another sirenodeck daemon is already running (pid 4242) — stop it with `sireno stop`
+```
+
+The lock belongs to the kernel, not to a file Sireno maintains, so it is
+released the moment the holder dies — including a `kill -9`, a crash or a power
+cut. A leftover lock socket from a daemon that died is detected and cleared on
+the next start; there is no stale-lock timeout to wait out.
+
+If the message names a pid that is genuinely gone, that is worth reporting.
+Check first, since the usual explanation is a daemon you forgot was running:
+
+```bash
+sireno status
+ps -p <pid>
+```
+
+Until this lock existed, a second daemon could start beside the first whenever
+the pid file went missing or a liveness check misread a running daemon as dead.
+Both then bound the same ports, each reaped the other's children, and the deck
+behaved as though it were fighting itself — because it was.
+
+### Sireno says a port is held by "a process that is NOT a sirenodeck child"
+
+On macOS this used to be reported for Sireno's own frontend, because the checks
+that identify our processes read `/proc`, which macOS does not have. Every
+check therefore answered "not ours" and startup left its own orphans running.
+They now fall back to `ps`.
+
+If you still see this message, the holder really is someone else's, and Sireno
+deliberately leaves it alone. Find out whose it is before killing anything:
+
+```bash
+lsof -nP -iTCP:5180 -sTCP:LISTEN
 ```
 
 ### Daemon crashes on startup

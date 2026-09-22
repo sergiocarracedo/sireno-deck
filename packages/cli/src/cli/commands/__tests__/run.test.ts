@@ -11,6 +11,18 @@ import { writeFileSync, mkdtempSync } from "node:fs"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 
+// ponytail: these tests drive the whole pipeline — bridge, supervisors,
+// watchers — and then wait on it. vi.waitFor's default budget is 1s and the
+// default test timeout 5s, which held on an idle laptop and then failed a
+// dozen assertions the moment the machine was also running a browser and a
+// chat app. The conditions being waited on are unchanged; only the patience
+// is. Wall-clock budgets in a test that spawns processes have to assume the
+// machine is busy, or the suite reports a load average as a code defect.
+// The test timeout itself is raised suite-wide in vitest.config.ts.
+const WAIT_OPTS = { timeout: 20_000, interval: 25 } as const
+const waitFor = <T>(fn: () => T | Promise<T>): Promise<T> =>
+  vi.waitFor(fn, WAIT_OPTS)
+
 vi.mock("@/config/loader", () => ({
   loadConfig: vi.fn(),
 }))
@@ -439,7 +451,7 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     signals.trigger()
     await runPromise
 
@@ -489,7 +501,7 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     const decks = (
       (deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> })
         .createDeckRuntime.mock.calls[0]![0] as {
@@ -522,7 +534,7 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     const handle = await outputClient.init.mock.results[0]!.value
     expect(signals.onSignalSpy).toHaveBeenCalledTimes(1)
     signals.trigger()
@@ -549,7 +561,7 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     const createDeckRuntimeMock = deckMod as unknown as {
       createDeckRuntime: ReturnType<typeof vi.fn>
     }
@@ -606,7 +618,7 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     const handle = await outputClient.init.mock.results[0]!.value
     signals.trigger()
     await runPromise
@@ -648,7 +660,7 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     const handle = await outputClient.init.mock.results[0]!.value
     signals.trigger()
     await runPromise
@@ -716,7 +728,7 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(emulatorClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(emulatorClient.init).toHaveBeenCalledTimes(1))
     signals.trigger()
     await runPromise
 
@@ -750,13 +762,13 @@ describe("run", () => {
       signals,
       logger: silentLogger(),
     })
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
-    await vi.waitFor(() => expect(configChangeCallback).not.toBeNull())
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(configChangeCallback).not.toBeNull())
     // Trigger the config change callback registered by ConfigWatcher mock.
     configChangeCallback!()
     // handleConfigChange is fire-and-forget; wait until broadcast fires.
     expect(capturedBridge).not.toBeNull()
-    await vi.waitFor(() =>
+    await waitFor(() =>
       expect(capturedBridge!.broadcast).toHaveBeenCalledWith({
         type: "iframe-reload",
       }),
@@ -791,7 +803,7 @@ describe("run", () => {
       signals,
       logger: silentLogger(),
     })
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     const runtime = (
       (deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> })
         .createDeckRuntime.mock.results[0]!.value as {
@@ -804,7 +816,7 @@ describe("run", () => {
       buttons: [],
     })
     configChangeCallback!()
-    await vi.waitFor(() => expect(capturedBridge!.broadcast).toHaveBeenCalled())
+    await waitFor(() => expect(capturedBridge!.broadcast).toHaveBeenCalled())
     const deckFrames = capturedBridge!.broadcast.mock.calls.filter(
       ([message]) => (message as { type?: string }).type === "deck-config",
     )
@@ -828,7 +840,7 @@ describe("run", () => {
       signals,
       logger: silentLogger(),
     })
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     const initOpts = outputClient.init.mock.calls[0]?.[0] as {
       onChildCrash?: () => void
     }

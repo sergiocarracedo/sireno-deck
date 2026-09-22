@@ -57,13 +57,26 @@ describe("buildMediaAddonChecks", () => {
     expect(result.reason).toContain("wpctl")
   })
 
-  it("returns available: true on darwin when osascript present", async () => {
+  it("returns available: true on darwin when media-control is present", async () => {
+    const checks = buildMediaAddonChecks({
+      platform: "darwin",
+      executor: fakeExecutor(["osascript", "media-control"]),
+    })
+    const result = await checks[0]!.check()
+    expect(result.available).toBe(true)
+  })
+
+  // ponytail: osascript alone only reaches scriptable desktop players, so a
+  // browser — where most playback happens — stays invisible. That is worth
+  // surfacing, the same way a missing playerctl is on Linux.
+  it("reports darwin unavailable when only osascript is present", async () => {
     const checks = buildMediaAddonChecks({
       platform: "darwin",
       executor: fakeExecutor(["osascript"]),
     })
     const result = await checks[0]!.check()
-    expect(result.available).toBe(true)
+    expect(result.available).toBe(false)
+    expect(result.reason).toContain("media-control")
   })
 
   it("returns available: false on darwin when osascript missing", async () => {

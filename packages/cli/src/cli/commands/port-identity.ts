@@ -1,4 +1,32 @@
 import { readFileSync } from "node:fs"
+import { execFileSync } from "node:child_process"
+
+/**
+ * ponytail: every identity check in this module used to read /proc, which does
+ * not exist on macOS. The result was not a graceful degradation but a silent
+ * inversion: `readProcCmdline` returned null, so `isOurViteChild` was false for
+ * every process, `isOurDaemon` returned false before it even looked, and
+ * `isOrphan` bailed out as "can't tell". A Mac therefore reported the daemon's
+ * OWN vite as "a process that is NOT a sirenodeck child — leaving it alone",
+ * never reaped a stale daemon holding the WS port, and left the orphans that
+ * blocked the next start. `ps` answers the same questions everywhere POSIX
+ * does, so ask it when /proc is absent.
+ */
+const psField = (
+  pid: number,
+  field: "command" | "comm" | "ppid",
+): string | null => {
+  try {
+    const out = execFileSync("ps", ["-p", String(pid), "-o", `${field}=`], {
+      encoding: "utf8",
+      timeout: 2_000,
+      maxBuffer: 1024 * 1024,
+    }).trim()
+    return out.length > 0 ? out : null
+  } catch {
+    return null
+  }
+}
 
 export const readProcCmdline = (pid: number): string | null => {
   try {
@@ -6,7 +34,8 @@ export const readProcCmdline = (pid: number): string | null => {
     // cmdline is NUL-separated; replace with spaces for matching.
     return buf.replace(/\u0000+/g, " ").trim()
   } catch {
-    return null
+    // No /proc (macOS, BSD): `ps -o command=` is the portable equivalent.
+    return psField(pid, "command")
   }
 }
 
@@ -20,7 +49,9 @@ const readProcComm = (pid: number): string | null => {
       .replace(/\u0000+$/, "")
       .trim()
   } catch {
-    return null
+    // macOS truncates `comm` to the executable name but reflects
+    // `process.title`, which is exactly the daemon marker we set.
+    return psField(pid, "comm")
   }
 }
 
@@ -35,10 +66,14 @@ const readProcComm = (pid: number): string | null => {
 // "sireno[-_]?deck" segment) because the daemon's argv can move across
 // versions, worktrees, and binaries (node, tsx, bin/sirenodeck.js).
 export const isOurDaemon = (pid: number): boolean => {
-  if (process.platform !== "linux") return false
   const comm = readProcComm(pid)
-  if (comm !== "sirenodeck:dm") return false
-  const cmdline = readProcCmdline(pid) ?? ""
+  if (comm === null) return false
+  // The daemon titles itself `sirenodeck:dm`; the foreground CLI that hosts an
+  // in-process daemon titles itself `sirenodeck:cli`. Both own the ports, so
+  // both must be recognisable — a Mac only ever sees the latter, which is why
+  // matching the daemon title alone left live daemons unrecognised there.
+  if (comm !== "sirenodeck:dm" && comm !== "sirenodeck:cli") return false
+  const cmdline = readProcCmdline(pid) ?? comm
   return /sireno[-_]?deck/i.test(cmdline)
 }
 
@@ -50,7 +85,9 @@ export const readProcPpid = (pid: number): number | null => {
     const ppid = Number.parseInt(tail.split(" ")[1] ?? "", 10)
     return Number.isFinite(ppid) && ppid > 0 ? ppid : null
   } catch {
-    return null
+    const raw = psField(pid, "ppid")
+    const ppid = raw === null ? Number.NaN : Number.parseInt(raw, 10)
+    return Number.isFinite(ppid) && ppid > 0 ? ppid : null
   }
 }
 
@@ -108,7 +145,6 @@ export const cmdlineMentionsCliRoot = (cmdline: string): boolean => {
 // child of it. An orphan with ppid NOT in the live daemons list is
 // classified as orphan and killed.
 export const isOrphan = (pid: number, daemonPid: number | null): boolean => {
-  if (process.platform !== "linux") return false // can't tell — be safe
   const ppid = readProcPpid(pid)
   if (ppid === null) return false // can't tell — be safe
   if (daemonPid !== null && ppid === daemonPid) return false // live child

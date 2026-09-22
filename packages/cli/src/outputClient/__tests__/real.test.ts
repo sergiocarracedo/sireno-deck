@@ -163,6 +163,9 @@ describe("RealOutputClient.init", () => {
       setBrightness: vi.fn(async () => undefined),
       fillKeyBuffer: vi.fn(async () => undefined),
       onKeyEvent: vi.fn(() => () => undefined),
+      // The device is wrapped so a USB disconnect is survivable, and the
+      // wrapper subscribes to the SDK's error event.
+      onError: vi.fn(() => () => undefined),
       close: vi.fn(async () => {
         throw new Error("close failed")
       }),
@@ -212,7 +215,14 @@ describe("RealOutputClient.init", () => {
 
     expect(mocks.rendererStop).toHaveBeenCalledTimes(1)
     expect(mocks.supervisorStop).toHaveBeenCalledTimes(1)
-    expect(mocks.pushBlackFrame).toHaveBeenCalledWith(device, expect.anything())
+    // ponytail: the pipeline is handed a reconnecting WRAPPER around the raw
+    // handle, so a USB disconnect (a KVM switching hosts) no longer kills the
+    // daemon. The wrapper keeps the device's identity and delegates close(),
+    // which is what this assertion actually cares about.
+    expect(mocks.pushBlackFrame).toHaveBeenCalledWith(
+      expect.objectContaining({ serial: "ABC", model: "mk2" }),
+      expect.anything(),
+    )
     expect(device.close).toHaveBeenCalledTimes(1)
     expect(mocks.pushBlackFrame.mock.invocationCallOrder[0]).toBeLessThan(
       device.close.mock.invocationCallOrder[0]!,

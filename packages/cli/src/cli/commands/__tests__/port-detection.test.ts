@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 
 import type pino from "pino"
 
@@ -27,10 +35,30 @@ vi.mock("node:fs", async (importOriginal) => {
   }
 })
 
+// ponytail: this override is process-global and used to be permanent. Vitest
+// can run several files in one worker, so a leaked fake platform reached
+// sibling suites that import the same pipeline — which is the most likely
+// reason run.test.ts failed a shifting handful of its device/SIGINT tests
+// under full-suite load while passing in isolation. Put the real descriptor
+// back when this file is done.
+const realPlatform = Object.getOwnPropertyDescriptor(process, "platform")
 Object.defineProperty(process, "platform", {
   get: () => platformMock(),
   configurable: true,
 })
+afterAll(() => {
+  if (realPlatform !== undefined) {
+    Object.defineProperty(process, "platform", realPlatform)
+  }
+})
+
+// ponytail: importing ../start pulls in the whole render pipeline, which
+// statically imports sharp. Sharp picks its native binary from
+// process.platform plus a libc probe AT IMPORT TIME — and by this point the
+// platform is forced to "linux" and node:fs is mocked, so it computed
+// "linuxnull-arm64", threw, and took the entire file down before a single test
+// ran. Nothing here encodes an image, so stub it.
+vi.mock("sharp", () => ({ default: () => ({}) }))
 
 const { detectPortPids } = await import("../start")
 

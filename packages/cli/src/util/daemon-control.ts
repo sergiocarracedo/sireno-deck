@@ -5,16 +5,30 @@ import { existsSync, unlinkSync } from "node:fs"
 import type pino from "pino"
 
 import type { DaemonPaths } from "./daemon"
+import { isSocketLive } from "./single-instance"
 
 const GET_TOKEN = "get-token\n"
 
-export const startDaemonControl = (
+/**
+ * ponytail: the stale-socket clear used to be unconditional, which quietly took
+ * the socket away from a daemon that was still serving it — the second daemon
+ * got a working control socket while the first was left owning a path that no
+ * longer referred to its listener. Whether a path is free is the kernel's to
+ * say, so ask it: only a socket nothing answers on is cleared, and a genuine
+ * EADDRINUSE surfaces as a rejection instead of being worked around.
+ */
+export const startDaemonControl = async (
   token: string,
   paths: DaemonPaths,
   logger: pino.Logger,
-): Promise<Server> =>
-  new Promise((resolve, reject) => {
-    if (existsSync(paths.controlSocket)) unlinkSync(paths.controlSocket)
+): Promise<Server> => {
+  if (
+    existsSync(paths.controlSocket) &&
+    !(await isSocketLive(paths.controlSocket))
+  ) {
+    unlinkSync(paths.controlSocket)
+  }
+  return new Promise((resolve, reject) => {
     const server = createServer((socket) => {
       socket.setEncoding("utf8")
       socket.on("data", (data) => {
@@ -29,6 +43,7 @@ export const startDaemonControl = (
       resolve(server)
     })
   })
+}
 
 export const requestDaemonToken = (
   paths: DaemonPaths,

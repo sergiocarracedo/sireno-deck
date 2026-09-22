@@ -11,6 +11,7 @@ import type {
   AddonGlobalPoller,
 } from "@/addon/api"
 import type { ScannedAddon } from "@/cli/commands/addon-registry"
+import { BUILTIN_MANIFESTS } from "@/builtin-addons/register-builtins"
 import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
 import type { Methods } from "@/deck/methods"
@@ -45,6 +46,21 @@ type AddonModule = {
 
 const namespacedKey = (addonName: string, methodName: string): string =>
   `${addonName}:${methodName}`
+
+/**
+ * A builtin's module without going through the filesystem.
+ *
+ * ponytail: importing a builtin by path is the one thing that cannot work in a
+ * published install — the path points at TypeScript source that uses `@/`
+ * aliases, so plain node refuses it and every builtin button loses its backend.
+ * The manifests are compiled into the bundle already, so prefer the object.
+ * A third-party addon is still loaded from disk, which is correct: it is not
+ * part of this package and has a real, loadable entry file.
+ */
+const staticAddonModule = (addonName: string): AddonModule | null => {
+  const manifest = BUILTIN_MANIFESTS.get(addonName)
+  return manifest === undefined ? null : ({ manifest } as AddonModule)
+}
 
 export interface AddonBridgeHandle {
   dispose(): void
@@ -97,8 +113,10 @@ export const bridgeAddonServices = async (
     if (addon.globalServiceEntry === null) continue
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mod = (await import(addon.globalServiceEntry)) as AddonModule
+      const mod =
+        staticAddonModule(addon.name) ??
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ((await import(addon.globalServiceEntry)) as AddonModule)
       let globalService: AddonGlobalService | undefined
       if (
         typeof (mod as unknown as { globalService?: AddonGlobalService })
@@ -122,8 +140,16 @@ export const bridgeAddonServices = async (
 
       addonModules.set(addon.name, mod)
       addonGlobalServices.set(addon.name, globalService)
-    } catch {
-      // Skip addons whose global backend fails to load.
+    } catch (err) {
+      // ponytail: this used to swallow the error silently. When run.ts handed
+      // the daemon an addon's BROWSER bundle, every import here threw on an
+      // unresolvable host-UI specifier and the addon simply vanished — no
+      // global service, no handlers, no log line, and a deck button that did
+      // nothing when tapped. Whatever the cause, say so.
+      logger.error(
+        { addonName: addon.name, entry: addon.globalServiceEntry, err },
+        "addon global service failed to load",
+      )
     }
   }
 
@@ -191,6 +217,33 @@ export const bridgeAddonServices = async (
     } catch (err) {
       logger.error({ addonName, err }, `addon onLoad threw`)
     }
+
+    // ponytail: `subscriptions` has been part of the addon API since it was
+    // written (api.ts documents them as "push-based sources — file watchers,
+    // sockets") but nothing ever invoked them. coding-agents declares one, and
+    // its ClaudeCodeProvider fills its agent map ONLY inside subscribe() — so
+    // the provider reported zero Claude Code sessions forever, on a machine
+    // with eight of them open. Pollers were wired; subscriptions never were.
+    for (const subscription of globalService.subscriptions ?? []) {
+      try {
+        const handle = subscription.subscribe(ctx)
+        trackedCleanup.push(() => {
+          try {
+            handle.unsubscribe()
+          } catch (err) {
+            logger.error(
+              { addonName, channel: subscription.channel, err },
+              `addon subscription unsubscribe failed`,
+            )
+          }
+        })
+      } catch (err) {
+        logger.error(
+          { addonName, channel: subscription.channel, err },
+          `addon subscription failed to start`,
+        )
+      }
+    }
   }
 
   const deckButtonCleanup = new Map<
@@ -237,10 +290,17 @@ export const bridgeAddonServices = async (
         if (addon.name !== addonName) continue
         if (addon.frontendEntry === null) continue
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          addonMod = (await import(addon.frontendEntry)) as AddonModule
-        } catch {
-          // Skip.
+          addonMod =
+            staticAddonModule(addon.name) ??
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ((await import(addon.frontendEntry)) as AddonModule)
+        } catch (err) {
+          // ponytail: silence here meant a failed import surfaced only as a
+          // button that ignored taps. See the matching catch above.
+          logger.error(
+            { addonName, entry: addon.frontendEntry, err },
+            "addon button handlers failed to load",
+          )
         }
         break
       }

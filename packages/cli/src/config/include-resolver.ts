@@ -1,5 +1,10 @@
 import { readFileSync, realpathSync } from "node:fs"
-import { dirname, isAbsolute, resolve as resolvePath } from "node:path"
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  resolve as resolvePath,
+} from "node:path"
 
 export class IncludeResolutionError extends Error {
   readonly issues: { message: string; path?: string }[]
@@ -16,16 +21,59 @@ export class IncludeResolutionError extends Error {
 
 const INCLUDE_RE = /^(\s*)(.*?)\s*!include\s+(\S+)(.*)$/
 
+/**
+ * Resolves symlinks so two spellings of the same directory compare equal.
+ *
+ * ponytail: the containment check below is a plain string prefix, so a config
+ * reached through a symlinked parent failed it — the defining file had already
+ * been canonicalised while an absolute `!include` had not, and the two never
+ * shared a prefix. On macOS that is every config under a temp dir, since /var
+ * is a symlink to /private/var, but it applies to any symlinked config
+ * directory. Falls back to the literal path when the target does not exist yet
+ * (a missing include must be reported as missing, not as an escape attempt).
+ */
+const canonical = (p: string): string => {
+  try {
+    return realpathSync.native(p)
+  } catch {
+    try {
+      return resolvePath(realpathSync.native(dirname(p)), basename(p))
+    } catch {
+      return p
+    }
+  }
+}
+
+const isUnder = (candidate: string, root: string): boolean =>
+  candidate.startsWith(root.endsWith("/") ? root : `${root}/`)
+
 const resolveIncludePath = (
   pathStr: string,
   definingFilePath: string,
 ): string => {
-  const rootDir = resolvePath(dirname(definingFilePath))
-  const normalizedRoot = rootDir.endsWith("/") ? rootDir : `${rootDir}/`
+  const lexicalRoot = resolvePath(dirname(definingFilePath))
   const includePath = isAbsolute(pathStr)
     ? pathStr
-    : resolvePath(dirname(definingFilePath), pathStr)
-  if (!includePath.startsWith(normalizedRoot)) {
+    : resolvePath(lexicalRoot, pathStr)
+
+  // ponytail: containment is judged LEXICALLY, and that is the whole point.
+  // This check exists to stop `../../etc/passwd`, not to police where the
+  // user's own files live. Resolving symlinks first broke a perfectly ordinary
+  // setup — a `demos -> ../../repo/demos` symlink placed inside the config
+  // directory on purpose — by reporting the user's deliberate choice as a path
+  // traversal attempt and refusing to start the daemon.
+  //
+  // The canonical forms are still accepted, because the defining file may
+  // arrive already realpath'd while an absolute !include has not (on macOS
+  // /var is a symlink to /private/var, so this is every config under a temp
+  // dir). Any of the spellings matching is enough; `../` escapes match none.
+  const canonicalRoot = canonical(lexicalRoot)
+  const contained =
+    isUnder(includePath, lexicalRoot) ||
+    isUnder(includePath, canonicalRoot) ||
+    isUnder(canonical(includePath), canonicalRoot)
+
+  if (!contained) {
     throw new IncludeResolutionError(
       `!include path escapes config directory: ${includePath} (from ${definingFilePath})`,
       [

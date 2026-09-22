@@ -103,7 +103,29 @@ export class BrowserRenderer {
       (async (): Promise<PlaywrightLike> =>
         (await import("playwright")) as PlaywrightLike)
     const playwright = await factory()
-    this.browser = await playwright.chromium.launch({ headless: true })
+    try {
+      this.browser = await playwright.chromium.launch({ headless: true })
+    } catch (err) {
+      // ponytail: hardware mode renders every deck frame in headless chromium,
+      // so a missing browser download is fatal — but Playwright's own message
+      // is a box-drawing banner wrapped in a stack trace that never mentions
+      // sirenodeck. Dev builds never auto-install it (ensurePlaywright only
+      // ran for installed trees), so this is the first thing a contributor
+      // hits when they plug in a real deck. Say what to run.
+      const message = (err as Error).message ?? ""
+      if (
+        /Executable doesn't exist|please run the following command/i.test(
+          message,
+        )
+      ) {
+        throw new Error(
+          "Headless chromium is not installed — sirenodeck renders deck images with it.\n" +
+            "  Fix: pnpm --filter @sirenodeck/sirenodeck exec playwright install chromium\n" +
+            `  (original error: ${message.split("\n")[0] ?? ""})`,
+        )
+      }
+      throw err
+    }
     const { columns, rows } = gridForKeyCount(this.options.device.getKeyCount())
     const vpWidth = columns * BUTTON_SIZE_PX
     const vpHeight = rows * BUTTON_SIZE_PX
@@ -128,6 +150,19 @@ export class BrowserRenderer {
     }
     this.cadence.start()
     this.running = true
+  }
+
+  /**
+   * Repaints every key on the next tick.
+   *
+   * ponytail: the change tracker skips keys whose bytes have not changed, so
+   * after the hardware goes away and comes back the deck would stay blank —
+   * the tracker still holds the hashes of what the OLD handle was showing.
+   * Nothing reset it before this; `runtime:invalidate` only triggers a tick.
+   */
+  forceRedraw(): void {
+    this.tracker.reset()
+    this.debouncer.trigger()
   }
 
   async stop(): Promise<void> {

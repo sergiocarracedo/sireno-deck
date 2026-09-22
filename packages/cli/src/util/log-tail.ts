@@ -7,6 +7,8 @@ export interface TailFileOptions {
   readonly lines?: number
   readonly follow?: boolean
   readonly pollMs?: number
+  /** Prefix each line with when it was logged. On by default here. */
+  readonly timestamps?: boolean
 }
 
 export interface TailHandle {
@@ -17,7 +19,16 @@ export interface TailHandle {
 // ponytail: tail the last N lines, then poll for appended bytes. Simpler than
 // fs.watch + inode tracking, and survives rotation (new size from 0).
 export const tailFile = (opts: TailFileOptions): TailHandle => {
-  const { logPath, lines = 50, follow = true, pollMs = 250 } = opts
+  const {
+    logPath,
+    lines = 50,
+    follow = true,
+    pollMs = 250,
+    // ponytail: reading a log after the fact, "when did this happen" is the
+    // first question — unlike live startup output, which is read as it
+    // happens. Opposite default to the console formatter, deliberately.
+    timestamps = true,
+  } = opts
   let stopped = false
   let resolveDone!: () => void
   const promise = new Promise<void>((resolve) => {
@@ -25,7 +36,7 @@ export const tailFile = (opts: TailFileOptions): TailHandle => {
   })
 
   const emit = (line: string): void => {
-    const formatted = formatHuman(line)
+    const formatted = formatHuman(line, { timestamps })
     const out = formatted !== null ? formatted : line
     process.stdout.write(`${out}\n`)
   }

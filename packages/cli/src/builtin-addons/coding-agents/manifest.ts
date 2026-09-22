@@ -92,6 +92,23 @@ export const manifest = {
       },
     },
     { name: "claude-code-projects-readable", check: probeClaudeProjectsDir },
+    {
+      // ponytail: distinguishes "reading transcripts and guessing" from
+      // "being told". Without the hooks the provider still works, but status
+      // is derived from file tails and lags a turn behind.
+      name: "claude-code-hooks",
+      check: async () => {
+        const { isClaudeHookInstalled, isClaudeHookEnabled } =
+          await import("@/cli/coding-agents-onboarding")
+        return isClaudeHookInstalled() && isClaudeHookEnabled()
+          ? { available: true }
+          : {
+              available: false,
+              reason:
+                "Claude Code session hooks not installed — status falls back to reading transcripts. Run `sirenodeck system-requirements` to add them.",
+            }
+      },
+    },
   ],
 } satisfies AddonManifestV1
 

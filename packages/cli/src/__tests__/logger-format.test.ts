@@ -189,3 +189,51 @@ describe("multi-line msg gutter", () => {
     expect(formatted).toContain("single line")
   })
 })
+
+describe("formatHuman timestamps", () => {
+  const line = (over: Record<string, unknown> = {}): string =>
+    JSON.stringify({
+      level: 30,
+      // 2026-09-17T09:13:49.164Z rendered in local time
+      time: Date.UTC(2026, 8, 17, 9, 13, 49, 164),
+      msg: "start: using config",
+      ...over,
+    })
+
+  const strip = (s: string): string => s.replace(/\u001b\[[0-9;]*m/g, "")
+
+  it("omits the time by default, as live startup output expects", () => {
+    // ponytail: the console formatter drops the clock on purpose — startup
+    // output is read as it happens. `sirenodeck logs` opts in instead.
+    expect(strip(formatHuman(line())!)).not.toMatch(/\d\d:\d\d:\d\d/)
+  })
+
+  it("prefixes the local time when asked", () => {
+    const out = strip(formatHuman(line(), { timestamps: true })!)
+    const d = new Date(Date.UTC(2026, 8, 17, 9, 13, 49, 164))
+    const pad = (n: number, w = 2): string => String(n).padStart(w, "0")
+    const expected = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.164`
+    expect(out.startsWith(expected)).toBe(true)
+    // The level and message survive the new prefix.
+    expect(out).toContain("INFO")
+    expect(out).toContain("start: using config")
+  })
+
+  it("accepts an ISO timestamp as well as epoch millis", () => {
+    const iso = line({ time: "2026-09-17T09:13:49.164Z" })
+    expect(strip(formatHuman(iso, { timestamps: true })!)).toMatch(
+      /^\d\d:\d\d:\d\d\.\d\d\d /,
+    )
+  })
+
+  it("just omits the prefix when the entry has no usable time", () => {
+    for (const bad of [{ time: undefined }, { time: "not a date" }]) {
+      const out = strip(formatHuman(line(bad), { timestamps: true })!)
+      expect(out.startsWith("INFO")).toBe(true)
+    }
+  })
+
+  it("leaves a non-JSON line alone", () => {
+    expect(formatHuman("plain text", { timestamps: true })).toBe("plain text")
+  })
+})

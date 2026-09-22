@@ -1,7 +1,8 @@
 import { spawn } from "node:child_process"
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs"
+import { createRequire } from "node:module"
 import { homedir } from "node:os"
-import { join } from "node:path"
+import { dirname, join } from "node:path"
 
 import type pino from "pino"
 
@@ -45,16 +46,36 @@ const chromiumInstalled = (browsersPath: string): boolean => {
  * (PLAYWRIGHT_BROWSERS_PATH) and the env var stays set for the child daemon,
  * so `browser-renderer` finds them at runtime.
  */
+/**
+ * Locate playwright's CLI entry point. Installed builds keep it under
+ * SIRENO_INSTALL_ROOT; dev checkouts resolve it from whichever node_modules
+ * the running CLI was loaded from (pnpm's layout means it is not necessarily
+ * a sibling of the repo root).
+ */
+const resolvePlaywrightCli = (): string | null => {
+  const root = process.env["SIRENO_INSTALL_ROOT"]
+  if (root !== undefined) {
+    const installed = join(root, "node_modules", "playwright", "cli.js")
+    if (existsSync(installed)) return installed
+  }
+  try {
+    const require_ = createRequire(import.meta.url)
+    // playwright's package.json "bin" points at cli.js; resolve the package
+    // entry then take its directory so we don't depend on the export map.
+    return join(dirname(require_.resolve("playwright")), "cli.js")
+  } catch {
+    return null
+  }
+}
+
 export const ensurePlaywright = async (logger: pino.Logger): Promise<void> => {
   const browsersPath = playrightBrowsersPath()
   if (chromiumInstalled(browsersPath)) return
-  const root = process.env["SIRENO_INSTALL_ROOT"]
-  if (root === undefined) return
-  const cliPath = join(root, "node_modules", "playwright", "cli.js")
-  if (!existsSync(cliPath)) {
+  const cliPath = resolvePlaywrightCli()
+  if (cliPath === null || !existsSync(cliPath)) {
     logger.warn(
       { cliPath },
-      "first-run: playwright cli not found in install tree — skipping browser download",
+      "first-run: playwright cli not found — skipping browser download",
     )
     return
   }

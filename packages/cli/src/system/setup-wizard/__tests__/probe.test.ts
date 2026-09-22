@@ -23,6 +23,15 @@ const createExecutor = (
     if (args[0] === "--version" && availableCommands.includes(command)) {
       return { exitCode: 0, stdout: `${command} 1.0`, stderr: "" }
     }
+    // macOS Accessibility (TCC) probe — `uiScripting` in availableCommands
+    // stands in for the grant being in place.
+    if (command === "osascript" && (args[1] ?? "").includes("UI elements")) {
+      return {
+        exitCode: 0,
+        stdout: availableCommands.includes("uiScripting") ? "true" : "false",
+        stderr: "",
+      }
+    }
     return { exitCode: 1, stdout: "", stderr: "" }
   }),
 })
@@ -119,7 +128,7 @@ describe("probeAll", () => {
   })
 
   it("reports osascript available on darwin and no udev probe", async () => {
-    const executor = createExecutor(["osascript", "pbcopy"])
+    const executor = createExecutor(["osascript", "pbcopy", "uiScripting"])
     const report = await probeAll({
       platform: "darwin",
       homeDir: "/Users/u",
@@ -135,6 +144,31 @@ describe("probeAll", () => {
     expect(report.capabilities.notification.available).toBe(true)
     expect(report.capabilities.activeApp.available).toBe(true)
     expect(report.udev.rulesInstalled).toBe(true)
+  })
+
+  it("darwin without the Accessibility grant reports keyMacro missing", async () => {
+    // Regression: osascript always exists on macOS, so probing only for the
+    // binary reported "all present" while every keystroke failed with -1719.
+    const executor = createExecutor(["osascript", "pbcopy"])
+    const report = await probeAll({
+      platform: "darwin",
+      homeDir: "/Users/u",
+      xdgConfigHome: "/Users/u/.config",
+      env: {},
+      executor,
+      extraFsProbe: noFsProbe,
+      fileExists: () => false,
+      readFile: () => null,
+    })
+    expect(report.capabilities.keyMacro.available).toBe(false)
+    expect(report.capabilities.keyMacro.missing).toContain(
+      "accessibility-permission",
+    )
+    expect(report.capabilities.keyMacro.reason).toContain("Accessibility")
+    expect(report.capabilities.activeApp.available).toBe(false)
+    // Capabilities that don't drive the UI are unaffected by the grant.
+    expect(report.capabilities.clipboard.available).toBe(true)
+    expect(report.capabilities.notification.available).toBe(true)
   })
 
   it("reports powershell available on win32", async () => {
