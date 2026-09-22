@@ -86,7 +86,93 @@ export const collectBuiltinAddonRegistry = async (): Promise<{
 }
 
 const here = dirname(fileURLToPath(import.meta.url))
-export const builtinDir = resolvePath(here, "..", "..", "builtin-addons")
+
+/**
+ * Where the builtin addons live on disk, from wherever this module is running.
+ *
+ * ponytail: this used to be a single hard-coded hop — `../../builtin-addons` —
+ * which is right only when the module runs from source at `src/cli/commands/`.
+ * The published CLI runs the bundle at `dist/main.mjs`, where the same hop
+ * lands on `<pkg>/../builtin-addons`: a path that does not exist. The scan
+ * below then returned an empty array without a word, and the consequences were
+ * entirely silent and entirely fatal to the deck — every builtin lost its
+ * frontend entry, so it was absent from `SIRENO_ADDONS`, absent from the
+ * frontend's `virtual:sireno/addons/registry`, and `ButtonSurface` rendered
+ * `null` for it. The deck came up with blank keys, no error anywhere, and the
+ * only buttons that survived were the hardcoded system ones and addons loaded
+ * from an absolute path outside the package.
+ *
+ * The package ships `src/` beside `dist/` (see the `files` field in
+ * package.json), so the sources are present in both layouts; only the number
+ * of hops differs. Try each layout and take the one that is actually there.
+ */
+export const resolveBuiltinDir = (
+  moduleDir: string,
+  exists: (path: string) => boolean = existsSync,
+): string => {
+  const candidates = [
+    // running from source: src/cli/commands → src/builtin-addons
+    resolvePath(moduleDir, "..", "..", "builtin-addons"),
+    // running from the bundle: dist → src/builtin-addons
+    resolvePath(moduleDir, "..", "src", "builtin-addons"),
+    // bundled alongside, if a future build ever emits them next to the entry
+    resolvePath(moduleDir, "builtin-addons"),
+  ]
+  return candidates.find((candidate) => exists(candidate)) ?? candidates[0]!
+}
+
+export const builtinDir = resolveBuiltinDir(here)
+
+/**
+ * The text of the modules an entry file re-exports, one hop deep.
+ *
+ * ponytail: the regex scan used to read only the entry file itself, which is
+ * empty of button types whenever the entry is a barrel — `system-status` and
+ * `coding-agents` both just re-export `./manifest`. Those two addons have a
+ * `sirenodeck.json`, so the JSON path was meant to cover them by importing the
+ * entry and reading `buttonTypes` off the module. That works under tsx and
+ * fails under the published bundle, because `await import()` on a `.ts` file
+ * is not something plain node can do — and the failure is swallowed by a catch
+ * that leaves the type list empty. The result was two addons whose buttons
+ * rendered blank only in a real install, which is the worst place to find out.
+ *
+ * Reading the re-exported file's text needs no loader, so it works in both.
+ * One hop is enough for a barrel and keeps this from walking a module graph.
+ */
+const reexportedSources = (addonDir: string, entrySource: string): string[] => {
+  const out: string[] = []
+  const seen = new Set<string>()
+  for (const match of entrySource.matchAll(
+    /(?:^|\n)\s*(?:export|import)\b[^"']*from\s*["'](\.[^"']+)["']/g,
+  )) {
+    const spec = match[1]
+    if (spec === undefined || seen.has(spec)) continue
+    seen.add(spec)
+    const base = resolvePath(addonDir, spec)
+    // TypeScript's ESM imports name the emitted `.js`, so `./manifest.js` is
+    // `manifest.ts` on disk — `coding-agents` imports exactly that way, and
+    // without the swap its barrel looked like it re-exported nothing.
+    const withoutJs = base.replace(/\.(js|jsx|mjs|cjs)$/, "")
+    for (const candidate of [
+      base,
+      `${base}.ts`,
+      `${base}.tsx`,
+      `${withoutJs}.ts`,
+      `${withoutJs}.tsx`,
+      join(base, "index.ts"),
+      join(base, "index.tsx"),
+    ]) {
+      if (!existsSync(candidate)) continue
+      try {
+        out.push(readFileSync(candidate, "utf8"))
+      } catch {
+        // unreadable sibling — the entry's own text still stands
+      }
+      break
+    }
+  }
+  return out
+}
 
 const scanAddonDir = async (
   addonDir: string,
@@ -96,11 +182,20 @@ const scanAddonDir = async (
   if (jsonScanned !== null && jsonScanned.types.length > 0) return jsonScanned
   const indexPath = join(addonDir, "index.ts")
   const indexTsxPath = join(addonDir, "index.tsx")
+  // ponytail: the text fallback used to insist on an `index.ts`, so an addon
+  // whose manifest names a different entry had no fallback at all — it simply
+  // returned the empty JSON scan. `coding-agents` has no index.ts and declares
+  // `manifest.ts`, which is why its two buttons were missing from the registry
+  // in a published install while every other builtin recovered. When the
+  // manifest names an entry, that is the file to read.
+  const manifestEntry = jsonScanned?.frontendEntry ?? null
   const indexFile = existsSync(indexPath)
     ? indexPath
     : existsSync(indexTsxPath)
       ? indexTsxPath
-      : null
+      : manifestEntry !== null && existsSync(manifestEntry)
+        ? manifestEntry
+        : null
   if (indexFile === null) return jsonScanned
   let raw: string
   try {
@@ -108,7 +203,7 @@ const scanAddonDir = async (
   } catch {
     return jsonScanned
   }
-  const allSources = [raw]
+  const allSources = [raw, ...reexportedSources(dirname(indexFile), raw)]
   const scanFrom = (source: string): Set<string> => {
     const out = new Set<string>()
     for (const m of source.matchAll(
@@ -123,7 +218,11 @@ const scanAddonDir = async (
     }
     return out
   }
-  const types = scanFrom(raw)
+  // Scan the re-exported modules too: a barrel entry declares no types of its
+  // own, which is exactly how `system-status` and `coding-agents` came up empty.
+  const types = new Set<string>()
+  for (const source of allSources)
+    for (const type of scanFrom(source)) types.add(type)
   let publishIntervalMs: number | null = null
   for (const src of allSources) {
     const match = src.match(/publishIntervalMs:\s*(\d+)/)
@@ -157,7 +256,7 @@ const scanAddonDir = async (
   return {
     name: addonName,
     types: [...types],
-    frontendEntry: existsSync(indexPath) ? indexPath : indexTsxPath,
+    frontendEntry: indexFile,
     publishIntervalMs,
     pollerEntry,
     buttonTypes,
@@ -365,7 +464,15 @@ const scanAddonJsonManifest = async (
 }
 
 const scanBuiltinAddons = async (): Promise<ReadonlyArray<ScannedAddon>> => {
-  if (!existsSync(builtinDir)) return []
+  if (!existsSync(builtinDir)) {
+    // Never normal: without these the deck renders blank keys. Say so loudly
+    // rather than returning an empty list and letting the UI explain it.
+    process.emitWarning(
+      `sirenodeck: builtin addons not found at ${builtinDir} — every builtin button will render empty`,
+      "SirenoDeckBuiltinsMissing",
+    )
+    return []
+  }
   const entries = readdirSync(builtinDir, { withFileTypes: true })
   const out: ScannedAddon[] = []
   for (const entry of entries) {
