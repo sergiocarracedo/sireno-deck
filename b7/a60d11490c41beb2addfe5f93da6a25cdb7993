@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/__tests__/builtin-manifests.test.ts
+  s_9f693a4d1a8676::t_1e1b5742f2de27 1-15,20-22,24-45
+  s_9f693a4d1a8676::t_49438412e13578 16-19,23
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_9f693a4d1a8676::t_018cd6315c80d8 5,33-65
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_9f693a4d1a8676::t_6a7a446e0d723c 14,50-64,116-119,293-296
+packages/cli/src/cli/commands/addon-registry.ts
+  s_9f693a4d1a8676::t_a4569417118ba2 237-243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b7a60d11490c41beb2addfe5f93da6a25cdb7993",
+  "prompts": {},
+  "sessions": {
+    "s_9f693a4d1a8676": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a285823-ea99-467d-9a84-2486991b79be",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sergio Carracedo <sergio.carracedo@feverup.com>"
+    }
+  }
+}
