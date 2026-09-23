@@ -92,7 +92,7 @@ jobs:
         env:
           RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          VERSION="${RELEASE_TAG##*-}"
+          VERSION="${RELEASE_TAG#@sirenodeck/sirenodeck-}"
           URL="https://registry.npmjs.org/@sirenodeck/sirenodeck/-/sirenodeck-${VERSION}.tgz"
           SHA256=$(curl --fail --location "$URL" | sha256sum | cut -d' ' -f1)
           sed -e "s/VERSION/${VERSION}/g" -e "s/SHA256/${SHA256}/g" \

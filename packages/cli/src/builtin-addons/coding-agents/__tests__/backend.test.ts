@@ -3,6 +3,15 @@ import { mkdtempSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
+const { loadProviders } = vi.hoisted(() => ({
+  loadProviders: vi.fn(async () => ({
+    providers: new Map(),
+    spawnedChild: null,
+  })),
+}))
+
+vi.mock("../providers/registry.js", () => ({ loadProviders }))
+
 // must land before any test triggers resolveDaemonPaths(); the statement
 // below runs at module eval, before every test body and before the first
 // onLoad call that persists state.
@@ -62,6 +71,7 @@ describe("coding-agents globalService", () => {
   afterEach(() => {
     const noopCtx = { signal: new AbortController().signal } as never
     globalService.onUnload?.(noopCtx)
+    loadProviders.mockClear()
   })
 
   it("exposes the shared channel on its poller", () => {
@@ -159,19 +169,18 @@ describe("deck rebuild on first agents", () => {
     vi.useFakeTimers()
     const { ctx } = makeCtx()
     const requestDeckRebuild = vi.fn()
+    loadProviders.mockResolvedValueOnce({
+      providers: new Map([
+        ["opencode", makeProvider("opencode", [makeAgent("a", "running")])],
+      ]),
+      spawnedChild: null,
+    })
     await globalService.onLoad?.(
       { ...ctx, requestDeckRebuild } as never,
-      {
-        providers: [makeProvider("opencode", [makeAgent("a", "running")])],
-      } as never,
+      {} as never,
     )
 
-    await globalService.pollers?.[0]?.poll({
-      ...ctx,
-      requestDeckRebuild,
-    } as never)
-
-    // No timer advance: the deck must already have been asked to rebuild.
+    // onLoad performs the first provider scan, so this is where 0 -> N occurs.
     expect(requestDeckRebuild).toHaveBeenCalled()
   })
 })
