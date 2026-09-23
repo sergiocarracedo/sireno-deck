@@ -1,0 +1,20 @@
+packages/cli/src/builtin-addons/coding-agents/__tests__/backend.test.ts
+  s_f1c0c0863b9261::t_bd114ca50a31c8 183
+  s_f1c0c0863b9261::t_f7f64673d1e78e 6-14,74,172-177,180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "80fecf83559e931434de77be26f463119243c4d0",
+  "prompts": {},
+  "sessions": {
+    "s_f1c0c0863b9261": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f358aff98ffeQFunXss0jTbX3r",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
