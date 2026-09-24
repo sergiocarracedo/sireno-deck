@@ -120,6 +120,16 @@ export const renderDarwinPlist = (vars: TemplateVars): string => {
     "  <dict>",
     "    <key>PATH</key>",
     `    <string>${darwinPathEntries(program)}</string>`,
+    // ponytail: launchd starts the daemon with no locale, and a process with
+    // no locale on macOS is assumed to speak Mac OS Roman. `pbcopy` then read
+    // an emoji's UTF-8 bytes as Mac OS Roman characters and copied those
+    // instead — 🏉 arrived as "üèâ" — without failing or logging anything.
+    // The clipboard provider states its own encoding now, so this is belt and
+    // braces, but any other child process the daemon spawns inherits it too.
+    "    <key>LANG</key>",
+    "    <string>en_US.UTF-8</string>",
+    "    <key>LC_CTYPE</key>",
+    "    <string>UTF-8</string>",
     "  </dict>",
     "  <key>WorkingDirectory</key>",
     `  <string>${vars.workingDirectory}</string>`,
