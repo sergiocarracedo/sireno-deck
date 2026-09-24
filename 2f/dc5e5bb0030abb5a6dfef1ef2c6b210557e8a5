@@ -1,0 +1,19 @@
+.github/workflows/release.yml
+  s_f1c0c0863b9261::t_3a881ece4c9cb7 95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2fdc5e5bb0030abb5a6dfef1ef2c6b210557e8a5",
+  "prompts": {},
+  "sessions": {
+    "s_f1c0c0863b9261": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f358aff98ffeQFunXss0jTbX3r",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
