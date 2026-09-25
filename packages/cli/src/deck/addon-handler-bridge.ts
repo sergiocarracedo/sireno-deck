@@ -12,6 +12,7 @@ import type {
 } from "@/addon/api"
 import type { ScannedAddon } from "@/cli/commands/addon-registry"
 import { BUILTIN_MANIFESTS } from "@/builtin-addons/register-builtins"
+import { BUILTIN_GLOBAL_SERVICES } from "@/builtin-addons/global-services"
 import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
 import type { Methods } from "@/deck/methods"
@@ -60,6 +61,29 @@ const namespacedKey = (addonName: string, methodName: string): string =>
 const staticAddonModule = (addonName: string): AddonModule | null => {
   const manifest = BUILTIN_MANIFESTS.get(addonName)
   return manifest === undefined ? null : ({ manifest } as AddonModule)
+}
+
+/**
+ * The module carrying a builtin's global service, without touching the disk.
+ *
+ * ponytail: taking the manifest for this unconditionally was wrong and broke
+ * `coding-agents`, whose manifest mentions `globalService` only in a comment —
+ * the service itself lives in `global-entry.ts`. The bridge found no service on
+ * the manifest, skipped the addon, and never fell back to the import, so the
+ * agents deck and summary button went empty and the persisted snapshot stopped
+ * being refreshed. Only stand in for the import when there is genuinely a
+ * service to hand over.
+ */
+const staticGlobalServiceModule = (addonName: string): AddonModule | null => {
+  const direct = BUILTIN_GLOBAL_SERVICES.get(addonName)
+  if (direct !== undefined)
+    return { globalService: direct } as unknown as AddonModule
+  const fromManifest = staticAddonModule(addonName)
+  if (fromManifest === null) return null
+  const manifest = fromManifest.manifest as
+    | { globalService?: unknown }
+    | undefined
+  return manifest?.globalService === undefined ? null : fromManifest
 }
 
 export interface AddonBridgeHandle {
@@ -114,7 +138,7 @@ export const bridgeAddonServices = async (
 
     try {
       const mod =
-        staticAddonModule(addon.name) ??
+        staticGlobalServiceModule(addon.name) ??
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ((await import(addon.globalServiceEntry)) as AddonModule)
       let globalService: AddonGlobalService | undefined

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { scanBuiltinAddons } from "@/cli/commands/addon-registry"
+import { BUILTIN_GLOBAL_SERVICES } from "../global-services"
 import { BUILTIN_MANIFESTS } from "../register-builtins"
 
 /**
@@ -41,5 +42,42 @@ describe("BUILTIN_MANIFESTS", () => {
     expect(BUILTIN_MANIFESTS.has("system-status")).toBe(true)
     expect(BUILTIN_MANIFESTS.has("media")).toBe(true)
     expect(BUILTIN_MANIFESTS.has("weather")).toBe(true)
+  })
+})
+
+/**
+ * A builtin's global service is what produces its data. The bridge takes it
+ * from a static map, falling back to importing `globalServiceEntry` — a
+ * fallback that cannot work in a published install, where that entry is
+ * TypeScript source. So every builtin that declares a global service has to be
+ * reachable statically: either the manifest carries it, or this map does.
+ *
+ * `coding-agents` is the case that proves it. Its manifest mentions
+ * `globalService` only in a comment — the service itself lives in
+ * `global-entry.ts`, kept out of the browser graph on purpose. Taking the
+ * manifest as the answer left the agents deck and summary button empty and
+ * froze the persisted snapshot.
+ */
+describe("BUILTIN_GLOBAL_SERVICES", () => {
+  it("covers every builtin whose service is not on its manifest", async () => {
+    const scanned = await scanBuiltinAddons()
+    const unreachable = scanned
+      .filter((addon) => addon.globalServiceEntry !== null)
+      .filter((addon) => {
+        if (BUILTIN_GLOBAL_SERVICES.has(addon.name)) return false
+        const manifest = BUILTIN_MANIFESTS.get(addon.name) as
+          | { globalService?: unknown }
+          | undefined
+        return manifest?.globalService === undefined
+      })
+      .map((addon) => addon.name)
+
+    expect(unreachable).toEqual([])
+  })
+
+  it("hands over coding-agents' service as an object", () => {
+    const service = BUILTIN_GLOBAL_SERVICES.get("coding-agents")
+    expect(service).toBeDefined()
+    expect(typeof service).toBe("object")
   })
 })
