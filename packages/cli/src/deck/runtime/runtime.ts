@@ -22,6 +22,7 @@ export interface RuntimeButton {
   type: string
   position?: number
   config?: unknown
+  icon?: string
   actions?: {
     tap?: string
     dbltap?: string

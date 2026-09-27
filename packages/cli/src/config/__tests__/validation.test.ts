@@ -6,7 +6,11 @@ import dateTimeAddon from "@/builtin-addons/date-time/index"
 import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index"
 import { sessionAddon } from "@/builtin-addons/session/index"
 
-import { validateFull, validatePerDeck } from "../validation"
+import {
+  serializeButtonSchemas,
+  validateFull,
+  validatePerDeck,
+} from "../validation"
 import type { RawConfig } from "../schemas"
 
 const registry = (): AddonRegistry => {
@@ -31,6 +35,14 @@ const baseConfig = (overrides: Partial<RawConfig> = {}): RawConfig => ({
 })
 
 describe("validateFull", () => {
+  it("serializes addon field labels and control hints into editor schemas", () => {
+    const schemas = serializeButtonSchemas(registry())
+    expect(schemas["core:action"]?.properties).toMatchObject({
+      icon: { title: "Icon", "x-control": "icon" },
+      label: { title: "Label" },
+    })
+  })
+
   it("clean config with valid core:change-deck button passes", () => {
     const reg = registry()
     const config = baseConfig({

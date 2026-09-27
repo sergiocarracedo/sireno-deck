@@ -86,11 +86,16 @@ const registerOneIcon = (
   })
 }
 
-const readButtonIcon = (button: RuntimeButton): string | undefined => {
+const readButtonIcons = (button: RuntimeButton): string[] => {
   const cfg = button.config
-  if (typeof cfg !== "object" || cfg === null) return undefined
-  const icon = (cfg as Record<string, unknown>).icon
-  return typeof icon === "string" && icon !== "" ? icon : undefined
+  const configIcon =
+    typeof cfg === "object" && cfg !== null
+      ? (cfg as Record<string, unknown>).icon
+      : undefined
+  return [configIcon, button.icon].filter(
+    (icon, index, icons): icon is string =>
+      typeof icon === "string" && icon !== "" && icons.indexOf(icon) === index,
+  )
 }
 
 export const registerIconForDeck = (
@@ -99,8 +104,8 @@ export const registerIconForDeck = (
   logger?: pino.Logger,
 ): void => {
   for (const button of buttons) {
-    const icon = readButtonIcon(button)
-    if (icon !== undefined) registerOneIcon(icon, resolverOptions, logger)
+    for (const icon of readButtonIcons(button))
+      registerOneIcon(icon, resolverOptions, logger)
   }
 }
 

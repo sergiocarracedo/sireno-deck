@@ -135,7 +135,10 @@ export const buildDeckConfigMessage = (
     .map((b) => {
       const position = b.position
       const addon = addonByType.get(b.type)
-      const cfg = (b.config ?? {}) as Record<string, unknown>
+      const cfg = {
+        ...((b.config ?? {}) as Record<string, unknown>),
+        ...(b.icon !== undefined ? { icon: b.icon } : {}),
+      }
       const label = deriveLabel(b.type, cfg)
       const resolvedConfig = resolveConfigIcons(
         cfg,

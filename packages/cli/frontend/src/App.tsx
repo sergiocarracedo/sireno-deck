@@ -37,6 +37,7 @@ interface DeckButton {
   type: string
   position?: number
   config: Record<string, unknown>
+  icon?: string
   full?: boolean
 }
 
@@ -142,6 +143,111 @@ export const App = () => {
 }
 const AppContent = () => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
+  const { setAsset } = useAssetCacheMutations()
+
+  useEffect(() => {
+    const preview = (event: MessageEvent<unknown>): void => {
+      if (event.source !== window.parent) return
+      try {
+        if (new URL(event.origin).hostname !== window.location.hostname) return
+      } catch {
+        return
+      }
+      if (typeof event.data !== "object" || event.data === null) return
+      const message = event.data as {
+        type?: string
+        deckId?: string
+        index?: number
+        position?: number
+        type?: string
+        config?: Record<string, unknown>
+        appearance?: { icon: string; variant: string }
+        assets?: Array<{ filename: string; preview: string }>
+      }
+      if (
+        message.type !== "editor-preview-config" ||
+        message.deckId === undefined ||
+        message.index === undefined ||
+        message.config === undefined
+      )
+        return
+      const previewAssetIds = new Map<string, string>()
+      for (const asset of message.assets ?? []) {
+        const id = `editor-preview-${asset.filename}`
+        previewAssetIds.set(`./assets/${asset.filename}`, id)
+        setAsset(id, asset.preview)
+      }
+      const applyPreviewAssets = (value: unknown): unknown => {
+        if (typeof value === "string") {
+          const id = previewAssetIds.get(value)
+          return id === undefined ? value : `asset://${id}`
+        }
+        if (Array.isArray(value)) return value.map(applyPreviewAssets)
+        if (typeof value === "object" && value !== null)
+          return Object.fromEntries(
+            Object.entries(value).map(([key, child]) => [
+              key,
+              applyPreviewAssets(child),
+            ]),
+          )
+        return value
+      }
+      setDeck((current) => {
+        if (current.id !== message.deckId) return current
+        const position = message.position ?? message.index!
+        const existingIndex = current.buttons.findIndex(
+          (button, index) => (button.position ?? index) === position,
+        )
+        if (existingIndex === -1 && message.type === undefined) return current
+        return {
+          ...current,
+          buttons:
+            existingIndex === -1
+              ? [
+                  ...current.buttons,
+                  {
+                    id: `editor-preview-${position}`,
+                    type: message.type!,
+                    position,
+                    config: applyPreviewAssets(message.config) as Record<
+                      string,
+                      unknown
+                    >,
+                    ...message.appearance,
+                    ...(message.appearance?.icon
+                      ? {
+                          icon: applyPreviewAssets(
+                            message.appearance.icon,
+                          ) as string,
+                        }
+                      : {}),
+                  },
+                ]
+              : current.buttons.map((button, index) =>
+                  index === existingIndex
+                    ? {
+                        ...button,
+                        ...message.appearance,
+                        config: applyPreviewAssets(message.config) as Record<
+                          string,
+                          unknown
+                        >,
+                        ...(message.appearance?.icon
+                          ? {
+                              icon: applyPreviewAssets(
+                                message.appearance.icon,
+                              ) as string,
+                            }
+                          : {}),
+                      }
+                    : button,
+                ),
+        }
+      })
+    }
+    window.addEventListener("message", preview)
+    return () => window.removeEventListener("message", preview)
+  }, [setAsset])
   const [send, setSend] = useState<WebSocketSend | null>(null)
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("connecting")
@@ -159,7 +265,6 @@ const AppContent = () => {
   // an empty asset cache and shows the broken-icon fallback on cold-start.
   const [assetsReady, setAssetsReady] = useState(false)
   const clientRef = useRef<WsClient | null>(null)
-  const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
   const initialSearch = useRef(
     typeof window === "undefined" ? "" : window.location.search,

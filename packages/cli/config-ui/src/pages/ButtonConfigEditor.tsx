@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react"
 
-import { Button, Input, ListBox, Select, Tabs, TextArea } from "@heroui/react"
+import {
+  Button,
+  Input,
+  ListBox,
+  Select,
+  Switch,
+  Tabs,
+  TextArea,
+} from "@heroui/react"
 import { parse, stringify } from "yaml"
-import { Icon } from "@sirenodeck/sirenodeck"
 import * as lucideIcons from "lucide-react"
 
 import type { WsClient } from "../bridge"
+import { IconPicker, type PendingIconAsset } from "../components/IconPicker"
 
 export interface JsonSchema {
   readonly type?: string
@@ -22,6 +30,9 @@ export interface JsonSchema {
   readonly oneOf?: JsonSchema[]
   readonly anyOf?: JsonSchema[]
   readonly internal?: boolean
+  readonly title?: string
+  readonly description?: string
+  readonly "x-control"?: string
 }
 
 export interface ValidationState {
@@ -38,146 +49,11 @@ interface ConfigFormProps {
   readonly wsClient: WsClient | null
   readonly revision: number
   readonly deckOptions?: readonly { id: string; name: string }[]
-}
-
-const LUCIDE_ICONS = Object.keys(lucideIcons)
-  .filter(
-    (name) =>
-      /^[A-Z]/.test(name) &&
-      name !== "createLucideIcon" &&
-      !name.endsWith("Icon") &&
-      !name.endsWith("Provider"),
-  )
-  .map((name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase())
-  .filter((name, index, names) => names.indexOf(name) === index)
-  .sort()
-
-const isIconField = (key: string, schema: JsonSchema): boolean =>
-  key.toLowerCase() === "icon" ||
-  schema.description?.toLowerCase().includes("icon://") === true
-
-const IconField = ({
-  value,
-  onChange,
-  wsClient,
-  revision,
-}: {
-  readonly value: unknown
-  readonly onChange: (value: string) => void
-  readonly wsClient: WsClient | null
-  readonly revision: number
-}) => {
-  const current = typeof value === "string" ? value : ""
-  const selected = current.startsWith("icon://") ? current.slice(7) : ""
-  const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState("")
-  const filtered = LUCIDE_ICONS.filter((name) =>
-    name.includes(query.trim().toLowerCase()),
-  ).slice(0, query.trim() === "" ? 120 : 240)
-  return (
-    <fieldset className="grid gap-2 rounded-lg border border-neutral-800 p-3">
-      <legend className="px-1 text-sm text-neutral-300">Icon</legend>
-      <Button type="button" variant="secondary" onPress={() => setOpen(true)}>
-        {selected === "" ? (
-          "Choose icon"
-        ) : (
-          <>
-            <Icon source={`icon://${selected}`} size={16} /> {selected}
-          </>
-        )}
-      </Button>
-      {open && (
-        <dialog
-          open
-          aria-label="Choose icon"
-          className="fixed inset-0 z-50 m-auto max-h-[80vh] w-[min(42rem,calc(100vw-2rem))] rounded-xl border border-neutral-700 bg-neutral-950 p-4 text-neutral-100 shadow-2xl"
-        >
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h3 className="text-sm font-semibold">Choose a Lucide icon</h3>
-            <Button
-              type="button"
-              variant="tertiary"
-              onPress={() => setOpen(false)}
-            >
-              Close
-            </Button>
-          </div>
-          <Input
-            aria-label="Search icons"
-            placeholder="Search by name"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          <div className="mt-3 grid max-h-[55vh] grid-cols-6 gap-1 overflow-auto sm:grid-cols-8">
-            {filtered.map((name) => (
-              <Button
-                key={name}
-                type="button"
-                size="sm"
-                variant={selected === name ? "secondary" : "tertiary"}
-                aria-label={name}
-                className="h-12 min-w-0 flex-col gap-0 p-1 text-[9px]"
-                onPress={() => {
-                  onChange(`icon://${name}`)
-                  setOpen(false)
-                }}
-              >
-                <Icon source={`icon://${name}`} size={18} />
-                <span className="max-w-full truncate">{name}</span>
-              </Button>
-            ))}
-          </div>
-          {filtered.length === 0 && (
-            <p className="py-6 text-center text-sm text-neutral-500">
-              No icons found.
-            </p>
-          )}
-        </dialog>
-      )}
-      {selected !== "" && (
-        <Button type="button" variant="tertiary" onPress={() => onChange("")}>
-          Clear icon
-        </Button>
-      )}
-      <Input
-        aria-label="Image path"
-        label="Image path"
-        placeholder="./assets/icon.png"
-        value={current.startsWith("icon://") ? "" : current}
-        onChange={(event) => onChange(event.target.value)}
-      />
-      <label className="grid gap-1 text-xs text-neutral-500">
-        Choose an image file
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(event) => {
-            const file = event.target.files?.[0]
-            if (file === undefined) return
-            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_")
-            const reader = new FileReader()
-            reader.onload = () => {
-              const dataUrl = String(reader.result)
-              const data = dataUrl.split(",", 2)[1]
-              if (data === undefined || wsClient === null) return
-              wsClient.send(
-                JSON.stringify({
-                  type: "editor-asset-write",
-                  requestId: `asset-${Date.now()}-${validationNumber++}`,
-                  revision,
-                  filename: safeName,
-                  data,
-                }),
-              )
-              onChange(`./assets/${safeName}`)
-            }
-            reader.readAsDataURL(file)
-          }}
-          className="text-xs text-neutral-400 file:mr-2 file:rounded file:border-0 file:bg-neutral-800 file:px-2 file:py-1 file:text-xs file:text-neutral-200"
-        />
-      </label>
-    </fieldset>
-  )
+  readonly compact?: boolean
+  readonly onPendingAssetChange?: (
+    path: string,
+    asset: PendingIconAsset | null,
+  ) => void
 }
 
 const labelFor = (key: string): string =>
@@ -240,6 +116,8 @@ const ConfigForm = ({
   wsClient,
   revision,
   deckOptions,
+  compact = false,
+  onPendingAssetChange,
 }: ConfigFormProps) => {
   const variants = schema.oneOf ?? schema.anyOf
   if (variants !== undefined && variants.length > 0) {
@@ -293,6 +171,7 @@ const ConfigForm = ({
           wsClient={wsClient}
           revision={revision}
           deckOptions={deckOptions}
+          onPendingAssetChange={onPendingAssetChange}
         />
       </div>
     )
@@ -300,30 +179,35 @@ const ConfigForm = ({
   const selectedSchema = schema
   if (selectedSchema.enum !== undefined) {
     return (
-      <Select
-        selectedKey={JSON.stringify(value)}
-        onSelectionChange={(key) => onChange(path, JSON.parse(String(key)))}
-        aria-label={labelFor(path.split(".").at(-1) ?? "Value")}
-      >
-        <Select.Trigger>
-          <Select.Value />
-          <Select.Indicator />
-        </Select.Trigger>
-        <Select.Popover>
-          <ListBox>
-            {selectedSchema.enum.map((option) => (
-              <ListBox.Item
-                key={JSON.stringify(option)}
-                id={JSON.stringify(option)}
-                textValue={String(option)}
-              >
-                {String(option)}
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-            ))}
-          </ListBox>
-        </Select.Popover>
-      </Select>
+      <label className="grid gap-1 text-sm text-neutral-300">
+        {selectedSchema.title ?? labelFor(path.split(".").at(-1) ?? "Value")}
+        <Select
+          selectedKey={JSON.stringify(value)}
+          onSelectionChange={(key) => onChange(path, JSON.parse(String(key)))}
+          aria-label={
+            selectedSchema.title ?? labelFor(path.split(".").at(-1) ?? "Value")
+          }
+        >
+          <Select.Trigger>
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              {selectedSchema.enum.map((option) => (
+                <ListBox.Item
+                  key={JSON.stringify(option)}
+                  id={JSON.stringify(option)}
+                  textValue={String(option)}
+                >
+                  {String(option)}
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
+        </Select>
+      </label>
     )
   }
   if (path.split(".").at(-1) === "deck" && deckOptions !== undefined) {
@@ -361,14 +245,18 @@ const ConfigForm = ({
         {Object.entries(selectedSchema.properties ?? {})
           .filter(([, child]) => child.internal !== true)
           .map(([key, child]) =>
-            isIconField(key, child) ? (
-              <IconField
+            child["x-control"] === "icon" ? (
+              <IconPicker
                 key={key}
-                value={valueAt(value, key)}
-                onChange={(next) => onChange(`${path}.${key}`, next)}
-                wsClient={wsClient}
-                revision={revision}
-                deckOptions={deckOptions}
+                label={child.title ?? labelFor(key)}
+                value={String(valueAt(value, key) ?? "")}
+                onApply={(next, asset) => {
+                  onChange(`${path}.${key}`, next)
+                  onPendingAssetChange?.(
+                    path ? `${path}.${key}` : key,
+                    asset ?? null,
+                  )
+                }}
               />
             ) : (
               <ConfigForm
@@ -380,6 +268,7 @@ const ConfigForm = ({
                 wsClient={wsClient}
                 revision={revision}
                 deckOptions={deckOptions}
+                onPendingAssetChange={onPendingAssetChange}
               />
             ),
           )}
@@ -408,12 +297,15 @@ const ConfigForm = ({
                 onChange={onChange}
                 wsClient={wsClient}
                 revision={revision}
+                compact
+                onPendingAssetChange={onPendingAssetChange}
               />
             </div>
             <Button
               type="button"
               size="sm"
               variant="tertiary"
+              isIconOnly
               aria-label={`Delete item ${index + 1}`}
               onPress={() =>
                 onChange(
@@ -422,7 +314,7 @@ const ConfigForm = ({
                 )
               }
             >
-              Trash
+              <lucideIcons.Trash2 aria-hidden="true" className="size-4" />
             </Button>
           </div>
         ))}
@@ -443,6 +335,22 @@ const ConfigForm = ({
       </fieldset>
     )
   }
+  const label =
+    selectedSchema.title ?? labelFor(path.split(".").at(-1) ?? "Value")
+  if (selectedSchema.type === "boolean") {
+    return (
+      <Switch
+        isSelected={value === true}
+        onValueChange={(next) => onChange(path, next)}
+        className="flex items-center gap-2"
+      >
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+        <Switch.Content>{label}</Switch.Content>
+      </Switch>
+    )
+  }
   const inputType =
     selectedSchema.type === "number" || selectedSchema.type === "integer"
       ? "number"
@@ -453,24 +361,28 @@ const ConfigForm = ({
         ? "true"
         : "false"
       : String(value ?? "")
+  const input = (
+    <Input
+      type={inputType}
+      value={inputValue}
+      onChange={(event) => {
+        const raw = event.target.value
+        onChange(
+          path,
+          selectedSchema.type === "boolean"
+            ? raw === "true"
+            : inputType === "number"
+              ? Number(raw)
+              : raw,
+        )
+      }}
+    />
+  )
+  if (compact) return input
   return (
-    <label className="grid gap-1 text-sm text-neutral-300">
-      {labelFor(path.split(".").at(-1) ?? "Value")}
-      <Input
-        type={inputType}
-        value={inputValue}
-        onChange={(event) => {
-          const raw = event.target.value
-          onChange(
-            path,
-            selectedSchema.type === "boolean"
-              ? raw === "true"
-              : inputType === "number"
-                ? Number(raw)
-                : raw,
-          )
-        }}
-      />
+    <label className="grid gap-0.5 text-sm text-neutral-300">
+      {label}
+      {input}
     </label>
   )
 }
@@ -487,6 +399,12 @@ export interface ButtonConfigEditorProps {
   readonly deckOptions?: readonly { id: string; name: string }[]
   readonly saveLabel?: string
   readonly actionsInHeader?: boolean
+  readonly hideActions?: boolean
+  readonly onDraftChange?: (config: Record<string, unknown> | null) => void
+  readonly onPendingAssetChange?: (
+    path: string,
+    asset: PendingIconAsset | null,
+  ) => void
 }
 
 let validationNumber = 0
@@ -503,6 +421,9 @@ export const ButtonConfigEditor = ({
   deckOptions,
   saveLabel = "Save button config",
   actionsInHeader = false,
+  hideActions = false,
+  onDraftChange,
+  onPendingAssetChange,
 }: ButtonConfigEditorProps) => {
   const initial =
     typeof config === "object" && config !== null && !Array.isArray(config)
@@ -574,6 +495,10 @@ export const ButtonConfigEditor = ({
     value !== null &&
     !Array.isArray(value)
 
+  useEffect(() => {
+    onDraftChange?.(canSave ? (value as Record<string, unknown>) : null)
+  }, [canSave, onDraftChange, value])
+
   return (
     <div className="grid gap-3">
       {actionsInHeader && (
@@ -620,6 +545,7 @@ export const ButtonConfigEditor = ({
               wsClient={wsClient}
               revision={revision}
               deckOptions={deckOptions}
+              onPendingAssetChange={onPendingAssetChange}
             />
           )}
         </Tabs.Panel>
@@ -633,20 +559,24 @@ export const ButtonConfigEditor = ({
           />
         </Tabs.Panel>
       </Tabs>
-      {!actionsInHeader && (
-        <Button
-          type="button"
-          variant="primary"
-          isDisabled={!canSave}
-          onPress={() => onSave(value as Record<string, unknown>)}
-        >
-          {saveLabel}
-        </Button>
-      )}
-      {!actionsInHeader && onCancel !== undefined && (
-        <Button type="button" variant="tertiary" onPress={onCancel}>
-          Cancel
-        </Button>
+      {!actionsInHeader && !hideActions && (
+        <div className="sticky bottom-0 flex gap-2 border-t border-separator bg-surface pt-3">
+          {onCancel !== undefined && (
+            <Button type="button" variant="tertiary" onPress={onCancel}>
+              <lucideIcons.CircleX aria-hidden="true" className="size-4" />
+              Cancel
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="primary"
+            isDisabled={!canSave}
+            onPress={() => onSave(value as Record<string, unknown>)}
+          >
+            <lucideIcons.Check aria-hidden="true" className="size-4" />
+            {saveLabel}
+          </Button>
+        </div>
       )}
       {errors.length > 0 && (
         <div role="alert" className="grid gap-1 text-sm text-red-300">

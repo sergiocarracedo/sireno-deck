@@ -65,6 +65,26 @@ describe("config mutation", () => {
     expect(readFileSync(path, "utf8")).toContain("# keep me")
   })
 
+  it("writes SVGs beside config without overwriting an existing asset", async () => {
+    const path = fixture()
+    const service = createConfigMutationService({ configPath: path })
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>'
+    const data = Buffer.from(svg).toString("base64")
+    await service.writeAsset("icon-one.svg", data)
+    expect(
+      readFileSync(join(join(path, ".."), "assets", "icon-one.svg"), "utf8"),
+    ).toBe(svg)
+    await expect(service.writeAsset("icon-one.svg", data)).rejects.toThrow(
+      /already exists/,
+    )
+    await expect(service.writeAsset("icon.png", data)).rejects.toThrow(
+      /Only SVG/,
+    )
+    await expect(
+      service.writeAsset("bad.svg", Buffer.from("not svg").toString("base64")),
+    ).rejects.toThrow(/Invalid SVG/)
+  })
+
   it("sets the configured theme and can undo it", async () => {
     const path = fixture("theme: old\ndecks:\n  main:\n    buttons: []\n")
     const service = createConfigMutationService({ configPath: path })

@@ -112,7 +112,7 @@ export const App = ({
   const [lastError, setLastError] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
   const [deckId, setDeckId] = useState<string>("")
-  const [deckName, setDeckName] = useState<string>("")
+  const [configView, setConfigView] = useState<"editor" | "config">("editor")
   // ponytail: addon inventory arrives over the WS bridge as a follow-up
   // to hello-ack (see protocol-internal.addonsInventoryMessageSchema).
   // Receiving it here avoids the previous `/api/addons` fetch, which the
@@ -203,7 +203,10 @@ export const App = ({
       },
       wsFactory: (url: string) => {
         const ws = new WebSocket(url)
-        return ws as unknown as { send: (d: string) => void; close: () => void }
+        return ws as unknown as {
+          send: (d: string) => void
+          close: () => void
+        }
       },
       onMessage: (raw: unknown) => {
         let m: Record<string, unknown>
@@ -222,10 +225,6 @@ export const App = ({
         if (m.type === "deck-config") {
           const id = typeof m.deckId === "string" ? m.deckId : ""
           setDeckId(id)
-          const surfaces = m.surfaces as
-            | Record<string, { name?: string }>
-            | undefined
-          setDeckName(surfaces?.[id]?.name ?? id)
         }
         if (m.type === "addons-inventory") {
           const addons = m.addons
@@ -265,6 +264,10 @@ export const App = ({
                     typeof theme?.name === "string",
                 )
               : [],
+            themeVariants:
+              m.themeVariants !== null && typeof m.themeVariants === "object"
+                ? (m.themeVariants as EditorState["themeVariants"])
+                : {},
             buttonSchemas:
               m.buttonSchemas !== null && typeof m.buttonSchemas === "object"
                 ? (m.buttonSchemas as Record<string, Record<string, unknown>>)
@@ -390,6 +393,7 @@ export const App = ({
 
   const onSelect = (path: string): void => {
     if (!isValidSection(path)) return
+    if (path === "config") setConfigView("editor")
     setActiveSection(path)
     if (typeof window !== "undefined") {
       window.location.hash = `#/${path}`
@@ -409,6 +413,20 @@ export const App = ({
           editorState={editorState}
           sourceValidation={editorSourceValidation}
           mutationResult={editorResult}
+          activeTab={configView}
+          onTabChange={setConfigView}
+          revision={editorState?.revision ?? null}
+          canUndo={editorState?.canUndo ?? false}
+          onUndo={() => {
+            if (editorState === null) return
+            clientRef.current?.send(
+              JSON.stringify({
+                type: "editor-undo",
+                requestId: `editor-undo-${Date.now()}`,
+                revision: editorState.revision,
+              }),
+            )
+          }}
           editor={
             <EditorPage
               wsClient={clientRef.current}
@@ -428,7 +446,6 @@ export const App = ({
                   }),
                 )
               }
-              themes={editorState?.themes}
             />
           }
         />
@@ -495,7 +512,9 @@ export const App = ({
       hideSidebar={deckOnly}
       pageTitle={
         activeSection === "config"
-          ? "Config"
+          ? configView === "editor"
+            ? "Visual editor"
+            : "Config"
           : activeSection.replaceAll("-", " ")
       }
       wsUrl={wsUrl}
@@ -550,32 +569,6 @@ export const App = ({
             </div>
           ) : (
             <div className="flex h-full flex-col">
-              <header
-                data-testid="deck-header"
-                className="flex shrink-0 items-center gap-4 border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-neutral-400"
-              >
-                <span className="truncate text-neutral-500">
-                  {deckName || "Awaiting deck-config"}
-                </span>
-                <span className="font-mono text-[10px] text-neutral-600">
-                  #{deckId}
-                </span>
-                <span className="text-neutral-500">·</span>
-                <span className="truncate" title={wsUrl}>
-                  ws: {wsUrl}
-                </span>
-                <span className="text-neutral-500">·</span>
-                <a
-                  href={ENV_FRONTEND_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="truncate text-sky-400 hover:underline"
-                  title={ENV_FRONTEND_URL}
-                >
-                  fe: {ENV_FRONTEND_URL}
-                </a>
-                <span className="flex-1" />
-              </header>
               <div className="flex flex-1 overflow-hidden">
                 <section className="flex-1 overflow-auto p-4">
                   {activeSection === "device" ? (

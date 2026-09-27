@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react"
-import { Button, Input, Tabs } from "@heroui/react"
+import {
+  Button,
+  Card,
+  Input,
+  ListBox,
+  Select,
+  Switch,
+  Tabs,
+} from "@heroui/react"
+import { Check, CircleX, Layers, Plus, Rows3 } from "lucide-react"
 
 import type { DeviceModelSpec } from "@sirenodeck/sirenodeck"
 
@@ -11,6 +20,7 @@ import {
   type JsonSchema,
   type ValidationState,
 } from "./ButtonConfigEditor"
+import { IconPicker, type PendingIconAsset } from "../components/IconPicker"
 
 type Button = Record<string, unknown> | string
 type Config = {
@@ -37,6 +47,8 @@ type Config = {
 
 interface DeckDraft {
   name: string
+  columns: string
+  rows: string
   icon: string
   background: string
   paginated: boolean
@@ -56,6 +68,10 @@ export interface EditorState {
   readonly sources: string[]
   readonly sourceContents?: Record<string, string>
   readonly themes?: readonly ThemeOption[]
+  readonly themeVariants?: Record<
+    string,
+    { background: string; border: string; foreground: string }
+  >
   readonly buttonSchemas?: Record<string, JsonSchema>
   readonly canUndo: boolean
 }
@@ -80,7 +96,6 @@ export interface EditorPageProps {
     gesture: "tap" | "dbl-tap" | "hold"
   }) => void
   readonly onDeckSelect?: (deckId: string) => void
-  readonly themes?: readonly ThemeOption[]
   readonly validation?: ValidationState | null
 }
 
@@ -93,6 +108,72 @@ const isButton = (button: Button): button is Record<string, unknown> =>
 type DragData =
   | { kind: "palette"; button: Record<string, unknown> }
   | { kind: "existing"; index: number }
+
+const ButtonAppearanceFields = ({
+  value,
+  variants,
+  onChange,
+  onAsset,
+}: {
+  readonly value: { icon: string; variant: string }
+  readonly variants: NonNullable<EditorState["themeVariants"]>
+  readonly onChange: (value: { icon: string; variant: string }) => void
+  readonly onAsset: (asset?: PendingIconAsset) => void
+}) => (
+  <div className="grid gap-3 rounded-lg border border-separator p-3 sm:grid-cols-2">
+    <IconPicker
+      label="Button icon"
+      value={value.icon}
+      onApply={(icon, asset) => {
+        onChange({ ...value, icon })
+        onAsset(asset)
+      }}
+    />
+    <label className="grid gap-1 text-sm">
+      Theme variant
+      <Select
+        aria-label="Theme variant"
+        selectedKey={value.variant || "default"}
+        onSelectionChange={(key) =>
+          onChange({
+            ...value,
+            variant: String(key) === "default" ? "" : String(key),
+          })
+        }
+      >
+        <Select.Trigger>
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            {Object.entries(variants).map(([name, colors]) => (
+              <ListBox.Item key={name} id={name} textValue={name}>
+                <span
+                  aria-hidden="true"
+                  className="size-4 rounded-full border"
+                  style={{
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    color: colors.foreground,
+                  }}
+                />
+                {name}
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </Select.Popover>
+      </Select>
+      {value.variant !== "" && variants[value.variant] !== undefined && (
+        <span
+          className="h-2 rounded-full"
+          style={{ backgroundColor: variants[value.variant]!.background }}
+        />
+      )}
+    </label>
+  </div>
+)
 
 const readDragData = (event: React.DragEvent): DragData | null => {
   try {
@@ -132,233 +213,6 @@ const buttonPositions = (buttons: Button[]): number[] => {
   })
 }
 
-const fieldValue = (button: Button, field: string): string => {
-  if (!isButton(button)) return ""
-  const value = button[field]
-  return value === undefined || value === null ? "" : String(value)
-}
-
-const EditorField = ({
-  label,
-  value,
-  type = "text",
-  disabled = false,
-  onChange,
-}: {
-  readonly label: string
-  readonly value: string
-  readonly type?: "text" | "number" | "url"
-  readonly disabled?: boolean
-  readonly onChange: (value: string) => void
-}) => (
-  <label className="grid gap-1 text-sm text-neutral-300">
-    {label}
-    <input
-      aria-label={label}
-      type={type}
-      value={value}
-      disabled={disabled}
-      onChange={(event) => onChange(event.target.value)}
-      className="min-h-10 rounded border border-neutral-800 bg-neutral-950 px-3 text-sm disabled:opacity-50"
-    />
-  </label>
-)
-
-const ButtonAppearanceEditor = ({
-  button,
-  types,
-  readOnly,
-  onSave,
-}: {
-  readonly button: Button
-  readonly types: string[]
-  readonly readOnly: boolean
-  readonly onSave: (button: Record<string, unknown>) => void
-}) => {
-  const initial = isButton(button) ? button : { type: button }
-  const [value, setValue] = useState<Record<string, unknown>>(initial)
-  useEffect(() => setValue(initial), [button])
-  const set = (key: string, next: string): void =>
-    setValue((current) => ({
-      ...current,
-      [key]: next.length === 0 ? undefined : next,
-    }))
-  const select = (key: string, next: string): void =>
-    setValue((current) => ({
-      ...current,
-      [key]: next.length === 0 ? undefined : next,
-    }))
-  return (
-    <div className="grid gap-3">
-      <EditorField
-        label="Label"
-        value={fieldValue(value, "label")}
-        disabled={readOnly}
-        onChange={(next) => set("label", next)}
-      />
-      <label className="grid gap-1 text-sm text-neutral-300">
-        Addon/action
-        <select
-          aria-label="Addon/action"
-          value={fieldValue(value, "type")}
-          disabled={readOnly}
-          onChange={(event) => select("type", event.target.value)}
-          className="min-h-10 rounded border border-neutral-800 bg-neutral-950 px-3"
-        >
-          {types.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-      </label>
-      <EditorField
-        label="Icon"
-        value={fieldValue(value, "icon")}
-        disabled={readOnly}
-        onChange={(next) => set("icon", next)}
-      />
-      <EditorField
-        label="Icon URL"
-        value={fieldValue(value, "iconUrl")}
-        type="url"
-        disabled={readOnly}
-        onChange={(next) => set("iconUrl", next)}
-      />
-      <label className="grid gap-1 text-sm text-neutral-300">
-        Color
-        <select
-          aria-label="Color"
-          value={fieldValue(value, "buttonColor")}
-          disabled={readOnly}
-          onChange={(event) => select("buttonColor", event.target.value)}
-          className="min-h-10 rounded border border-neutral-800 bg-neutral-950 px-3"
-        >
-          <option value="">Default</option>
-          {["blue", "green", "purple", "cyan", "magenta", "amber", "lime"].map(
-            (color) => (
-              <option key={color} value={color}>
-                {color}
-              </option>
-            ),
-          )}
-        </select>
-      </label>
-      <EditorField
-        label="Size"
-        value={fieldValue(value, "size")}
-        disabled={readOnly}
-        onChange={(next) => set("size", next)}
-      />
-      <EditorField
-        label="Text size"
-        value={fieldValue(value, "textSize")}
-        disabled={readOnly}
-        onChange={(next) => set("textSize", next)}
-      />
-      <EditorField
-        label="Border radius"
-        value={fieldValue(value, "borderRadius")}
-        disabled={readOnly}
-        onChange={(next) => set("borderRadius", next)}
-      />
-      <button
-        type="button"
-        disabled={readOnly}
-        onClick={() => onSave(value)}
-        className="min-h-10 rounded bg-sky-600 px-3 text-sm disabled:opacity-50"
-      >
-        Save button
-      </button>
-      {readOnly && (
-        <p className="text-xs text-amber-300">
-          Generated buttons are owned by their addon.
-        </p>
-      )}
-    </div>
-  )
-}
-
-const DeckEditor = ({
-  deck,
-  theme,
-  themeOptions,
-  onSave,
-  onTheme,
-}: {
-  readonly deck: Config["decks"] extends Record<string, infer T> ? T : never
-  readonly theme: string
-  readonly themeOptions: readonly ThemeOption[]
-  readonly onSave: (deck: Record<string, unknown>) => void
-  readonly onTheme: (theme: string) => void
-}) => {
-  const [value, setValue] = useState(() => ({
-    label: deck.label ?? deck.name ?? "",
-    columns: deck.columns === undefined ? "" : String(deck.columns),
-    rows: deck.rows === undefined ? "" : String(deck.rows),
-  }))
-  useEffect(() => {
-    setValue({
-      label: deck.label ?? deck.name ?? "",
-      columns: deck.columns === undefined ? "" : String(deck.columns),
-      rows: deck.rows === undefined ? "" : String(deck.rows),
-    })
-  }, [deck])
-  return (
-    <div className="grid gap-3">
-      <EditorField
-        label="Label"
-        value={value.label}
-        onChange={(label) => setValue((current) => ({ ...current, label }))}
-      />
-      <EditorField
-        label="Columns"
-        type="number"
-        value={value.columns}
-        onChange={(columns) => setValue((current) => ({ ...current, columns }))}
-      />
-      <EditorField
-        label="Rows"
-        type="number"
-        value={value.rows}
-        onChange={(rows) => setValue((current) => ({ ...current, rows }))}
-      />
-      <label className="grid gap-1 text-sm text-neutral-300">
-        Theme
-        <select
-          aria-label="Theme"
-          value={theme}
-          onChange={(event) => onTheme(event.target.value)}
-          className="min-h-10 rounded border border-neutral-800 bg-neutral-950 px-3"
-        >
-          {(themeOptions.length === 0 ? [{ name: theme }] : themeOptions).map(
-            (option) => (
-              <option key={option.name} value={option.name}>
-                {option.name}
-              </option>
-            ),
-          )}
-        </select>
-      </label>
-      <button
-        type="button"
-        onClick={() =>
-          onSave({
-            ...deck,
-            name: value.label || undefined,
-            label: undefined,
-            columns: value.columns === "" ? undefined : Number(value.columns),
-            rows: value.rows === "" ? undefined : Number(value.rows),
-          })
-        }
-        className="min-h-10 rounded bg-sky-600 px-3 text-sm"
-      >
-        Save deck
-      </button>
-    </div>
-  )
-}
-
 export const EditorPage = ({
   wsClient,
   state,
@@ -369,7 +223,6 @@ export const EditorPage = ({
   token,
   onGesture,
   onDeckSelect,
-  themes = [],
   validation = null,
 }: EditorPageProps) => {
   const [deckId, setDeckId] = useState<string | null>(null)
@@ -394,6 +247,19 @@ export const EditorPage = ({
   const [creatingDeck, setCreatingDeck] = useState(false)
   const [newDeckId, setNewDeckId] = useState("")
   const [newDeckName, setNewDeckName] = useState("")
+  const [buttonAppearance, setButtonAppearance] = useState<{
+    icon: string
+    variant: string
+  }>({ icon: "", variant: "" })
+  const [pendingAssets, setPendingAssets] = useState<
+    Record<string, PendingIconAsset>
+  >({})
+  const [assetWriteQueue, setAssetWriteQueue] = useState<{
+    requestId: string
+    assets: PendingIconAsset[]
+    next: number
+    mutation: Record<string, unknown>
+  } | null>(null)
 
   useEffect(() => {
     wsClient?.send(JSON.stringify({ type: "editor-state-request" }))
@@ -401,6 +267,38 @@ export const EditorPage = ({
 
   useEffect(() => {
     if (result === null) return
+    if (
+      assetWriteQueue !== null &&
+      result.requestId === assetWriteQueue.requestId
+    ) {
+      if (!result.ok) {
+        setMessage(result.error ?? "Could not save icon asset")
+        setAssetWriteQueue(null)
+        return
+      }
+      const next = assetWriteQueue.next + 1
+      const asset = assetWriteQueue.assets[next]
+      if (asset !== undefined) {
+        const requestId = nextRequestId()
+        wsClient?.send(
+          JSON.stringify({
+            type: "editor-asset-write",
+            requestId,
+            revision: state?.revision ?? 0,
+            filename: asset.filename,
+            data: asset.data,
+          }),
+        )
+        setAssetWriteQueue({ ...assetWriteQueue, requestId, next })
+      } else {
+        const mutationRequestId = sendMutation(assetWriteQueue.mutation)
+        if (pendingButton !== null && mutationRequestId !== null)
+          setPendingRequestId(mutationRequestId)
+        setAssetWriteQueue(null)
+        setPendingAssets({})
+      }
+      return
+    }
     setMessage(result.ok ? "Saved" : (result.error ?? "Edit failed"))
     if (result.requestId !== pendingRequestId) return
     if (result.ok) {
@@ -410,7 +308,16 @@ export const EditorPage = ({
       setNewPage(false)
       setPendingRequestId(null)
     }
-  }, [newPage, newPageId, pendingRequestId, result])
+  }, [
+    assetWriteQueue,
+    newPage,
+    newPageId,
+    pendingButton,
+    pendingRequestId,
+    result,
+    state?.revision,
+    wsClient,
+  ])
 
   const config = (state?.config ?? {}) as Config
   const decks = Object.entries(config.decks ?? {})
@@ -440,6 +347,9 @@ export const EditorPage = ({
     const windowName = activeDeck.trigger?.window_name
     setDeckDraft({
       name: activeDeck.name ?? activeDeckId,
+      columns:
+        activeDeck.columns === undefined ? "" : String(activeDeck.columns),
+      rows: activeDeck.rows === undefined ? "" : String(activeDeck.rows),
       icon: activeDeck.icon ?? "",
       background: activeDeck.background ?? "",
       paginated: activeDeck.paginated === true,
@@ -487,9 +397,13 @@ export const EditorPage = ({
     (deck, index, all) =>
       all.findIndex((item) => item.id === deck.id) === index,
   )
-  const [paletteTab, setPaletteTab] = useState<"buttons" | "decks" | "themes">(
-    "buttons",
-  )
+  const [editionTab, setEditionTab] = useState<"buttons" | "decks">("buttons")
+  const [showButtonTypes, setShowButtonTypes] = useState(false)
+  const [hoveredPosition, setHoveredPosition] = useState<number | null>(null)
+  const [buttonDraft, setButtonDraft] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
 
   useEffect(() => {
     if (selectedPosition !== null) {
@@ -500,6 +414,32 @@ export const EditorPage = ({
       setSelectedIndex(buttons.length === 0 ? null : buttons.length - 1)
     }
   }, [activeDeckId, selectedIndex, selectedPosition, state?.revision])
+
+  useEffect(() => setButtonDraft(null), [pendingButton, selectedIndex])
+
+  useEffect(() => {
+    const current = pendingButton ?? selected
+    const fields =
+      typeof current === "object" && current !== null && !Array.isArray(current)
+        ? current
+        : {}
+    setButtonAppearance({
+      icon: typeof fields.icon === "string" ? fields.icon : "",
+      variant: typeof fields.variant === "string" ? fields.variant : "",
+    })
+    setPendingAssets({})
+  }, [activeDeckId, pendingButton, selected, selectedIndex, state?.revision])
+
+  const chooseAsset = (
+    path: string,
+    asset: PendingIconAsset | undefined,
+  ): void =>
+    setPendingAssets((current) => {
+      const next = { ...current }
+      if (asset === undefined) delete next[path]
+      else next[path] = asset
+      return next
+    })
 
   const sendMutation = (mutation: Record<string, unknown>): string | null => {
     if (state === null) return null
@@ -516,6 +456,30 @@ export const EditorPage = ({
     return requestId
   }
 
+  const persistMutation = (mutation: Record<string, unknown>): void => {
+    const assets = Object.values(pendingAssets)
+    if (assets.length === 0) {
+      const requestId = sendMutation(mutation)
+      if (pendingButton !== null && requestId !== null)
+        setPendingRequestId(requestId)
+      setPendingAssets({})
+      return
+    }
+    const first = assets[0]!
+    const requestId = nextRequestId()
+    wsClient?.send(
+      JSON.stringify({
+        type: "editor-asset-write",
+        requestId,
+        revision: state?.revision ?? 0,
+        filename: first.filename,
+        data: first.data,
+      }),
+    )
+    setAssetWriteQueue({ requestId, assets, next: 0, mutation })
+    setMessage("Saving icon asset…")
+  }
+
   const selectPosition = (position: number): void => {
     const index = buttons.findIndex((_, i) => positions[i] === position)
     setSelectedPosition(position)
@@ -527,7 +491,7 @@ export const EditorPage = ({
     position?: number,
   ): void => {
     setPendingButton(button)
-    setPendingPosition(position ?? null)
+    setPendingPosition(position ?? firstFreePosition())
     setPositionUnset(false)
     setNewPage(false)
     setNewPageId(activeDeckId === null ? "page-2" : `${activeDeckId}-p2`)
@@ -613,28 +577,20 @@ export const EditorPage = ({
     )
       return
     const button = isButton(selected) ? selected : { type: selected }
-    sendMutation({
+    persistMutation({
       kind: "update",
       deckId: activeDeckId,
       index: selectedIndex,
-      button: { ...button, config },
+      button: {
+        ...button,
+        ...buttonAppearance,
+        ...(buttonAppearance.icon === "" ? { icon: undefined } : {}),
+        ...(buttonAppearance.variant === "" ? { variant: undefined } : {}),
+        config,
+      },
     })
   }
 
-  const saveButton = (button: Record<string, unknown>): void => {
-    if (activeDeckId === null || selectedIndex === null) return
-    sendMutation({
-      kind: "update",
-      deckId: activeDeckId,
-      index: selectedIndex,
-      button,
-    })
-  }
-
-  const saveDeck = (deck: Record<string, unknown>): void => {
-    if (activeDeckId === null) return
-    sendMutation({ kind: "update-deck", deckId: activeDeckId, deck })
-  }
   const addPending = (config: Record<string, unknown>): void => {
     if (activeDeckId === null || pendingButton === null) return
     const position = newPage
@@ -655,7 +611,7 @@ export const EditorPage = ({
       pendingButton.type === "core:change-deck" && newPage
         ? { ...config, deck: targetDeckId }
         : config
-    const requestId = sendMutation({
+    persistMutation({
       kind: "add-button",
       deckId: activeDeckId,
       ...(index >= 0 && !newPage ? { replaceIndex: index } : {}),
@@ -675,11 +631,13 @@ export const EditorPage = ({
         : { index: index >= 0 ? index : buttons.length }),
       button: {
         ...pendingButton,
+        ...buttonAppearance,
+        ...(buttonAppearance.icon === "" ? { icon: undefined } : {}),
+        ...(buttonAppearance.variant === "" ? { variant: undefined } : {}),
         config: nextConfig,
         ...(position === undefined ? {} : { position }),
       },
     })
-    setPendingRequestId(requestId)
   }
 
   const undo = (): void => {
@@ -706,753 +664,765 @@ export const EditorPage = ({
   })
 
   return (
-    <section
-      aria-labelledby="editor-title"
-      className="flex h-full min-h-0 flex-col gap-4 overflow-auto p-1"
-    >
-      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-neutral-800 pb-3">
-        <div>
-          <h1
-            id="editor-title"
-            className="text-xl font-semibold text-neutral-100"
-          >
-            Visual editor
-          </h1>
-          <p className="mt-1 text-sm text-neutral-400">
-            Arrange configured buttons and save valid YAML changes live.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            role="status"
-            aria-live="polite"
-            className="text-xs text-neutral-400"
-          >
-            {message ??
-              (state === null
-                ? "Waiting for editor state…"
-                : `Revision ${state.revision}`)}
-          </span>
-          <Button
-            type="button"
-            onClick={undo}
-            isDisabled={!state?.canUndo}
-            variant="tertiary"
-          >
-            Undo
-          </Button>
-        </div>
-      </header>
+    <section className="flex h-full min-h-0 flex-col gap-4 overflow-hidden p-1">
+      {message !== null && (
+        <p role="status" aria-live="polite" className="text-sm text-muted">
+          {message}
+        </p>
+      )}
       {state === null ? (
         <p className="text-sm text-neutral-400">Loading configured decks…</p>
       ) : (
-        <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(12rem,16rem)_minmax(20rem,1fr)_minmax(18rem,1fr)]">
-          <aside
-            aria-label="Editor palette"
-            className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
+        <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-2">
+          <Card
+            aria-labelledby="preview-title"
+            className="flex min-w-0 min-h-0 flex-col"
           >
-            <div className="mb-3">
-              <Tabs
-                selectedKey={paletteTab}
-                onSelectionChange={(key) =>
-                  setPaletteTab(String(key) as typeof paletteTab)
-                }
-              >
-                <Tabs.ListContainer>
-                  <Tabs.List className="w-fit rounded-full bg-neutral-800 p-1">
-                    <Tabs.Tab
-                      id="buttons"
-                      className="rounded-full px-3 py-1.5 text-xs"
-                    >
-                      Buttons
-                      <Tabs.Indicator />
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      id="decks"
-                      className="rounded-full px-3 py-1.5 text-xs"
-                    >
-                      Decks
-                      <Tabs.Indicator />
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      id="themes"
-                      className="rounded-full px-3 py-1.5 text-xs"
-                    >
-                      Themes
-                      <Tabs.Indicator />
-                    </Tabs.Tab>
-                  </Tabs.List>
-                </Tabs.ListContainer>
-              </Tabs>
-            </div>
-            <div className="space-y-1">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                YAML sources
-              </h2>
-              {state.sources
-                .filter((source) => /\.(?:yaml|yml)$/i.test(source))
-                .map((source) => (
-                  <div
-                    key={source}
-                    className="truncate rounded border border-neutral-800 px-3 py-2 font-mono text-xs text-neutral-400"
-                    title={source}
-                  >
-                    {source}
-                  </div>
-                ))}
-            </div>
-            {paletteTab === "buttons" ? (
-              <div role="tabpanel" aria-label="Buttons" className="space-y-3">
-                <div className="space-y-1">
-                  {addonInventory?.addons
-                    .filter((addon) => !addon.internal)
-                    .map((addon) => (
-                      <div key={addon.name} className="space-y-1">
-                        <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                          {addon.name}
-                        </h2>
-                        {addon.buttonTypes
-                          .filter((bt) => !bt.internal)
-                          .map((bt) => (
-                            <button
-                              key={bt.type}
-                              type="button"
-                              draggable
-                              onDragStart={(event) =>
-                                dragStart(event, {
-                                  kind: "palette",
-                                  button: { type: bt.type, config: {} },
-                                })
-                              }
-                              onClick={() =>
-                                beginInsert({ type: bt.type, config: {} })
-                              }
-                              className="block min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
-                            >
-                              {bt.type}
-                            </button>
-                          ))}
-                      </div>
-                    )) ?? (
-                    <p className="text-xs text-neutral-500">
-                      No addon types received.
-                    </p>
-                  )}
-                </div>
-              </div>
-            ) : paletteTab === "decks" ? (
-              <div role="tabpanel" aria-label="Decks" className="space-y-3">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                  Configured decks
-                </h2>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onPress={() => setCreatingDeck((value) => !value)}
+            <Card.Header>
+              <Card.Title id="preview-title">Live preview</Card.Title>
+            </Card.Header>
+            <Card.Content className="flex min-h-0 flex-1 items-center justify-center overflow-auto">
+              {frontendUrl !== undefined &&
+              device !== undefined &&
+              activeDeckId !== null ? (
+                <div
+                  data-testid="editor-preview"
+                  onDragOver={(event) => event.preventDefault()}
+                  className="overflow-hidden rounded-xl"
                 >
-                  {creatingDeck ? "Cancel new deck" : "Create deck"}
-                </Button>
-                {creatingDeck && (
-                  <div className="grid gap-2 rounded-lg border border-neutral-800 p-3">
-                    <Input
-                      aria-label="New deck ID"
-                      label="ID"
-                      value={newDeckId}
-                      onChange={(event) => setNewDeckId(event.target.value)}
-                    />
-                    <Input
-                      aria-label="New deck name"
-                      label="Name"
-                      value={newDeckName}
-                      onChange={(event) => setNewDeckName(event.target.value)}
-                    />
+                  <DeckFrame
+                    frontendUrl={frontendUrl}
+                    device={device}
+                    deckId={activeDeckId}
+                    token={token}
+                    onGesture={onGesture}
+                    onKeyAction={keyAction}
+                    fitToContainer
+                    highlightedKey={
+                      hoveredPosition ?? selectedPosition ?? pendingPosition
+                    }
+                    previewConfig={
+                      buttonDraft === null
+                        ? null
+                        : {
+                            index:
+                              pendingButton === null
+                                ? (selectedIndex ?? firstFreePosition())
+                                : (pendingPosition ?? firstFreePosition()),
+                            position:
+                              pendingButton === null
+                                ? (selectedPosition ??
+                                  positions[selectedIndex ?? -1])
+                                : (pendingPosition ?? firstFreePosition()),
+                            ...(pendingButton !== null
+                              ? { type: String(pendingButton.type ?? "") }
+                              : {}),
+                            config: buttonDraft,
+                            appearance: buttonAppearance,
+                            assets: Object.values(pendingAssets).map(
+                              ({ filename, preview }) => ({
+                                filename,
+                                preview,
+                              }),
+                            ),
+                          }
+                    }
+                    onDropPosition={(position, event) =>
+                      dropAt(event, position)
+                    }
+                  />
+                </div>
+              ) : (
+                <p className="text-sm text-neutral-500">
+                  Preview unavailable until the device is connected.
+                </p>
+              )}
+            </Card.Content>
+          </Card>
+          <Card
+            aria-labelledby="edition-panel-title"
+            className="flex min-w-0 min-h-0 flex-col"
+          >
+            <Card.Header className="flex flex-row items-center justify-between gap-3">
+              <Card.Title id="edition-panel-title">Edition panel</Card.Title>
+              <div className="flex items-center gap-2">
+                <Tabs
+                  selectedKey={editionTab}
+                  onSelectionChange={(key) =>
+                    setEditionTab(String(key) as typeof editionTab)
+                  }
+                >
+                  <Tabs.ListContainer>
+                    <Tabs.List className="w-fit rounded-full bg-neutral-800 p-1">
+                      <Tabs.Tab
+                        id="buttons"
+                        className="rounded-full px-3 py-1.5 text-xs"
+                      >
+                        <Rows3 aria-hidden="true" className="size-4" />
+                        Buttons
+                        <Tabs.Indicator />
+                      </Tabs.Tab>
+                      <Tabs.Tab
+                        id="decks"
+                        className="rounded-full px-3 py-1.5 text-xs"
+                      >
+                        <Layers aria-hidden="true" className="size-4" />
+                        Decks
+                        <Tabs.Indicator />
+                      </Tabs.Tab>
+                    </Tabs.List>
+                  </Tabs.ListContainer>
+                </Tabs>
+                {editionTab === "buttons" &&
+                  pendingButton === null &&
+                  !showButtonTypes &&
+                  selected === undefined && (
                     <Button
                       type="button"
                       variant="primary"
-                      isDisabled={newDeckId.trim().length === 0}
-                      onPress={() => {
-                        const id = newDeckId.trim()
-                        const requestId = sendMutation({
-                          kind: "create-deck",
-                          deck: {
-                            id,
-                            ...(newDeckName.trim()
-                              ? { name: newDeckName.trim() }
-                              : {}),
-                          },
-                        })
-                        if (requestId !== null) {
-                          setCreatingDeck(false)
-                          setNewDeckId("")
-                          setNewDeckName("")
-                        }
-                      }}
+                      className="order-first"
+                      onPress={() => setShowButtonTypes((value) => !value)}
                     >
-                      Save deck
+                      <Plus aria-hidden="true" className="size-4" />
+                      New button
                     </Button>
-                  </div>
-                )}
-                {decks.map(([id, deck]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => {
-                      setDeckId(id)
-                      setSelectedIndex(null)
-                      setSelectedPosition(null)
-                      onDeckSelect?.(id)
-                    }}
-                    aria-pressed={id === activeDeckId}
-                    className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm aria-pressed:border-sky-400 aria-pressed:bg-sky-500/15"
-                  >
-                    <span className="block truncate">{deck.name ?? id}</span>
-                    <span className="block truncate text-xs text-neutral-500">
-                      #{id}
-                    </span>
-                  </button>
-                ))}
-                {addonInventory?.addons
-                  .filter((addon) => !addon.internal)
-                  .map((addon) => (
-                    <div key={addon.name} className="space-y-1">
-                      <h2 className="pt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                        {addon.name}
-                      </h2>
-                      {addon.decks
-                        .filter((deck) => !deck.internal)
-                        .map((deck) => {
-                          const button = {
-                            type: "core:change-deck",
-                            config: { deck: deck.id, label: deck.id },
-                          }
-                          return (
-                            <div key={deck.id} className="flex gap-1">
-                              <button
-                                type="button"
-                                draggable
-                                onDragStart={(event) =>
-                                  dragStart(event, { kind: "palette", button })
-                                }
-                                onClick={() =>
-                                  insertAt(
-                                    button,
-                                    selectedPosition ?? buttons.length,
-                                  )
-                                }
-                                className="min-h-10 min-w-0 flex-1 rounded border border-neutral-800 px-3 text-left text-sm text-amber-300 hover:border-amber-400"
-                              >
-                                {deck.id}
-                              </button>
-                              {deck.generated === true &&
-                              deck.addonIndex !== undefined &&
-                              deck.overrideKey !== undefined ? (
-                                <button
-                                  type="button"
-                                  aria-label={`Edit override for ${deck.id}`}
-                                  onClick={() => {
-                                    sendMutation({
-                                      kind: "set-addon-deck-override",
-                                      addonIndex: deck.addonIndex,
-                                      deckId: deck.overrideKey,
-                                      override: {},
-                                    })
-                                    setMessage("Saving addon override…")
-                                  }}
-                                  className="min-h-10 rounded border border-neutral-800 px-2 text-xs text-sky-300 hover:border-sky-400"
-                                >
-                                  Edit
-                                </button>
-                              ) : null}
-                            </div>
-                          )
-                        })}
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div role="tabpanel" aria-label="Themes" className="space-y-2">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                  Configured theme
-                </h2>
-                <div className="space-y-1">
-                  {themes.length === 0 ? (
-                    <p className="rounded border border-neutral-800 px-3 py-3 font-mono text-sm text-amber-300">
-                      {typeof config.theme === "string"
-                        ? config.theme
-                        : (config.theme?.src ?? "default")}
-                    </p>
-                  ) : (
-                    themes.map((theme) => (
-                      <button
-                        key={theme.name}
-                        type="button"
-                        aria-pressed={theme.active === true}
-                        onClick={() =>
-                          sendMutation({ kind: "set-theme", theme: theme.name })
-                        }
-                        className="min-h-10 w-full rounded border border-neutral-800 px-3 text-left text-sm aria-pressed:border-sky-400 aria-pressed:bg-sky-500/15"
-                      >
-                        {theme.name}
-                      </button>
-                    ))
                   )}
-                </div>
-                <p className="text-xs text-neutral-500">
-                  Theme changes are managed by the current YAML configuration.
-                </p>
-              </div>
-            )}
-          </aside>
-          <section
-            aria-labelledby="preview-title"
-            className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
-          >
-            <h2
-              id="preview-title"
-              className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500"
-            >
-              Live preview
-            </h2>
-            {frontendUrl !== undefined &&
-            device !== undefined &&
-            activeDeckId !== null ? (
-              <div
-                data-testid="editor-preview"
-                onDragOver={(event) => event.preventDefault()}
-                className="overflow-hidden rounded-xl"
-              >
-                <DeckFrame
-                  frontendUrl={frontendUrl}
-                  device={device}
-                  deckId={activeDeckId}
-                  token={token}
-                  onGesture={onGesture}
-                  onKeyAction={keyAction}
-                  fitToContainer
-                  onDropPosition={(position, event) => dropAt(event, position)}
-                />
-              </div>
-            ) : (
-              <p className="text-sm text-neutral-500">
-                Preview unavailable until the device is connected.
-              </p>
-            )}
-          </section>
-          <section
-            aria-labelledby="deck-config-title"
-            className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 lg:col-span-2"
-          >
-            <h2
-              id="deck-config-title"
-              className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500"
-            >
-              Active deck
-            </h2>
-            {activeDeckId === null ? (
-              <p className="text-sm text-neutral-500">No deck selected.</p>
-            ) : deckDraft === null ? (
-              <p className="text-sm text-neutral-500">
-                Addon-provided decks are read-only here; edit their configured
-                overrides in YAML.
-              </p>
-            ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <p className="text-sm text-neutral-300 sm:col-span-2">
-                  <span className="block text-xs uppercase tracking-wider text-neutral-500">
-                    ID
-                  </span>
-                  <code>{activeDeckId}</code>
-                </p>
-                <p className="text-sm text-neutral-300">
-                  <span className="block text-xs uppercase tracking-wider text-neutral-500">
-                    Buttons
-                  </span>
-                  {buttons.length}
-                </p>
-                {(hasPreviousPage || hasNextPage) && (
-                  <div className="flex gap-2 sm:col-span-2">
-                    <Button
-                      type="button"
-                      variant="tertiary"
-                      isDisabled={!hasPreviousPage}
-                      onPress={() => {
-                        if (!hasPreviousPage) return
-                        setDeckId(previousPage)
-                        onDeckSelect?.(previousPage)
-                      }}
-                    >
-                      Previous page
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="tertiary"
-                      isDisabled={!hasNextPage}
-                      onPress={() => {
-                        if (!hasNextPage) return
-                        setDeckId(nextPage)
-                        onDeckSelect?.(nextPage)
-                      }}
-                    >
-                      Next page
-                    </Button>
-                  </div>
+                {editionTab === "decks" && !creatingDeck && (
+                  <Button
+                    type="button"
+                    variant="primary"
+                    className="order-first"
+                    onPress={() => setCreatingDeck(true)}
+                  >
+                    <Plus aria-hidden="true" className="size-4" />
+                    New deck
+                  </Button>
                 )}
-                <p className="text-sm text-neutral-300 sm:col-span-2">
-                  <span className="block text-xs uppercase tracking-wider text-neutral-500">
-                    Name
-                  </span>
-                  <Input
-                    aria-label="Deck name"
-                    value={deckDraft.name}
-                    onChange={(event) =>
-                      setDeckDraft({ ...deckDraft, name: event.target.value })
-                    }
-                  />
-                </p>
-                <Input
-                  aria-label="Deck icon"
-                  label="Icon"
-                  value={deckDraft.icon}
-                  onChange={(event) =>
-                    setDeckDraft({ ...deckDraft, icon: event.target.value })
-                  }
-                />
-                <Input
-                  aria-label="Deck background"
-                  label="Background"
-                  value={deckDraft.background}
-                  onChange={(event) =>
-                    setDeckDraft({
-                      ...deckDraft,
-                      background: event.target.value,
-                    })
-                  }
-                />
-                <Input
-                  aria-label="Trigger process"
-                  label="Trigger process"
-                  placeholder="chrome, slack"
-                  value={deckDraft.processName}
-                  onChange={(event) =>
-                    setDeckDraft({
-                      ...deckDraft,
-                      processName: event.target.value,
-                    })
-                  }
-                />
-                <Input
-                  aria-label="Trigger window"
-                  label="Trigger window"
-                  value={deckDraft.windowName}
-                  onChange={(event) =>
-                    setDeckDraft({
-                      ...deckDraft,
-                      windowName: event.target.value,
-                    })
-                  }
-                />
-                <label className="flex items-center gap-2 text-sm text-neutral-300">
-                  <input
-                    type="checkbox"
-                    checked={deckDraft.paginated}
-                    onChange={(event) =>
-                      setDeckDraft({
-                        ...deckDraft,
-                        paginated: event.target.checked,
-                      })
-                    }
-                  />{" "}
-                  Paginated
-                </label>
-                <label className="flex items-center gap-2 text-sm text-neutral-300">
-                  <input
-                    type="checkbox"
-                    checked={deckDraft.autoShow}
-                    onChange={(event) =>
-                      setDeckDraft({
-                        ...deckDraft,
-                        autoShow: event.target.checked,
-                      })
-                    }
-                  />{" "}
-                  Auto show overlay
-                </label>
+              </div>
+            </Card.Header>
+            <Card.Content className="min-h-0 flex-1 overflow-y-auto">
+              {editionTab === "decks" && (
+                <div role="tabpanel" aria-label="Decks" className="space-y-4">
+                  <section aria-labelledby="deck-config-title">
+                    <h3
+                      id="deck-config-title"
+                      className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500"
+                    >
+                      Active deck
+                    </h3>
+                    {activeDeckId === null ? (
+                      <p className="text-sm text-neutral-500">
+                        No deck selected.
+                      </p>
+                    ) : deckDraft === null ? (
+                      <p className="text-sm text-neutral-500">
+                        Addon-provided decks are read-only here; edit their
+                        configured overrides in YAML.
+                      </p>
+                    ) : (
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <p className="text-sm text-neutral-300 sm:col-span-2">
+                          <span className="block text-xs uppercase tracking-wider text-neutral-500">
+                            ID
+                          </span>
+                          <code>{activeDeckId}</code>
+                        </p>
+                        <p className="text-sm text-neutral-300">
+                          <span className="block text-xs uppercase tracking-wider text-neutral-500">
+                            Buttons
+                          </span>
+                          {buttons.length}
+                        </p>
+                        {(hasPreviousPage || hasNextPage) && (
+                          <div className="flex gap-2 sm:col-span-2">
+                            <Button
+                              type="button"
+                              variant="tertiary"
+                              isDisabled={!hasPreviousPage}
+                              onPress={() => {
+                                if (!hasPreviousPage) return
+                                setDeckId(previousPage)
+                                onDeckSelect?.(previousPage)
+                              }}
+                            >
+                              Previous page
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="tertiary"
+                              isDisabled={!hasNextPage}
+                              onPress={() => {
+                                if (!hasNextPage) return
+                                setDeckId(nextPage)
+                                onDeckSelect?.(nextPage)
+                              }}
+                            >
+                              Next page
+                            </Button>
+                          </div>
+                        )}
+                        <p className="text-sm text-neutral-300 sm:col-span-2">
+                          <span className="block text-xs uppercase tracking-wider text-neutral-500">
+                            Name
+                          </span>
+                          <Input
+                            aria-label="Deck name"
+                            value={deckDraft.name}
+                            onChange={(event) =>
+                              setDeckDraft({
+                                ...deckDraft,
+                                name: event.target.value,
+                              })
+                            }
+                          />
+                        </p>
+                        <Input
+                          aria-label="Deck icon"
+                          label="Icon"
+                          value={deckDraft.icon}
+                          onChange={(event) =>
+                            setDeckDraft({
+                              ...deckDraft,
+                              icon: event.target.value,
+                            })
+                          }
+                        />
+                        <Input
+                          aria-label="Deck background"
+                          label="Background"
+                          value={deckDraft.background}
+                          onChange={(event) =>
+                            setDeckDraft({
+                              ...deckDraft,
+                              background: event.target.value,
+                            })
+                          }
+                        />
+                        <Input
+                          aria-label="Trigger process"
+                          label="Trigger process"
+                          placeholder="chrome, slack"
+                          value={deckDraft.processName}
+                          onChange={(event) =>
+                            setDeckDraft({
+                              ...deckDraft,
+                              processName: event.target.value,
+                            })
+                          }
+                        />
+                        <Input
+                          aria-label="Trigger window"
+                          label="Trigger window"
+                          value={deckDraft.windowName}
+                          onChange={(event) =>
+                            setDeckDraft({
+                              ...deckDraft,
+                              windowName: event.target.value,
+                            })
+                          }
+                        />
+                        <Switch
+                          isSelected={deckDraft.paginated}
+                          onChange={(event) =>
+                            setDeckDraft({
+                              ...deckDraft,
+                              paginated: event.target.checked,
+                            })
+                          }
+                        >
+                          Paginated
+                        </Switch>
+                        <Switch
+                          isSelected={deckDraft.autoShow}
+                          onChange={(event) =>
+                            setDeckDraft({
+                              ...deckDraft,
+                              autoShow: event.target.checked,
+                            })
+                          }
+                        >
+                          Auto show overlay
+                        </Switch>
+                        <Button
+                          type="button"
+                          variant="primary"
+                          onPress={() => {
+                            if (activeDeckId === null) return
+                            const process = deckDraft.processName
+                              .split(",")
+                              .map((value) => value.trim())
+                              .filter(Boolean)
+                            const window = deckDraft.windowName
+                              .split(",")
+                              .map((value) => value.trim())
+                              .filter(Boolean)
+                            sendMutation({
+                              kind: "update-deck",
+                              deckId: activeDeckId,
+                              patch: {
+                                name: deckDraft.name,
+                                icon: deckDraft.icon || null,
+                                background: deckDraft.background || null,
+                                paginated: deckDraft.paginated,
+                                autoShow: deckDraft.autoShow,
+                                trigger:
+                                  process.length || window.length
+                                    ? {
+                                        ...(process.length === 1
+                                          ? { process_name: process[0] }
+                                          : process.length
+                                            ? { process_name: process }
+                                            : {}),
+                                        ...(window.length === 1
+                                          ? { window_name: window[0] }
+                                          : window.length
+                                            ? { window_name: window }
+                                            : {}),
+                                      }
+                                    : null,
+                              },
+                            })
+                          }}
+                        >
+                          Save deck
+                        </Button>
+                      </div>
+                    )}
+                    <div className="border-t border-neutral-800 pt-4">
+                      <div className="mb-3">
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                          Decks
+                        </h3>
+                      </div>
+                      {creatingDeck && (
+                        <div className="mb-3 grid gap-2 rounded-lg border border-neutral-800 p-3">
+                          <Input
+                            aria-label="New deck ID"
+                            label="ID"
+                            value={newDeckId}
+                            onChange={(event) =>
+                              setNewDeckId(event.target.value)
+                            }
+                          />
+                          <Input
+                            aria-label="New deck name"
+                            label="Name"
+                            value={newDeckName}
+                            onChange={(event) =>
+                              setNewDeckName(event.target.value)
+                            }
+                          />
+                          <Button
+                            type="button"
+                            variant="primary"
+                            isDisabled={newDeckId.trim().length === 0}
+                            onPress={() => {
+                              const id = newDeckId.trim()
+                              const requestId = sendMutation({
+                                kind: "create-deck",
+                                deck: {
+                                  id,
+                                  ...(newDeckName.trim()
+                                    ? { name: newDeckName.trim() }
+                                    : {}),
+                                },
+                              })
+                              if (requestId !== null) {
+                                setCreatingDeck(false)
+                                setNewDeckId("")
+                                setNewDeckName("")
+                              }
+                            }}
+                          >
+                            Add deck
+                          </Button>
+                        </div>
+                      )}
+                      <div className="grid gap-1">
+                        {decks.map(([id, deck]) => (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => {
+                              setDeckId(id)
+                              setSelectedIndex(null)
+                              setSelectedPosition(null)
+                              onDeckSelect?.(id)
+                            }}
+                            aria-pressed={id === activeDeckId}
+                            className="min-h-10 rounded border border-neutral-800 px-3 text-left text-sm aria-pressed:border-sky-400 aria-pressed:bg-sky-500/15"
+                          >
+                            <span className="block truncate">
+                              {deck.name ?? id}
+                            </span>
+                            <span className="block truncate text-xs text-neutral-500">
+                              #{id}
+                            </span>
+                          </button>
+                        ))}
+                        {addonInventory?.addons
+                          .filter((addon) => !addon.internal)
+                          .flatMap((addon) =>
+                            addon.decks.filter((deck) => !deck.internal),
+                          )
+                          .filter(
+                            (deck) =>
+                              deck.generated === true &&
+                              deck.addonIndex !== undefined &&
+                              deck.overrideKey !== undefined,
+                          )
+                          .map((deck) => (
+                            <button
+                              key={deck.id}
+                              type="button"
+                              onClick={() => {
+                                sendMutation({
+                                  kind: "set-addon-deck-override",
+                                  addonIndex: deck.addonIndex,
+                                  deckId: deck.overrideKey,
+                                  override: {},
+                                })
+                                setMessage("Saving addon override…")
+                              }}
+                              className="min-h-10 rounded border border-neutral-800 px-3 text-left text-sm text-amber-300 hover:border-amber-400"
+                            >
+                              {deck.id}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              )}
+              {editionTab === "buttons" && (
+                <section aria-labelledby="button-config-title">
+                  <div className="mb-3">
+                    <h3
+                      id="button-config-title"
+                      className="text-xs font-semibold uppercase tracking-wider text-neutral-500"
+                    >
+                      Selected button
+                    </h3>
+                  </div>
+                  {showButtonTypes && (
+                    <div className="mb-4 grid gap-2 rounded-lg border border-neutral-800 p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs text-muted">
+                          Choose a button type.
+                        </p>
+                        <Button
+                          type="button"
+                          variant="tertiary"
+                          onPress={() => setShowButtonTypes(false)}
+                        >
+                          <CircleX aria-hidden="true" className="size-4" />
+                          Cancel
+                        </Button>
+                      </div>
+                      {addonInventory?.addons
+                        .filter((addon) => !addon.internal)
+                        .flatMap((addon) =>
+                          addon.buttonTypes
+                            .filter((type) => !type.internal)
+                            .map((type) => type.type),
+                        )
+                        .map((type) => (
+                          <button
+                            key={type}
+                            type="button"
+                            draggable
+                            onDragStart={(event) =>
+                              dragStart(event, {
+                                kind: "palette",
+                                button: { type, config: {} },
+                              })
+                            }
+                            onClick={() => {
+                              beginInsert({ type, config: {} })
+                              setShowButtonTypes(false)
+                            }}
+                            className="min-h-10 rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
+                          >
+                            {type}
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                  {pendingButton === null && selected !== undefined && (
+                    <div className="mb-3 grid grid-cols-[repeat(5,30px)] justify-center gap-[3px] rounded-lg border border-separator p-3">
+                      {Array.from(
+                        { length: device?.keyCount ?? 15 },
+                        (_, position) => {
+                          const occupied = positions.includes(position)
+                          return (
+                            <button
+                              key={position}
+                              type="button"
+                              aria-label={`Position ${position}`}
+                              aria-pressed={selectedPosition === position}
+                              onClick={() => {
+                                if (occupied) selectPosition(position)
+                              }}
+                              onMouseEnter={() => setHoveredPosition(position)}
+                              onMouseLeave={() => setHoveredPosition(null)}
+                              className={`h-[30px] w-[30px] rounded border border-separator text-xs text-muted hover:border-primary ${selectedPosition === position ? "border-primary bg-primary text-primary-foreground" : ""}`}
+                            >
+                              {position + 1}
+                            </button>
+                          )
+                        },
+                      )}
+                    </div>
+                  )}
+                  {pendingButton !== null ? (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-[auto_repeat(5,30px)] items-center gap-[3px] rounded-lg border border-separator p-3">
+                        <Button
+                          type="button"
+                          variant="tertiary"
+                          onPress={() => {
+                            setPendingPosition(firstFreePosition())
+                            setPositionUnset(false)
+                            setNewPage(false)
+                          }}
+                        >
+                          First available
+                        </Button>
+                        {Array.from(
+                          { length: device?.keyCount ?? 15 },
+                          (_, position) => {
+                            return (
+                              <button
+                                key={position}
+                                type="button"
+                                aria-label={`Position ${position}`}
+                                aria-pressed={pendingPosition === position}
+                                onClick={() => {
+                                  if (
+                                    position ===
+                                    (device?.keyCount ?? 15) - 1
+                                  ) {
+                                    setPendingPosition(null)
+                                    setPositionUnset(true)
+                                  } else {
+                                    setPendingPosition(position)
+                                    setPositionUnset(false)
+                                  }
+                                  setNewPage(false)
+                                }}
+                                onMouseEnter={() =>
+                                  setHoveredPosition(position)
+                                }
+                                onMouseLeave={() => setHoveredPosition(null)}
+                                className={`h-[30px] w-[30px] rounded border border-separator text-xs text-muted hover:border-primary ${positionUnset && position === (device?.keyCount ?? 15) - 1 ? "border-primary bg-primary text-primary-foreground" : pendingPosition === position ? "border-primary bg-primary text-primary-foreground" : ""}`}
+                              >
+                                {position === (device?.keyCount ?? 15) - 1
+                                  ? "∅"
+                                  : position + 1}
+                              </button>
+                            )
+                          },
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {pendingButton.type === "core:change-deck" && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewPage(true)
+                              setPendingPosition(0)
+                            }}
+                            className="rounded border border-neutral-700 px-3 py-2 text-xs hover:border-sky-400"
+                          >
+                            Add new page
+                          </button>
+                        )}
+                      </div>
+                      {newPage && (
+                        <div className="grid gap-2 rounded-lg border border-neutral-800 p-3">
+                          <label className="grid gap-1 text-xs text-neutral-400">
+                            Page ID
+                            <input
+                              value={newPageId}
+                              onChange={(event) =>
+                                setNewPageId(event.target.value)
+                              }
+                              className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
+                            />
+                          </label>
+                          <label className="grid gap-1 text-xs text-neutral-400">
+                            Page name
+                            <input
+                              value={newPageName}
+                              onChange={(event) =>
+                                setNewPageName(event.target.value)
+                              }
+                              className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
+                            />
+                          </label>
+                          <label className="grid gap-1 text-xs text-neutral-400">
+                            Icon source
+                            <input
+                              placeholder="icon://layout-grid"
+                              value={newPageIcon}
+                              onChange={(event) =>
+                                setNewPageIcon(event.target.value)
+                              }
+                              className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
+                            />
+                          </label>
+                          <label className="grid gap-1 text-xs text-neutral-400">
+                            Background
+                            <input
+                              value={newPageBackground}
+                              onChange={(event) =>
+                                setNewPageBackground(event.target.value)
+                              }
+                              className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
+                            />
+                          </label>
+                          <label className="flex items-center gap-2 text-xs text-neutral-400">
+                            <input
+                              type="checkbox"
+                              checked={newPagePaginated}
+                              onChange={(event) =>
+                                setNewPagePaginated(event.target.checked)
+                              }
+                            />{" "}
+                            Paginated page
+                          </label>
+                        </div>
+                      )}
+                      {!selectedGenerated && (
+                        <ButtonAppearanceFields
+                          value={buttonAppearance}
+                          variants={state?.themeVariants ?? {}}
+                          onChange={setButtonAppearance}
+                          onAsset={(asset) => chooseAsset("button.icon", asset)}
+                        />
+                      )}
+                      <ButtonConfigEditor
+                        key={`pending:${pendingButton.type as string}`}
+                        wsClient={wsClient}
+                        revision={state?.revision ?? 0}
+                        buttonType={String(pendingButton.type ?? "")}
+                        config={pendingButton.config ?? {}}
+                        schema={
+                          state?.buttonSchemas?.[
+                            String(pendingButton.type ?? "")
+                          ]
+                        }
+                        validation={validation}
+                        deckOptions={deckOptions}
+                        saveLabel="Add button"
+                        hideActions
+                        onDraftChange={setButtonDraft}
+                        onPendingAssetChange={(path, asset) =>
+                          chooseAsset(`config.${path}`, asset ?? undefined)
+                        }
+                        onCancel={() => {
+                          setPendingButton(null)
+                          setPendingPosition(null)
+                          setSelectedPosition(null)
+                          setSelectedIndex(null)
+                        }}
+                        onSave={addPending}
+                      />
+                    </div>
+                  ) : selected === undefined ? (
+                    <div className="space-y-3">
+                      <p className="flex min-h-48 items-center justify-center text-sm text-muted">
+                        Select a button using its ⋮ menu.
+                      </p>
+                      {clipboard !== null && (
+                        <button
+                          type="button"
+                          onClick={() => add()}
+                          className="min-h-10 rounded bg-sky-600 px-3 text-sm"
+                        >
+                          Paste button
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="grid gap-4">
+                      <ButtonAppearanceFields
+                        value={buttonAppearance}
+                        variants={state?.themeVariants ?? {}}
+                        onChange={setButtonAppearance}
+                        onAsset={(asset) => chooseAsset("button.icon", asset)}
+                      />
+                      {!selectedGenerated && (
+                        <ButtonConfigEditor
+                          key={`${activeDeckId}:${selectedIndex}:${state?.revision ?? 0}`}
+                          wsClient={wsClient}
+                          revision={state?.revision ?? 0}
+                          buttonType={
+                            isButton(selected) &&
+                            typeof selected.type === "string"
+                              ? selected.type
+                              : String(selected)
+                          }
+                          config={isButton(selected) ? selected.config : {}}
+                          schema={
+                            state?.buttonSchemas?.[
+                              isButton(selected) &&
+                              typeof selected.type === "string"
+                                ? selected.type
+                                : String(selected)
+                            ]
+                          }
+                          validation={validation}
+                          deckOptions={deckOptions}
+                          hideActions
+                          onDraftChange={setButtonDraft}
+                          onPendingAssetChange={(path, asset) =>
+                            chooseAsset(`config.${path}`, asset ?? undefined)
+                          }
+                          onCancel={() => {
+                            setSelectedIndex(null)
+                            setSelectedPosition(null)
+                          }}
+                          onSave={saveConfig}
+                        />
+                      )}
+                    </div>
+                  )}
+                </section>
+              )}
+            </Card.Content>
+            {(pendingButton !== null ||
+              (selected !== undefined && !selectedGenerated)) && (
+              <Card.Footer className="mt-auto shrink-0 justify-end gap-2 border-t border-separator">
+                <Button
+                  type="button"
+                  variant="tertiary"
+                  onPress={() => {
+                    setPendingButton(null)
+                    setPendingPosition(null)
+                    setSelectedPosition(null)
+                    setSelectedIndex(null)
+                  }}
+                >
+                  <CircleX aria-hidden="true" className="size-4" />
+                  Cancel
+                </Button>
                 <Button
                   type="button"
                   variant="primary"
+                  isDisabled={buttonDraft === null}
                   onPress={() => {
-                    if (activeDeckId === null) return
-                    const process = deckDraft.processName
-                      .split(",")
-                      .map((value) => value.trim())
-                      .filter(Boolean)
-                    const window = deckDraft.windowName
-                      .split(",")
-                      .map((value) => value.trim())
-                      .filter(Boolean)
-                    sendMutation({
-                      kind: "update-deck",
-                      deckId: activeDeckId,
-                      patch: {
-                        name: deckDraft.name,
-                        icon: deckDraft.icon || null,
-                        background: deckDraft.background || null,
-                        paginated: deckDraft.paginated,
-                        autoShow: deckDraft.autoShow,
-                        trigger:
-                          process.length || window.length
-                            ? {
-                                ...(process.length === 1
-                                  ? { process_name: process[0] }
-                                  : process.length
-                                    ? { process_name: process }
-                                    : {}),
-                                ...(window.length === 1
-                                  ? { window_name: window[0] }
-                                  : window.length
-                                    ? { window_name: window }
-                                    : {}),
-                              }
-                            : null,
-                      },
-                    })
+                    if (buttonDraft === null) return
+                    if (pendingButton !== null) addPending(buttonDraft)
+                    else saveConfig(buttonDraft)
                   }}
                 >
-                  Save deck
+                  <Check aria-hidden="true" className="size-4" />
+                  {pendingButton === null ? "Save button" : "Add button"}
                 </Button>
-              </div>
+              </Card.Footer>
             )}
-          </section>
-          <section
-            aria-labelledby="button-config-title"
-            className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
-          >
-            <h2
-              id="button-config-title"
-              className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500"
-            >
-              Selected button
-            </h2>
-            {selected !== undefined && (
-              <div className="mb-3 flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-neutral-500">
-                <span className="rounded border border-neutral-800 px-2 py-1">
-                  type: {isButton(selected) ? String(selected.type) : selected}
-                </span>
-                <span className="rounded border border-neutral-800 px-2 py-1">
-                  position:{" "}
-                  {selectedPosition === null ? "none" : selectedPosition + 1}
-                </span>
-              </div>
-            )}
-            {pendingButton !== null ? (
-              <div className="space-y-3">
-                <div className="rounded-lg border border-sky-500/30 bg-sky-500/5 p-3">
-                  <p className="text-sm font-medium text-sky-200">Add button</p>
-                  <p className="mt-1 text-xs text-neutral-500">
-                    Choose a position, configure the button, then add it.
-                  </p>
-                </div>
-                <div className="grid grid-cols-5 gap-1 rounded-lg border border-neutral-800 p-3">
-                  {Array.from(
-                    { length: device?.keyCount ?? 15 },
-                    (_, position) => {
-                      const occupied = positions.includes(position)
-                      return (
-                        <button
-                          key={position}
-                          type="button"
-                          aria-label={`Position ${position}${occupied ? " occupied" : " empty"}`}
-                          aria-pressed={pendingPosition === position}
-                          onClick={() => {
-                            if (position === (device?.keyCount ?? 15) - 1) {
-                              setPendingPosition(null)
-                              setPositionUnset(true)
-                            } else {
-                              setPendingPosition(position)
-                              setPositionUnset(false)
-                            }
-                            setNewPage(false)
-                          }}
-                          className={`h-[30px] w-[30px] rounded border text-xs ${positionUnset && position === (device?.keyCount ?? 15) - 1 ? "border-sky-400 bg-sky-500/20" : pendingPosition === position ? "border-sky-400 bg-sky-500/20" : occupied ? "border-amber-500/50 text-amber-300" : "border-neutral-800 text-neutral-500 hover:border-sky-400"}`}
-                        >
-                          {position === (device?.keyCount ?? 15) - 1
-                            ? "∅"
-                            : position + 1}
-                        </button>
-                      )
-                    },
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPendingPosition(firstFreePosition())
-                      setNewPage(false)
-                    }}
-                    className="rounded border border-neutral-700 px-3 py-2 text-xs hover:border-sky-400"
-                  >
-                    First available
-                  </button>
-                  {pendingButton.type === "core:change-deck" && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setNewPage(true)
-                        setPendingPosition(0)
-                      }}
-                      className="rounded border border-neutral-700 px-3 py-2 text-xs hover:border-sky-400"
-                    >
-                      Add new page
-                    </button>
-                  )}
-                </div>
-                {newPage && (
-                  <div className="grid gap-2 rounded-lg border border-neutral-800 p-3">
-                    <label className="grid gap-1 text-xs text-neutral-400">
-                      Page ID
-                      <input
-                        value={newPageId}
-                        onChange={(event) => setNewPageId(event.target.value)}
-                        className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
-                      />
-                    </label>
-                    <label className="grid gap-1 text-xs text-neutral-400">
-                      Page name
-                      <input
-                        value={newPageName}
-                        onChange={(event) => setNewPageName(event.target.value)}
-                        className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
-                      />
-                    </label>
-                    <label className="grid gap-1 text-xs text-neutral-400">
-                      Icon source
-                      <input
-                        placeholder="icon://layout-grid"
-                        value={newPageIcon}
-                        onChange={(event) => setNewPageIcon(event.target.value)}
-                        className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
-                      />
-                    </label>
-                    <label className="grid gap-1 text-xs text-neutral-400">
-                      Background
-                      <input
-                        value={newPageBackground}
-                        onChange={(event) =>
-                          setNewPageBackground(event.target.value)
-                        }
-                        className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
-                      />
-                    </label>
-                    <label className="flex items-center gap-2 text-xs text-neutral-400">
-                      <input
-                        type="checkbox"
-                        checked={newPagePaginated}
-                        onChange={(event) =>
-                          setNewPagePaginated(event.target.checked)
-                        }
-                      />{" "}
-                      Paginated page
-                    </label>
-                  </div>
-                )}
-                <ButtonConfigEditor
-                  key={`pending:${pendingButton.type as string}`}
-                  wsClient={wsClient}
-                  revision={state?.revision ?? 0}
-                  buttonType={String(pendingButton.type ?? "")}
-                  config={pendingButton.config ?? {}}
-                  schema={
-                    state?.buttonSchemas?.[String(pendingButton.type ?? "")]
-                  }
-                  validation={validation}
-                  deckOptions={deckOptions}
-                  saveLabel="Add button"
-                  actionsInHeader
-                  onCancel={() => setPendingButton(null)}
-                  onSave={addPending}
-                />
-              </div>
-            ) : selected === undefined ? (
-              <div className="space-y-3">
-                {activeDeck !== undefined && paletteTab !== "themes" && (
-                  <DeckEditor
-                    deck={activeDeck}
-                    theme={
-                      typeof config.theme === "string"
-                        ? config.theme
-                        : (config.theme?.src ?? "default")
-                    }
-                    themeOptions={themes}
-                    onSave={saveDeck}
-                    onTheme={(theme) =>
-                      sendMutation({ kind: "set-theme", theme })
-                    }
-                  />
-                )}
-                <p className="text-sm text-neutral-500">
-                  Select a preview position to edit its configuration.
-                </p>
-                {clipboard !== null && (
-                  <button
-                    type="button"
-                    onClick={() => add()}
-                    className="min-h-10 rounded bg-sky-600 px-3 text-sm"
-                  >
-                    Paste button
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div className="grid gap-4">
-                <ButtonAppearanceEditor
-                  button={selected}
-                  types={[
-                    ...new Set([
-                      ...(addonInventory?.addons.flatMap((addon) =>
-                        addon.buttonTypes
-                          .filter((type) => !type.internal)
-                          .map((type) => type.type),
-                      ) ?? []),
-                      isButton(selected) && typeof selected.type === "string"
-                        ? selected.type
-                        : String(selected),
-                    ]),
-                  ]}
-                  readOnly={selectedGenerated}
-                  onSave={saveButton}
-                />
-                {!selectedGenerated && (
-                  <ButtonConfigEditor
-                    key={`${activeDeckId}:${selectedIndex}:${state?.revision ?? 0}`}
-                    wsClient={wsClient}
-                    revision={state?.revision ?? 0}
-                    buttonType={
-                      isButton(selected) && typeof selected.type === "string"
-                        ? selected.type
-                        : String(selected)
-                    }
-                    config={isButton(selected) ? selected.config : {}}
-                    schema={
-                      state?.buttonSchemas?.[
-                        isButton(selected) && typeof selected.type === "string"
-                          ? selected.type
-                          : String(selected)
-                      ]
-                    }
-                    validation={validation}
-                    deckOptions={deckOptions}
-                    actionsInHeader
-                    onCancel={() => {
-                      setSelectedIndex(null)
-                      setSelectedPosition(null)
-                    }}
-                    onSave={saveConfig}
-                  />
-                )}
-              </div>
-            )}
-          </section>
+          </Card>
         </div>
       )}
     </section>

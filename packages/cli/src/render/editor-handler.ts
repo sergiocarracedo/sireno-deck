@@ -18,9 +18,15 @@ export interface EditorMessageHandlerOptions {
   readonly mutationService: ConfigMutationService
   readonly getState: () => Omit<
     EditorStateMessage,
-    "type" | "revision" | "canUndo" | "buttonSchemas" | "surfaces"
+    | "type"
+    | "revision"
+    | "canUndo"
+    | "buttonSchemas"
+    | "themeVariants"
+    | "surfaces"
   > & {
     buttonSchemas?: EditorStateMessage["buttonSchemas"]
+    themeVariants?: EditorStateMessage["themeVariants"]
     surfaces?: EditorStateMessage["surfaces"]
     revision?: number
   }
@@ -161,6 +167,11 @@ export const createEditorMessageHandler = (
         return
       }
       if (message.type === "editor-asset-write") {
+        if (message.revision !== revision) {
+          result(socket, message.requestId, false, "stale editor revision")
+          send(socket, state())
+          return
+        }
         void options.mutationService
           .writeAsset(message.filename, message.data)
           .then(() => result(socket, message.requestId, true))

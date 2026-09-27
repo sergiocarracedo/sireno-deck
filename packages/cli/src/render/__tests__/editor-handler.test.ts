@@ -29,6 +29,43 @@ const service = (): ConfigMutationService => ({
 })
 
 describe("editor WS handler", () => {
+  it("rejects stale SVG writes without touching the asset service", () => {
+    const mutations = service()
+    const { socket: client, sent } = socket()
+    const handler = createEditorMessageHandler({
+      mutationService: mutations,
+      getState: () => ({
+        config: {},
+        sources: [],
+        sourceContents: {},
+        themes: [],
+      }),
+      broadcast: vi.fn(),
+    })
+    handler.invalidate()
+    handler.onMessage(
+      {
+        type: "editor-asset-write",
+        requestId: "asset-old",
+        revision: 0,
+        filename: "icon.svg",
+        data: "PHN2Zz48L3N2Zz4=",
+      },
+      client,
+    )
+
+    expect(mutations.writeAsset).not.toHaveBeenCalled()
+    expect(
+      sent
+        .map((message) => JSON.parse(message))
+        .find((message) => message.requestId === "asset-old"),
+    ).toMatchObject({
+      type: "editor-mutation-result",
+      ok: false,
+      error: "stale editor revision",
+    })
+  })
+
   it("returns state and applies a current revision mutation", async () => {
     const mutations = service()
     const broadcast = vi.fn()

@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
 import { ButtonConfigEditor } from "../pages/ButtonConfigEditor"
@@ -65,17 +65,18 @@ describe("ButtonConfigEditor", () => {
     ).toBeDisabled()
   })
 
-  it("writes a selected Lucide icon into the config", () => {
-    const ws = wsClient()
+  it("applies a chosen Lucide icon only after Apply", () => {
     render(
       <ButtonConfigEditor
-        wsClient={ws}
+        wsClient={wsClient()}
         revision={1}
         buttonType="test:button"
         config={{ icon: "" }}
         schema={{
           type: "object",
-          properties: { icon: { type: "string" } },
+          properties: {
+            icon: { type: "string", title: "Icon", "x-control": "icon" },
+          },
         }}
         validation={null}
         onSave={vi.fn()}
@@ -83,11 +84,100 @@ describe("ButtonConfigEditor", () => {
     )
 
     fireEvent.click(screen.getByRole("button", { name: "Choose icon" }))
-    fireEvent.change(screen.getByLabelText("Search icons"), {
+    fireEvent.change(screen.getByLabelText("Search Lucide icons"), {
       target: { value: "activity" },
     })
     fireEvent.click(screen.getByRole("button", { name: "activity" }))
-
+    expect(screen.getByRole("dialog")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     expect(screen.getByRole("button", { name: /activity/ })).toBeInTheDocument()
+  })
+
+  it("discards an icon selection when the picker is canceled", () => {
+    const onDraftChange = vi.fn()
+    render(
+      <ButtonConfigEditor
+        wsClient={wsClient()}
+        revision={1}
+        buttonType="test:button"
+        config={{ icon: "" }}
+        schema={{
+          type: "object",
+          properties: { icon: { type: "string", "x-control": "icon" } },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+        onDraftChange={onDraftChange}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Choose icon" }))
+    fireEvent.change(screen.getByLabelText("Search Lucide icons"), {
+      target: { value: "activity" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "activity" }))
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(onDraftChange).not.toHaveBeenCalledWith({ icon: "icon://activity" })
+  })
+
+  it("renders boolean config fields as labeled switches", () => {
+    render(
+      <ButtonConfigEditor
+        wsClient={wsClient()}
+        revision={1}
+        buttonType="test:button"
+        config={{ enabled: true }}
+        schema={{
+          type: "object",
+          properties: { enabled: { type: "boolean", title: "Enabled" } },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+      />,
+    )
+    expect(screen.getByRole("switch", { name: "Enabled" })).toBeChecked()
+  })
+
+  it("keeps an uploaded SVG pending until Apply", async () => {
+    const onPendingAssetChange = vi.fn()
+    render(
+      <ButtonConfigEditor
+        wsClient={wsClient()}
+        revision={1}
+        buttonType="test:button"
+        config={{ icon: "" }}
+        schema={{
+          type: "object",
+          properties: { icon: { type: "string", "x-control": "icon" } },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+        onPendingAssetChange={onPendingAssetChange}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Choose icon" }))
+    fireEvent.click(screen.getByRole("tab", { name: "SVG upload" }))
+    fireEvent.change(screen.getByLabelText("Upload SVG"), {
+      target: {
+        files: [
+          new File(
+            ['<svg xmlns="http://www.w3.org/2000/svg"></svg>'],
+            "test.svg",
+            { type: "image/svg+xml" },
+          ),
+        ],
+      },
+    })
+    await waitFor(() =>
+      expect(screen.getByAltText("SVG preview")).toBeInTheDocument(),
+    )
+    expect(onPendingAssetChange).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
+    expect(onPendingAssetChange).toHaveBeenCalledWith(
+      "icon",
+      expect.objectContaining({
+        filename: expect.stringMatching(/test\.svg$/),
+      }),
+    )
   })
 })

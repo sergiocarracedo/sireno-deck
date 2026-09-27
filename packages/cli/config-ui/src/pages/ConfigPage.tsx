@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { Button, Tabs } from "@heroui/react"
+import { Button, Card, ListBox, Select, Tabs, TextArea } from "@heroui/react"
+import { CodeXml, PencilRuler } from "lucide-react"
 
 import type { WsClient } from "../bridge"
 import type { EditorState } from "./EditorPage"
@@ -19,6 +20,11 @@ export interface ConfigPageProps {
     readonly ok: boolean
     readonly error?: string
   } | null
+  readonly activeTab?: "editor" | "config"
+  readonly onTabChange?: (tab: "editor" | "config") => void
+  readonly revision?: number | null
+  readonly canUndo?: boolean
+  readonly onUndo?: () => void
 }
 
 let sourceRequestNumber = 0
@@ -32,10 +38,16 @@ export const ConfigPage = ({
   editorState = null,
   sourceValidation = null,
   mutationResult = null,
+  activeTab,
+  onTabChange,
+  revision = null,
+  canUndo = false,
+  onUndo,
 }: ConfigPageProps) => {
-  const [tab, setTab] = useState<"editor" | "config">(
+  const [internalTab, setInternalTab] = useState<"editor" | "config">(
     editor === undefined ? "config" : "editor",
   )
+  const tab = activeTab ?? internalTab
   const sources = editorState?.sources ?? []
   const [selectedSource, setSelectedSource] = useState<string | null>(
     sources[0] ?? configPath ?? null,
@@ -43,6 +55,9 @@ export const ConfigPage = ({
   const [draft, setDraft] = useState<string | null>(null)
   const [requestId, setRequestId] = useState<string | null>(null)
   const [saveRequestId, setSaveRequestId] = useState<string | null>(null)
+  const [themeRequestId, setThemeRequestId] = useState<string | null>(null)
+  const [themeMessage, setThemeMessage] = useState<string | null>(null)
+  const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
 
   useEffect(() => {
     if (selectedSource === null && sources[0] !== undefined) {
@@ -60,6 +75,17 @@ export const ConfigPage = ({
     if (mutationResult.ok) setSaveRequestId(null)
   }, [mutationResult, saveRequestId])
 
+  useEffect(() => {
+    if (mutationResult?.requestId !== themeRequestId) return
+    setThemeMessage(
+      mutationResult.ok
+        ? "Theme saved"
+        : (mutationResult.error ?? "Theme update failed"),
+    )
+    if (!mutationResult.ok) setSelectedTheme(null)
+    setThemeRequestId(null)
+  }, [mutationResult, themeRequestId])
+
   const original =
     selectedSource === null
       ? ""
@@ -69,6 +95,15 @@ export const ConfigPage = ({
     requestId !== null && sourceValidation?.requestId === requestId
   const canSave =
     isDirty && validationMatches && sourceValidation?.valid === true
+  const theme = (
+    editorState?.config as { theme?: string | { src?: string } } | undefined
+  )?.theme
+  const activeTheme =
+    typeof theme === "string" ? theme : (theme?.src ?? "default")
+
+  useEffect(() => {
+    if (selectedTheme === activeTheme) setSelectedTheme(null)
+  }, [activeTheme, selectedTheme])
 
   const changeDraft = (content: string): void => {
     setDraft(content)
@@ -103,29 +138,106 @@ export const ConfigPage = ({
     <div className="flex h-full min-h-0 flex-col">
       <Tabs
         selectedKey={tab}
-        onSelectionChange={(key) => setTab(String(key) as "editor" | "config")}
+        onSelectionChange={(key) => {
+          const next = String(key) as "editor" | "config"
+          setInternalTab(next)
+          onTabChange?.(next)
+        }}
         className="min-h-0 flex-1"
       >
-        <Tabs.ListContainer>
-          <Tabs.List
-            aria-label="Configuration views"
-            className="w-fit rounded-full bg-[var(--surface-secondary)] p-1"
-          >
-            {editor !== undefined && (
+        <div className="flex items-center justify-between gap-3 px-4 pt-4">
+          <Tabs.ListContainer>
+            <Tabs.List
+              aria-label="Configuration views"
+              className="w-fit rounded-full bg-[var(--surface-secondary)] p-1"
+            >
+              {editor !== undefined && (
+                <Tabs.Tab
+                  id="editor"
+                  className="flex items-center gap-2 rounded-full px-4 py-1.5 text-xs"
+                >
+                  <PencilRuler size={14} aria-hidden="true" />
+                  Editor
+                  <Tabs.Indicator />
+                </Tabs.Tab>
+              )}
               <Tabs.Tab
-                id="editor"
-                className="rounded-full px-4 py-1.5 text-xs"
+                id="config"
+                className="flex items-center gap-2 rounded-full px-4 py-1.5 text-xs"
               >
-                Editor
+                <CodeXml size={14} aria-hidden="true" />
+                Config
                 <Tabs.Indicator />
               </Tabs.Tab>
+            </Tabs.List>
+          </Tabs.ListContainer>
+          <div className="flex items-center gap-2">
+            <span
+              role="status"
+              aria-live="polite"
+              className="text-sm text-muted"
+            >
+              {revision === null
+                ? "Waiting for editor state"
+                : `Revision ${revision}`}
+            </span>
+            <Button
+              type="button"
+              variant="tertiary"
+              isDisabled={!canUndo}
+              onPress={onUndo}
+            >
+              Undo
+            </Button>
+            <span className="text-sm text-muted">Theme</span>
+            <Select
+              aria-label="Theme"
+              selectedKey={selectedTheme ?? activeTheme}
+              onSelectionChange={(key) => {
+                const themeName = String(key)
+                const nextRequestId = nextSourceRequestId()
+                setSelectedTheme(themeName)
+                setThemeRequestId(nextRequestId)
+                setThemeMessage("Saving theme...")
+                wsClient?.send(
+                  JSON.stringify({
+                    type: "editor-mutate",
+                    requestId: nextRequestId,
+                    revision: editorState?.revision ?? 0,
+                    mutation: { kind: "set-theme", theme: themeName },
+                  }),
+                )
+              }}
+            >
+              <Select.Trigger className="min-w-32">
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {(editorState?.themes?.length === 0
+                    ? [{ name: activeTheme }]
+                    : (editorState?.themes ?? [{ name: activeTheme }])
+                  ).map((theme) => (
+                    <ListBox.Item
+                      key={theme.name}
+                      id={theme.name}
+                      textValue={theme.name}
+                    >
+                      {theme.name}
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
+            {themeMessage !== null && (
+              <span role="status" aria-live="polite" className="sr-only">
+                {themeMessage}
+              </span>
             )}
-            <Tabs.Tab id="config" className="rounded-full px-4 py-1.5 text-xs">
-              Config
-              <Tabs.Indicator />
-            </Tabs.Tab>
-          </Tabs.List>
-        </Tabs.ListContainer>
+          </div>
+        </div>
         {editor !== undefined && (
           <Tabs.Panel
             id="editor"
@@ -136,11 +248,11 @@ export const ConfigPage = ({
         )}
         <Tabs.Panel id="config" className="min-h-0 flex-1 overflow-hidden p-4">
           <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
-            <aside className="w-full shrink-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 lg:w-64">
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-                Configuration files
-              </h2>
-              <div className="grid gap-1">
+            <Card className="w-full shrink-0 lg:w-64">
+              <Card.Header>
+                <Card.Title>Configuration files</Card.Title>
+              </Card.Header>
+              <Card.Content className="grid gap-1">
                 {sources.map((source, index) => (
                   <button
                     key={source}
@@ -155,10 +267,10 @@ export const ConfigPage = ({
                     </span>
                   </button>
                 ))}
-              </div>
-            </aside>
-            <section className="flex min-h-0 min-w-0 flex-1 flex-col rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-              <header className="mb-3 flex flex-wrap items-center justify-between gap-3">
+              </Card.Content>
+            </Card>
+            <Card className="flex min-h-0 min-w-0 flex-1 flex-col">
+              <Card.Header className="flex flex-row flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="truncate text-base font-semibold">
                     {selectedSource ?? "Configuration"}
@@ -185,25 +297,27 @@ export const ConfigPage = ({
                     {saveRequestId === null ? "Save" : "Saving..."}
                   </Button>
                 </div>
-              </header>
-              <textarea
-                aria-label="Configuration source YAML"
-                value={draft ?? ""}
-                onChange={(event) => changeDraft(event.target.value)}
-                spellCheck={false}
-                className="min-h-0 w-full flex-1 resize-none rounded-lg border border-[var(--border)] bg-[var(--background)] p-4 font-mono text-sm text-[var(--foreground)] outline-none focus:border-[var(--focus)]"
-              />
-              {validationMatches && sourceValidation?.errors.length !== 0 && (
-                <div
-                  role="alert"
-                  className="mt-3 grid gap-1 text-sm text-[var(--danger)]"
-                >
-                  {sourceValidation?.errors.map((error) => (
-                    <p key={error}>{error}</p>
-                  ))}
-                </div>
-              )}
-            </section>
+              </Card.Header>
+              <Card.Content className="flex min-h-0 flex-1 flex-col">
+                <TextArea
+                  aria-label="Configuration source YAML"
+                  value={draft ?? ""}
+                  onChange={(event) => changeDraft(event.target.value)}
+                  spellCheck={false}
+                  className="min-h-0 w-full flex-1 font-mono"
+                />
+                {validationMatches && sourceValidation?.errors.length !== 0 && (
+                  <div
+                    role="alert"
+                    className="mt-3 grid gap-1 text-sm text-[var(--danger)]"
+                  >
+                    {sourceValidation?.errors.map((error) => (
+                      <p key={error}>{error}</p>
+                    ))}
+                  </div>
+                )}
+              </Card.Content>
+            </Card>
           </div>
         </Tabs.Panel>
       </Tabs>

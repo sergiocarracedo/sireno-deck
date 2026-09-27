@@ -404,6 +404,18 @@ export const editorStateMessageSchema = baseServerMessage
     themes: z.array(
       z.object({ name: z.string(), active: z.boolean().optional() }).strict(),
     ),
+    themeVariants: z
+      .record(
+        z.string(),
+        z
+          .object({
+            background: z.string(),
+            border: z.string(),
+            foreground: z.string(),
+          })
+          .strict(),
+      )
+      .default({}),
     buttonSchemas: z
       .record(z.string(), z.record(z.string(), z.unknown()))
       .default({}),
@@ -465,7 +477,7 @@ export const editorAssetWriteMessageSchema = baseClientMessage
     requestId: z.string().min(1),
     revision: z.number().int().nonnegative(),
     filename: z.string().min(1).max(255),
-    data: z.string().min(1),
+    data: z.string().min(1).max(2_666_668),
   })
   .strict()
 

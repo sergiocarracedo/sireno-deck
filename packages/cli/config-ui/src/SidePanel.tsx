@@ -46,10 +46,10 @@ export const SidePanel = ({
   return (
     <nav
       data-testid="side-panel"
-      className={`flex shrink-0 flex-col border-r border-neutral-800 bg-[var(--background)] transition-[width] ${collapsed ? "w-16" : "w-64"}`}
+      className={`flex shrink-0 flex-col border-r border-separator bg-background transition-[width] ${collapsed ? "w-16" : "w-64"}`}
     >
       <div
-        className={`flex items-center border-b border-neutral-800 py-5 ${collapsed ? "justify-center px-2" : "gap-3 px-5"}`}
+        className={`flex items-center border-b border-separator py-5 ${collapsed ? "justify-center px-2" : "gap-3 px-5"}`}
       >
         <img
           src={logoUrl}
@@ -58,12 +58,8 @@ export const SidePanel = ({
         />
         {!collapsed && (
           <div className="min-w-0">
-            <div className="truncate font-mono text-sm font-semibold text-neutral-100">
-              sirenodeck
-            </div>
-            <div className="font-mono text-[10px] uppercase tracking-widest text-neutral-500">
-              UI
-            </div>
+            <div className="truncate text-sm font-semibold">sirenodeck</div>
+            <div className="text-xs text-muted">UI</div>
           </div>
         )}
       </div>
@@ -84,7 +80,7 @@ export const SidePanel = ({
               data-testid={`side-panel-${s.path}`}
               aria-current={active ? "page" : undefined}
               title={collapsed ? s.label : undefined}
-              className={`w-full justify-start rounded-full px-3 text-sm ${collapsed ? "justify-center px-0" : ""} ${active ? "" : "bg-transparent"}`}
+              className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
             >
               <s.icon size={17} aria-hidden="true" />
               {!collapsed && s.label}
@@ -93,7 +89,7 @@ export const SidePanel = ({
         })}
       </div>
       <div
-        className={`${collapsed ? "hidden" : "block"} border-t border-neutral-800 px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-neutral-500`}
+        className={`${collapsed ? "hidden" : "block"} border-t border-separator px-4 py-3 text-xs text-muted`}
       >
         v{VERSION}
       </div>

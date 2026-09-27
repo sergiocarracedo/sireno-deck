@@ -14,9 +14,28 @@ import {
   editorUndoMessageSchema,
   editorSourceValidationRequestMessageSchema,
   editorSourceValidationResultMessageSchema,
+  editorAssetWriteMessageSchema,
 } from "../protocol"
 
 describe("ws protocol v1", () => {
+  it("bounds uploaded asset payloads", () => {
+    const base = {
+      type: "editor-asset-write" as const,
+      requestId: "asset-1",
+      revision: 0,
+      filename: "icon.svg",
+    }
+    expect(
+      editorAssetWriteMessageSchema.safeParse({ ...base, data: "a" }).success,
+    ).toBe(true)
+    expect(
+      editorAssetWriteMessageSchema.safeParse({
+        ...base,
+        data: "a".repeat(2_666_669),
+      }).success,
+    ).toBe(false)
+  })
+
   it("hello requires version 1", () => {
     const ok = helloMessageSchema.safeParse({ type: "hello", version: 1 })
     expect(ok.success).toBe(true)

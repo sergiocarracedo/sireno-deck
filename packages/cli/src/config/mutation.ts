@@ -273,9 +273,21 @@ export const createConfigMutationService = ({
       } catch {
         throw new ConfigMutationError("Invalid asset data")
       }
+      if (bytes.length > 2_000_000)
+        throw new ConfigMutationError("SVG asset exceeds 2 MB")
+      if (!safeName.toLowerCase().endsWith(".svg"))
+        throw new ConfigMutationError("Only SVG assets are supported")
+      if (!/^\s*(?:<\?xml[^>]*>\s*)?<svg\b/i.test(bytes.toString("utf8")))
+        throw new ConfigMutationError("Invalid SVG asset")
       const assetDir = join(dirname(rootPath), "assets")
       mkdirSync(assetDir, { recursive: true })
-      writeFileSync(join(assetDir, safeName), bytes)
+      try {
+        writeFileSync(join(assetDir, safeName), bytes, { flag: "wx" })
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "EEXIST")
+          throw new ConfigMutationError(`Asset already exists: ${safeName}`)
+        throw error
+      }
     },
     apply: (mutation) =>
       run(() => {

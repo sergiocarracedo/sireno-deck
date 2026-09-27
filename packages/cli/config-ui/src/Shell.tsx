@@ -1,6 +1,7 @@
 import { SidePanel } from "./SidePanel"
 import { useState } from "react"
 import { PanelLeft, PanelLeftClose } from "lucide-react"
+import { Button } from "@heroui/react"
 
 export interface ShellProps {
   readonly activeSection: string
@@ -34,7 +35,7 @@ export const Shell = ({
     return (
       <main
         data-testid="config-ui-shell"
-        className="flex h-screen flex-1 overflow-hidden bg-neutral-900 text-neutral-100"
+        className="flex h-screen flex-1 overflow-hidden bg-background text-foreground"
       >
         {content}
       </main>
@@ -43,7 +44,7 @@ export const Shell = ({
   return (
     <div
       data-testid="config-ui-shell"
-      className="flex h-screen bg-neutral-900 text-neutral-100"
+      className="flex h-screen bg-background text-foreground"
     >
       <SidePanel
         activeSection={activeSection}
@@ -54,25 +55,26 @@ export const Shell = ({
         deviceSelector={deviceSelector}
       />
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="flex min-h-14 shrink-0 flex-wrap items-center gap-3 border-b border-[var(--border)] bg-[var(--background)] px-4 py-2">
-          <button
+        <header className="flex min-h-14 shrink-0 flex-wrap items-center gap-3 border-b border-separator bg-background px-4 py-2">
+          <Button
             type="button"
+            isIconOnly
+            variant="tertiary"
             aria-label={
               sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
             }
-            onClick={() => setSidebarCollapsed((value) => !value)}
-            className="rounded-lg p-2 text-[var(--muted)] hover:bg-[var(--surface-secondary)] hover:text-[var(--foreground)]"
+            onPress={() => setSidebarCollapsed((value) => !value)}
           >
             {sidebarCollapsed ? (
               <PanelLeft size={18} />
             ) : (
               <PanelLeftClose size={18} />
             )}
-          </button>
-          <h1 className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--foreground)]">
+          </Button>
+          <h1 className="min-w-0 flex-1 truncate text-sm font-semibold">
             {pageTitle}
           </h1>
-          <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs text-muted">
             <span className="whitespace-nowrap">
               ws:{" "}
               <strong
@@ -88,9 +90,15 @@ export const Shell = ({
             <span className="hidden truncate sm:inline" title={wsUrl}>
               ws://{wsUrl.replace(/^wss?:\/\//, "")}
             </span>
-            <span className="hidden truncate md:inline" title={frontendUrl}>
+            <a
+              href={frontendUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden truncate text-sky-400 hover:underline md:inline"
+              title={frontendUrl}
+            >
               fe: {frontendUrl}
-            </span>
+            </a>
           </div>
         </header>
         <div className="min-h-0 flex-1">{content}</div>

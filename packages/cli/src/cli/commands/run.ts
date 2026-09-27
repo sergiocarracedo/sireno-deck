@@ -61,7 +61,11 @@ import {
   formatCapabilityWarning,
   type SystemCapability,
 } from "@/system/requirements"
-import { copyThemeAssets, resolveActiveTheme } from "@/themes/loader"
+import {
+  copyThemeAssets,
+  readAndValidateManifest,
+  resolveActiveTheme,
+} from "@/themes/loader"
 import { resolveAddonCacheDir } from "@/util/cache-paths"
 import { probeGlobalPackageRoots } from "../package-manager"
 import { installPackage } from "./install"
@@ -837,6 +841,7 @@ const buildRuntime = (
         ...(typeof b.config === "object" && b.config !== null
           ? { config: b.config }
           : {}),
+        ...(b.icon !== undefined ? { icon: b.icon } : {}),
         ...(b.actions !== undefined ? { actions: b.actions } : {}),
         ...(b.variant !== undefined && b.variant.length > 0
           ? { variant: b.variant }
@@ -2177,6 +2182,23 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           name: theme.name,
           active: theme.name === currentLoadedConfig.theme.name,
         })),
+        themeVariants: (() => {
+          try {
+            const variants = readAndValidateManifest(
+              currentLoadedConfig.theme.manifestPath,
+            ).variants
+            return Object.fromEntries(
+              Object.entries(variants).map(
+                ([name, { background, border, foreground }]) => [
+                  name,
+                  { background, border, foreground },
+                ],
+              ),
+            )
+          } catch {
+            return {}
+          }
+        })(),
         buttonSchemas: serializeButtonSchemas(currentLoadedConfig.registry),
         surfaces: runtime!.getEditorSurfaces({
           keyCount: descriptor!.keyCount,

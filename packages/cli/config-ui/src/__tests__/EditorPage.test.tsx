@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
 import { DEVICE_MODELS } from "@sirenodeck/sirenodeck"
@@ -27,6 +27,10 @@ const state: EditorState = {
       type: "object",
       properties: { command: { type: "string" } },
     },
+  },
+  themeVariants: {
+    default: { background: "#222", border: "#444", foreground: "#fff" },
+    error: { background: "#f00", border: "#900", foreground: "#fff" },
   },
   canUndo: true,
 }
@@ -79,7 +83,10 @@ describe("EditorPage", () => {
     expect(JSON.parse(ws.sent[0] ?? "{}")).toEqual({
       type: "editor-state-request",
     })
-    expect(screen.getByText("Visual editor")).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: "Edition panel" }),
+    ).toBeInTheDocument()
+    expect(screen.queryByText("YAML sources")).not.toBeInTheDocument()
   })
 
   it("stages a copied button before adding it", () => {
@@ -122,6 +129,16 @@ describe("EditorPage", () => {
     fireEvent.change(screen.getByLabelText("Command"), {
       target: { value: "whoami" },
     })
+    fireEvent.click(screen.getByRole("button", { name: "Choose icon" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Emoji" }))
+    fireEvent.change(screen.getByLabelText("Search emoji"), {
+      target: { value: "sparkling_heart" },
+    })
+    expect(
+      screen.queryByRole("button", { name: "grinning" }),
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "sparkling_heart" }))
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
     const validation = JSON.parse(ws.sent.at(-1) ?? "{}") as {
       requestId: string
     }
@@ -139,18 +156,114 @@ describe("EditorPage", () => {
         device={DEVICE_MODELS.find((model) => model.id === "mk2")}
       />,
     )
-    fireEvent.click(screen.getByRole("button", { name: "Save button config" }))
+    fireEvent.click(screen.getByRole("button", { name: "Save button" }))
 
-    const message = JSON.parse(ws.sent.at(-1) ?? "{}") as { mutation?: unknown }
+    const message = JSON.parse(ws.sent.at(-1) ?? "{}") as {
+      mutation?: unknown
+    }
     expect(message.mutation).toEqual({
       kind: "update",
       deckId: "main",
       index: 0,
-      button: { type: "core:action", config: { command: "whoami" } },
+      button: {
+        type: "core:action",
+        config: { command: "whoami" },
+        icon: "💖",
+      },
     })
   })
 
-  it("switches the palette between addon types and themes", () => {
+  it("writes an uploaded SVG before persisting the combined button update", async () => {
+    const ws = client()
+    const view = render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    const validationRequest = JSON.parse(ws.sent.at(-1) ?? "{}") as {
+      requestId: string
+    }
+    view.rerender(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        validation={{
+          requestId: validationRequest.requestId,
+          valid: true,
+          errors: [],
+        }}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Choose icon" }))
+    fireEvent.click(screen.getByRole("tab", { name: "SVG upload" }))
+    fireEvent.change(screen.getByLabelText("Upload SVG"), {
+      target: {
+        files: [
+          new File(
+            ['<svg xmlns="http://www.w3.org/2000/svg"></svg>'],
+            "badge.svg",
+            { type: "image/svg+xml" },
+          ),
+        ],
+      },
+    })
+    await waitFor(() =>
+      expect(screen.getByAltText("SVG preview")).toBeInTheDocument(),
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
+    fireEvent.click(screen.getByRole("button", { name: "Save button" }))
+
+    const assetWrite = JSON.parse(ws.sent.at(-1) ?? "{}") as {
+      type: string
+      requestId: string
+      filename: string
+    }
+    expect(assetWrite.type).toBe("editor-asset-write")
+    expect(assetWrite.filename).toMatch(/badge\.svg$/)
+    expect(
+      ws.sent.some((message) => JSON.parse(message).type === "editor-mutate"),
+    ).toBe(false)
+
+    view.rerender(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={{ requestId: assetWrite.requestId, ok: true }}
+        validation={{
+          requestId: validationRequest.requestId,
+          valid: true,
+          errors: [],
+        }}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    await waitFor(() =>
+      expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toMatchObject({
+        kind: "update",
+        button: { icon: `./assets/${assetWrite.filename}` },
+      }),
+    )
+    const writeIndex = ws.sent.findIndex(
+      (message) => JSON.parse(message).requestId === assetWrite.requestId,
+    )
+    const mutationIndex = ws.sent.findIndex(
+      (message) => JSON.parse(message).type === "editor-mutate",
+    )
+    expect(writeIndex).toBeGreaterThanOrEqual(0)
+    expect(mutationIndex).toBeGreaterThan(writeIndex)
+  })
+
+  it("reveals button types only when creating a button", () => {
     render(
       <EditorPage
         wsClient={client()}
@@ -165,18 +278,12 @@ describe("EditorPage", () => {
       "true",
     )
     expect(
-      screen.getByRole("button", { name: "test-addon:action" }),
-    ).toBeInTheDocument()
-    fireEvent.click(screen.getByRole("tab", { name: "Themes" }))
-
-    expect(screen.getByRole("tab", { name: "Themes" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    )
-    expect(screen.getByText("default")).toBeInTheDocument()
-    expect(
       screen.queryByRole("button", { name: "test-addon:action" }),
     ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "New button" }))
+    expect(
+      screen.getByRole("button", { name: "test-addon:action" }),
+    ).toBeInTheDocument()
   })
 
   it("targets generated deck overrides with the addon owner", () => {
@@ -192,7 +299,7 @@ describe("EditorPage", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Decks" }))
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Edit override for test-addon:generated",
+        name: "test-addon:generated",
       }),
     )
 
@@ -261,6 +368,7 @@ describe("EditorPage", () => {
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 4" }))
     fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.click(screen.getByRole("button", { name: "New button" }))
     fireEvent.click(screen.getByRole("button", { name: "test-addon:action" }))
 
     expect(
@@ -274,36 +382,25 @@ describe("EditorPage", () => {
   it("renders deck fields and dispatches an immutable-id deck update", () => {
     const ws = client()
     render(<EditorPage wsClient={ws} state={state} result={null} />)
-    fireEvent.change(screen.getByLabelText("Label"), {
+    fireEvent.click(screen.getByRole("tab", { name: "Decks" }))
+    fireEvent.change(screen.getByLabelText("Deck name"), {
       target: { value: "Updated deck" },
-    })
-    fireEvent.change(screen.getByLabelText("Columns"), {
-      target: { value: "4" },
-    })
-    fireEvent.change(screen.getByLabelText("Rows"), {
-      target: { value: "2" },
     })
     fireEvent.click(
       screen.getAllByRole("button", { name: "Save deck" }).at(-1)!,
     )
 
-    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toMatchObject({
       kind: "update-deck",
       deckId: "main",
-      deck: {
-        name: "Updated deck",
-        columns: 4,
-        rows: 2,
-        buttons: state.config.decks.main.buttons,
-      },
+      patch: { name: "Updated deck" },
     })
   })
 
-  it("dispatches top-level button fields without changing its position", () => {
-    const ws = client()
+  it("shows the position selector for the selected button", () => {
     render(
       <EditorPage
-        wsClient={ws}
+        wsClient={client()}
         state={state}
         result={null}
         frontendUrl="http://127.0.0.1:5180"
@@ -312,25 +409,10 @@ describe("EditorPage", () => {
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
     fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
-    fireEvent.change(screen.getByLabelText("Label"), {
-      target: { value: "Run command" },
-    })
-    fireEvent.change(screen.getByLabelText("Color"), {
-      target: { value: "green" },
-    })
-    fireEvent.click(screen.getByRole("button", { name: "Save button" }))
-
-    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
-      kind: "update",
-      deckId: "main",
-      index: 0,
-      button: {
-        type: "core:action",
-        config: { command: "date" },
-        label: "Run command",
-        buttonColor: "green",
-      },
-    })
+    expect(screen.getByRole("button", { name: "Position 0" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    )
   })
 
   it("keeps generated buttons read-only", () => {
@@ -355,10 +437,8 @@ describe("EditorPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
     fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
 
-    expect(screen.getByLabelText("Label")).toBeDisabled()
-    expect(screen.getByRole("button", { name: "Save button" })).toBeDisabled()
     expect(
-      screen.getByText("Generated buttons are owned by their addon."),
-    ).toBeInTheDocument()
+      screen.queryByRole("button", { name: "Save button" }),
+    ).not.toBeInTheDocument()
   })
 })

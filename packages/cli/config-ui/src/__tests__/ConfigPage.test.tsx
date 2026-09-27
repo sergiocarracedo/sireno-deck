@@ -31,4 +31,30 @@ describe("ConfigPage", () => {
       expect.stringContaining("editor-source-validation-request"),
     )
   })
+
+  it("places theme selection beside the view tabs", () => {
+    const ws = wsClient()
+    render(
+      <ConfigPage
+        editor={<div>Visual editor</div>}
+        wsClient={ws}
+        editorState={{
+          revision: 3,
+          config: { theme: "default" },
+          sources: [],
+          themes: [{ name: "default" }, { name: "midnight" }],
+          canUndo: false,
+        }}
+      />,
+    )
+
+    fireEvent.click(screen.getByLabelText("Theme"))
+    fireEvent.click(screen.getByRole("option", { name: "midnight" }))
+
+    expect(JSON.parse(ws.send.mock.calls[0][0])).toMatchObject({
+      type: "editor-mutate",
+      revision: 3,
+      mutation: { kind: "set-theme", theme: "midnight" },
+    })
+  })
 })

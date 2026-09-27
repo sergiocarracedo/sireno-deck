@@ -81,4 +81,26 @@ describe("buildDeckConfigMessage — deriveLabel for core:action", () => {
     )
     expect(msg.surfaces[deck.id]!.buttons[0]!.label).toBeUndefined()
   })
+
+  it("passes the top-level icon through as the rendered config icon", () => {
+    const deck = {
+      ...makeDeck({ label: "Icon" }),
+      buttons: [
+        { id: "0", type: "core:action", config: { label: "Icon" }, icon: "🔥" },
+      ],
+    }
+    const msg = buildDeckConfigMessage(
+      deck,
+      new Map(),
+      {},
+      undefined,
+      15,
+      false,
+      () => undefined,
+    )
+    expect(msg.surfaces[deck.id]!.buttons[0]!.config).toMatchObject({
+      icon: "🔥",
+      label: "Icon",
+    })
+  })
 })

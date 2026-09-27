@@ -32,6 +32,15 @@ export interface DeckFrameProps {
     position: number,
     action: "edit" | "copy" | "duplicate" | "up" | "down" | "delete",
   ) => void
+  readonly highlightedKey?: number | null
+  readonly previewConfig?: {
+    index: number
+    position?: number
+    type?: string
+    config: Record<string, unknown>
+    appearance?: { icon: string; variant: string }
+    assets?: Array<{ filename: string; preview: string }>
+  } | null
   readonly fitToContainer?: boolean
   // ponytail: lets the parent trigger `iframe.contentWindow.location.reload()`
   // on `iframe-reload` WS messages without giving the parent a real DOM ref
@@ -48,6 +57,8 @@ export const DeckFrame = ({
   onGesture,
   onDropPosition,
   onKeyAction,
+  highlightedKey,
+  previewConfig = null,
   fitToContainer = false,
   onIframeRef,
 }: DeckFrameProps): React.ReactElement => {
@@ -60,6 +71,7 @@ export const DeckFrame = ({
     "loading" | "loaded" | "error"
   >("loading")
   const [reloadNonce, setReloadNonce] = useState(0)
+  const previousPreview = useRef<typeof previewConfig>(null)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
   const frameRef = useRef<HTMLDivElement | null>(null)
   const [scale, setScale] = useState(1)
@@ -143,6 +155,19 @@ export const DeckFrame = ({
     iframeRef.current = el
     onIframeRef?.(el)
   }
+
+  useEffect(() => {
+    if (iframeState !== "loaded") return
+    if (previewConfig === null) {
+      if (previousPreview.current !== null) setReloadNonce((n) => n + 1)
+    } else {
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: "editor-preview-config", deckId, ...previewConfig },
+        new URL(resolvedFrontendUrl).origin,
+      )
+    }
+    previousPreview.current = previewConfig
+  }, [deckId, iframeState, previewConfig, resolvedFrontendUrl])
 
   const resolvedGap = gap ? DECK_GAP_PX : 0
   const { width: frameWidth, height: frameHeight } = deckDimensions(
@@ -325,7 +350,9 @@ export const DeckFrame = ({
                     "hover:from-black/20 hover:via-black/0 hover:to-white/10 hover:border-white/25",
                     isPressed
                       ? "from-white/60 via-white/30 to-white/10 border-white/60 shadow-[0_0_18px_rgba(255,255,255,0.5)] scale-[0.96]"
-                      : "",
+                      : highlightedKey === i
+                        ? "outline outline-2 outline-offset-2 outline-primary"
+                        : "",
                   ].join(" ")}
                 />
                 {editorControls}
