@@ -131,6 +131,8 @@ describe("DeckFrame (emulator)", () => {
       const { getByTestId, rerender } = render(<Wrapper />)
       const key = getByTestId("deck-key-3")
 
+      expect(key).toHaveClass("touch-none")
+
       fireEvent.pointerDown(key)
       // parent re-renders between down and up — the detector must survive
       rerender(<Wrapper />)

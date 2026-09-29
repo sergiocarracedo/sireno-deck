@@ -321,7 +321,7 @@ export const printDaemonUrl = async (
       const isTty = Boolean(process.stdout.isTTY)
       if (isTty) {
         write("\n  Emulator (LAN):\n")
-        for (const addr of state.addresses) {
+        for (const addr of state.addresses.slice(0, 1)) {
           const url = buildUrl(addr, true)
           const qr = await qrcode.toString(url, {
             type: "terminal",
@@ -330,8 +330,8 @@ export const printDaemonUrl = async (
           write(`\n${qr}  ${url}\n`)
         }
       } else {
-        for (const addr of state.addresses) {
-          write(`  ${addr}: ${buildUrl(addr, false)}\n`)
+        for (const addr of state.addresses.slice(0, 1)) {
+          write(`  ${addr}: ${buildUrl(addr, true)}\n`)
         }
       }
     }

@@ -5,7 +5,7 @@
   "bugs": {
     "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
   },
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sergiocarracedo/sireno-deck.git",
@@ -15,7 +15,8 @@
     "sirenodeck.json",
     "components.css",
     "components",
-    "assets"
+    "assets",
+    "LICENSE"
   ],
   "type": "module",
   "publishConfig": {

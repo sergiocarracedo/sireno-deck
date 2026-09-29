@@ -5,6 +5,6 @@ export const PACKAGE_NAME = "@sirenodeck/sirenodeck"
  * a string that is not a runnable command. Keep the two separate.
  */
 export const BIN_NAME = "sirenodeck"
-export const VERSION = "0.1.0"
+export const VERSION = "0.2.0"
 export const SIRENO_ADDON_API_VERSION = 3
 export const PROTOCOL_VERSION = 3

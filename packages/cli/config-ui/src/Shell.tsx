@@ -35,7 +35,7 @@ export const Shell = ({
     return (
       <main
         data-testid="config-ui-shell"
-        className="flex h-screen flex-1 overflow-hidden bg-background text-foreground"
+        className="flex h-[100dvh] w-full flex-1 overflow-hidden bg-background text-foreground"
       >
         {content}
       </main>

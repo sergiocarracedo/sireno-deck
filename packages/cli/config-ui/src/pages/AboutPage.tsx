@@ -32,7 +32,16 @@ export const AboutPage = (): React.ReactElement => (
       </div>
       <div className="rounded border border-neutral-800 bg-neutral-950 p-4">
         <dt className="text-neutral-500">License</dt>
-        <dd className="mt-1 text-neutral-100">MIT</dd>
+        <dd className="mt-1">
+          <a
+            className="text-sky-400 hover:underline"
+            href="https://www.gnu.org/licenses/gpl-3.0.html"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GNU GPL version 3 or later
+          </a>
+        </dd>
       </div>
       <div className="rounded border border-neutral-800 bg-neutral-950 p-4">
         <dt className="text-neutral-500">Repository</dt>
@@ -48,5 +57,9 @@ export const AboutPage = (): React.ReactElement => (
         </dd>
       </div>
     </dl>
+    <p className="text-xs leading-5 text-neutral-500">
+      This program comes with no warranty. You may redistribute and modify it
+      under the terms of the GNU General Public License.
+    </p>
   </section>
 )

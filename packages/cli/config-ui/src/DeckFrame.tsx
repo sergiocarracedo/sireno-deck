@@ -347,6 +347,7 @@ export const DeckFrame = ({
                     "bg-gradient-to-br from-black/40 via-black/20 to-white/5",
                     "border-white/10",
                     "pointer-events-auto transition-all duration-200",
+                    "touch-none",
                     "hover:from-black/20 hover:via-black/0 hover:to-white/10 hover:border-white/25",
                     isPressed
                       ? "from-white/60 via-white/30 to-white/10 border-white/60 shadow-[0_0_18px_rgba(255,255,255,0.5)] scale-[0.96]"
