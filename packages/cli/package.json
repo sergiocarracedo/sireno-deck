@@ -1,11 +1,11 @@
 {
   "name": "@sirenodeck/sirenodeck",
-  "version": "0.1.1-alpha.0",
+  "version": "0.2.0",
   "description": "CLI for managing Elgato Stream Deck devices via a config-driven deck system.",
   "bugs": {
     "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
   },
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sergiocarracedo/sireno-deck.git",

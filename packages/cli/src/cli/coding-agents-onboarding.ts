@@ -7,6 +7,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from "node:fs"
+import { execFileSync } from "node:child_process"
 import { homedir } from "node:os"
 import { join } from "node:path"
 
@@ -24,6 +25,20 @@ import { applyEdits, modify, parse, type ParseError } from "jsonc-parser"
 const PLUGIN_FILE = "sirenodeck-agent-state.js"
 const PLUGIN_SPEC = `./plugins/${PLUGIN_FILE}`
 const PLUGIN_MARKER = "SIRENODECK_INTEGRATION_ID=coding-agents-v2"
+const PLUGIN_API_MARKER = "SIRENODECK_OPENCODE_PLUGIN_API="
+
+export type OpenCodeMajorVersion = 1 | 2
+
+export const parseOpenCodeMajorVersion = (
+  output: string,
+): OpenCodeMajorVersion | null => {
+  const match = output.match(
+    /(?:^|\s|v)(\d+)\.\d+\.\d+(?:[-+][\w.-]+)?(?:\s|$)/i,
+  )
+  if (!match) return null
+  const major = Number(match[1])
+  return major === 1 || major === 2 ? major : null
+}
 
 const opencodeConfigDir = (): string =>
   process.env["OPENCODE_CONFIG_DIR"] ??
@@ -47,11 +62,30 @@ export const isCodingAgentsConfigured = (configPath: string): boolean => {
   }
 }
 
-export const isOpenCodePluginInstalled = (): boolean => {
+export const isOpenCodePluginInstalled = (
+  majorVersion?: OpenCodeMajorVersion,
+): boolean => {
   try {
-    return readFileSync(opencodePluginPath(), "utf8").includes(PLUGIN_MARKER)
+    const source = readFileSync(opencodePluginPath(), "utf8")
+    return (
+      source.includes(PLUGIN_MARKER) &&
+      (majorVersion === undefined ||
+        source.includes(`${PLUGIN_API_MARKER}${majorVersion}`))
+    )
   } catch {
     return false
+  }
+}
+
+export const detectOpenCodeMajorVersion = (): OpenCodeMajorVersion | null => {
+  try {
+    const output = execFileSync("opencode", ["--version"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+    return parseOpenCodeMajorVersion(output)
+  } catch {
+    return null
   }
 }
 
@@ -77,40 +111,68 @@ const readOpenCodeConfig = (): {
 const pluginSpec = (entry: unknown): unknown =>
   Array.isArray(entry) ? entry[0] : entry
 
-export const isOpenCodePluginEnabled = (): boolean => {
+export const isOpenCodePluginEnabled = (
+  majorVersion?: OpenCodeMajorVersion,
+): boolean => {
   const config = readOpenCodeConfig()
-  const plugins = config?.config["plugin"]
-  return (
-    Array.isArray(plugins) &&
-    plugins.some((entry) => pluginSpec(entry) === PLUGIN_SPEC)
+  const plugins =
+    majorVersion === undefined
+      ? [config?.config["plugin"], config?.config["plugins"]]
+      : [config?.config[majorVersion === 1 ? "plugin" : "plugins"]]
+  return plugins.some(
+    (entries) =>
+      Array.isArray(entries) &&
+      entries.some((entry) => pluginSpec(entry) === PLUGIN_SPEC),
   )
 }
 
-export const enableOpenCodePlugin = (): boolean => {
+export const enableOpenCodePlugin = (
+  majorVersion: OpenCodeMajorVersion,
+): boolean => {
   const config = readOpenCodeConfig()
   if (config === null) return false
-  const plugins = Array.isArray(config.config["plugin"])
-    ? config.config["plugin"]
+  const key = majorVersion === 1 ? "plugin" : "plugins"
+  const otherKey = majorVersion === 1 ? "plugins" : "plugin"
+  const plugins = Array.isArray(config.config[key]) ? config.config[key] : []
+  const otherPlugins = Array.isArray(config.config[otherKey])
+    ? config.config[otherKey]
     : []
-  if (!plugins.some((entry) => pluginSpec(entry) === PLUGIN_SPEC)) {
-    plugins.push(PLUGIN_SPEC)
-    const updated = applyEdits(
-      config.text,
-      modify(config.text, ["plugin"], plugins, {
+  const hasPlugin = (entries: unknown[]): boolean =>
+    entries.some((entry) => pluginSpec(entry) === PLUGIN_SPEC)
+  const updatedKeyPlugins = hasPlugin(plugins)
+    ? plugins
+    : [...plugins, PLUGIN_SPEC]
+  const updatedOtherPlugins = hasPlugin(otherPlugins)
+    ? otherPlugins.filter((entry) => pluginSpec(entry) !== PLUGIN_SPEC)
+    : otherPlugins
+
+  let updated = config.text
+  if (!hasPlugin(plugins)) {
+    updated = applyEdits(
+      updated,
+      modify(updated, [key], updatedKeyPlugins, {
         formattingOptions: { insertSpaces: true, tabSize: 2 },
       }),
     )
+  }
+  if (updatedOtherPlugins !== otherPlugins) {
+    updated = applyEdits(
+      updated,
+      modify(updated, [otherKey], updatedOtherPlugins, {
+        formattingOptions: { insertSpaces: true, tabSize: 2 },
+      }),
+    )
+  }
+  if (updated !== config.text) {
     const path = opencodeConfigPath()
     mkdirSync(opencodeConfigDir(), { recursive: true, mode: 0o700 })
-    writeFileSync(path, updated, {
-      encoding: "utf8",
-      mode: 0o600,
-    })
+    writeFileSync(path, updated, { encoding: "utf8", mode: 0o600 })
   }
   return true
 }
 
-export const codingAgentsPluginSource = `// ${PLUGIN_MARKER}
+export const codingAgentsPluginSourceV1 = `// ${PLUGIN_MARKER}
+// ${PLUGIN_API_MARKER}1
 // Managed by Sireno Deck. Re-running setup replaces this file.
 import { mkdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -151,13 +213,82 @@ const heartbeat = setInterval(() => write(currentState, currentSessionID), 5000)
 process.once("exit", () => clearInterval(heartbeat));
 `
 
-export const installOpenCodePlugin = (): string => {
+export const codingAgentsPluginSourceV2 = `// ${PLUGIN_MARKER}
+// ${PLUGIN_API_MARKER}2
+// Managed by Sireno Deck. Re-running setup replaces this file.
+import { Plugin } from "@opencode/plugin";
+import { mkdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+
+const dir = join(process.env.XDG_STATE_HOME || join(homedir(), ".local", "state"), "sirenodeck", "coding-agents");
+const file = join(dir, "opencode-" + process.pid + ".json");
+
+export default Plugin.define({
+  id: "sirenodeck.agent-state",
+  setup(ctx) {
+    let currentState = "idle";
+    let currentSessionID;
+    const write = (state, sessionID) => {
+      currentState = state;
+      if (sessionID) currentSessionID = sessionID;
+      mkdirSync(dir, { recursive: true, mode: 0o700 });
+      const tmp = file + ".tmp";
+      writeFileSync(tmp, JSON.stringify({ pid: process.pid, cwd: ctx.location.directory, state: currentState, sessionID: currentSessionID, updatedAt: Date.now() }), { mode: 0o600 });
+      renameSync(tmp, file);
+    };
+    const stateFromEvent = (event) => {
+      const properties = event?.properties || {};
+      const sessionID = properties.sessionID;
+      switch (event?.type) {
+        case "session.status":
+          write(properties.status?.type === "idle" ? "idle" : properties.status?.type === "retry" ? "waiting" : "running", sessionID);
+          break;
+        case "session.idle": write("idle", sessionID); break;
+        case "permission.asked":
+        case "question.asked": write("waiting_for_human", sessionID); break;
+        case "session.error": write("error", sessionID); break;
+      }
+    };
+
+    write("idle");
+    const controller = new AbortController();
+    void (async () => {
+      try {
+        for await (const event of ctx.event.subscribe({ signal: controller.signal })) {
+          stateFromEvent(event);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) console.error("[sirenodeck] OpenCode event stream stopped", error);
+      }
+    })();
+    const heartbeat = setInterval(() => write(currentState, currentSessionID), 5000);
+
+    return () => {
+      controller.abort();
+      clearInterval(heartbeat);
+      try { unlinkSync(file); } catch {}
+    };
+  },
+});
+`
+
+// Keep the original named export available to callers that used it directly.
+export const codingAgentsPluginSource = codingAgentsPluginSourceV1
+
+export const installOpenCodePlugin = (
+  majorVersion = detectOpenCodeMajorVersion(),
+): string | null => {
+  if (majorVersion === null) return null
   const path = opencodePluginPath()
   mkdirSync(pluginDir(), { recursive: true, mode: 0o700 })
-  writeFileSync(path, codingAgentsPluginSource, {
-    encoding: "utf8",
-    mode: 0o600,
-  })
+  writeFileSync(
+    path,
+    majorVersion === 1
+      ? codingAgentsPluginSourceV1
+      : codingAgentsPluginSourceV2,
+    { encoding: "utf8", mode: 0o600 },
+  )
   return path
 }
 
@@ -378,10 +509,14 @@ export const onboardCodingAgents = async (
   options: { readonly nonInteractive?: boolean; readonly yes?: boolean } = {},
 ): Promise<boolean> => {
   if (!isCodingAgentsConfigured(configPath)) return false
+  const openCodeMajorVersion = detectOpenCodeMajorVersion()
   // ponytail: this used to bail as soon as OpenCode was set up, which meant a
   // user who had already onboarded OpenCode was never offered the Claude Code
   // hooks at all. The two harnesses are independent; each decides for itself.
-  const openCodeDone = isOpenCodePluginInstalled() && isOpenCodePluginEnabled()
+  const openCodeDone =
+    openCodeMajorVersion !== null &&
+    isOpenCodePluginInstalled(openCodeMajorVersion) &&
+    isOpenCodePluginEnabled(openCodeMajorVersion)
   const claudeDone = isClaudeHookInstalled() && isClaudeHookEnabled()
   if (openCodeDone && claudeDone) return false
   // ponytail: with no TTY nobody can answer — @clack's confirm() renders the
@@ -410,18 +545,30 @@ export const onboardCodingAgents = async (
             initialValue: true,
           })
     if (!isCancel(answer) && answer) {
-      installOpenCodePlugin()
-      if (enableOpenCodePlugin()) {
+      if (openCodeMajorVersion === null) {
         note(
-          `Installed and enabled ${opencodePluginPath()}. Restart OpenCode to activate it.`,
+          "Could not detect a supported OpenCode version. Make sure `opencode --version` works, then run setup again. No plugin files were changed.",
           "OpenCode integration",
         )
-        changed = true
       } else {
-        note(
-          "Could not update OpenCode's opencode.json because it is invalid JSON.",
-          "OpenCode integration",
-        )
+        const installedPath = installOpenCodePlugin(openCodeMajorVersion)
+        if (
+          installedPath !== null &&
+          enableOpenCodePlugin(openCodeMajorVersion)
+        ) {
+          note(
+            `Installed the OpenCode ${openCodeMajorVersion} plugin at ${installedPath} and enabled it. Restart OpenCode to activate it.`,
+            "OpenCode integration",
+          )
+          changed = true
+        } else {
+          note(
+            installedPath === null
+              ? "Could not detect a supported OpenCode version. No plugin files were changed."
+              : "Could not update OpenCode's opencode.json because it is invalid JSON.",
+            "OpenCode integration",
+          )
+        }
       }
     }
   }

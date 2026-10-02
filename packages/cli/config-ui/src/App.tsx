@@ -348,11 +348,14 @@ export const App = ({
     const computeDeckScale = () => {
       const el = deckContainerRef.current
       if (el === null || typeof window === "undefined") return
-      // Use the container's actual size (not window.innerWidth/Height) so the
-      // deck scales to the visible viewport, excluding mobile browser chrome.
-      const padding = 32
-      const containerW = el.clientWidth - padding
-      const containerH = el.clientHeight - padding
+      // Measure the padded content box. In deck-only mode this also respects
+      // the safe-area space reserved for the fullscreen control.
+      const style = window.getComputedStyle(el)
+      const px = (value: string): number => Number.parseFloat(value) || 0
+      const containerW =
+        el.clientWidth - px(style.paddingLeft) - px(style.paddingRight)
+      const containerH =
+        el.clientHeight - px(style.paddingTop) - px(style.paddingBottom)
       if (containerW <= 0 || containerH <= 0) return
       const rows = Math.ceil(deviceModel.keyCount / deviceModel.columns)
       const { width, height } = deckDimensions(
@@ -537,39 +540,34 @@ export const App = ({
           {deckOnly ? (
             <div
               ref={deckContainerRef}
-              className="flex h-full w-full items-center justify-center overflow-hidden p-4"
+              data-testid="deck-only-view"
+              className="flex h-full w-full items-center justify-center overflow-hidden px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-[calc(env(safe-area-inset-bottom)+1rem)]"
             >
-              {activeSection === "device" ? (
-                deckId === "" ? (
-                  <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
-                    Awaiting deck-config…
-                  </p>
-                ) : (
-                  // ponytail: wrap the fixed-size deck so flexbox can't shrink
-                  // it before the scale transform is applied; without shrink-0
-                  // the deck is squeezed to the container width and then scaled
-                  // again, making it far smaller than the intended fit.
-                  <div
-                    className="shrink-0"
-                    style={{
-                      transform: `scale(${deckScale})`,
-                      transformOrigin: "center",
-                    }}
-                  >
-                    <DeckFrame
-                      frontendUrl={ENV_FRONTEND_URL}
-                      device={deviceModel}
-                      deckId={deckId}
-                      token={token}
-                      onGesture={sendButtonAction}
-                      onIframeRef={(el) => {
-                        iframeRef.current = el
-                      }}
-                    />
-                  </div>
-                )
+              {deckId === "" ? (
+                <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
+                  Awaiting deck-config…
+                </p>
               ) : (
-                renderActive()
+                // ponytail: keep the fixed-size deck from flex-shrinking
+                // before applying the scale calculated for the mobile viewport.
+                <div
+                  className="shrink-0"
+                  style={{
+                    transform: `scale(${deckScale})`,
+                    transformOrigin: "center",
+                  }}
+                >
+                  <DeckFrame
+                    frontendUrl={ENV_FRONTEND_URL}
+                    device={deviceModel}
+                    deckId={deckId}
+                    token={token}
+                    onGesture={sendButtonAction}
+                    onIframeRef={(el) => {
+                      iframeRef.current = el
+                    }}
+                  />
+                </div>
               )}
             </div>
           ) : (
@@ -666,7 +664,7 @@ export const App = ({
               onClick={toggleFullscreen}
               aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
               data-testid="fullscreen-toggle"
-              className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-neutral-800/80 text-[10px] font-medium uppercase tracking-wide text-neutral-100 shadow-lg backdrop-blur hover:bg-neutral-700/80"
+              className="fixed top-[calc(env(safe-area-inset-top)+0.75rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-neutral-800/80 text-[10px] font-medium uppercase tracking-wide text-neutral-100 shadow-lg backdrop-blur hover:bg-neutral-700/80"
             >
               {isFullscreen ? "Exit" : "Full"}
             </button>

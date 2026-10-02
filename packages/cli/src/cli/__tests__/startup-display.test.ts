@@ -195,16 +195,49 @@ describe("printDaemonUrl", () => {
       value: false,
       configurable: true,
     })
-    await printDaemonUrl(
-      makeState({ remote: true, addresses: ["192.168.1.10"] }),
-      output,
-    )
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: original,
-      configurable: true,
-    })
+    try {
+      await printDaemonUrl(
+        makeState({ remote: true, addresses: ["192.168.1.10"] }),
+        output,
+      )
+    } finally {
+      Object.defineProperty(process.stdout, "isTTY", {
+        value: original,
+        configurable: true,
+      })
+    }
     const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).toContain("192.168.1.10")
+    expect(text).toContain("deckOnly=1")
+  })
+
+  it("prints a single device-only QR for the selected adapter", async () => {
+    const output = vi.fn()
+    const original = process.stdout.isTTY
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: true,
+      configurable: true,
+    })
+    try {
+      await printDaemonUrl(
+        makeState({
+          remote: true,
+          addresses: ["192.168.1.10", "10.0.0.2"],
+        }),
+        output,
+      )
+    } finally {
+      Object.defineProperty(process.stdout, "isTTY", {
+        value: original,
+        configurable: true,
+      })
+    }
+
+    const text = output.mock.calls.map((call: string[]) => call[0]!).join("")
+    expect(text).toContain("192.168.1.10")
+    expect(text).toContain("deckOnly=1")
+    expect(text).not.toContain("10.0.0.2")
+    expect(text.match(/Emulator \(LAN\):/g)).toHaveLength(1)
   })
 
   it("omits LAN section when remote is false (emulator mode)", async () => {
@@ -214,14 +247,17 @@ describe("printDaemonUrl", () => {
       value: false,
       configurable: true,
     })
-    await printDaemonUrl(
-      makeState({ remote: false, addresses: ["192.168.1.10"] }),
-      output,
-    )
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: original,
-      configurable: true,
-    })
+    try {
+      await printDaemonUrl(
+        makeState({ remote: false, addresses: ["192.168.1.10"] }),
+        output,
+      )
+    } finally {
+      Object.defineProperty(process.stdout, "isTTY", {
+        value: original,
+        configurable: true,
+      })
+    }
     const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).not.toContain("192.168.1.10")
     expect(text).not.toContain("Emulator (LAN)")
@@ -234,16 +270,20 @@ describe("printDaemonUrl", () => {
       value: false,
       configurable: true,
     })
-    await printDaemonUrl(
-      makeState({ remote: true, addresses: ["192.168.1.10"] }),
-      output,
-    )
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: original,
-      configurable: true,
-    })
+    try {
+      await printDaemonUrl(
+        makeState({ remote: true, addresses: ["192.168.1.10"] }),
+        output,
+      )
+    } finally {
+      Object.defineProperty(process.stdout, "isTTY", {
+        value: original,
+        configurable: true,
+      })
+    }
     const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
     expect(text).toContain("192.168.1.10")
+    expect(text).toContain("deckOnly=1")
   })
 })
 

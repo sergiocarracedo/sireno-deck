@@ -2,7 +2,6 @@ import logoUrl from "../../src/assets/logo72x72.png"
 import { VERSION } from "../../src/version"
 import { Button } from "@heroui/react"
 import {
-  Blocks,
   CircleHelp,
   FileText,
   LayoutDashboard,
@@ -23,7 +22,6 @@ const SECTIONS = [
     icon: FileText,
     devOnly: true,
   },
-  { path: "decks", label: "Decks", icon: Blocks, devOnly: true },
 ] as const
 
 export interface SidePanelProps {

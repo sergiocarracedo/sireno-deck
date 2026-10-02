@@ -213,7 +213,7 @@ Subhead: `Side-by-side, so you don't have to take our word for it.`
   - **Resources** — Docs · Guides · Changelog · GitHub
   - **Community** — Discord · Issues · Discussions
   - **Legal** — License · Privacy · Trademarks
-- Bottom bar: full logo lockup (`logoFull.png`, white-on-slate) on the left, copyright `© 2026 Sireno Deck — MIT` in the center, and two small compliance tags on the right: `MIT licensed` and `Linux-first`
+- Bottom bar: full logo lockup (`logoFull.png`, white-on-slate) on the left, copyright `© 2026 Sireno Deck — GPL-3.0-or-later` in the center, and compliance tags on the right including `GPL-3.0-or-later` and `Linux-first`
 - Tiny red fin mark watermark in the bottom-right corner
 
 ---
