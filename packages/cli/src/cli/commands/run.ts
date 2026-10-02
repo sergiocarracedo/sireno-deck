@@ -43,6 +43,7 @@ import {
   type Store,
 } from "@/deck"
 import { paginateDeck } from "@/deck/paginate-deck"
+import { injectConfigUiButton } from "@/deck/inject-config-ui-button"
 import { positionButtons } from "@/deck/position-buttons"
 import { subscribeNavigateDeck } from "@/deck/runtime-subscriptions"
 import {
@@ -51,6 +52,7 @@ import {
 } from "@/system/providers/active-app"
 import { createKeyMacroProvider } from "@/system/providers/key-macro"
 import { createNotificationProvider } from "@/system/providers/notification"
+import { createUrlProvider } from "@/system/providers/url"
 import {
   createNullSessionProvider,
   createSessionProvider,
@@ -69,6 +71,7 @@ import {
 import { resolveAddonCacheDir } from "@/util/cache-paths"
 import { probeGlobalPackageRoots } from "../package-manager"
 import { installPackage } from "./install"
+import { DEFAULT_CONFIG_UI_PORT } from "./emulator-mode"
 import { isNpmAddonSpec } from "@/addon/spec"
 import { confirm } from "@/cli/prompt"
 
@@ -987,8 +990,16 @@ const buildRuntime = (
     registry,
     logger,
   )
+  const token = process.env["SIRENO_TOKEN"] ?? ""
+  const configUiUrl = new URL(`http://127.0.0.1:${DEFAULT_CONFIG_UI_PORT}/`)
+  if (token.length > 0) configUiUrl.searchParams.set("token", token)
+  configUiUrl.hash = "/config"
+  const runtimeDecks =
+    options.emulator === true
+      ? injectConfigUiButton(allDecks, configUiUrl.toString())
+      : allDecks
   const { runtime, methods, pubSub, store } = createDeckRuntime({
-    decks: allDecks,
+    decks: runtimeDecks,
     logger,
   })
 
@@ -1001,7 +1012,7 @@ const buildRuntime = (
       uiOverridesPath: theme.uiOverridesPath,
     },
     themeDir,
-    decks: allDecks,
+    decks: runtimeDecks,
     sourceDecks,
     pubSub,
     runtime,
@@ -1127,6 +1138,7 @@ interface SystemProviders {
   readonly session: import("@/system/providers/session").SessionProvider
   readonly keyMacro: import("@/system/providers/key-macro").KeyMacroProvider
   readonly notification: import("@/system/providers/notification").NotificationProvider
+  readonly url: import("@/system/providers/url").UrlProvider
 }
 
 const startSystemProviders = async (
@@ -1250,8 +1262,10 @@ const startSystemProviders = async (
   runtime.setSessionProvider(session)
   methods.setKeyMacroProvider(keyMacro)
   methods.setNotificationProvider(notification)
+  const url = createUrlProvider(platform, executor)
+  methods.setUrlProvider(url)
 
-  return { activeApp, session, keyMacro, notification }
+  return { activeApp, session, keyMacro, notification, url }
 }
 
 interface AddonRegistryBundle {
