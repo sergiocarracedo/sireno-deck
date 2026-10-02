@@ -412,12 +412,11 @@ export class OpenCodeProvider implements AgentProvider {
           signal,
         )),
       ]
-    } catch (err) {
+    } catch {
       if (signal.aborted) return []
-      console.warn(
-        "[coding-agents] opencode snapshot failed:",
-        err instanceof Error ? err.message : String(err),
-      )
+      // The API is optional: OpenCode's local instance leases still provide
+      // the active-agent state when its HTTP service is stopped or upgraded.
+      // Do not emit a warning on every poll for this expected fallback.
       return instances.map(toInstanceAgent)
     }
   }

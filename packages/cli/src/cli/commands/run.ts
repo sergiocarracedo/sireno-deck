@@ -1242,7 +1242,9 @@ const startSystemProviders = async (
   const [activeApp, session, keyMacro, notification] = await Promise.all([
     createActiveAppProvider({ platform, executor, logger }),
     options.emulator === true
-      ? createNullSessionProvider(logger)
+      ? // Emulator mode intentionally does not follow the host lock screen;
+        // this is an expected transport choice, not an unavailable OS feature.
+        createNullSessionProvider()
       : createSessionProvider({
           platform,
           executor,
