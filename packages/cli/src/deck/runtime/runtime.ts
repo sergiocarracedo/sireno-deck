@@ -23,6 +23,7 @@ export interface RuntimeButton {
   position?: number
   config?: unknown
   icon?: string
+  label?: string
   actions?: {
     tap?: string
     dbltap?: string
@@ -601,6 +602,24 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
           : gesture === "dbl-tap"
             ? found.button.actions?.dbltap
             : found.button.actions?.hold
+
+      const actionHandler = handlers.get(`${found.deckId}:${found.button.id}`)
+      const actionHandlerFn =
+        gesture === "tap"
+          ? actionHandler?.onTap
+          : gesture === "dbl-tap"
+            ? actionHandler?.onDblTap
+            : actionHandler?.onHold
+      if (userAction !== undefined && actionHandlerFn !== undefined) {
+        await actionHandlerFn({
+          buttonId,
+          deckId: found.deckId,
+          config: found.button.config,
+          gesture,
+          position: found.button.position,
+        })
+        return
+      }
 
       const deck = deckById(found.deckId)
       // ponytail: Array.isArray is tighter than  — rejects

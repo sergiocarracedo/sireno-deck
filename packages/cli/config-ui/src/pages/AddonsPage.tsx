@@ -26,6 +26,7 @@ interface ButtonTypeInfo {
   internal: boolean
   generated?: boolean
   defaultConfig?: unknown
+  gestureHandlers?: Array<"tap" | "dbl-tap" | "hold">
 }
 
 export interface AddonInfo {

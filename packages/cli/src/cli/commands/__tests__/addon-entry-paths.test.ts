@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest"
 
 import { AddonRegistry } from "@/addon/registry"
-import { addonSpecFromScanned, buildExternalScannedAddons } from "../run"
+import {
+  addonInventoryFromScanned,
+  addonSpecFromScanned,
+  buildExternalScannedAddons,
+} from "../run"
 import type { ScannedAddon } from "../addon-registry"
 
 // ponytail: regression guard for the bug that made every addon button dead.
@@ -46,6 +50,43 @@ const build = (): ReadonlyArray<ScannedAddon> =>
   )
 
 describe("daemon vs browser addon entry points", () => {
+  it("exposes only implemented addon-owned gestures to the editor", () => {
+    const registry = new AddonRegistry()
+    registry.load({
+      apiVersion: 1,
+      name: "gesture-addon",
+      buttonTypes: {
+        "gesture-addon:button": {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          frontend: (() => null) as any,
+          service: {
+            gestureHandlers: ["tap", "hold"],
+            onTap: () => undefined,
+          },
+        },
+      },
+      globalService: { pollers: [] },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any)
+    const scanned = {
+      ...build()[0]!,
+      name: "gesture-addon",
+      buttonTypes: {
+        "gesture-addon:button": { exportName: "button", internal: false },
+      },
+    }
+
+    const inventory = addonInventoryFromScanned(
+      scanned,
+      0,
+      [],
+      undefined,
+      registry,
+    )
+
+    expect(inventory.buttonTypes[0]?.gestureHandlers).toEqual(["tap"])
+  })
+
   it("gives the daemon the Node entry, never the browser bundle", () => {
     const addon = build()[0]
     expect(addon).toBeDefined()

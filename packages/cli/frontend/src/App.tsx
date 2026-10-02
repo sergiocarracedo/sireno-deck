@@ -38,6 +38,9 @@ interface DeckButton {
   position?: number
   config: Record<string, unknown>
   icon?: string
+  label?: string
+  variant?: string
+  actions?: { tap?: string; dbltap?: string; hold?: string }
   full?: boolean
 }
 
@@ -161,7 +164,12 @@ const AppContent = () => {
         position?: number
         type?: string
         config?: Record<string, unknown>
-        appearance?: { icon: string; variant: string }
+        appearance?: {
+          icon: string
+          label: string
+          variant: string
+          actions: { tap?: string; dbltap?: string; hold?: string }
+        }
         assets?: Array<{ filename: string; preview: string }>
       }
       if (

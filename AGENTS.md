@@ -92,6 +92,7 @@ After any change that touches the WebSocket bridge, the session provider, the ru
    pnpm --filter @sirenodeck/sirenodeck exec node bin/dev.js start --config config.yml --emulator --port 52937
    ```
 4. With `agent-browser`, verify both surfaces:
+
    ```bash
    # Open emulator — wait for WS open, confirm no iframe freeze
    agent-browser open "http://127.0.0.1:52938/#/device"
@@ -104,6 +105,7 @@ After any change that touches the WebSocket bridge, the session provider, the ru
    agent-browser eval "window.location.pathname"  # should be /decks/main
    agent-browser eval "document.querySelectorAll('[data-button-type]').length"  # should be >0
    ```
+
 5. Stop the daemon (`Ctrl+C`) and confirm it exits cleanly.
 
 If the emulator iframe shows "loading…" indefinitely, check the bridge WS port matches the iframe's `VITE_WS_URL` env. If the frontend redirects to `/decks/core:lock`, the session provider is reporting `locked` — check `docs/solutions/runtime-errors/session-lock-provider-never-fires.md` for the idle-monitor state machine fix.

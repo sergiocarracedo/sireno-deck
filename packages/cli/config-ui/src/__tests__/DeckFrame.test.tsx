@@ -3,13 +3,48 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { DEVICE_MODELS } from "@sirenodeck/sirenodeck"
 
-import { fireEvent, render } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 
 import { DeckFrame } from "../DeckFrame"
 
 const mk2 = DEVICE_MODELS.find((m) => m.id === "mk2")!
 
 describe("DeckFrame (emulator)", () => {
+  it("labels and icons the key menu, and confirms before deleting", () => {
+    const onKeyAction = vi.fn()
+    render(
+      <DeckFrame
+        frontendUrl="http://127.0.0.1:5180"
+        deckId="main"
+        device={mk2}
+        onKeyAction={onKeyAction}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 3" }))
+    const edit = screen.getByRole("menuitem", { name: "Edit" })
+    expect(edit.querySelector("svg")).toBeInTheDocument()
+    fireEvent.click(edit)
+    expect(onKeyAction).toHaveBeenLastCalledWith(3, "edit")
+
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 3" }))
+    const deleteItem = screen.getByRole("menuitem", { name: "Delete" })
+    expect(deleteItem).toHaveClass("text-danger")
+    expect(deleteItem.querySelector("svg")).toBeInTheDocument()
+    fireEvent.click(deleteItem)
+    expect(
+      screen.getByRole("heading", { name: "Delete key 4?" }),
+    ).toBeInTheDocument()
+    expect(onKeyAction).toHaveBeenCalledTimes(1)
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(onKeyAction).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 3" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Delete" }))
+    fireEvent.click(screen.getByRole("button", { name: "Delete button" }))
+    expect(onKeyAction).toHaveBeenLastCalledWith(3, "delete")
+  })
+
   it("renders keyCount cells with correct grid columns", () => {
     const { getByTestId } = render(
       <DeckFrame
@@ -170,6 +205,36 @@ describe("DeckFrame (emulator)", () => {
         gesture: "tap",
       })
       expect(onKeyAction).not.toHaveBeenCalled()
+    })
+
+    it("delivers tap, double-tap, and hold gestures", () => {
+      const onGesture = vi.fn()
+      const { getByTestId } = render(
+        <DeckFrame
+          frontendUrl="http://127.0.0.1:5180"
+          deckId="main"
+          device={mk2}
+          onGesture={onGesture}
+        />,
+      )
+      const key = getByTestId("deck-key-5")
+
+      fireEvent.pointerDown(key)
+      fireEvent.pointerUp(key)
+      vi.advanceTimersByTime(201)
+      fireEvent.pointerDown(key)
+      fireEvent.pointerUp(key)
+      fireEvent.pointerDown(key)
+      fireEvent.pointerUp(key)
+      fireEvent.pointerDown(key)
+      vi.advanceTimersByTime(201)
+      fireEvent.pointerUp(key)
+
+      expect(onGesture.mock.calls.map(([gesture]) => gesture.gesture)).toEqual([
+        "tap",
+        "dbl-tap",
+        "hold",
+      ])
     })
 
     it("does not dispatch a preview drag as an edit action", () => {

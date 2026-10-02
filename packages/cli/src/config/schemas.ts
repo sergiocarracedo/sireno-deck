@@ -14,9 +14,9 @@ export const TriggerSchema = z
 
 export const ButtonActionsSchema = z
   .object({
-    tap: z.string().min(1).optional(),
-    dbltap: z.string().min(1).optional(),
-    hold: z.string().min(1).optional(),
+    tap: z.string().min(1).optional().meta({ title: "Tap action" }),
+    dbltap: z.string().min(1).optional().meta({ title: "Double-tap action" }),
+    hold: z.string().min(1).optional().meta({ title: "Hold action" }),
   })
   .strict()
 

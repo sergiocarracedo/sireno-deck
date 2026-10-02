@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 
 import type pino from "pino"
@@ -9,8 +10,10 @@ import { createReconnectingDevice } from "@/device/reconnecting"
 import { connectStreamDeck, type StreamDeckDevice } from "@/device/stream-deck"
 import { BrowserRenderer } from "@/render/browser-renderer"
 import { pushRawImage } from "@/render/push-raw-image"
+import { pushStartupScreen } from "@/render/push-startup-screen"
 import { NoStreamDeckFoundError, selectDevice } from "@/system/device-selection"
 import { saveDeviceConfig } from "@/util/device-config"
+import { VERSION } from "@/version"
 
 import {
   DEFAULT_FRONTEND_PORT,
@@ -144,24 +147,14 @@ export class RealOutputClient implements OutputClient {
     let configUiSupervisor: SuperviseHandle | null = null
 
     try {
-      // ponytail: hardware-only splash — push the logo immediately after the
-      // device is connected and before Playwright/Vite takes over. pushRawImage
-      // swallows errors (non-fatal). Skipped on emulator (no pushRawImage method).
-      const splashPath = fileURLToPath(
-        new URL("../assets/logoFull.png", import.meta.url),
-      )
-      try {
-        await pushRawImage({
-          imagePath: splashPath,
-          device,
-          logger,
-        })
-      } catch (err) {
-        logger.warn(
-          { err: (err as Error).message, splashPath },
-          "real: splash push failed (non-fatal)",
-        )
-      }
+      // ponytail: paint the waiting state directly to hardware before Vite or
+      // Playwright starts; the deck must remain useful when its frontend is down.
+      const logoCandidates = [
+        new URL("../assets/logo72x72.png", import.meta.url),
+        new URL("../src/assets/logo72x72.png", import.meta.url),
+      ].map(fileURLToPath)
+      const logoPath = logoCandidates.find(existsSync) ?? logoCandidates[0]!
+      await pushStartupScreen({ logoPath, version: VERSION, device, logger })
 
       opts.bridge.setDevice(descriptor)
 

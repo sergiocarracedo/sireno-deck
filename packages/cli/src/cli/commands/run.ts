@@ -1311,6 +1311,7 @@ export const addonInventoryFromScanned = (
   addonIndex = 0,
   materializedDecks: ReadonlyArray<RuntimeDeck> = [],
   defaultConfig?: unknown,
+  registry?: AddonRegistry,
 ): AddonInventoryEntry => {
   const generatedDecks = materializedDecks.filter(
     (deck) => deck.addonOwner?.addonName === s.name,
@@ -1363,14 +1364,25 @@ export const addonInventoryFromScanned = (
     ...(s.path !== undefined ? { path: s.path } : {}),
     internal: s.internal === true,
     source: s.source,
-    buttonTypes: Object.entries(s.buttonTypes).map(([type, info]) => ({
-      type,
-      internal: info.internal,
-      generated: false,
-      ...(info.defaultConfig !== undefined
-        ? { defaultConfig: info.defaultConfig }
-        : {}),
-    })),
+    buttonTypes: Object.entries(s.buttonTypes).map(([type, info]) => {
+      const service = registry?.getButtonType(type)?.def.service
+      const gestureHandlers = service?.gestureHandlers?.filter((gesture) =>
+        gesture === "tap"
+          ? service.onTap !== undefined
+          : gesture === "dbl-tap"
+            ? service.onDblTap !== undefined
+            : service.onHold !== undefined,
+      )
+      return {
+        type,
+        internal: info.internal || service?.internal === true,
+        generated: false,
+        ...(info.defaultConfig !== undefined
+          ? { defaultConfig: info.defaultConfig }
+          : {}),
+        ...(gestureHandlers?.length ? { gestureHandlers } : {}),
+      }
+    }),
     defaultButton: s.defaultButton ?? null,
     ...(defaultConfig !== undefined ? { defaultConfig } : {}),
     decks,
@@ -1776,6 +1788,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
               addonIndex,
               decks ?? [],
               defaultConfigs.get(addon.name),
+              loadedConfig!.registry,
             ),
         )
       })(),
@@ -2100,6 +2113,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
               nextRuntime.decks,
               logger,
             ).get(addon.name),
+            nextLoaded.registry,
           ),
         ),
       )

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { ListBox, Select } from "@heroui/react"
+import { ListBox, Select, Toast } from "@heroui/react"
 
 import {
   getDeviceModel,
@@ -268,6 +268,9 @@ export const App = ({
               m.themeVariants !== null && typeof m.themeVariants === "object"
                 ? (m.themeVariants as EditorState["themeVariants"])
                 : {},
+            surfaces: Array.isArray(m.surfaces)
+              ? (m.surfaces as EditorState["surfaces"])
+              : [],
             buttonSchemas:
               m.buttonSchemas !== null && typeof m.buttonSchemas === "object"
                 ? (m.buttonSchemas as Record<string, Record<string, unknown>>)
@@ -438,6 +441,7 @@ export const App = ({
               device={deviceModel}
               token={token}
               onGesture={sendButtonAction}
+              runtimeDeckId={deckId || null}
               onDeckSelect={(selectedDeckId) =>
                 clientRef.current?.send(
                   JSON.stringify({
@@ -529,6 +533,7 @@ export const App = ({
       }
       content={
         <>
+          <Toast.Provider placement="bottom end" />
           {deckOnly ? (
             <div
               ref={deckContainerRef}

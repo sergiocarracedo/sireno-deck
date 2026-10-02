@@ -1,16 +1,20 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   Button,
   Card,
+  Fieldset,
   Input,
-  ListBox,
-  Select,
+  Label,
+  Modal,
   Switch,
   Tabs,
+  TextField,
+  toast,
 } from "@heroui/react"
 import { Check, CircleX, Layers, Plus, Rows3 } from "lucide-react"
 
 import type { DeviceModelSpec } from "@sirenodeck/sirenodeck"
+import { isSystemButtonType } from "@/deck/system-buttons/types"
 
 import type { WsClient } from "../bridge"
 import { DeckFrame } from "../DeckFrame"
@@ -20,9 +24,37 @@ import {
   type JsonSchema,
   type ValidationState,
 } from "./ButtonConfigEditor"
-import { IconPicker, type PendingIconAsset } from "../components/IconPicker"
+import { ButtonAppearanceFields } from "./ButtonConfigEditor/ButtonAppearanceFields"
+import { PositionPicker } from "./ButtonConfigEditor/PositionPicker"
+import type {
+  ButtonAppearance,
+  ButtonThemeVariant,
+} from "./ButtonConfigEditor/types"
+import type { PendingIconAsset } from "../components/IconPicker"
+import {
+  ButtonTypePicker,
+  type ButtonTypeOption,
+} from "./ButtonConfigEditor/ButtonTypePicker"
+import { isValidActionValue } from "../components/ActionValueEditor"
 
 type Button = Record<string, unknown> | string
+const INLINE_CONTROL_ROW_CLASS =
+  "grid min-w-0 grid-cols-[minmax(min(10rem,42%),0.85fr)_minmax(0,1.15fr)] items-center gap-x-3 gap-y-1"
+
+const gestureConfigKeys = {
+  tap: "tap",
+  "dbl-tap": "dbltap",
+  hold: "hold",
+} as const
+
+const withoutOwnedGestures = (
+  actions: ButtonAppearance["actions"],
+  owned: readonly (keyof typeof gestureConfigKeys)[],
+): ButtonAppearance["actions"] => {
+  const next = { ...actions }
+  for (const gesture of owned) delete next[gestureConfigKeys[gesture]]
+  return next
+}
 type Config = {
   theme?: string | { src: string; global?: boolean }
   decks?: Record<
@@ -68,10 +100,14 @@ export interface EditorState {
   readonly sources: string[]
   readonly sourceContents?: Record<string, string>
   readonly themes?: readonly ThemeOption[]
-  readonly themeVariants?: Record<
-    string,
-    { background: string; border: string; foreground: string }
-  >
+  readonly themeVariants?: Record<string, ButtonThemeVariant>
+  readonly surfaces?: Array<{
+    readonly id: string
+    readonly buttons: Array<{
+      readonly type: string
+      readonly position: number
+    }>
+  }>
   readonly buttonSchemas?: Record<string, JsonSchema>
   readonly canUndo: boolean
 }
@@ -96,6 +132,7 @@ export interface EditorPageProps {
     gesture: "tap" | "dbl-tap" | "hold"
   }) => void
   readonly onDeckSelect?: (deckId: string) => void
+  readonly runtimeDeckId?: string | null
   readonly validation?: ValidationState | null
 }
 
@@ -108,72 +145,6 @@ const isButton = (button: Button): button is Record<string, unknown> =>
 type DragData =
   | { kind: "palette"; button: Record<string, unknown> }
   | { kind: "existing"; index: number }
-
-const ButtonAppearanceFields = ({
-  value,
-  variants,
-  onChange,
-  onAsset,
-}: {
-  readonly value: { icon: string; variant: string }
-  readonly variants: NonNullable<EditorState["themeVariants"]>
-  readonly onChange: (value: { icon: string; variant: string }) => void
-  readonly onAsset: (asset?: PendingIconAsset) => void
-}) => (
-  <div className="grid gap-3 rounded-lg border border-separator p-3 sm:grid-cols-2">
-    <IconPicker
-      label="Button icon"
-      value={value.icon}
-      onApply={(icon, asset) => {
-        onChange({ ...value, icon })
-        onAsset(asset)
-      }}
-    />
-    <label className="grid gap-1 text-sm">
-      Theme variant
-      <Select
-        aria-label="Theme variant"
-        selectedKey={value.variant || "default"}
-        onSelectionChange={(key) =>
-          onChange({
-            ...value,
-            variant: String(key) === "default" ? "" : String(key),
-          })
-        }
-      >
-        <Select.Trigger>
-          <Select.Value />
-          <Select.Indicator />
-        </Select.Trigger>
-        <Select.Popover>
-          <ListBox>
-            {Object.entries(variants).map(([name, colors]) => (
-              <ListBox.Item key={name} id={name} textValue={name}>
-                <span
-                  aria-hidden="true"
-                  className="size-4 rounded-full border"
-                  style={{
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
-                    color: colors.foreground,
-                  }}
-                />
-                {name}
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-            ))}
-          </ListBox>
-        </Select.Popover>
-      </Select>
-      {value.variant !== "" && variants[value.variant] !== undefined && (
-        <span
-          className="h-2 rounded-full"
-          style={{ backgroundColor: variants[value.variant]!.background }}
-        />
-      )}
-    </label>
-  </div>
-)
 
 const readDragData = (event: React.DragEvent): DragData | null => {
   try {
@@ -223,9 +194,13 @@ export const EditorPage = ({
   token,
   onGesture,
   onDeckSelect,
+  runtimeDeckId,
   validation = null,
 }: EditorPageProps) => {
-  const [deckId, setDeckId] = useState<string | null>(null)
+  const [deckSelection, setDeckSelection] = useState<{
+    readonly id: string
+    readonly runtimeDeckId: string | null
+  } | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [selectedPosition, setSelectedPosition] = useState<number | null>(null)
   const [clipboard, setClipboard] = useState<Button | null>(null)
@@ -235,6 +210,9 @@ export const EditorPage = ({
     unknown
   > | null>(null)
   const [pendingPosition, setPendingPosition] = useState<number | null>(null)
+  const [positionToReplace, setPositionToReplace] = useState<number | null>(
+    null,
+  )
   const [newPage, setNewPage] = useState(false)
   const [newPageId, setNewPageId] = useState("")
   const [newPageName, setNewPageName] = useState("")
@@ -242,15 +220,21 @@ export const EditorPage = ({
   const [newPageBackground, setNewPageBackground] = useState("")
   const [newPagePaginated, setNewPagePaginated] = useState(false)
   const [positionUnset, setPositionUnset] = useState(false)
+  const [buttonTypeOverride, setButtonTypeOverride] = useState<string | null>(
+    null,
+  )
+  const [selectionDeckId, setSelectionDeckId] = useState<string | null>(null)
+  const skipPositionSelectionSync = useRef(false)
   const [pendingRequestId, setPendingRequestId] = useState<string | null>(null)
+  const lastResultId = useRef<string | null>(null)
   const [deckDraft, setDeckDraft] = useState<DeckDraft | null>(null)
   const [creatingDeck, setCreatingDeck] = useState(false)
   const [newDeckId, setNewDeckId] = useState("")
   const [newDeckName, setNewDeckName] = useState("")
-  const [buttonAppearance, setButtonAppearance] = useState<{
-    icon: string
-    variant: string
-  }>({ icon: "", variant: "" })
+  const [buttonAppearance, setButtonAppearance] = useState<ButtonAppearance>({
+    variant: "",
+    actions: {},
+  })
   const [pendingAssets, setPendingAssets] = useState<
     Record<string, PendingIconAsset>
   >({})
@@ -266,13 +250,15 @@ export const EditorPage = ({
   }, [wsClient])
 
   useEffect(() => {
-    if (result === null) return
+    if (result === null || result.requestId === lastResultId.current) return
+    lastResultId.current = result.requestId
     if (
       assetWriteQueue !== null &&
       result.requestId === assetWriteQueue.requestId
     ) {
       if (!result.ok) {
-        setMessage(result.error ?? "Could not save icon asset")
+        toast.danger(result.error ?? "Could not save icon asset")
+        setMessage(null)
         setAssetWriteQueue(null)
         return
       }
@@ -299,10 +285,22 @@ export const EditorPage = ({
       }
       return
     }
-    setMessage(result.ok ? "Saved" : (result.error ?? "Edit failed"))
+    if (result.ok) toast.success("Saved")
+    else toast.danger(result.error ?? "Edit failed")
+    setMessage(null)
     if (result.requestId !== pendingRequestId) return
     if (result.ok) {
-      if (newPage) setDeckId(newPageId.trim())
+      if (newPage) {
+        const nextDeckId = newPageId.trim()
+        setDeckSelection({
+          id: nextDeckId,
+          runtimeDeckId: runtimeDeckId ?? null,
+        })
+        onDeckSelect?.(nextDeckId)
+        setSelectedIndex(null)
+        setSelectedPosition(null)
+        setSelectionDeckId(null)
+      }
       setPendingButton(null)
       setPendingPosition(null)
       setNewPage(false)
@@ -312,16 +310,21 @@ export const EditorPage = ({
     assetWriteQueue,
     newPage,
     newPageId,
+    onDeckSelect,
     pendingButton,
     pendingRequestId,
     result,
+    runtimeDeckId,
     state?.revision,
     wsClient,
   ])
 
   const config = (state?.config ?? {}) as Config
   const decks = Object.entries(config.decks ?? {})
-  const activeDeckId = deckId ?? decks[0]?.[0] ?? null
+  const activeDeckId =
+    deckSelection?.runtimeDeckId === (runtimeDeckId ?? null)
+      ? deckSelection.id
+      : (runtimeDeckId ?? decks[0]?.[0] ?? null)
   const activeDeck =
     activeDeckId === null ? undefined : config.decks?.[activeDeckId]
   const buttons =
@@ -362,20 +365,20 @@ export const EditorPage = ({
         : (windowName ?? ""),
     })
   }, [activeDeckId, state?.revision])
-  const firstFreePosition = (): number => {
-    const used = new Set(positions)
-    for (let position = 0; position < (device?.keyCount ?? 15); position += 1) {
-      if (!used.has(position)) return position
-    }
-    return positions.length
-  }
-  const selected = selectedIndex === null ? undefined : buttons[selectedIndex]
+  const selected =
+    selectionDeckId === activeDeckId && selectedIndex !== null
+      ? buttons[selectedIndex]
+      : undefined
+  const activeSelectedPosition =
+    selectionDeckId === activeDeckId ? selectedPosition : null
   const selectedType =
     selected === undefined
       ? null
       : isButton(selected) && typeof selected.type === "string"
         ? selected.type
         : String(selected)
+  const currentButtonType =
+    pendingButton?.type ?? buttonTypeOverride ?? selectedType
   const selectedGenerated =
     selected !== undefined &&
     ((isButton(selected) && selected.generated === true) ||
@@ -384,6 +387,10 @@ export const EditorPage = ({
           (type) => type.type === selectedType && type.generated === true,
         ),
       ) === true)
+  const buttonSchema =
+    currentButtonType === undefined || currentButtonType === null
+      ? undefined
+      : state?.buttonSchemas?.[String(currentButtonType)]
   const deckOptions = [
     ...decks.map(([id, deck]) => ({ id, name: deck.name ?? id })),
     ...(addonInventory?.addons ?? []).flatMap((addon) =>
@@ -397,6 +404,61 @@ export const EditorPage = ({
     (deck, index, all) =>
       all.findIndex((item) => item.id === deck.id) === index,
   )
+  const addableButtonTypes: ButtonTypeOption[] = [
+    ...(addonInventory?.addons ?? []).flatMap((addon) =>
+      addon.buttonTypes
+        .filter((buttonType) => !buttonType.internal)
+        .map((buttonType) => ({
+          addon: addon.name,
+          type: buttonType.type,
+          defaultConfig: buttonType.defaultConfig,
+          gestureHandlers: buttonType.gestureHandlers,
+        })),
+    ),
+  ].filter(
+    (buttonType, index, all) =>
+      all.findIndex((candidate) => candidate.type === buttonType.type) ===
+      index,
+  )
+  const currentButtonTypeInfo = addonInventory?.addons
+    .flatMap((addon) => addon.buttonTypes)
+    .find((buttonType) => buttonType.type === currentButtonType)
+  const ownedGestures = currentButtonTypeInfo?.gestureHandlers ?? []
+  const buttonEditorConfig = useMemo(() => {
+    if (buttonTypeOverride !== null)
+      return currentButtonTypeInfo?.defaultConfig ?? {}
+    const config =
+      isButton(selected) &&
+      typeof selected.config === "object" &&
+      selected.config !== null &&
+      !Array.isArray(selected.config)
+        ? { ...(selected.config as Record<string, unknown>) }
+        : {}
+    if (isButton(selected)) {
+      for (const key of ["icon", "label"] as const) {
+        if (
+          buttonSchema?.properties?.[key] !== undefined &&
+          typeof selected[key] === "string"
+        )
+          config[key] = selected[key]
+      }
+    }
+    return config
+  }, [buttonSchema, buttonTypeOverride, currentButtonTypeInfo, selected])
+  const activeSurface = state?.surfaces?.find(
+    (surface) => surface.id === activeDeckId,
+  )
+  const systemPositions =
+    activeSurface?.buttons
+      .filter((button) => isSystemButtonType(button.type))
+      .map((button) => button.position) ?? []
+  const firstFreePosition = (): number | undefined => {
+    const used = new Set([...positions, ...systemPositions])
+    for (let position = 0; position < (device?.keyCount ?? 15); position += 1) {
+      if (!used.has(position)) return position
+    }
+    return undefined
+  }
   const [editionTab, setEditionTab] = useState<"buttons" | "decks">("buttons")
   const [showButtonTypes, setShowButtonTypes] = useState(false)
   const [hoveredPosition, setHoveredPosition] = useState<number | null>(null)
@@ -404,18 +466,83 @@ export const EditorPage = ({
     string,
     unknown
   > | null>(null)
+  const [buttonPreviewDraft, setButtonPreviewDraft] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
+
+  const changeDeck = (nextDeckId: string): void => {
+    setDeckSelection({
+      id: nextDeckId,
+      runtimeDeckId: runtimeDeckId ?? null,
+    })
+    setSelectedIndex(null)
+    setSelectedPosition(null)
+    setSelectionDeckId(null)
+    setPendingButton(null)
+    setPendingPosition(null)
+    setPositionToReplace(null)
+    setButtonTypeOverride(null)
+    setShowButtonTypes(false)
+    setButtonDraft(null)
+    setButtonPreviewDraft(null)
+    setPendingAssets({})
+    onDeckSelect?.(nextDeckId)
+  }
+
+  const previousActiveDeckId = useRef(activeDeckId)
+  const previousRuntimeDeckId = useRef(runtimeDeckId)
 
   useEffect(() => {
-    if (selectedPosition !== null) {
-      const index = positions.indexOf(selectedPosition)
+    if (previousRuntimeDeckId.current === runtimeDeckId) return
+    previousRuntimeDeckId.current = runtimeDeckId
+    setDeckSelection(null)
+  }, [runtimeDeckId])
+
+  useEffect(() => {
+    if (previousActiveDeckId.current === activeDeckId) return
+    previousActiveDeckId.current = activeDeckId
+    setSelectedIndex(null)
+    setSelectedPosition(null)
+    setSelectionDeckId(null)
+    setPendingButton(null)
+    setPendingPosition(null)
+    setPositionToReplace(null)
+    setButtonTypeOverride(null)
+    setShowButtonTypes(false)
+    setButtonDraft(null)
+  }, [activeDeckId])
+
+  useEffect(() => {
+    if (selectionDeckId !== activeDeckId) return
+    if (skipPositionSelectionSync.current) {
+      skipPositionSelectionSync.current = false
+      return
+    }
+    if (activeSelectedPosition !== null) {
+      const index = positions.indexOf(activeSelectedPosition)
       if (index >= 0 && index !== selectedIndex) setSelectedIndex(index)
     }
     if (selectedIndex !== null && selectedIndex >= buttons.length) {
       setSelectedIndex(buttons.length === 0 ? null : buttons.length - 1)
     }
-  }, [activeDeckId, selectedIndex, selectedPosition, state?.revision])
+  }, [
+    activeDeckId,
+    activeSelectedPosition,
+    selectedIndex,
+    selectionDeckId,
+    state?.revision,
+  ])
 
-  useEffect(() => setButtonDraft(null), [pendingButton, selectedIndex])
+  useEffect(
+    () => setButtonDraft(null),
+    [buttonTypeOverride, pendingButton, selectedIndex],
+  )
+  useEffect(
+    () => setButtonPreviewDraft(null),
+    [buttonTypeOverride, pendingButton, selectedIndex],
+  )
+  useEffect(() => setButtonTypeOverride(null), [activeDeckId, selectedIndex])
 
   useEffect(() => {
     const current = pendingButton ?? selected
@@ -424,8 +551,11 @@ export const EditorPage = ({
         ? current
         : {}
     setButtonAppearance({
-      icon: typeof fields.icon === "string" ? fields.icon : "",
       variant: typeof fields.variant === "string" ? fields.variant : "",
+      actions:
+        typeof fields.actions === "object" && fields.actions !== null
+          ? (fields.actions as ButtonAppearance["actions"])
+          : {},
     })
     setPendingAssets({})
   }, [activeDeckId, pendingButton, selected, selectedIndex, state?.revision])
@@ -484,14 +614,39 @@ export const EditorPage = ({
     const index = buttons.findIndex((_, i) => positions[i] === position)
     setSelectedPosition(position)
     setSelectedIndex(index === -1 ? null : index)
+    setSelectionDeckId(activeDeckId)
+  }
+
+  const stagePendingPosition = (position: number): void => {
+    setPendingPosition(position)
+    setPositionUnset(false)
+    setNewPage(false)
+  }
+
+  const moveSelectedToPosition = (position: number): void => {
+    if (selectedIndex === null || activeDeckId === null) return
+    const targetIndex = positions.indexOf(position)
+    if (targetIndex >= 0 && targetIndex !== selectedIndex) {
+      skipPositionSelectionSync.current = true
+      sendMutation({
+        kind: "move-position",
+        deckId: activeDeckId,
+        from: selectedIndex,
+        to: targetIndex,
+      })
+    }
+    setSelectedPosition(position)
+    setSelectionDeckId(activeDeckId)
   }
 
   const beginInsert = (
     button: Record<string, unknown>,
     position?: number,
   ): void => {
+    setShowButtonTypes(false)
     setPendingButton(button)
-    setPendingPosition(position ?? firstFreePosition())
+    setPendingPosition(position ?? firstFreePosition() ?? null)
+    setPositionToReplace(null)
     setPositionUnset(false)
     setNewPage(false)
     setNewPageId(activeDeckId === null ? "page-2" : `${activeDeckId}-p2`)
@@ -499,16 +654,18 @@ export const EditorPage = ({
       `${config.decks?.[activeDeckId ?? ""]?.name ?? activeDeckId ?? "Deck"} 2`,
     )
     setSelectedIndex(null)
+    setSelectedPosition(null)
+    setSelectionDeckId(null)
   }
 
   const add = (index?: number): void => {
     if (activeDeckId === null) return
     const button =
       clipboard === null ? { type: "core:action", config: {} } : clipboard
-    if (selectedPosition !== null)
+    if (activeSelectedPosition !== null)
       return beginInsert(
         isButton(button) ? button : { type: button, config: {} },
-        selectedPosition,
+        activeSelectedPosition,
       )
     beginInsert(
       isButton(button) ? button : { type: button },
@@ -564,11 +721,6 @@ export const EditorPage = ({
     }
   }
 
-  const dragStart = (event: React.DragEvent, data: DragData): void => {
-    event.dataTransfer.effectAllowed = "copyMove"
-    event.dataTransfer.setData("application/json", JSON.stringify(data))
-  }
-
   const saveConfig = (config: Record<string, unknown>): void => {
     if (
       activeDeckId === null ||
@@ -576,16 +728,34 @@ export const EditorPage = ({
       selected === undefined
     )
       return
-    const button = isButton(selected) ? selected : { type: selected }
+    const actions = withoutOwnedGestures(
+      buttonAppearance.actions,
+      ownedGestures,
+    )
+    if (!Object.values(actions).every(isValidActionValue)) {
+      toast.danger("Fix the keyboard macro before saving")
+      return
+    }
+    const button = isButton(selected) ? { ...selected } : { type: selected }
+    delete button.icon
+    delete button.label
+    const type = buttonTypeOverride ?? selectedType ?? String(button.type)
     persistMutation({
       kind: "update",
       deckId: activeDeckId,
       index: selectedIndex,
       button: {
         ...button,
+        type,
         ...buttonAppearance,
-        ...(buttonAppearance.icon === "" ? { icon: undefined } : {}),
         ...(buttonAppearance.variant === "" ? { variant: undefined } : {}),
+        ...(Object.values(actions).some(Boolean)
+          ? { actions }
+          : { actions: undefined }),
+        ...(activeSelectedPosition !== null &&
+        activeSelectedPosition !== positions[selectedIndex]
+          ? { position: activeSelectedPosition }
+          : {}),
         config,
       },
     })
@@ -593,6 +763,14 @@ export const EditorPage = ({
 
   const addPending = (config: Record<string, unknown>): void => {
     if (activeDeckId === null || pendingButton === null) return
+    const actions = withoutOwnedGestures(
+      buttonAppearance.actions,
+      ownedGestures,
+    )
+    if (!Object.values(actions).every(isValidActionValue)) {
+      toast.danger("Fix the keyboard macro before adding this button")
+      return
+    }
     const position = newPage
       ? 0
       : positionUnset
@@ -606,7 +784,6 @@ export const EditorPage = ({
       return
     const index =
       newPage || position === undefined ? -1 : positions.indexOf(position)
-    if (index >= 0 && !window.confirm(`Replace key ${position}?`)) return
     const nextConfig =
       pendingButton.type === "core:change-deck" && newPage
         ? { ...config, deck: targetDeckId }
@@ -632,8 +809,10 @@ export const EditorPage = ({
       button: {
         ...pendingButton,
         ...buttonAppearance,
-        ...(buttonAppearance.icon === "" ? { icon: undefined } : {}),
         ...(buttonAppearance.variant === "" ? { variant: undefined } : {}),
+        ...(Object.values(actions).some(Boolean)
+          ? { actions }
+          : { actions: undefined }),
         config: nextConfig,
         ...(position === undefined ? {} : { position }),
       },
@@ -697,27 +876,35 @@ export const EditorPage = ({
                     token={token}
                     onGesture={onGesture}
                     onKeyAction={keyAction}
+                    systemPositions={systemPositions}
                     fitToContainer
                     highlightedKey={
-                      hoveredPosition ?? selectedPosition ?? pendingPosition
+                      hoveredPosition ??
+                      activeSelectedPosition ??
+                      pendingPosition
                     }
                     previewConfig={
-                      buttonDraft === null
+                      buttonPreviewDraft === null
                         ? null
                         : {
                             index:
                               pendingButton === null
-                                ? (selectedIndex ?? firstFreePosition())
-                                : (pendingPosition ?? firstFreePosition()),
+                                ? (selectedIndex ??
+                                  firstFreePosition() ??
+                                  buttons.length)
+                                : (pendingPosition ??
+                                  firstFreePosition() ??
+                                  buttons.length),
                             position:
                               pendingButton === null
-                                ? (selectedPosition ??
+                                ? (activeSelectedPosition ??
                                   positions[selectedIndex ?? -1])
                                 : (pendingPosition ?? firstFreePosition()),
-                            ...(pendingButton !== null
-                              ? { type: String(pendingButton.type ?? "") }
+                            ...(currentButtonType !== null &&
+                            currentButtonType !== undefined
+                              ? { type: String(currentButtonType) }
                               : {}),
-                            config: buttonDraft,
+                            config: buttonPreviewDraft,
                             appearance: buttonAppearance,
                             assets: Object.values(pendingAssets).map(
                               ({ filename, preview }) => ({
@@ -746,6 +933,25 @@ export const EditorPage = ({
             <Card.Header className="flex flex-row items-center justify-between gap-3">
               <Card.Title id="edition-panel-title">Edition panel</Card.Title>
               <div className="flex items-center gap-2">
+                {editionTab === "buttons" &&
+                  pendingButton === null &&
+                  !showButtonTypes &&
+                  (selected === undefined || !selectedGenerated) && (
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onPress={() => setShowButtonTypes(true)}
+                    >
+                      {selected === undefined ? (
+                        <>
+                          <Plus aria-hidden="true" className="size-4" />
+                          New button
+                        </>
+                      ) : (
+                        `Change type: ${String(currentButtonType ?? selectedType)}`
+                      )}
+                    </Button>
+                  )}
                 <Tabs
                   selectedKey={editionTab}
                   onSelectionChange={(key) =>
@@ -773,20 +979,6 @@ export const EditorPage = ({
                     </Tabs.List>
                   </Tabs.ListContainer>
                 </Tabs>
-                {editionTab === "buttons" &&
-                  pendingButton === null &&
-                  !showButtonTypes &&
-                  selected === undefined && (
-                    <Button
-                      type="button"
-                      variant="primary"
-                      className="order-first"
-                      onPress={() => setShowButtonTypes((value) => !value)}
-                    >
-                      <Plus aria-hidden="true" className="size-4" />
-                      New button
-                    </Button>
-                  )}
                 {editionTab === "decks" && !creatingDeck && (
                   <Button
                     type="button"
@@ -841,8 +1033,7 @@ export const EditorPage = ({
                               isDisabled={!hasPreviousPage}
                               onPress={() => {
                                 if (!hasPreviousPage) return
-                                setDeckId(previousPage)
-                                onDeckSelect?.(previousPage)
+                                changeDeck(previousPage)
                               }}
                             >
                               Previous page
@@ -853,18 +1044,17 @@ export const EditorPage = ({
                               isDisabled={!hasNextPage}
                               onPress={() => {
                                 if (!hasNextPage) return
-                                setDeckId(nextPage)
-                                onDeckSelect?.(nextPage)
+                                changeDeck(nextPage)
                               }}
                             >
                               Next page
                             </Button>
                           </div>
                         )}
-                        <p className="text-sm text-neutral-300 sm:col-span-2">
-                          <span className="block text-xs uppercase tracking-wider text-neutral-500">
-                            Name
-                          </span>
+                        <TextField
+                          className={`${INLINE_CONTROL_ROW_CLASS} sm:col-span-2`}
+                        >
+                          <Label className="min-w-0 break-words">Name</Label>
                           <Input
                             aria-label="Deck name"
                             value={deckDraft.name}
@@ -875,73 +1065,103 @@ export const EditorPage = ({
                               })
                             }
                           />
-                        </p>
-                        <Input
-                          aria-label="Deck icon"
-                          label="Icon"
-                          value={deckDraft.icon}
-                          onChange={(event) =>
-                            setDeckDraft({
-                              ...deckDraft,
-                              icon: event.target.value,
-                            })
-                          }
-                        />
-                        <Input
-                          aria-label="Deck background"
-                          label="Background"
-                          value={deckDraft.background}
-                          onChange={(event) =>
-                            setDeckDraft({
-                              ...deckDraft,
-                              background: event.target.value,
-                            })
-                          }
-                        />
-                        <Input
-                          aria-label="Trigger process"
-                          label="Trigger process"
-                          placeholder="chrome, slack"
-                          value={deckDraft.processName}
-                          onChange={(event) =>
-                            setDeckDraft({
-                              ...deckDraft,
-                              processName: event.target.value,
-                            })
-                          }
-                        />
-                        <Input
-                          aria-label="Trigger window"
-                          label="Trigger window"
-                          value={deckDraft.windowName}
-                          onChange={(event) =>
-                            setDeckDraft({
-                              ...deckDraft,
-                              windowName: event.target.value,
-                            })
-                          }
-                        />
+                        </TextField>
+                        <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                          <Label className="min-w-0 break-words">Icon</Label>
+                          <Input
+                            aria-label="Deck icon"
+                            value={deckDraft.icon}
+                            onChange={(event) =>
+                              setDeckDraft({
+                                ...deckDraft,
+                                icon: event.target.value,
+                              })
+                            }
+                          />
+                        </TextField>
+                        <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                          <Label className="min-w-0 break-words">
+                            Background
+                          </Label>
+                          <Input
+                            aria-label="Deck background"
+                            value={deckDraft.background}
+                            onChange={(event) =>
+                              setDeckDraft({
+                                ...deckDraft,
+                                background: event.target.value,
+                              })
+                            }
+                          />
+                        </TextField>
+                        <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                          <Label className="min-w-0 break-words">
+                            Trigger process
+                          </Label>
+                          <Input
+                            aria-label="Trigger process"
+                            placeholder="chrome, slack"
+                            value={deckDraft.processName}
+                            onChange={(event) =>
+                              setDeckDraft({
+                                ...deckDraft,
+                                processName: event.target.value,
+                              })
+                            }
+                          />
+                        </TextField>
+                        <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                          <Label className="min-w-0 break-words">
+                            Trigger window
+                          </Label>
+                          <Input
+                            aria-label="Trigger window"
+                            value={deckDraft.windowName}
+                            onChange={(event) =>
+                              setDeckDraft({
+                                ...deckDraft,
+                                windowName: event.target.value,
+                              })
+                            }
+                          />
+                        </TextField>
                         <Switch
                           isSelected={deckDraft.paginated}
-                          onChange={(event) =>
+                          onChange={(paginated) =>
                             setDeckDraft({
                               ...deckDraft,
-                              paginated: event.target.checked,
+                              paginated,
                             })
                           }
+                          className="w-full min-w-0"
                         >
-                          Paginated
+                          <Switch.Content
+                            className={`${INLINE_CONTROL_ROW_CLASS} w-full cursor-pointer`}
+                          >
+                            <Label>Paginated</Label>
+                            <Switch.Control>
+                              <Switch.Thumb />
+                            </Switch.Control>
+                          </Switch.Content>
                         </Switch>
                         <Switch
                           isSelected={deckDraft.autoShow}
-                          onChange={(event) =>
+                          onChange={(autoShow) =>
                             setDeckDraft({
                               ...deckDraft,
-                              autoShow: event.target.checked,
+                              autoShow,
                             })
                           }
+                          className="w-full min-w-0"
                         >
-                          Auto show overlay
+                          <Switch.Content
+                            className={`${INLINE_CONTROL_ROW_CLASS} w-full cursor-pointer`}
+                          >
+                            <Label>Auto show overlay</Label>
+                            <Switch.Control>
+                              <Switch.Thumb />
+                            </Switch.Control>
+                          </Switch.Content>
                         </Switch>
                         <Button
                           type="button"
@@ -996,22 +1216,26 @@ export const EditorPage = ({
                       </div>
                       {creatingDeck && (
                         <div className="mb-3 grid gap-2 rounded-lg border border-neutral-800 p-3">
-                          <Input
-                            aria-label="New deck ID"
-                            label="ID"
-                            value={newDeckId}
-                            onChange={(event) =>
-                              setNewDeckId(event.target.value)
-                            }
-                          />
-                          <Input
-                            aria-label="New deck name"
-                            label="Name"
-                            value={newDeckName}
-                            onChange={(event) =>
-                              setNewDeckName(event.target.value)
-                            }
-                          />
+                          <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                            <Label className="min-w-0 break-words">ID</Label>
+                            <Input
+                              aria-label="New deck ID"
+                              value={newDeckId}
+                              onChange={(event) =>
+                                setNewDeckId(event.target.value)
+                              }
+                            />
+                          </TextField>
+                          <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                            <Label className="min-w-0 break-words">Name</Label>
+                            <Input
+                              aria-label="New deck name"
+                              value={newDeckName}
+                              onChange={(event) =>
+                                setNewDeckName(event.target.value)
+                              }
+                            />
+                          </TextField>
                           <Button
                             type="button"
                             variant="primary"
@@ -1040,17 +1264,16 @@ export const EditorPage = ({
                       )}
                       <div className="grid gap-1">
                         {decks.map(([id, deck]) => (
-                          <button
+                          <Button
                             key={id}
                             type="button"
-                            onClick={() => {
-                              setDeckId(id)
-                              setSelectedIndex(null)
-                              setSelectedPosition(null)
-                              onDeckSelect?.(id)
+                            size="sm"
+                            variant="tertiary"
+                            onPress={() => {
+                              changeDeck(id)
                             }}
                             aria-pressed={id === activeDeckId}
-                            className="min-h-10 rounded border border-neutral-800 px-3 text-left text-sm aria-pressed:border-sky-400 aria-pressed:bg-sky-500/15"
+                            className="min-h-10 h-auto justify-start rounded border border-separator px-3 py-2 text-left text-sm aria-pressed:border-primary aria-pressed:bg-surface-secondary"
                           >
                             <span className="block truncate">
                               {deck.name ?? id}
@@ -1058,7 +1281,7 @@ export const EditorPage = ({
                             <span className="block truncate text-xs text-neutral-500">
                               #{id}
                             </span>
-                          </button>
+                          </Button>
                         ))}
                         {addonInventory?.addons
                           .filter((addon) => !addon.internal)
@@ -1072,10 +1295,12 @@ export const EditorPage = ({
                               deck.overrideKey !== undefined,
                           )
                           .map((deck) => (
-                            <button
+                            <Button
                               key={deck.id}
                               type="button"
-                              onClick={() => {
+                              size="sm"
+                              variant="tertiary"
+                              onPress={() => {
                                 sendMutation({
                                   kind: "set-addon-deck-override",
                                   addonIndex: deck.addonIndex,
@@ -1084,10 +1309,10 @@ export const EditorPage = ({
                                 })
                                 setMessage("Saving addon override…")
                               }}
-                              className="min-h-10 rounded border border-neutral-800 px-3 text-left text-sm text-amber-300 hover:border-amber-400"
+                              className="min-h-10 h-auto justify-start rounded border border-separator px-3 py-2 text-left text-sm text-amber-300 hover:border-amber-400"
                             >
                               {deck.id}
-                            </button>
+                            </Button>
                           ))}
                       </div>
                     </div>
@@ -1095,333 +1320,375 @@ export const EditorPage = ({
                 </div>
               )}
               {editionTab === "buttons" && (
-                <section aria-labelledby="button-config-title">
-                  <div className="mb-3">
-                    <h3
-                      id="button-config-title"
-                      className="text-xs font-semibold uppercase tracking-wider text-neutral-500"
-                    >
-                      Selected button
-                    </h3>
-                  </div>
-                  {showButtonTypes && (
-                    <div className="mb-4 grid gap-2 rounded-lg border border-neutral-800 p-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs text-muted">
-                          Choose a button type.
-                        </p>
-                        <Button
-                          type="button"
-                          variant="tertiary"
-                          onPress={() => setShowButtonTypes(false)}
-                        >
-                          <CircleX aria-hidden="true" className="size-4" />
-                          Cancel
-                        </Button>
-                      </div>
-                      {addonInventory?.addons
-                        .filter((addon) => !addon.internal)
-                        .flatMap((addon) =>
-                          addon.buttonTypes
-                            .filter((type) => !type.internal)
-                            .map((type) => type.type),
-                        )
-                        .map((type) => (
-                          <button
-                            key={type}
-                            type="button"
-                            draggable
-                            onDragStart={(event) =>
-                              dragStart(event, {
-                                kind: "palette",
-                                button: { type, config: {} },
-                              })
-                            }
-                            onClick={() => {
-                              beginInsert({ type, config: {} })
-                              setShowButtonTypes(false)
-                            }}
-                            className="min-h-10 rounded border border-neutral-800 px-3 text-left text-sm text-emerald-300 hover:border-emerald-500"
-                          >
-                            {type}
-                          </button>
-                        ))}
-                    </div>
-                  )}
-                  {pendingButton === null && selected !== undefined && (
-                    <div className="mb-3 grid grid-cols-[repeat(5,30px)] justify-center gap-[3px] rounded-lg border border-separator p-3">
-                      {Array.from(
-                        { length: device?.keyCount ?? 15 },
-                        (_, position) => {
-                          const occupied = positions.includes(position)
-                          return (
-                            <button
-                              key={position}
-                              type="button"
-                              aria-label={`Position ${position}`}
-                              aria-pressed={selectedPosition === position}
-                              onClick={() => {
-                                if (occupied) selectPosition(position)
-                              }}
-                              onMouseEnter={() => setHoveredPosition(position)}
-                              onMouseLeave={() => setHoveredPosition(null)}
-                              className={`h-[30px] w-[30px] rounded border border-separator text-xs text-muted hover:border-primary ${selectedPosition === position ? "border-primary bg-primary text-primary-foreground" : ""}`}
-                            >
-                              {position + 1}
-                            </button>
-                          )
-                        },
-                      )}
-                    </div>
-                  )}
-                  {pendingButton !== null ? (
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-[auto_repeat(5,30px)] items-center gap-[3px] rounded-lg border border-separator p-3">
-                        <Button
-                          type="button"
-                          variant="tertiary"
-                          onPress={() => {
-                            setPendingPosition(firstFreePosition())
-                            setPositionUnset(false)
-                            setNewPage(false)
-                          }}
-                        >
-                          First available
-                        </Button>
-                        {Array.from(
-                          { length: device?.keyCount ?? 15 },
-                          (_, position) => {
-                            return (
-                              <button
-                                key={position}
-                                type="button"
-                                aria-label={`Position ${position}`}
-                                aria-pressed={pendingPosition === position}
-                                onClick={() => {
-                                  if (
-                                    position ===
-                                    (device?.keyCount ?? 15) - 1
-                                  ) {
-                                    setPendingPosition(null)
-                                    setPositionUnset(true)
-                                  } else {
-                                    setPendingPosition(position)
-                                    setPositionUnset(false)
-                                  }
-                                  setNewPage(false)
-                                }}
-                                onMouseEnter={() =>
-                                  setHoveredPosition(position)
-                                }
-                                onMouseLeave={() => setHoveredPosition(null)}
-                                className={`h-[30px] w-[30px] rounded border border-separator text-xs text-muted hover:border-primary ${positionUnset && position === (device?.keyCount ?? 15) - 1 ? "border-primary bg-primary text-primary-foreground" : pendingPosition === position ? "border-primary bg-primary text-primary-foreground" : ""}`}
-                              >
-                                {position === (device?.keyCount ?? 15) - 1
-                                  ? "∅"
-                                  : position + 1}
-                              </button>
+                <Fieldset
+                  aria-labelledby="button-config-title"
+                  className={`grid min-h-0 gap-2 ${showButtonTypes ? "h-full grid-rows-[auto_minmax(0,1fr)]" : ""}`}
+                >
+                  <Fieldset.Legend
+                    id="button-config-title"
+                    className="flex w-full items-center justify-between gap-2"
+                  >
+                    <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                      {pendingButton === null && selected === undefined
+                        ? showButtonTypes
+                          ? "New button"
+                          : "Button"
+                        : "Selected button"}
+                    </span>
+                  </Fieldset.Legend>
+                  {showButtonTypes && pendingButton === null && (
+                    <div className="flex min-h-0 min-w-0 items-stretch gap-2">
+                      <ButtonTypePicker
+                        options={addableButtonTypes}
+                        value={
+                          selected === undefined
+                            ? undefined
+                            : String(currentButtonType)
+                        }
+                        label={
+                          selected === undefined
+                            ? "Button type"
+                            : "Change button type"
+                        }
+                        onSelect={(option) => {
+                          if (selected === undefined) {
+                            const config = option.defaultConfig
+                            beginInsert(
+                              {
+                                type: option.type,
+                                config:
+                                  typeof config === "object" &&
+                                  config !== null &&
+                                  !Array.isArray(config)
+                                    ? config
+                                    : {},
+                              },
+                              activeSelectedPosition ?? undefined,
                             )
-                          },
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {pendingButton.type === "core:change-deck" && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setNewPage(true)
-                              setPendingPosition(0)
-                            }}
-                            className="rounded border border-neutral-700 px-3 py-2 text-xs hover:border-sky-400"
-                          >
-                            Add new page
-                          </button>
-                        )}
-                      </div>
-                      {newPage && (
-                        <div className="grid gap-2 rounded-lg border border-neutral-800 p-3">
-                          <label className="grid gap-1 text-xs text-neutral-400">
-                            Page ID
-                            <input
-                              value={newPageId}
-                              onChange={(event) =>
-                                setNewPageId(event.target.value)
-                              }
-                              className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
-                            />
-                          </label>
-                          <label className="grid gap-1 text-xs text-neutral-400">
-                            Page name
-                            <input
-                              value={newPageName}
-                              onChange={(event) =>
-                                setNewPageName(event.target.value)
-                              }
-                              className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
-                            />
-                          </label>
-                          <label className="grid gap-1 text-xs text-neutral-400">
-                            Icon source
-                            <input
-                              placeholder="icon://layout-grid"
-                              value={newPageIcon}
-                              onChange={(event) =>
-                                setNewPageIcon(event.target.value)
-                              }
-                              className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
-                            />
-                          </label>
-                          <label className="grid gap-1 text-xs text-neutral-400">
-                            Background
-                            <input
-                              value={newPageBackground}
-                              onChange={(event) =>
-                                setNewPageBackground(event.target.value)
-                              }
-                              className="min-h-10 rounded border border-neutral-700 bg-neutral-950 px-3 text-sm text-neutral-100"
-                            />
-                          </label>
-                          <label className="flex items-center gap-2 text-xs text-neutral-400">
-                            <input
-                              type="checkbox"
-                              checked={newPagePaginated}
-                              onChange={(event) =>
-                                setNewPagePaginated(event.target.checked)
-                              }
-                            />{" "}
-                            Paginated page
-                          </label>
+                          } else {
+                            setButtonTypeOverride(option.type)
+                          }
+                          setShowButtonTypes(false)
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="tertiary"
+                        className="self-end"
+                        onPress={() => setShowButtonTypes(false)}
+                      >
+                        <CircleX aria-hidden="true" className="size-4" />
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
+                  {!showButtonTypes &&
+                    (pendingButton !== null ? (
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap gap-2">
+                          {pendingButton.type === "core:change-deck" && (
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              onPress={() => {
+                                setNewPage(true)
+                                setPendingPosition(0)
+                              }}
+                            >
+                              Add new page
+                            </Button>
+                          )}
                         </div>
-                      )}
-                      {!selectedGenerated && (
+                        {newPage && (
+                          <Fieldset className="grid gap-2 rounded-lg border border-separator bg-surface-secondary p-2">
+                            <Fieldset.Legend className="px-1 text-sm font-medium">
+                              New page
+                            </Fieldset.Legend>
+                            <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                              <Label className="min-w-0 break-words">
+                                Page ID
+                              </Label>
+                              <Input
+                                aria-label="Page ID"
+                                value={newPageId}
+                                onChange={(event) =>
+                                  setNewPageId(event.target.value)
+                                }
+                              />
+                            </TextField>
+                            <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                              <Label className="min-w-0 break-words">
+                                Page name
+                              </Label>
+                              <Input
+                                aria-label="Page name"
+                                value={newPageName}
+                                onChange={(event) =>
+                                  setNewPageName(event.target.value)
+                                }
+                              />
+                            </TextField>
+                            <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                              <Label className="min-w-0 break-words">
+                                Icon source
+                              </Label>
+                              <Input
+                                aria-label="Icon source"
+                                placeholder="icon://layout-grid"
+                                value={newPageIcon}
+                                onChange={(event) =>
+                                  setNewPageIcon(event.target.value)
+                                }
+                              />
+                            </TextField>
+                            <TextField className={INLINE_CONTROL_ROW_CLASS}>
+                              <Label className="min-w-0 break-words">
+                                Background
+                              </Label>
+                              <Input
+                                aria-label="Background"
+                                value={newPageBackground}
+                                onChange={(event) =>
+                                  setNewPageBackground(event.target.value)
+                                }
+                              />
+                            </TextField>
+                            <Switch
+                              isSelected={newPagePaginated}
+                              onChange={setNewPagePaginated}
+                              className="w-full min-w-0"
+                            >
+                              <Switch.Content
+                                className={`${INLINE_CONTROL_ROW_CLASS} w-full cursor-pointer`}
+                              >
+                                <Label>Paginated page</Label>
+                                <Switch.Control>
+                                  <Switch.Thumb />
+                                </Switch.Control>
+                              </Switch.Content>
+                            </Switch>
+                          </Fieldset>
+                        )}
                         <ButtonAppearanceFields
                           value={buttonAppearance}
                           variants={state?.themeVariants ?? {}}
+                          ownedGestures={ownedGestures}
+                          positionControl={
+                            <PositionPicker
+                              mode="add"
+                              keyCount={device?.keyCount ?? 15}
+                              selected={pendingPosition}
+                              unset={positionUnset}
+                              disabledPositions={systemPositions}
+                              onHover={setHoveredPosition}
+                              onSelect={(position) => {
+                                if (systemPositions.includes(position)) return
+                                const index = positions.indexOf(position)
+                                if (index >= 0) setPositionToReplace(position)
+                                else stagePendingPosition(position)
+                              }}
+                              onUnset={() => {
+                                setPendingPosition(null)
+                                setPositionToReplace(null)
+                                setPositionUnset(true)
+                                setNewPage(false)
+                              }}
+                              onFirstAvailable={() => {
+                                const position = firstFreePosition()
+                                if (position === undefined) return
+                                stagePendingPosition(position)
+                              }}
+                            />
+                          }
                           onChange={setButtonAppearance}
-                          onAsset={(asset) => chooseAsset("button.icon", asset)}
                         />
-                      )}
-                      <ButtonConfigEditor
-                        key={`pending:${pendingButton.type as string}`}
-                        wsClient={wsClient}
-                        revision={state?.revision ?? 0}
-                        buttonType={String(pendingButton.type ?? "")}
-                        config={pendingButton.config ?? {}}
-                        schema={
-                          state?.buttonSchemas?.[
-                            String(pendingButton.type ?? "")
-                          ]
-                        }
-                        validation={validation}
-                        deckOptions={deckOptions}
-                        saveLabel="Add button"
-                        hideActions
-                        onDraftChange={setButtonDraft}
-                        onPendingAssetChange={(path, asset) =>
-                          chooseAsset(`config.${path}`, asset ?? undefined)
-                        }
-                        onCancel={() => {
-                          setPendingButton(null)
-                          setPendingPosition(null)
-                          setSelectedPosition(null)
-                          setSelectedIndex(null)
-                        }}
-                        onSave={addPending}
-                      />
-                    </div>
-                  ) : selected === undefined ? (
-                    <div className="space-y-3">
-                      <p className="flex min-h-48 items-center justify-center text-sm text-muted">
-                        Select a button using its ⋮ menu.
-                      </p>
-                      {clipboard !== null && (
-                        <button
-                          type="button"
-                          onClick={() => add()}
-                          className="min-h-10 rounded bg-sky-600 px-3 text-sm"
-                        >
-                          Paste button
-                        </button>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="grid gap-4">
-                      <ButtonAppearanceFields
-                        value={buttonAppearance}
-                        variants={state?.themeVariants ?? {}}
-                        onChange={setButtonAppearance}
-                        onAsset={(asset) => chooseAsset("button.icon", asset)}
-                      />
-                      {!selectedGenerated && (
                         <ButtonConfigEditor
-                          key={`${activeDeckId}:${selectedIndex}:${state?.revision ?? 0}`}
+                          key={`pending:${pendingButton.type as string}`}
                           wsClient={wsClient}
                           revision={state?.revision ?? 0}
-                          buttonType={
-                            isButton(selected) &&
-                            typeof selected.type === "string"
-                              ? selected.type
-                              : String(selected)
-                          }
-                          config={isButton(selected) ? selected.config : {}}
+                          buttonType={String(pendingButton.type ?? "")}
+                          config={pendingButton.config ?? {}}
                           schema={
                             state?.buttonSchemas?.[
-                              isButton(selected) &&
-                              typeof selected.type === "string"
-                                ? selected.type
-                                : String(selected)
+                              String(pendingButton.type ?? "")
                             ]
                           }
                           validation={validation}
                           deckOptions={deckOptions}
+                          saveLabel="Add button"
                           hideActions
                           onDraftChange={setButtonDraft}
+                          onPreviewChange={setButtonPreviewDraft}
                           onPendingAssetChange={(path, asset) =>
                             chooseAsset(`config.${path}`, asset ?? undefined)
                           }
                           onCancel={() => {
-                            setSelectedIndex(null)
+                            setPendingButton(null)
+                            setPendingPosition(null)
+                            setPositionToReplace(null)
                             setSelectedPosition(null)
+                            setSelectedIndex(null)
+                            setButtonTypeOverride(null)
                           }}
-                          onSave={saveConfig}
+                          onSave={addPending}
                         />
-                      )}
-                    </div>
-                  )}
-                </section>
+                      </div>
+                    ) : selected === undefined ? (
+                      <div className="space-y-3">
+                        <p className="py-3 text-sm text-muted">
+                          Select a button using its ⋮ menu.
+                        </p>
+                        {clipboard !== null && (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            onPress={() => add()}
+                            className="min-h-10"
+                          >
+                            Paste button
+                          </Button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="grid gap-2">
+                        {!selectedGenerated && (
+                          <ButtonAppearanceFields
+                            value={buttonAppearance}
+                            variants={state?.themeVariants ?? {}}
+                            ownedGestures={ownedGestures}
+                            positionControl={
+                              <PositionPicker
+                                mode="edit"
+                                keyCount={device?.keyCount ?? 15}
+                                selected={activeSelectedPosition}
+                                disabledPositions={systemPositions}
+                                onHover={setHoveredPosition}
+                                onSelect={moveSelectedToPosition}
+                                onFirstAvailable={() => {
+                                  const position = firstFreePosition()
+                                  if (position === undefined) return
+                                  setSelectedPosition(position)
+                                  setSelectionDeckId(activeDeckId)
+                                }}
+                              />
+                            }
+                            onChange={setButtonAppearance}
+                          />
+                        )}
+                        {!selectedGenerated && (
+                          <ButtonConfigEditor
+                            key={`${activeDeckId}:${selectedIndex}:${state?.revision ?? 0}`}
+                            wsClient={wsClient}
+                            revision={state?.revision ?? 0}
+                            buttonType={String(
+                              currentButtonType ?? selectedType,
+                            )}
+                            config={buttonEditorConfig}
+                            schema={
+                              state?.buttonSchemas?.[
+                                String(currentButtonType ?? selectedType)
+                              ]
+                            }
+                            validation={validation}
+                            deckOptions={deckOptions}
+                            hideActions
+                            onDraftChange={setButtonDraft}
+                            onPreviewChange={setButtonPreviewDraft}
+                            onPendingAssetChange={(path, asset) =>
+                              chooseAsset(`config.${path}`, asset ?? undefined)
+                            }
+                            onCancel={() => {
+                              setSelectedIndex(null)
+                              setSelectedPosition(null)
+                              setButtonTypeOverride(null)
+                            }}
+                            onSave={saveConfig}
+                          />
+                        )}
+                      </div>
+                    ))}
+                </Fieldset>
               )}
             </Card.Content>
             {(pendingButton !== null ||
-              (selected !== undefined && !selectedGenerated)) && (
-              <Card.Footer className="mt-auto shrink-0 justify-end gap-2 border-t border-separator">
-                <Button
-                  type="button"
-                  variant="tertiary"
-                  onPress={() => {
-                    setPendingButton(null)
-                    setPendingPosition(null)
-                    setSelectedPosition(null)
-                    setSelectedIndex(null)
+              (selected !== undefined && !selectedGenerated)) &&
+              !showButtonTypes && (
+                <Card.Footer className="mt-auto shrink-0 justify-end gap-2 border-t border-separator">
+                  <Button
+                    type="button"
+                    variant="tertiary"
+                    onPress={() => {
+                      setPendingButton(null)
+                      setPendingPosition(null)
+                      setPositionToReplace(null)
+                      setSelectedPosition(null)
+                      setSelectedIndex(null)
+                      setButtonTypeOverride(null)
+                    }}
+                  >
+                    <CircleX aria-hidden="true" className="size-4" />
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    isDisabled={buttonDraft === null}
+                    onPress={() => {
+                      if (buttonDraft === null) return
+                      if (pendingButton !== null) addPending(buttonDraft)
+                      else saveConfig(buttonDraft)
+                    }}
+                  >
+                    <Check aria-hidden="true" className="size-4" />
+                    {pendingButton === null ? "Save button" : "Add button"}
+                  </Button>
+                </Card.Footer>
+              )}
+            <Modal>
+              {positionToReplace !== null && (
+                <Modal.Backdrop
+                  isOpen
+                  onOpenChange={(isOpen) => {
+                    if (!isOpen) setPositionToReplace(null)
                   }}
                 >
-                  <CircleX aria-hidden="true" className="size-4" />
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  variant="primary"
-                  isDisabled={buttonDraft === null}
-                  onPress={() => {
-                    if (buttonDraft === null) return
-                    if (pendingButton !== null) addPending(buttonDraft)
-                    else saveConfig(buttonDraft)
-                  }}
-                >
-                  <Check aria-hidden="true" className="size-4" />
-                  {pendingButton === null ? "Save button" : "Add button"}
-                </Button>
-              </Card.Footer>
-            )}
+                  <Modal.Container placement="center" size="sm">
+                    <Modal.Dialog aria-label="Replace button position">
+                      <Modal.Header>
+                        <Modal.Heading>
+                          Replace key {positionToReplace + 1}?
+                        </Modal.Heading>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <p>
+                          The button currently in this position will be replaced
+                          when you add this button.
+                        </p>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          type="button"
+                          variant="tertiary"
+                          onPress={() => setPositionToReplace(null)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="primary"
+                          onPress={() => {
+                            stagePendingPosition(positionToReplace)
+                            setPositionToReplace(null)
+                          }}
+                        >
+                          Replace key
+                        </Button>
+                      </Modal.Footer>
+                    </Modal.Dialog>
+                  </Modal.Container>
+                </Modal.Backdrop>
+              )}
+            </Modal>
           </Card>
         </div>
       )}

@@ -4,10 +4,23 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { fireEvent, render, screen } from "@testing-library/react"
 
 import { App } from "../App"
+import { SidePanel } from "../SidePanel"
 
 describe("App (emulator)", () => {
   beforeEach(() => {
     window.history.replaceState(null, "", "/")
+  })
+
+  it("uses a background only for the current sidebar item and on hover", () => {
+    render(<SidePanel activeSection="config" onSelect={() => undefined} />)
+    expect(screen.getByTestId("side-panel-config")).toHaveClass(
+      "bg-surface-secondary",
+      "hover:bg-surface-secondary",
+    )
+    expect(screen.getByTestId("side-panel-about")).toHaveClass(
+      "bg-transparent",
+      "hover:bg-surface-secondary",
+    )
   })
 
   it("renders the side panel and header by default", () => {

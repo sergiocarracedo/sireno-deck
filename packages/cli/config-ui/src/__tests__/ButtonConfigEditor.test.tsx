@@ -13,6 +13,147 @@ const wsClient = () => ({
 })
 
 describe("ButtonConfigEditor", () => {
+  it("shows addon schema descriptions as field help", () => {
+    render(
+      <ButtonConfigEditor
+        wsClient={wsClient()}
+        revision={1}
+        buttonType="date-time:date-time"
+        config={{ format: "YYYY-MM-DD" }}
+        schema={{
+          type: "object",
+          properties: {
+            format: {
+              type: "string",
+              title: "Date and time format",
+              description: "Use YYYY for the full year.",
+            },
+          },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByText("Use YYYY for the full year.")).toBeInTheDocument()
+    expect(screen.getByLabelText("Date and time format")).toHaveValue(
+      "YYYY-MM-DD",
+    )
+  })
+
+  it("notifies the preview with locally edited config before validation", async () => {
+    const onPreviewChange = vi.fn()
+    render(
+      <ButtonConfigEditor
+        wsClient={wsClient()}
+        revision={1}
+        buttonType="test:button"
+        config={{ name: "before" }}
+        schema={{
+          type: "object",
+          properties: { name: { type: "string" } },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+        onPreviewChange={onPreviewChange}
+      />,
+    )
+
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: { value: "after" },
+    })
+
+    await waitFor(() =>
+      expect(onPreviewChange).toHaveBeenLastCalledWith({ name: "after" }),
+    )
+  })
+
+  it("renders keyboard macros with HeroUI keyboard keys", () => {
+    render(
+      <ButtonConfigEditor
+        wsClient={wsClient()}
+        revision={1}
+        buttonType="test:button"
+        config={{ command: "macro://ctrl+c;delay(50ms);ctrl+v" }}
+        schema={{
+          type: "object",
+          properties: {
+            command: { type: "string", "x-control": "action" },
+          },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByText("ctrl+c")).toBeInTheDocument()
+    expect(screen.getByText("delay(50ms)")).toBeInTheDocument()
+    expect(screen.getByText("ctrl+v")).toBeInTheDocument()
+    expect(screen.getByLabelText("Default macro").tagName).toBe("INPUT")
+    expect(screen.getByLabelText("macOS override").tagName).toBe("INPUT")
+    expect(screen.getByLabelText("Linux override").tagName).toBe("INPUT")
+    expect(screen.getByLabelText("Windows override").tagName).toBe("INPUT")
+  })
+
+  it("toggles boolean config fields through the HeroUI switch", async () => {
+    const onPreviewChange = vi.fn()
+    render(
+      <ButtonConfigEditor
+        wsClient={wsClient()}
+        revision={1}
+        buttonType="test:button"
+        config={{ show_count: false }}
+        schema={{
+          type: "object",
+          properties: {
+            show_count: { type: "boolean", title: "Show count" },
+          },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+        onPreviewChange={onPreviewChange}
+      />,
+    )
+
+    const toggle = screen.getByRole("switch", { name: "Show count" })
+    expect(toggle).not.toBeChecked()
+    fireEvent.click(toggle)
+
+    expect(toggle).toBeChecked()
+    await waitFor(() =>
+      expect(onPreviewChange).toHaveBeenLastCalledWith({ show_count: true }),
+    )
+  })
+
+  it("applies an emoji selected in the icon picker", async () => {
+    const onPreviewChange = vi.fn()
+    render(
+      <ButtonConfigEditor
+        wsClient={wsClient()}
+        revision={1}
+        buttonType="test:button"
+        config={{ icon: "" }}
+        schema={{
+          type: "object",
+          properties: {
+            icon: { type: "string", title: "Icon", "x-control": "icon" },
+          },
+        }}
+        validation={null}
+        onSave={vi.fn()}
+        onPreviewChange={onPreviewChange}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Choose icon" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Emoji" }))
+    fireEvent.click(screen.getByRole("button", { name: "sparkling_heart" }))
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
+
+    await waitFor(() =>
+      expect(onPreviewChange).toHaveBeenLastCalledWith({ icon: "💖" }),
+    )
+  })
+
   it("adds and removes array config items", () => {
     const onSave = vi.fn()
     render(

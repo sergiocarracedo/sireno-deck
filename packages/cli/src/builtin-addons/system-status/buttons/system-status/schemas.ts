@@ -13,8 +13,13 @@ export const MetricEntrySchema = z
     z
       .object({
         id: z.enum(SYSTEM_METRIC_IDS),
-        label: z.string().min(1).optional(),
-        shortLabel: z.string().min(1).max(3).optional(),
+        label: z.string().min(1).optional().meta({ title: "Metric label" }),
+        shortLabel: z
+          .string()
+          .min(1)
+          .max(3)
+          .optional()
+          .meta({ title: "Short label" }),
       })
       .strict(),
   ])
@@ -34,24 +39,45 @@ export const MetricEntrySchema = z
 export const BarPageSchema = z
   .object({
     type: z.literal("bars"),
-    metrics: z.array(MetricEntrySchema).min(1).max(3),
+    metrics: z
+      .array(MetricEntrySchema)
+      .min(1)
+      .max(3)
+      .meta({ title: "Metrics" }),
   })
   .strict()
+  .meta({ title: "Bar gauges" })
 
 export const KpiPageSchema = z
   .object({
     type: z.literal("kpis"),
-    metrics: z.array(MetricEntrySchema).min(1).max(3),
+    metrics: z
+      .array(MetricEntrySchema)
+      .min(1)
+      .max(3)
+      .meta({ title: "Metrics" }),
   })
   .strict()
+  .meta({ title: "Key metrics" })
 
 export const ChartPageSchema = z
   .object({
     type: z.literal("chart"),
-    metrics: z.array(MetricEntrySchema).min(1).max(2),
-    windowSeconds: z.number().int().positive().max(60).default(60),
+    metrics: z
+      .array(MetricEntrySchema)
+      .min(1)
+      .max(2)
+      .meta({ title: "Metrics" }),
+    windowSeconds: z
+      .number()
+      .int()
+      .positive()
+      .max(60)
+      .default(60)
+      .meta({ title: "History window (seconds)" }),
   })
   .strict()
+  .meta({ title: "History chart" })
 
 export const PageSchema = z.discriminatedUnion("type", [
   BarPageSchema,

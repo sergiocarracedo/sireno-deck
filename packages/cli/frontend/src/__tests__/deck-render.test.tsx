@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import { act, fireEvent, render } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import { ChannelRegistry } from "@sirenodeck/sirenodeck"
 import { getDeviceModel } from "@/device/models"
@@ -92,6 +92,43 @@ describe("Deck", () => {
         gesture: "tap",
       },
     ])
+  })
+
+  it("sends tap, double-tap, and hold from pointer gestures", () => {
+    ChannelRegistry.resetForTests()
+    vi.useFakeTimers()
+    const sent: unknown[] = []
+    const { container } = render(
+      <WebSocketProvider value={(message) => sent.push(message)}>
+        <Deck deck={DECK} deviceModel={MODEL} />
+      </WebSocketProvider>,
+    )
+    const button = container.querySelector(
+      '[data-button-type="core:action"] [data-sireno-button-frame="true"]',
+    )!
+
+    fireEvent.pointerDown(button, { pointerId: 1, button: 0 })
+    fireEvent.pointerUp(button, { pointerId: 1, button: 0 })
+    vi.advanceTimersByTime(500)
+    fireEvent.pointerDown(button, { pointerId: 1, button: 0 })
+    fireEvent.pointerUp(button, { pointerId: 1, button: 0 })
+    fireEvent.pointerDown(button, { pointerId: 1, button: 0 })
+    fireEvent.pointerUp(button, { pointerId: 1, button: 0 })
+    fireEvent.pointerDown(button, { pointerId: 1, button: 0 })
+    vi.advanceTimersByTime(501)
+    fireEvent.pointerUp(button, { pointerId: 1, button: 0 })
+
+    expect(sent).toEqual([
+      { type: "button-action", deckId: "main", position: 1, gesture: "tap" },
+      {
+        type: "button-action",
+        deckId: "main",
+        position: 1,
+        gesture: "dbl-tap",
+      },
+      { type: "button-action", deckId: "main", position: 1, gesture: "hold" },
+    ])
+    vi.useRealTimers()
   })
 
   it("ignores buttons whose position is >= device keyCount", () => {

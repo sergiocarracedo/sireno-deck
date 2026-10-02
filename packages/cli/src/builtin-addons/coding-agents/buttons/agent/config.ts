@@ -6,7 +6,7 @@ export const configSchema = z
     // is resolved from the live snapshot (agentAtSlot). Explicit
     // providerId/sessionId pinning was never reachable (button ids are
     // positional), so it's gone.
-    slot: z.number().int().min(0).default(0),
+    slot: z.number().int().min(0).default(0).meta({ title: "Agent slot" }),
   })
   .strict()
 

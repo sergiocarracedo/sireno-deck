@@ -188,13 +188,13 @@ A small URL-like scheme normalises every button action into one of three
 flavours: `type://` (keys / text), `brightness://`, or raw shell (via the
 executor). The capability probe gates dispatch before it reaches the executor.
 
-| Property   | Value                                                                                                                      |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Files      | `packages/cli/src/deck/methods.ts:1`, `packages/cli/src/action/executor.ts:1`, `packages/cli/src/system/requirements.ts:1` |
-| Stability  | Contract (`type://                                                                                                         | brightness:// | raw`) / Implementation detail (executor internals, macro parser) |
-| Owns       | `dispatch` URL parser, host interpolation (`{{ host.* }}`), macro parser (`deck/macro-parse.ts`), execa wrapper            |
-| May change | New schemes; new `host.*` keys; new probe order                                                                            |
-| Failure    | Unknown host key → `ActionError`; missing capability → `NotImplementedError`                                               |
+| Property | Value |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------- |
+| Files | `packages/cli/src/deck/methods.ts:1`, `packages/cli/src/action/executor.ts:1`, `packages/cli/src/system/requirements.ts:1` |
+| Stability | Contract (`type://                                                                                                         | brightness:// | raw`) / Implementation detail (executor internals, macro parser) |
+| Owns | `dispatch` URL parser, host interpolation (`{{ host.* }}`), macro parser (`deck/macro-parse.ts`), execa wrapper |
+| May change | New schemes; new `host.*` keys; new probe order |
+| Failure | Unknown host key → `ActionError`; missing capability → `NotImplementedError` |
 
 ### B9. Transport boundary
 

@@ -520,6 +520,9 @@ export const addonsInventoryMessageSchema = baseServerMessage
               internal: z.boolean().default(false),
               generated: z.boolean().default(false),
               defaultConfig: z.unknown().optional(),
+              gestureHandlers: z
+                .array(z.enum(["tap", "dbl-tap", "hold"]))
+                .optional(),
             })
             .strict(),
         ),

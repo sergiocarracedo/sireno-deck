@@ -388,60 +388,48 @@ export const bridgeAddonServices = async (
 
       const allowedGestures = buttonService.gestureHandlers
       const handler = {
-        async onTap(ctx: {
-          buttonId: string
-          config: unknown
-          gesture: string
-        }) {
-          if (allowedGestures === undefined || !allowedGestures.includes("tap"))
-            return
-          try {
-            await buttonService.onTap?.(wrappedCtx)
-          } catch (err) {
-            logger.error(
-              { addonName, buttonType: resolvedButtonType, err },
-              `addon onTap failed`,
-            )
-          }
-        },
-        async onDblTap(ctx: {
-          buttonId: string
-          config: unknown
-          gesture: string
-        }) {
-          if (
-            allowedGestures === undefined ||
-            !allowedGestures.includes("dbl-tap")
-          )
-            return
-          try {
-            await buttonService.onDblTap?.(wrappedCtx)
-          } catch (err) {
-            logger.error(
-              { addonName, buttonType: resolvedButtonType, err },
-              `addon onDblTap failed`,
-            )
-          }
-        },
-        async onHold(ctx: {
-          buttonId: string
-          config: unknown
-          gesture: string
-        }) {
-          if (
-            allowedGestures === undefined ||
-            !allowedGestures.includes("hold")
-          )
-            return
-          try {
-            await buttonService.onHold?.(wrappedCtx)
-          } catch (err) {
-            logger.error(
-              { addonName, buttonType: resolvedButtonType, err },
-              `addon onHold failed`,
-            )
-          }
-        },
+        ...(allowedGestures?.includes("tap") && buttonService.onTap
+          ? {
+              async onTap() {
+                try {
+                  await buttonService.onTap?.(wrappedCtx)
+                } catch (err) {
+                  logger.error(
+                    { addonName, buttonType: resolvedButtonType, err },
+                    `addon onTap failed`,
+                  )
+                }
+              },
+            }
+          : {}),
+        ...(allowedGestures?.includes("dbl-tap") && buttonService.onDblTap
+          ? {
+              async onDblTap() {
+                try {
+                  await buttonService.onDblTap?.(wrappedCtx)
+                } catch (err) {
+                  logger.error(
+                    { addonName, buttonType: resolvedButtonType, err },
+                    `addon onDblTap failed`,
+                  )
+                }
+              },
+            }
+          : {}),
+        ...(allowedGestures?.includes("hold") && buttonService.onHold
+          ? {
+              async onHold() {
+                try {
+                  await buttonService.onHold?.(wrappedCtx)
+                } catch (err) {
+                  logger.error(
+                    { addonName, buttonType: resolvedButtonType, err },
+                    `addon onHold failed`,
+                  )
+                }
+              },
+            }
+          : {}),
         dispose() {
           buttonAbort.abort()
           try {

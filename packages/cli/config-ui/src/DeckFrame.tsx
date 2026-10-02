@@ -7,7 +7,15 @@ import {
   deckDimensions,
   type DeviceModelSpec,
 } from "@sirenodeck/sirenodeck"
-import { Dropdown, Button, Label } from "@heroui/react"
+import { Button, Dropdown, Label, Modal } from "@heroui/react"
+import {
+  ArrowDown,
+  ArrowUp,
+  Copy,
+  CopyPlus,
+  Pencil,
+  Trash2,
+} from "lucide-react"
 
 import {
   createEmulatorGestureDetector,
@@ -28,17 +36,20 @@ export interface DeckFrameProps {
     gesture: "tap" | "dbl-tap" | "hold"
   }) => void
   readonly onDropPosition?: (position: number, event: React.DragEvent) => void
-  readonly onKeyAction?: (
-    position: number,
-    action: "edit" | "copy" | "duplicate" | "up" | "down" | "delete",
-  ) => void
+  readonly onKeyAction?: (position: number, action: KeyAction) => void
+  readonly systemPositions?: readonly number[]
   readonly highlightedKey?: number | null
   readonly previewConfig?: {
     index: number
     position?: number
     type?: string
     config: Record<string, unknown>
-    appearance?: { icon: string; variant: string }
+    appearance?: {
+      icon: string
+      label: string
+      variant: string
+      actions: { tap?: string; dbltap?: string; hold?: string }
+    }
     assets?: Array<{ filename: string; preview: string }>
   } | null
   readonly fitToContainer?: boolean
@@ -47,6 +58,17 @@ export interface DeckFrameProps {
   // (which would force React to re-render and discard internal state).
   readonly onIframeRef?: (iframe: HTMLIFrameElement | null) => void
 }
+
+const KEY_ACTIONS = [
+  { action: "edit", label: "Edit", Icon: Pencil },
+  { action: "copy", label: "Copy config", Icon: Copy },
+  { action: "duplicate", label: "Duplicate", Icon: CopyPlus },
+  { action: "up", label: "Move up", Icon: ArrowUp },
+  { action: "down", label: "Move down", Icon: ArrowDown },
+  { action: "delete", label: "Delete", Icon: Trash2 },
+] as const
+
+type KeyAction = (typeof KEY_ACTIONS)[number]["action"]
 
 export const DeckFrame = ({
   frontendUrl,
@@ -57,6 +79,7 @@ export const DeckFrame = ({
   onGesture,
   onDropPosition,
   onKeyAction,
+  systemPositions = [],
   highlightedKey,
   previewConfig = null,
   fitToContainer = false,
@@ -67,6 +90,9 @@ export const DeckFrame = ({
   const onGestureRef = useRef(onGesture)
   onGestureRef.current = onGesture
   const [pressedIndex, setPressedIndex] = useState<number | null>(null)
+  const [deleteConfirmationPosition, setDeleteConfirmationPosition] = useState<
+    number | null
+  >(null)
   const [iframeState, setIframeState] = useState<
     "loading" | "loaded" | "error"
   >("loading")
@@ -268,7 +294,8 @@ export const DeckFrame = ({
           {Array.from({ length: keyCount }, (_, i) => {
             const isPressed = pressedIndex === i
             const editorControls =
-              onKeyAction === undefined ? null : (
+              onKeyAction === undefined ||
+              systemPositions.includes(i) ? null : (
                 <div className="pointer-events-none absolute top-0 right-0 z-20 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100 [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100">
                   <Dropdown>
                     <Button
@@ -282,35 +309,35 @@ export const DeckFrame = ({
                     <Dropdown.Popover>
                       <Dropdown.Menu
                         aria-label="Key actions"
-                        onAction={(key) =>
-                          onKeyAction(
-                            i,
-                            String(key) as
-                              | "edit"
-                              | "copy"
-                              | "duplicate"
-                              | "up"
-                              | "down"
-                              | "delete",
-                          )
-                        }
+                        onAction={(key) => {
+                          const action = String(key) as KeyAction
+                          if (action === "delete") {
+                            setDeleteConfirmationPosition(i)
+                            return
+                          }
+                          onKeyAction(i, action)
+                        }}
                       >
-                        {(
-                          [
-                            ["edit", "Edit/select"],
-                            ["copy", "Copy config"],
-                            ["duplicate", "Duplicate"],
-                            ["up", "Previous position"],
-                            ["down", "Next position"],
-                            ["delete", "Delete"],
-                          ] as const
-                        ).map(([action, label]) => (
+                        {KEY_ACTIONS.map(({ action, label, Icon }) => (
                           <Dropdown.Item
                             key={action}
                             id={action}
                             textValue={label}
+                            className={
+                              action === "delete" ? "text-danger" : undefined
+                            }
                           >
-                            <Label>{label}</Label>
+                            <Icon
+                              aria-hidden="true"
+                              className={`size-4 ${action === "delete" ? "text-danger" : ""}`}
+                            />
+                            <Label
+                              className={
+                                action === "delete" ? "text-danger" : undefined
+                              }
+                            >
+                              {label}
+                            </Label>
                           </Dropdown.Item>
                         ))}
                       </Dropdown.Menu>
@@ -361,6 +388,50 @@ export const DeckFrame = ({
           })}
         </div>
       </div>
+      <Modal>
+        {deleteConfirmationPosition !== null && (
+          <Modal.Backdrop
+            isOpen
+            onOpenChange={(isOpen) => {
+              if (!isOpen) setDeleteConfirmationPosition(null)
+            }}
+          >
+            <Modal.Container placement="center" size="sm">
+              <Modal.Dialog aria-label="Confirm deleting button">
+                <Modal.Header>
+                  <Modal.Heading>
+                    Delete key {deleteConfirmationPosition + 1}?
+                  </Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>This removes the button from this deck.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    type="button"
+                    variant="tertiary"
+                    onPress={() => setDeleteConfirmationPosition(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    className="bg-danger text-foreground-contrast"
+                    onPress={() => {
+                      const position = deleteConfirmationPosition
+                      setDeleteConfirmationPosition(null)
+                      onKeyAction?.(position, "delete")
+                    }}
+                  >
+                    Delete button
+                  </Button>
+                </Modal.Footer>
+              </Modal.Dialog>
+            </Modal.Container>
+          </Modal.Backdrop>
+        )}
+      </Modal>
     </div>
   )
 }
