@@ -184,15 +184,16 @@ the same surface as wlroots.
 
 ### B8. Action dispatch
 
-A small URL-like scheme normalises every button action into one of three
-flavours: `type://` (keys / text), `brightness://`, or raw shell (via the
-executor). The capability probe gates dispatch before it reaches the executor.
+A small URL-like scheme normalises button actions into `type://` (keys / text),
+`brightness://`, `url://` (default browser; HTTP, HTTPS, mailto, and tel only),
+or raw shell (via the executor). URL actions use an OS-specific provider and
+never fall through to shell execution.
 
 | Property   | Value                                                                                                                      |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Files      | `packages/cli/src/deck/methods.ts:1`, `packages/cli/src/action/executor.ts:1`, `packages/cli/src/system/requirements.ts:1` |
-| Stability  | Contract (`type://                                                                                                         | brightness:// | raw`) / Implementation detail (executor internals, macro parser) |
-| Owns       | `dispatch` URL parser, host interpolation (`{{ host.* }}`), macro parser (`deck/macro-parse.ts`), execa wrapper            |
+| Stability  | Contract (`type://` / `brightness://` / `url://` / raw) / Implementation detail (executor internals, macro parser)         |
+| Owns       | `dispatch` parser, URL provider, host interpolation (`{{ host.* }}`), macro parser (`deck/macro-parse.ts`), execa wrapper  |
 | May change | New schemes; new `host.*` keys; new probe order                                                                            |
 | Failure    | Unknown host key → `ActionError`; missing capability → `NotImplementedError`                                               |
 

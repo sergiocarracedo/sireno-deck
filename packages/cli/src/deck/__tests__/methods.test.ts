@@ -36,6 +36,23 @@ const setup = (decks: ReadonlyArray<RuntimeDeck>) => {
 }
 
 describe("createMethods", () => {
+  it("dispatch routes url:// through the URL provider", async () => {
+    const { methods } = setup([{ id: "main", name: "Main", buttons: [] }])
+    const open = vi.fn(async () => undefined)
+    methods.setUrlProvider({ open })
+
+    await methods.dispatch("url://https://example.com/path")
+
+    expect(open).toHaveBeenCalledWith("https://example.com/path")
+  })
+
+  it("dispatch rejects an empty url:// action", async () => {
+    const { methods } = setup([{ id: "main", name: "Main", buttons: [] }])
+    await expect(methods.dispatch("url://")).rejects.toThrow(
+      "url:// requires a URL",
+    )
+  })
+
   it("navigateToDeck pushes and changes active", () => {
     const { methods, runtime } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },

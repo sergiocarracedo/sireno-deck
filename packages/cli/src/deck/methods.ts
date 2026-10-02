@@ -7,6 +7,7 @@ import type {
   NotificationArgs,
   NotificationProvider,
 } from "@/system/providers/notification"
+import type { UrlProvider } from "@/system/providers/url"
 import {
   type RequirementsCheckResult,
   type SystemCapability,
@@ -39,6 +40,7 @@ export interface MethodsContext {
   logger: pino.Logger
   keyMacroProvider?: KeyMacroProvider
   notificationProvider?: NotificationProvider
+  urlProvider?: UrlProvider
 }
 
 export interface Methods {
@@ -80,6 +82,7 @@ export interface Methods {
    */
   notify(args: NotificationArgs): Promise<void>
   setNotificationProvider(provider: NotificationProvider): void
+  setUrlProvider(provider: UrlProvider): void
   setRequirements(requirements: RequirementsCheckResult): void
   checkRequirement(capability: SystemCapability): boolean
   showTemporaryError(
@@ -104,6 +107,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
   let keyMacroProvider: KeyMacroProvider | undefined = ctx.keyMacroProvider
   let notificationProvider: NotificationProvider | undefined =
     ctx.notificationProvider
+  let urlProvider: UrlProvider | undefined = ctx.urlProvider
   const logger = ctx.logger.child({ component: "methods" })
   const setKeyMacroProvider: Methods["setKeyMacroProvider"] = (provider) => {
     keyMacroProvider = provider
@@ -112,6 +116,9 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     provider,
   ) => {
     notificationProvider = provider
+  }
+  const setUrlProvider: Methods["setUrlProvider"] = (provider) => {
+    urlProvider = provider
   }
   const notify: Methods["notify"] = async (args) => {
     if (notificationProvider === undefined) {
@@ -254,6 +261,21 @@ export const createMethods = (ctx: MethodsContext): Methods => {
       await keyMacro({ kind: "text", value: text })
       return
     }
+    if (value.startsWith("url://")) {
+      const url = value.slice("url://".length)
+      if (url.length === 0) {
+        throw new NotImplementedError(
+          "dispatch: url:// requires a URL, e.g. url://https://example.com",
+        )
+      }
+      if (urlProvider === undefined) {
+        throw new NotImplementedError(
+          "dispatch: url:// requires a URL provider configured for this platform",
+        )
+      }
+      await urlProvider.open(url)
+      return
+    }
     if (value.startsWith("macro://")) {
       const inner = value.slice("macro://".length)
       if (inner.length === 0) {
@@ -335,6 +357,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     subscribe,
     setKeyMacroProvider,
     setNotificationProvider,
+    setUrlProvider,
     notify,
     setRequirements,
     checkRequirement,

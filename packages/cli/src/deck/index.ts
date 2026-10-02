@@ -5,6 +5,7 @@ import { createStore } from "@/core/store"
 import { NotImplementedError } from "@/util/errors"
 import { createLogger } from "@/util/logger"
 import type { KeyMacroProvider } from "@/system/providers/key-macro"
+import type { UrlProvider } from "@/system/providers/url"
 
 import { createActionExecutor } from "@/action/executor"
 import { getHostContext } from "./host-context"
@@ -55,6 +56,7 @@ export interface CreateDeckRuntimeOptions {
   decks: ReadonlyArray<RuntimeDeck>
   logger?: pino.Logger
   keyMacroProvider?: KeyMacroProvider
+  urlProvider?: UrlProvider
 }
 
 export const createDeckRuntime = (
@@ -91,6 +93,9 @@ export const createDeckRuntime = (
     logger,
     ...(options.keyMacroProvider !== undefined
       ? { keyMacroProvider: options.keyMacroProvider }
+      : {}),
+    ...(options.urlProvider !== undefined
+      ? { urlProvider: options.urlProvider }
       : {}),
   })
 
