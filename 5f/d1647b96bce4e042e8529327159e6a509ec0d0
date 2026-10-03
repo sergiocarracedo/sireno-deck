@@ -1,0 +1,18 @@
+package.json
+  h_31bfcf89e26281 8
+packages/cli/bin/dev.js
+  h_31bfcf89e26281 58-64,70-74
+packages/cli/src/cli/commands/start.ts
+  h_31bfcf89e26281 17-20,484-490
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "5fd1647b96bce4e042e8529327159e6a509ec0d0",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
