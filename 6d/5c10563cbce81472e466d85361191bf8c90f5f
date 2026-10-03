@@ -1,0 +1,18 @@
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/__tests__/frontend.test.tsx
+  h_31bfcf89e26281 106
+packages/cli/src/outputClient/real.ts
+  h_31bfcf89e26281 155
+packages/cli/src/render/__tests__/push-startup-screen.test.ts
+  h_31bfcf89e26281 32-34,60-62,78-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6d5c10563cbce81472e466d85361191bf8c90f5f",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
