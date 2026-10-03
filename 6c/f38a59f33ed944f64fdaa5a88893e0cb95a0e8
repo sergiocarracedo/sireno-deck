@@ -1,0 +1,18 @@
+packages/cli/src/builtin-addons/coding-agents/__tests__/opencode-provider.test.ts
+  h_31bfcf89e26281 72,92
+packages/cli/src/builtin-addons/coding-agents/providers/opencode.ts
+  h_31bfcf89e26281 415,417-419
+packages/cli/src/cli/commands/run.ts
+  h_31bfcf89e26281 1245-1247
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6cf38a59f33ed944f64fdaa5a88893e0cb95a0e8",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
