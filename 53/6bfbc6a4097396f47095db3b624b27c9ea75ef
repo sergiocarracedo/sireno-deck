@@ -1,0 +1,30 @@
+docs/architecture/boundaries.md
+  h_31bfcf89e26281 187-190,195-196
+packages/cli/src/cli/commands/run.ts
+  h_31bfcf89e26281 46,55,74,993-1000,1002,1015,1141,1265-1266,1268
+packages/cli/src/deck/__tests__/inject-config-ui-button.test.ts
+  h_31bfcf89e26281 1-30
+packages/cli/src/deck/__tests__/methods.test.ts
+  h_31bfcf89e26281 39-55
+packages/cli/src/deck/index.ts
+  h_31bfcf89e26281 8,59,97-99
+packages/cli/src/deck/inject-config-ui-button.ts
+  h_31bfcf89e26281 1-23
+packages/cli/src/deck/methods.ts
+  h_31bfcf89e26281 10,43,85,110,120-122,264-278,360
+packages/cli/src/system/providers/__tests__/url.test.ts
+  h_31bfcf89e26281 1-53
+packages/cli/src/system/providers/url.ts
+  h_31bfcf89e26281 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "536bfbc6a4097396f47095db3b624b27c9ea75ef",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
