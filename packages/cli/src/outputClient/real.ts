@@ -152,7 +152,7 @@ export class RealOutputClient implements OutputClient {
       const logoCandidates = [
         new URL("../assets/logo72x72.png", import.meta.url),
         new URL("../src/assets/logo72x72.png", import.meta.url),
-      ].map(fileURLToPath)
+      ].map((url) => fileURLToPath(url))
       const logoPath = logoCandidates.find(existsSync) ?? logoCandidates[0]!
       await pushStartupScreen({ logoPath, version: VERSION, device, logger })
 

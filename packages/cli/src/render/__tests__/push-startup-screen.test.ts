@@ -29,7 +29,9 @@ describe("pushStartupScreen", () => {
   it("renders version, logo, and loading on the center row without a frontend", async () => {
     mkdirSync(workDir, { recursive: true })
     writeFileSync(logoPath, await redLogo())
-    const fillKeyBuffer = vi.fn(async () => undefined)
+    const fillKeyBuffer = vi.fn<(key: number, image: Buffer) => Promise<void>>(
+      async () => undefined,
+    )
 
     await pushStartupScreen({
       logoPath,
@@ -55,7 +57,9 @@ describe("pushStartupScreen", () => {
 
   it("centers the three-key group for an eight-column deck", async () => {
     writeFileSync(logoPath, await redLogo())
-    const fillKeyBuffer = vi.fn(async () => undefined)
+    const fillKeyBuffer = vi.fn<(key: number, image: Buffer) => Promise<void>>(
+      async () => undefined,
+    )
 
     await pushStartupScreen({
       logoPath,
@@ -71,7 +75,9 @@ describe("pushStartupScreen", () => {
   })
 
   it("keeps startup non-fatal if the logo is unavailable", async () => {
-    const fillKeyBuffer = vi.fn(async () => undefined)
+    const fillKeyBuffer = vi.fn<(key: number, image: Buffer) => Promise<void>>(
+      async () => undefined,
+    )
 
     await expect(
       pushStartupScreen({

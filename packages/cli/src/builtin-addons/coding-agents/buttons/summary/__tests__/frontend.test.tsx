@@ -103,7 +103,7 @@ describe("coding-agents:summary matrix rain", () => {
     expect(styles).toContain("color:var(--sireno-color-fg)")
     expect(styles).toContain("color:var(--sireno-color-foreground-contrast)")
     expect(styles).not.toContain("--sireno-color-background")
-    expect(container.firstElementChild).toHaveClass(
+    expect(container.firstElementChild?.classList).toContain(
       "text-[color:var(--sireno-color-fg)]",
     )
   })
