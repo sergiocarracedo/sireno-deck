@@ -1,0 +1,353 @@
+packages/cli/config-ui/src/__tests__/EditorPage.test.tsx
+  s_b763e6150604cb::t_334c645f10a436 820-821,834-842
+  s_b763e6150604cb::t_ac2ee2af7cc125 725-734,736-752,754-760,764,766-768
+  s_b763e6150604cb::t_5301d3fdd9081d 578-580,845
+  s_b763e6150604cb::t_6881c36d49d6cb 324,448-452
+  s_b763e6150604cb::t_74fe14681f1b3c 315-317
+  s_b763e6150604cb::t_65eeb42a677165 476,492,494-495,497,503,508-512,514-516,534-543
+  s_b763e6150604cb::t_9864c7d45369b8 311,322,325,340,343,441,496,708
+  s_b763e6150604cb::t_f4cc55fc729aff 334-335
+  s_b763e6150604cb::t_abb2155af5e4c5 520-522,528-532
+  s_b763e6150604cb::t_55866e4f10f18e 234-238
+  s_b763e6150604cb::t_82b5e7f351b8a0 226-233,239-242
+  s_b763e6150604cb::t_03766d07962089 456-464
+  s_b763e6150604cb::t_490998df2b26b1 342,344
+  s_b763e6150604cb::t_bb8db14bf74222 582-585
+  s_b763e6150604cb::t_bc9305dac7f91e 292-302,337-339,341
+  s_b763e6150604cb::t_a2476a918f8bb2 318,336,438,493,704
+  s_b763e6150604cb::t_9969dfb1c187f2 286,326-330,416,443-447,475,498-502,639,710-712
+  s_b763e6150604cb::t_cb9c2649e9c9f9 465-469
+  s_b763e6150604cb::t_61fc303ecb8197 408-410
+  s_b763e6150604cb::t_322870d37a9917 28-32,174,273,795
+  s_b763e6150604cb::t_5c0848d05f0575 700-703
+  s_b763e6150604cb::t_1442a9655564ca 735,761-763
+  s_b763e6150604cb::t_8f66a24fface07 133
+  s_b763e6150604cb::t_e0034dbc3dae0f 640-695,697-699,705-707,709,713,715-720,722-724
+  s_b763e6150604cb::t_4a21abf351bbd0 321,331-333,804-806,813-815,826-828
+  s_b763e6150604cb::t_db9bffdb3abc07 793,796-803,807-812,816-819,822-824,829-833,843,846-849
+  s_b763e6150604cb::t_1c81b674ab9a8c 477-491,517-519,523-527,533
+  s_b763e6150604cb::t_3b89cf75b2519f 422-430
+  s_b763e6150604cb::t_4079d54b1abc33 721
+  s_b763e6150604cb::t_fa7078b1ae7874 504-506,513
+  s_b763e6150604cb::t_47b9b071a0f713 507
+  s_b763e6150604cb::t_5f82badc2ddc71 589-600,602-628,630-638
+  s_b763e6150604cb::t_664f29631ca0b3 319-320,439-440
+  s_b763e6150604cb::t_d0416da7d63fc1 132,191,404,573,601,629,696,753,765,825,844,872
+  s_b763e6150604cb::t_a7f3921ed3b165 714
+  s_b763e6150604cb::t_392e88d7ec698e 581,586-588,769-792
+  s_b763e6150604cb::t_0ed5d5b9f665de 794
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/config.ts
+  s_b763e6150604cb::t_4a21abf351bbd0 4-9
+packages/cli/config-ui/src/pages/ButtonConfigEditor/FormFieldParts.tsx
+  s_b763e6150604cb::t_fda7680f245513 1-23
+packages/cli/src/outputClient/__tests__/real.test.ts
+  s_b763e6150604cb::t_422bc03b7dc3b6 9,33-35,222-225
+packages/cli/config-ui/src/pages/ButtonConfigEditor/ButtonTypePicker.tsx
+  s_b763e6150604cb::t_3c2f9b01f7c50d 1-80
+packages/cli/config-ui/src/pages/ButtonConfigEditor/PositionPicker.tsx
+  s_b763e6150604cb::t_c34a55c2002819 1-68
+docs/architecture/boundaries.md
+  s_b763e6150604cb::t_a762b6fed043b1 191-197
+packages/cli/frontend/src/App.tsx
+  s_b763e6150604cb::t_e1fd4bca30ef97 41-43
+  s_b763e6150604cb::t_99f8f6fb6f76b7 167-172
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/DeckSelectControl.tsx
+  s_b763e6150604cb::t_dd152afd946cfa 1-33,41-47
+  s_b763e6150604cb::t_d6106212524da6 34-40
+packages/cli/src/config/schemas.ts
+  s_b763e6150604cb::t_5cd6eba760e894 17-19
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/frontend.tsx
+  s_b763e6150604cb::t_887d57d75d2588 33,75,216
+packages/cli/src/builtin-addons/media/buttons/volume/volume-down/config.ts
+  s_b763e6150604cb::t_ec694e4936db59 4
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/BooleanControl.tsx
+  s_b763e6150604cb::t_dd152afd946cfa 1-20,22-34
+  s_b763e6150604cb::t_0c5b4d060b9e2b 21
+packages/cli/src/builtin-addons/brightness/buttons/brightness/config.ts
+  s_b763e6150604cb::t_2d4ba493fc0f16 5-16
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/TextControl.tsx
+  s_b763e6150604cb::t_dd152afd946cfa 1-36
+packages/cli/config-ui/src/App.tsx
+  s_b763e6150604cb::t_bce434fe80ba32 444
+  s_b763e6150604cb::t_490998df2b26b1 271-273
+  s_b763e6150604cb::t_0444d990878dfb 2,536
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_b763e6150604cb::t_96c92b8d9f6216 1540,1557-1558
+packages/cli/src/api/protocol-internal.ts
+  s_b763e6150604cb::t_e23efe65763b84 523-525
+packages/cli/config-ui/src/pages/ButtonConfigEditor/ConfigForm.tsx
+  s_b763e6150604cb::t_861a94d881fc0b 1-33,38-50
+  s_b763e6150604cb::t_f706e10315d0e1 34-37
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_b763e6150604cb::t_899974a737e84c 391-432
+packages/cli/src/builtin-addons/core/buttons/media-sample/config.ts
+  s_b763e6150604cb::t_ec694e4936db59 4-5
+packages/cli/src/builtin-addons/session/buttons/time/config.ts
+  s_b763e6150604cb::t_ec694e4936db59 4
+packages/cli/src/builtin-addons/date-time/buttons/time/config.ts
+  s_b763e6150604cb::t_490998df2b26b1 5-9
+packages/cli/config-ui/src/SidePanel.tsx
+  s_b763e6150604cb::t_89462dba44cc05 79,83
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_b763e6150604cb::t_f4415bc7349c74 3,97-131
+  s_b763e6150604cb::t_6793cb3cbdf78e 132-133
+packages/cli/config-ui/src/__tests__/ButtonConfigEditor.test.tsx
+  s_b763e6150604cb::t_eef1d304b97cbf 98-127
+  s_b763e6150604cb::t_fa131bcd50f875 16-43
+  s_b763e6150604cb::t_48c49f380ef4a0 128-156
+  s_b763e6150604cb::t_b4e0ce22939781 44-70
+  s_b763e6150604cb::t_ddc0023d1cc19d 71-91,96-97
+  s_b763e6150604cb::t_36daf96f9bf860 92-95
+packages/cli/config-ui/src/pages/ButtonConfigEditor/utils.ts
+  s_b763e6150604cb::t_92dc680f1f2d37 8-10
+  s_b763e6150604cb::t_fda7680f245513 1-7,11-56
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/ShellControl.tsx
+  s_b763e6150604cb::t_dd152afd946cfa 1-29
+packages/cli/config-ui/src/components/ButtonActionsEditor.tsx
+  s_b763e6150604cb::t_6c07493110fab4 1-37,42-84
+  s_b763e6150604cb::t_d6106212524da6 38-41
+packages/cli/config-ui/src/components/MacroPreview.tsx
+  s_b763e6150604cb::t_87757e789da7f8 1-22
+packages/cli/config-ui/src/components/ActionValueEditor.tsx
+  s_b763e6150604cb::t_0844e15a640308 48-57,184-189
+  s_b763e6150604cb::t_21698988826164 2,5-15,35,37-47,58-59,67-85,112-113,115-145,181-183,190-193,206-207
+  s_b763e6150604cb::t_000adaab485241 146,164-176,178-179
+  s_b763e6150604cb::t_b1b70d4f7dc383 180,208-209
+  s_b763e6150604cb::t_490998df2b26b1 60-66
+  s_b763e6150604cb::t_62325b7a9643a8 114
+  s_b763e6150604cb::t_aeb9552177bd9e 1,3-4,86-111,147-163,177,194-205
+  s_b763e6150604cb::t_d9d900785cf2cf 16-34,36
+docs/plans/2026-07-24-extend-system-status-addon-with-missing-metrics.md
+  s_b763e6150604cb::t_a762b6fed043b1 30-39
+packages/cli/src/deck/runtime/runtime.ts
+  s_b763e6150604cb::t_3efb75c673a663 26
+  s_b763e6150604cb::t_46edebdc832fe3 606-623
+packages/cli/src/builtin-addons/media/buttons/volume/volume-up/config.ts
+  s_b763e6150604cb::t_ec694e4936db59 4
+packages/cli/config-ui/src/pages/ButtonConfigEditor/ButtonAppearanceFields.tsx
+  s_b763e6150604cb::t_c34a55c2002819 1-77
+packages/cli/src/builtin-addons/coding-agents/buttons/summary/__tests__/frontend.test.tsx
+  s_b763e6150604cb::t_d6106212524da6 104
+  s_b763e6150604cb::t_6d0ae8083b110e 100-103,105-107
+packages/cli/frontend/src/components/Deck.tsx
+  s_b763e6150604cb::t_33aa42d6ccc816 230,307
+  s_b763e6150604cb::t_71df366479269d 257
+  s_b763e6150604cb::t_6d88b3f66d0ce9 150,168-208
+  s_b763e6150604cb::t_617dbb9a690b36 209
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/IconControl.tsx
+  s_b763e6150604cb::t_0cff7d30b21bed 1-31
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/ArrayControl.tsx
+  s_b763e6150604cb::t_b866d824a4ba37 1-3,5-10,12-25,31,36-39,41-67,71-77
+  s_b763e6150604cb::t_d6106212524da6 26-30,32-35
+  s_b763e6150604cb::t_5d18a38072065f 4,40,68-70
+  s_b763e6150604cb::t_8274d5984ad059 11
+packages/cli/config-ui/src/pages/AddonsPage.tsx
+  s_b763e6150604cb::t_28ea47c171b5e8 29
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/SelectControl.tsx
+  s_b763e6150604cb::t_dd152afd946cfa 1-46
+AGENTS.md
+  s_b763e6150604cb::t_a762b6fed043b1 95,108
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/EmojiControl.tsx
+  s_b763e6150604cb::t_0cff7d30b21bed 1-2,4-70
+  s_b763e6150604cb::t_b866d824a4ba37 3
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/config.ts
+  s_b763e6150604cb::t_4a21abf351bbd0 4-9
+packages/cli/config-ui/src/pages/ButtonConfigEditor.tsx
+  s_b763e6150604cb::t_ae6117431a1901 3-4,8-11,13,29,52,129-139,202,212,218
+packages/cli/src/deck/deck-config.ts
+  s_b763e6150604cb::t_8905b4ad24a84c 148-149,155-159
+packages/cli/src/render/__tests__/protocol.test.ts
+  s_b763e6150604cb::t_494e0d9f48aae1 19
+  s_b763e6150604cb::t_47c254dec419fd 22-46
+packages/cli/src/builtin-addons/value-display/buttons/value-display/config.ts
+  s_b763e6150604cb::t_490998df2b26b1 9-17,19-24
+  s_b763e6150604cb::t_5cd6eba760e894 37-38,44-45
+  s_b763e6150604cb::t_50fe71c52458f1 8,18,25,31
+packages/cli/src/builtin-addons/date-time/buttons/date/config.ts
+  s_b763e6150604cb::t_50fe71c52458f1 5-6
+plans/design/PLAN.md
+  s_b763e6150604cb::t_a762b6fed043b1 117
+packages/cli/src/builtin-addons/date-time/buttons/custom/config.ts
+  s_b763e6150604cb::t_5d601652fd9549 5-9
+packages/cli/src/cli/commands/__tests__/addon-entry-paths.test.ts
+  s_b763e6150604cb::t_5d601652fd9549 79-85
+  s_b763e6150604cb::t_0ff2cfe63e8608 4-8,53-78,86-89
+packages/cli/config-ui/src/components/EmojiPicker.tsx
+  s_b763e6150604cb::t_4e7a6bff99cb2f 2,43,46-48,52-53,56
+packages/cli/src/outputClient/real.ts
+  s_b763e6150604cb::t_d9215c27a63c09 1,13,16,150-157
+docs/solutions/runtime-errors/real-mode-hid-stall-after-idle.md
+  s_b763e6150604cb::t_a762b6fed043b1 25-26
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/ActionControl.tsx
+  s_b763e6150604cb::t_0cff7d30b21bed 1-27
+packages/cli/config-ui/src/DeckFrame.tsx
+  s_b763e6150604cb::t_d6106212524da6 11-18,39,93-95
+  s_b763e6150604cb::t_280d66619c48b6 312-319,321,326-328,330-340
+  s_b763e6150604cb::t_490998df2b26b1 297-298
+  s_b763e6150604cb::t_04b61e24fd743d 391-434
+  s_b763e6150604cb::t_99f8f6fb6f76b7 47-52
+  s_b763e6150604cb::t_b76b29bf6b3e65 10,62-71
+  s_b763e6150604cb::t_781f45e6d9d60c 40,82
+  s_b763e6150604cb::t_8bb9d3def23662 72
+packages/cli/config-ui/src/pages/ButtonConfigEditor/types.ts
+  s_b763e6150604cb::t_dd2d5d1935ee67 32-42
+  s_b763e6150604cb::t_9e09d9fcfa2ca4 1-31,43-67
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/RecordControl.tsx
+  s_b763e6150604cb::t_8274d5984ad059 23
+  s_b763e6150604cb::t_2d67fe202dfb4b 13,58
+  s_b763e6150604cb::t_d6106212524da6 3-10,45-49
+  s_b763e6150604cb::t_b866d824a4ba37 1-2,11-12,14-22,24-44,50-57,59-104
+packages/cli/config-ui/src/__tests__/App.test.tsx
+  s_b763e6150604cb::t_4079d54b1abc33 15
+  s_b763e6150604cb::t_2cc826a517f803 7,14,16-23
+  s_b763e6150604cb::t_445c41c3aec4f6 24-25
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/registry.ts
+  s_b763e6150604cb::t_861a94d881fc0b 1-17
+packages/cli/config-ui/src/components/IconPicker.tsx
+  s_b763e6150604cb::t_ab026cb94667ae 61,71,261
+  s_b763e6150604cb::t_cd356aa5e6ff94 2
+  s_b763e6150604cb::t_9b4b437e2844d9 47-48,51,130-133,160-169,172-173
+  s_b763e6150604cb::t_a773b24e0f74c5 59-60,65,185,218
+  s_b763e6150604cb::t_f6a386453e3a55 186-188,219-220
+  s_b763e6150604cb::t_d344c7fda7b579 170-171
+  s_b763e6150604cb::t_13b0c576c7cfd6 62-64,66-70,73-93,95-129,134-159,174-184,189-217,221-239,242-243,245-251,254,256-260
+  s_b763e6150604cb::t_cb4b6af0b1866e 50
+packages/cli/src/render/push-startup-screen.ts
+  s_b763e6150604cb::t_26bfdd594831a6 1-76
+packages/cli/src/builtin-addons/emoji-selector/support.ts
+  s_b763e6150604cb::t_797545c121607a 30,35-38
+packages/cli/src/cli/commands/run.ts
+  s_b763e6150604cb::t_ba48936207beb2 1367-1385
+  s_b763e6150604cb::t_7ad6b83f290399 1314,1791
+  s_b763e6150604cb::t_490998df2b26b1 2116
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_b763e6150604cb::t_50fe71c52458f1 10
+  s_b763e6150604cb::t_490998df2b26b1 6-9
+packages/cli/config-ui/src/__tests__/DeckFrame.test.tsx
+  s_b763e6150604cb::t_c381803db4b2bc 31-34
+  s_b763e6150604cb::t_16fb4095d24482 210-239
+  s_b763e6150604cb::t_d293a79a9df137 6,13-30,35-47
+packages/cli/src/builtin-addons/system-status/buttons/system-status/schemas.ts
+  s_b763e6150604cb::t_2d4ba493fc0f16 17-22,42-46,54-58,66-77
+  s_b763e6150604cb::t_ec694e4936db59 16,49,61,80
+packages/cli/src/builtin-addons/coding-agents/buttons/agent/config.ts
+  s_b763e6150604cb::t_ec694e4936db59 9
+packages/addons/pomodoro/src/buttons/pomodoro/config.ts
+  s_b763e6150604cb::t_2d4ba493fc0f16 4-9,12-19
+packages/cli/config-ui/src/pages/EditorPage.tsx
+  s_b763e6150604cb::t_821fa2823e48f3 1475,1531
+  s_b763e6150604cb::t_733f216f2162cc 390-393
+  s_b763e6150604cb::t_f1f8fba41b5c9c 408-413,416-419,422,448-454,646
+  s_b763e6150604cb::t_a32b4de70b7214 428-435,437-446
+  s_b763e6150604cb::t_29ad559c809c8f 903-905
+  s_b763e6150604cb::t_7f1a4c8e345b41 1647-1652,1655-1663,1666-1691
+  s_b763e6150604cb::t_f57b23893b9a46 317
+  s_b763e6150604cb::t_0b9298ce9e9f21 736-738,771-773
+  s_b763e6150604cb::t_ab66246b611a44 892-897
+  s_b763e6150604cb::t_b8d87ffbf52f89 27-32
+  s_b763e6150604cb::t_e7185b0b423648 1057,1070
+  s_b763e6150604cb::t_ed0c8f0e3b7605 1312
+  s_b763e6150604cb::t_0c6bc6a5acc10b 1385-1390,1392-1395,1398-1406,1411-1418,1423-1430,1435-1440,1442-1443,1448-1457,1460,1469-1470,1478,1480-1481,1484-1486,1489-1491,1493-1495,1506,1509-1510,1513,1518,1526-1527,1530,1533,1535-1609,1616-1622,1624-1646
+  s_b763e6150604cb::t_7534e8c76fefaf 223-225,380-381,415
+  s_b763e6150604cb::t_3db10f1730bc70 879
+  s_b763e6150604cb::t_b13fb14f954730 8
+  s_b763e6150604cb::t_3cf4a58e1e0aec 135,197,293-294,299-303,313
+  s_b763e6150604cb::t_8287f856bc82af 1323-1324,1326-1332,1336-1339,1341-1342,1353-1365,1367-1376,1378-1382,1610
+  s_b763e6150604cb::t_d4434c2e71473d 1521
+  s_b763e6150604cb::t_490998df2b26b1 106-109,420-421
+  s_b763e6150604cb::t_79545e61fae823 7,12,17,104-105,110
+  s_b763e6150604cb::t_b0d26b6a2c58df 41
+  s_b763e6150604cb::t_d6cd247c8414bc 38
+  s_b763e6150604cb::t_fad6be20631a81 1483
+  s_b763e6150604cb::t_5f918c7a17fc44 1476-1477,1479,1501-1502
+  s_b763e6150604cb::t_67ee144d4ca8ab 42
+  s_b763e6150604cb::t_e65e924de364a9 43-57
+  s_b763e6150604cb::t_ec6851de2d72d3 213-215,1487,1664-1665
+  s_b763e6150604cb::t_06f80b3a15e784 739-741
+  s_b763e6150604cb::t_d6106212524da6 1083-1085,1098-1100,1114-1116,1220,1230,1408-1410,1420-1422,1432-1434,1445-1447
+  s_b763e6150604cb::t_ca81a2f17df3ed 407,426,545
+  s_b763e6150604cb::t_0c5b4d060b9e2b 1139,1158,1462
+  s_b763e6150604cb::t_61d2af9a35c70c 227,518-521,617-619,626-638
+  s_b763e6150604cb::t_f843745cbe3fd6 1054-1056,1068-1069,1071-1082,1086-1097,1101-1113,1117-1127,1130,1133,1136,1138,1140-1145,1149,1152,1155,1157,1159-1164
+  s_b763e6150604cb::t_aac588a7dfe3d7 436,537-538,543-544,735,742,749,752-753,770,813-814
+  s_b763e6150604cb::t_dfb01061ef54f3 455-461,648
+  s_b763e6150604cb::t_5124dde1a58bdf 936-954
+  s_b763e6150604cb::t_55e034db41037a 103,234-237
+  s_b763e6150604cb::t_36c88d8701f735 469-472,488,539-542
+  s_b763e6150604cb::t_2fe9571f9873f9 368-373,493-498,500-509,511-514,517,522-523
+  s_b763e6150604cb::t_5d601652fd9549 423-425,731-734,766-769,1343-1352
+  s_b763e6150604cb::t_7a41412be3fab3 754,815
+  s_b763e6150604cb::t_39f533331ba766 639,665,668
+  s_b763e6150604cb::t_b98202390e6d44 555-558
+  s_b763e6150604cb::t_b7ebe5183c8011 657-658
+  s_b763e6150604cb::t_81b66916e49c73 474,479-483,485-487,489-492
+  s_b763e6150604cb::t_d0be1e6b4c3ab5 1407,1419,1431,1444,1458-1459,1461,1464-1468
+  s_b763e6150604cb::t_b0b6757fae5b80 33,226
+  s_b763e6150604cb::t_1442a9655564ca 529-535
+  s_b763e6150604cb::t_04fc9466d830a2 1528,1623
+  s_b763e6150604cb::t_6c10ac2eb4c050 229,253-254,260-261,288-290
+  s_b763e6150604cb::t_e1499a994f350e 1325,1340,1377
+  s_b763e6150604cb::t_e099803cf759de 414
+  s_b763e6150604cb::t_f1537a8f6cbe5d 484,510,620-625,649
+  s_b763e6150604cb::t_07471ed96478f5 200-203,295-298,324-327,475-478,499
+  s_b763e6150604cb::t_089e88556f77cb 1267,1270-1272,1276,1284,1298,1301-1303,1315
+  s_b763e6150604cb::t_3ca7ab5fb42785 5,11
+  s_b763e6150604cb::t_dd82a1e252abb9 882-884,900,1366
+  s_b763e6150604cb::t_6cf1ae45ff8ffb 755-758,1482,1496-1498,1500
+  s_b763e6150604cb::t_d9d4b6cc7e6ce9 427,447
+  s_b763e6150604cb::t_5b587e1b418849 1
+  s_b763e6150604cb::t_e21d4abeaae223 887,907
+  s_b763e6150604cb::t_edf9444e31df9e 1333-1335,1614-1615
+  s_b763e6150604cb::t_a8d53a6afffeb7 34-37
+  s_b763e6150604cb::t_b0c26c596662bc 1036,1047,1273
+  s_b763e6150604cb::t_7f8dbf02221990 1219,1221-1229,1231-1238
+  s_b763e6150604cb::t_a96eeb530bff3a 1488,1492,1499
+  s_b763e6150604cb::t_b4328388c61287 473
+packages/cli/src/builtin-addons/weather/buttons/weather/config.ts
+  s_b763e6150604cb::t_490998df2b26b1 23-27
+  s_b763e6150604cb::t_50fe71c52458f1 7-9,15,21-22
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/UnionControl.tsx
+  s_b763e6150604cb::t_613781ecaf7d79 91
+  s_b763e6150604cb::t_d6106212524da6 40
+  s_b763e6150604cb::t_f745bd7dc2e45a 1-39,41-59,65-90,92-96
+  s_b763e6150604cb::t_8274d5984ad059 60-64
+packages/cli/src/core/__tests__/gesture-state.test.ts
+  s_b763e6150604cb::t_f2b685ab06fcf8 88-90,92-94
+  s_b763e6150604cb::t_79cc7cfdd56145 87,91
+docs/plans/2026-08-20-dev-detach-match-production.md
+  s_b763e6150604cb::t_a762b6fed043b1 137,168,170,189
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/config.ts
+  s_b763e6150604cb::t_5cd6eba760e894 9-10
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/config.ts
+  s_b763e6150604cb::t_50fe71c52458f1 4-6
+packages/cli/src/builtin-addons/core/buttons/toggle/config.ts
+  s_b763e6150604cb::t_240fbed279b607 8-14,16,27-39,51-52
+  s_b763e6150604cb::t_c3276853fb3909 45,55
+  s_b763e6150604cb::t_dfcfd13d441ee5 15
+packages/cli/config-ui/src/__tests__/setup.ts
+  s_b763e6150604cb::t_2eeefe2d8c3718 5-17
+packages/cli/config-ui/src/pages/ButtonConfigEditor/controls/ObjectControl.tsx
+  s_b763e6150604cb::t_7353e17ec9f457 2,27-37,39-42
+  s_b763e6150604cb::t_b866d824a4ba37 1,3-10,13-19,25-26,43-46,49-52
+  s_b763e6150604cb::t_d6106212524da6 20-24,47-48
+  s_b763e6150604cb::t_8274d5984ad059 11
+  s_b763e6150604cb::t_613781ecaf7d79 12,38
+packages/cli/src/render/__tests__/push-startup-screen.test.ts
+  s_b763e6150604cb::t_5d172d6d43018a 1-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "dabec9c0edff73627b345887522c5c432fa4ab01",
+  "prompts": {},
+  "sessions": {
+    "s_b763e6150604cb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f4eef58f9fferlnug3Suq4q4ev",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
