@@ -1,0 +1,34 @@
+packages/cli/config-ui/src/App.tsx
+  h_31bfcf89e26281 524,549
+packages/cli/config-ui/src/DeckFrame.tsx
+  h_31bfcf89e26281 56-57,88,227-231
+packages/cli/config-ui/src/__tests__/App.test.tsx
+  h_31bfcf89e26281 77,82
+packages/cli/src/cli/commands/run.ts
+  h_31bfcf89e26281 1665
+packages/cli/src/outputClient/__tests__/index.test.ts
+  h_31bfcf89e26281 1-26
+packages/cli/src/outputClient/emulator.ts
+  h_31bfcf89e26281 72-77,212-218
+packages/cli/src/outputClient/index.ts
+  h_31bfcf89e26281 3,8,18-22,33
+packages/cli/src/outputClient/real.ts
+  h_31bfcf89e26281 265-291,307,317
+packages/cli/src/outputClient/remote-mirror.ts
+  h_31bfcf89e26281 1-60
+packages/cli/src/outputClient/types.ts
+  h_31bfcf89e26281 33-34
+packages/cli/src/vite/virtual-modules.ts
+  h_31bfcf89e26281 578-579,590-598,602
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7b694eb69989c8f1afcee4bce36d6d6233dfb181",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
