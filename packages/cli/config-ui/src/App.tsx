@@ -145,7 +145,6 @@ export const App = ({
       ? getDeviceModel(initialDeviceModel)
       : DEFAULT_DEVICE_MODEL,
   )
-  const [isFullscreen, setIsFullscreen] = useState(false)
   const clientRef = useRef<WsClient | null>(null)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
   const deckContainerRef = useRef<HTMLDivElement | null>(null)
@@ -387,16 +386,6 @@ export const App = ({
     }
   }, [])
 
-  useEffect(() => {
-    if (typeof document === "undefined") return
-    const handleChange = (): void => {
-      setIsFullscreen(document.fullscreenElement !== null)
-    }
-    document.addEventListener("fullscreenchange", handleChange)
-    handleChange()
-    return () => document.removeEventListener("fullscreenchange", handleChange)
-  }, [])
-
   const onSelect = (path: string): void => {
     if (!isValidSection(path)) return
     if (path === "config") setConfigView("editor")
@@ -480,15 +469,6 @@ export const App = ({
     clientRef.current?.send(JSON.stringify({ type: "set-device", deviceId }))
   }
 
-  const toggleFullscreen = (): void => {
-    if (typeof document === "undefined") return
-    if (document.fullscreenElement !== null) {
-      void document.exitFullscreen()
-    } else {
-      void document.documentElement.requestFullscreen()
-    }
-  }
-
   const elapsed = disconnectedSince === null ? 0 : now - disconnectedSince
   const showBsod =
     connectionStatus !== "open" &&
@@ -541,7 +521,7 @@ export const App = ({
             <div
               ref={deckContainerRef}
               data-testid="deck-only-view"
-              className="flex h-full w-full items-center justify-center overflow-hidden px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+              className="flex h-full w-full items-center justify-center overflow-hidden"
             >
               {deckId === "" ? (
                 <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
@@ -566,6 +546,7 @@ export const App = ({
                     onIframeRef={(el) => {
                       iframeRef.current = el
                     }}
+                    bare
                   />
                 </div>
               )}
@@ -657,17 +638,6 @@ export const App = ({
                 </dl>
               </div>
             </div>
-          )}
-          {deckOnly && (
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-              data-testid="fullscreen-toggle"
-              className="fixed top-[calc(env(safe-area-inset-top)+0.75rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-neutral-800/80 text-[10px] font-medium uppercase tracking-wide text-neutral-100 shadow-lg backdrop-blur hover:bg-neutral-700/80"
-            >
-              {isFullscreen ? "Exit" : "Full"}
-            </button>
           )}
         </>
       }

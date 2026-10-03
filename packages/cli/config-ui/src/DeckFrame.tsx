@@ -53,6 +53,8 @@ export interface DeckFrameProps {
     assets?: Array<{ filename: string; preview: string }>
   } | null
   readonly fitToContainer?: boolean
+  /** Render without editor chrome for the dedicated remote deck surface. */
+  readonly bare?: boolean
   // ponytail: lets the parent trigger `iframe.contentWindow.location.reload()`
   // on `iframe-reload` WS messages without giving the parent a real DOM ref
   // (which would force React to re-render and discard internal state).
@@ -83,6 +85,7 @@ export const DeckFrame = ({
   highlightedKey,
   previewConfig = null,
   fitToContainer = false,
+  bare = false,
   onIframeRef,
 }: DeckFrameProps): React.ReactElement => {
   const { columns, keyCount } = device
@@ -221,7 +224,11 @@ export const DeckFrame = ({
   return (
     <div
       ref={frameRef}
-      className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 shadow-lg"
+      className={
+        bare
+          ? "relative overflow-hidden"
+          : "relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 shadow-lg"
+      }
       style={{
         width: frameWidth * scale,
         height: frameHeight * scale,

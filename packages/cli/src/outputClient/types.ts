@@ -30,6 +30,8 @@ export interface InitOptions {
   readonly configPath?: string
   readonly logger: pino.Logger
   readonly frontendUrl?: string
+  /** Reuse a Config UI started by a companion output transport. */
+  readonly configUiUrl?: string
   readonly port?: number
   readonly intervalMs?: number
   /**

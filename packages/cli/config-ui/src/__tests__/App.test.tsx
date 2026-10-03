@@ -74,20 +74,12 @@ describe("App (emulator)", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("fits the device-only view to the dynamic mobile viewport and safe areas", () => {
+  it("fits the device-only view to the full viewport", () => {
     window.history.replaceState(null, "", "/?deckOnly=1")
     render(<App />)
 
     expect(screen.getByTestId("deck-only-view")).toHaveClass("h-full", "w-full")
-    expect(screen.getByTestId("fullscreen-toggle")).toHaveClass(
-      "top-[calc(env(safe-area-inset-top)+0.75rem)]",
-    )
-  })
-
-  it("shows a fullscreen toggle in deck-only mode", () => {
-    window.history.replaceState(null, "", "/?deckOnly=1")
-    render(<App />)
-    expect(screen.getByTestId("fullscreen-toggle")).toBeInTheDocument()
+    expect(screen.getByTestId("deck-only-view")).not.toHaveClass("px-4")
   })
 
   it("updates the shell title when changing configuration views", () => {

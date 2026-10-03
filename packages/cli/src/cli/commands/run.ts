@@ -1662,6 +1662,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     outputClient = selectOutputClient({
       emulator: options.emulator === true,
       xdgConfigHome,
+      ...(options.remote === true ? { remote: true } : {}),
     })
     const devices = await outputClient.listDevices()
     const savedDevice = loadDeviceConfig({ xdgConfigHome })

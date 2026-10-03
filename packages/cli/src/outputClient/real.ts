@@ -262,31 +262,33 @@ export class RealOutputClient implements OutputClient {
         })
       }
 
-      let configUiUrl = `http://127.0.0.1:${DEFAULT_FRONTEND_PORT + 1}`
-      configUiSupervisor = await supervise({
-        label: "config ui vite",
-        kill: killChild,
-        delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
-        spawn: async () => {
-          const r = await spawnConfigUiVite({
-            port: DEFAULT_FRONTEND_PORT + 1,
-            cwd: resolveConfigUiCwd(),
-            pnpmCommand: "pnpm",
-            readyTimeoutMs: 30_000,
-            logger,
-            wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
-            frontendUrl,
-            configPath: opts.configPath,
-            emulatorMode: false,
-            onPid: opts.onChildPid,
-          })
-          configUiUrl = r.url
-          return r.process
-        },
-        onGiveUp: () => opts.onChildCrash?.(),
-        isShuttingDown: () => shuttingDown,
-        logger,
-      })
+      let configUiUrl =
+        opts.configUiUrl ?? `http://127.0.0.1:${DEFAULT_FRONTEND_PORT + 1}`
+      if (opts.configUiUrl === undefined)
+        configUiSupervisor = await supervise({
+          label: "config ui vite",
+          kill: killChild,
+          delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
+          spawn: async () => {
+            const r = await spawnConfigUiVite({
+              port: DEFAULT_FRONTEND_PORT + 1,
+              cwd: resolveConfigUiCwd(),
+              pnpmCommand: "pnpm",
+              readyTimeoutMs: 30_000,
+              logger,
+              wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
+              frontendUrl,
+              configPath: opts.configPath,
+              emulatorMode: false,
+              onPid: opts.onChildPid,
+            })
+            configUiUrl = r.url
+            return r.process
+          },
+          onGiveUp: () => opts.onChildCrash?.(),
+          isShuttingDown: () => shuttingDown,
+          logger,
+        })
 
       logger.info({ frontendUrl }, "real mode: frontend URL")
 
@@ -302,7 +304,7 @@ export class RealOutputClient implements OutputClient {
       await renderer.start()
 
       const frontendVitePid = frontendSupervisor?.process.pid ?? 0
-      const configUiPid = configUiSupervisor.process.pid ?? 0
+      const configUiPid = configUiSupervisor?.process.pid ?? 0
       const childPids = [frontendVitePid, configUiPid].filter((pid) => pid > 0)
 
       const state: RuntimeState = {
@@ -312,7 +314,7 @@ export class RealOutputClient implements OutputClient {
         lanHost: opts.lanHost ?? "127.0.0.1",
         addresses: opts.lanAddresses ?? [],
         emulatorMode: false,
-        remote: false,
+        remote: opts.remote === true,
         startedAt: Date.now(),
         theme: opts.theme.name,
       }

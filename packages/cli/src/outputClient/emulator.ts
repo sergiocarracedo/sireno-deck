@@ -69,6 +69,12 @@ export class EmulatorOutputClient implements OutputClient {
   readonly kind = "emulator" as const
 
   private descriptor: DeviceDescriptor | null = null
+  private fixedDisplayDevice = false
+
+  setDisplayDevice(descriptor: DeviceDescriptor): void {
+    this.descriptor = descriptor
+    this.fixedDisplayDevice = true
+  }
 
   async validateReady(): Promise<void> {
     void this.kind
@@ -203,6 +209,13 @@ export class EmulatorOutputClient implements OutputClient {
         return
       }
       if (isSetDevice(message)) {
+        if (this.fixedDisplayDevice) {
+          logger.warn(
+            { deviceId: message.deviceId },
+            "emulator: ignoring device change while mirroring hardware",
+          )
+          return
+        }
         if (
           !VIRTUAL_MODELS.includes(
             message.deviceId as (typeof VIRTUAL_MODELS)[number],
