@@ -31,10 +31,10 @@ describe("computeSystemButtonForSlotN1", () => {
     )
   })
 
-  it("inOverlayMode returns overlay-toggle (n-1 becomes the toggle button)", () => {
+  it("inOverlayMode returns back so n-1 can render the split action", () => {
     expect(
       computeSystemButtonForSlotN1(deck(), state({ inOverlayMode: true })),
-    ).toBe("core:overlay-toggle")
+    ).toBe("core:back")
   })
 
   it("regular deck with navStackDepth=1 returns back", () => {
@@ -58,13 +58,13 @@ describe("computeSystemButtonForSlotN1", () => {
     ).toBe("core:settings-entry")
   })
 
-  it("inOverlayMode with navStackDepth=3 returns overlay-toggle", () => {
+  it("inOverlayMode with navStackDepth=3 returns back", () => {
     expect(
       computeSystemButtonForSlotN1(
         deck(),
         state({ navStackDepth: 3, inOverlayMode: true }),
       ),
-    ).toBe("core:overlay-toggle")
+    ).toBe("core:back")
   })
 
   it("returns null when lockActive is true (main deck)", () => {

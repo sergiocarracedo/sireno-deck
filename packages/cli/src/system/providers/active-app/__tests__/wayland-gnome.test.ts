@@ -145,6 +145,50 @@ describe("shouldUseWaylandGnomeProvider", () => {
     )
   })
 
+  it("detects GNOME Wayland directly from the systemd user environment", async () => {
+    const executor = {
+      run: vi.fn(async (command: string) =>
+        command === "systemctl"
+          ? {
+              exitCode: 0,
+              stdout:
+                "XDG_CURRENT_DESKTOP=ubuntu:GNOME\nXDG_SESSION_TYPE=wayland\n",
+              stderr: "",
+            }
+          : { exitCode: 1, stdout: "", stderr: "" },
+      ),
+    }
+
+    await expect(hasWaylandGnomeSession({ env: {}, executor })).resolves.toBe(
+      true,
+    )
+    expect(executor.run).toHaveBeenCalledTimes(1)
+  })
+
+  it("checks the systemd environment when only DISPLAY is inherited", async () => {
+    const executor = {
+      run: vi.fn(async (command: string) =>
+        command === "systemctl"
+          ? {
+              exitCode: 0,
+              stdout:
+                "XDG_CURRENT_DESKTOP=ubuntu:GNOME\nXDG_SESSION_TYPE=wayland\n",
+              stderr: "",
+            }
+          : { exitCode: 1, stdout: "", stderr: "" },
+      ),
+    }
+
+    await expect(
+      hasWaylandGnomeSession({ env: { DISPLAY: ":0" }, executor }),
+    ).resolves.toBe(true)
+    expect(executor.run).toHaveBeenCalledWith(
+      "systemctl",
+      ["--user", "show-environment"],
+      { timeoutMs: 3_000 },
+    )
+  })
+
   it("does not override an explicit X11 session with logind", async () => {
     const executor = { run: vi.fn() }
 

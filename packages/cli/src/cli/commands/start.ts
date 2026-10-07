@@ -507,7 +507,9 @@ const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
 }
 
 const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
-  emulator: options.emulator === true || options.remote === true,
+  // Remote mode adds the browser surface; it does not replace attached
+  // hardware. Only an explicit --emulator selects the virtual output device.
+  emulator: options.emulator === true,
   remote: options.remote,
   httpPort: options.httpPort ?? 3939,
   ...(options.config !== undefined ? { config: options.config } : {}),

@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process"
 import { existsSync } from "node:fs"
+import { homedir } from "node:os"
 import { join } from "node:path"
 
 export type PackageManager = "pnpm" | "npm" | "yarn"
@@ -132,8 +133,13 @@ const probeRoot = (manager: PackageManager): RootProbe => {
   try {
     const root = execFileSync(manager, ["root", "--global"], {
       ...probeOptions(),
+      // These discovery probes ask only for a global root. Avoid loading a
+      // workspace .npmrc (which contains pnpm-only settings) and suppress
+      // package-manager warnings that are unrelated to startup diagnostics.
+      cwd: homedir(),
       encoding: "utf8",
       env: probeEnv(),
+      stdio: ["ignore", "pipe", "ignore"],
     }).trim()
     return root.length > 0 ? { kind: "root", root } : { kind: "unavailable" }
   } catch (error) {

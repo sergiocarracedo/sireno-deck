@@ -46,6 +46,7 @@ import {
 } from "@/deck"
 import { paginateDeck } from "@/deck/paginate-deck"
 import { injectConfigUiButton } from "@/deck/inject-config-ui-button"
+import { positionSettingsVersionButton } from "@/deck/position-settings-version-button"
 import { positionButtons } from "@/deck/position-buttons"
 import { subscribeNavigateDeck } from "@/deck/runtime-subscriptions"
 import {
@@ -76,6 +77,7 @@ import { installPackage } from "./install"
 import { DEFAULT_CONFIG_UI_PORT } from "./emulator-mode"
 import { isNpmAddonSpec } from "@/addon/spec"
 import { confirm } from "@/cli/prompt"
+import { createCommandExecutor } from "./command-executor"
 
 import { createActionExecutor } from "@/action/executor"
 import {
@@ -184,7 +186,10 @@ export interface SetupAddonServicesOptions {
     "registerChannel" | "setActiveDeck"
   >
   readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
+  /** Retained for callers using the pre-publisher setup contract. */
   readonly isCompact: boolean
+  /** Retained for callers using the pre-publisher setup contract. */
+  readonly keyCount: number
   readonly initialDeck?: RuntimeDeck
   readonly signal: AbortSignal
   readonly store: Store
@@ -865,7 +870,7 @@ const buildRuntime = (
     decks.length > 0
       ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
-  const sourceDecks = materializeAddonDecks(
+  const materializedDecks = materializeAddonDecks(
     registry,
     effectiveDecks,
     logger,
@@ -873,6 +878,7 @@ const buildRuntime = (
     config.lock?.buttons,
     addonConfigOverrides,
   )
+  const sourceDecks = positionSettingsVersionButton(materializedDecks, keyCount)
   const allDecsWithSystemButtons = injectSystemButtons(sourceDecks, keyCount, {
     lockActive,
   })
@@ -886,10 +892,7 @@ const buildRuntime = (
   const configUiUrl = new URL(`http://127.0.0.1:${DEFAULT_CONFIG_UI_PORT}/`)
   if (token.length > 0) configUiUrl.searchParams.set("token", token)
   configUiUrl.hash = "/config"
-  const runtimeDecks =
-    options.emulator === true
-      ? injectConfigUiButton(allDecks, configUiUrl.toString())
-      : allDecks
+  const runtimeDecks = injectConfigUiButton(allDecks, configUiUrl.toString())
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: runtimeDecks,
     logger,
@@ -1038,59 +1041,7 @@ const startSystemProviders = async (
   methods: Methods,
 ): Promise<SystemProviders> => {
   const { logger } = options
-  const { spawn } = await import("node:child_process")
-  const executor: CommandExecutor = {
-    async run(
-      command: string,
-      args: ReadonlyArray<string>,
-      execOptions?: { timeoutMs?: number },
-    ) {
-      // Uses 'exit' (not 'close') so tools that keep stdio fds open after their
-      // main exits — notably wl-copy — don't hang the runtime. Streams are
-      // drained via 'data' events until 'exit' fires; once the process exits,
-      // no further writes are possible.
-      const timeoutMs = execOptions?.timeoutMs
-      const start = Date.now()
-      return await new Promise((resolve) => {
-        const proc = spawn(command, [...args], {
-          stdio: ["pipe", "pipe", "pipe"],
-        })
-        let stdout = ""
-        let stderr = ""
-        let timedOut = false
-        let killTimer: ReturnType<typeof setTimeout> | undefined
-        proc.stdout.on("data", (chunk: Buffer) => {
-          stdout += chunk.toString()
-        })
-        proc.stderr.on("data", (chunk: Buffer) => {
-          stderr += chunk.toString()
-        })
-        const onExit = (code: number | null): void => {
-          if (killTimer !== undefined) clearTimeout(killTimer)
-          resolve({
-            exitCode: timedOut ? -1 : (code ?? -1),
-            stdout,
-            stderr,
-          })
-        }
-        proc.on("error", (err) => {
-          if (killTimer !== undefined) clearTimeout(killTimer)
-          resolve({
-            exitCode: -1,
-            stdout,
-            stderr: stderr ? `${stderr}\n${err.message}` : err.message,
-          })
-        })
-        proc.on("exit", onExit)
-        if (timeoutMs !== undefined && timeoutMs > 0) {
-          killTimer = setTimeout(() => {
-            timedOut = true
-            proc.kill("SIGKILL")
-          }, timeoutMs)
-        }
-      })
-    },
-  }
+  const executor: CommandExecutor = createCommandExecutor()
 
   const env = { ...process.env } as Readonly<Record<string, string>>
   const platform = process.platform
@@ -1791,6 +1742,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       statePublisher,
       bridge,
       isCompact,
+      keyCount: descriptor.keyCount,
       resolverOptions,
       requestDeckRebuild,
       ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),

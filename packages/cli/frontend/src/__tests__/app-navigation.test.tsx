@@ -101,6 +101,54 @@ describe("App navigation", () => {
     expect(paths.at(-1)).toBe("/decks/main")
   })
 
+  it("clears the overlay icon when availability is explicitly cleared", () => {
+    const { handlers } = buildMockWsClient()
+    const { container } = render(
+      <MemoryRouter initialEntries={["/decks/main"]}>
+        <App />
+      </MemoryRouter>,
+    )
+
+    act(() => {
+      handlers.onMessage({ type: "assets", assets: [] })
+      handlers.onMessage({
+        type: "deck-config",
+        deckId: "app-shortcuts:chrome-p1",
+        surfaces: {
+          "app-shortcuts:chrome-p1": {
+            name: "Chrome",
+            buttons: [{ id: "14", type: "core:overlay-toggle", position: 14 }],
+          },
+        },
+        hasOverlayDeckAvailable: true,
+        overlayDeckIcon: "icon://layers",
+        overlayDeckName: "Chrome",
+      })
+    })
+
+    expect(
+      container.querySelector("[data-sireno-overlay-toggle]"),
+    ).not.toBeNull()
+
+    act(() => {
+      handlers.onMessage({
+        type: "deck-config",
+        deckId: "app-shortcuts:chrome-p1",
+        surfaces: {
+          "app-shortcuts:chrome-p1": {
+            name: "Chrome",
+            buttons: [{ id: "14", type: "core:overlay-toggle", position: 14 }],
+          },
+        },
+        hasOverlayDeckAvailable: false,
+        overlayDeckIcon: null,
+        overlayDeckName: null,
+      })
+    })
+
+    expect(container.querySelector("[data-sireno-overlay-toggle]")).toBeNull()
+  })
+
   it("shows a button error for the active deck", () => {
     const { handlers } = buildMockWsClient()
 

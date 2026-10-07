@@ -71,7 +71,6 @@ export const hasWaylandGnomeSession = async ({
   if (
     env["XDG_SESSION_TYPE"] !== undefined ||
     env["WAYLAND_DISPLAY"] !== undefined ||
-    env["DISPLAY"] !== undefined ||
     env["XDG_CURRENT_DESKTOP"] !== undefined
   ) {
     return false
@@ -79,6 +78,30 @@ export const hasWaylandGnomeSession = async ({
   if (typeof process.getuid !== "function") return false
 
   try {
+    // Detached daemons often have no graphical variables in their own
+    // environment. systemd --user retains the desktop environment that started
+    // the graphical session; use it before probing logind's incomplete Desktop
+    // property (Ubuntu commonly leaves that property empty).
+    const managerEnvironment = await executor.run(
+      "systemctl",
+      ["--user", "show-environment"],
+      { timeoutMs: PROBE_TIMEOUT_MS },
+    )
+    const managerEnv: NodeJS.ProcessEnv = {}
+    for (const key of [
+      "XDG_CURRENT_DESKTOP",
+      "XDG_SESSION_TYPE",
+      "WAYLAND_DISPLAY",
+    ]) {
+      managerEnv[key] = sessionProperty(managerEnvironment.stdout, key)
+    }
+    if (
+      managerEnvironment.exitCode === 0 &&
+      shouldUseWaylandGnomeProvider(managerEnv)
+    ) {
+      return true
+    }
+
     const sessions = await executor.run("loginctl", [
       "show-user",
       String(process.getuid()),
@@ -108,17 +131,10 @@ export const hasWaylandGnomeSession = async ({
 
       // Ubuntu's logind session can omit Desktop. systemd's user manager
       // retains the graphical session variables that the daemon inherits.
-      const environment = await executor.run("systemctl", [
-        "--user",
-        "show-environment",
-      ])
       if (
-        environment.exitCode === 0 &&
+        managerEnvironment.exitCode === 0 &&
         isGnomeDesktop({
-          XDG_CURRENT_DESKTOP: sessionProperty(
-            environment.stdout,
-            "XDG_CURRENT_DESKTOP",
-          ),
+          XDG_CURRENT_DESKTOP: managerEnv["XDG_CURRENT_DESKTOP"],
         })
       )
         return true

@@ -29,7 +29,8 @@ export const computeSystemButtonForSlotN1 = (
 ): SystemButtonType | null => {
   if (state.lockActive === true) return null
   if (deck.isMain) return "core:settings-entry"
-  if (state.inOverlayMode === true) return "core:overlay-toggle"
+  // `core:back` gives the split surface distinct tap (back) and dbl-tap
+  // (overlay toggle) actions, including while an overlay is active.
   return "core:back"
 }
 

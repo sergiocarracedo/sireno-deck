@@ -46,6 +46,7 @@ export const createHostPolicyCoordinator = (
     null
   let hasObservedActiveApp = false
   let lastMatchedDeckId: string | null = null
+  let lastLoggedActiveAppKey: string | null = null
   let lockSnapshot: ReturnType<Runtime["enterLock"]> | null = null
   let unsubscribeSession: (() => void) | null = null
 
@@ -112,6 +113,23 @@ export const createHostPolicyCoordinator = (
       latestSnapshot = snapshot
       hasObservedActiveApp = true
       const matchedDeck = snapshot === null ? null : match(snapshot)
+      const snapshotKey =
+        snapshot === null
+          ? "<none>"
+          : JSON.stringify([snapshot.name, snapshot.windowTitle])
+      if (snapshotKey !== lastLoggedActiveAppKey) {
+        lastLoggedActiveAppKey = snapshotKey
+        logger.info(
+          {
+            snapshot:
+              snapshot === null
+                ? null
+                : { name: snapshot.name, windowTitle: snapshot.windowTitle },
+            matchedDeckId: matchedDeck?.id ?? null,
+          },
+          "active-app: focus snapshot changed",
+        )
+      }
       logger.debug(
         { snapshot, matchedDeckId: matchedDeck?.id ?? null },
         "active-app: focus snapshot",

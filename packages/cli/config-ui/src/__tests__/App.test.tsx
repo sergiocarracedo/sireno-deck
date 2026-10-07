@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { fireEvent, render, screen } from "@testing-library/react"
 
@@ -80,6 +80,25 @@ describe("App (emulator)", () => {
 
     expect(screen.getByTestId("deck-only-view")).toHaveClass("h-full", "w-full")
     expect(screen.getByTestId("deck-only-view")).not.toHaveClass("px-4")
+  })
+
+  it("offers one-way fullscreen entry without an exit control", () => {
+    window.history.replaceState(null, "", "/?deckOnly=1")
+    const requestFullscreen = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(document.documentElement, "requestFullscreen", {
+      configurable: true,
+      value: requestFullscreen,
+    })
+    render(<App />)
+
+    fireEvent.click(screen.getByTestId("fullscreen-toggle"))
+
+    expect(requestFullscreen).toHaveBeenCalledOnce()
+    expect(screen.getByTestId("fullscreen-toggle")).toHaveTextContent("Full")
+    expect(screen.getByTestId("fullscreen-toggle")).toHaveAttribute(
+      "aria-label",
+      "Enter fullscreen",
+    )
   })
 
   it("updates the shell title when changing configuration views", () => {

@@ -8,10 +8,13 @@ import type { InitOptions, OutputClient, OutputHandle } from "./types"
 
 /** Runs the physical deck and remote emulator against one runtime. */
 export class RemoteMirrorOutputClient implements OutputClient {
-  readonly kind = "real" as const
-
   private readonly real: RealOutputClient
   private readonly emulator = new EmulatorOutputClient()
+  private hardwareSelected = false
+
+  get kind(): "real" | "emulator" {
+    return this.hardwareSelected ? "real" : "emulator"
+  }
 
   constructor(options: { readonly xdgConfigHome: string }) {
     this.real = new RealOutputClient(options)
@@ -22,7 +25,14 @@ export class RemoteMirrorOutputClient implements OutputClient {
   }
 
   listDevices(): Promise<ReadonlyArray<DeviceDescriptor>> {
-    return this.real.listDevices()
+    return this.real.listDevices().then(async (devices) => {
+      if (devices.length > 0) {
+        this.hardwareSelected = true
+        return devices
+      }
+      this.hardwareSelected = false
+      return this.emulator.listDevices()
+    })
   }
 
   async selectDevice(
@@ -30,16 +40,23 @@ export class RemoteMirrorOutputClient implements OutputClient {
     savedId: string | null,
     logger: pino.Logger,
   ): Promise<DeviceDescriptor> {
+    if (!this.hardwareSelected) {
+      return this.emulator.selectDevice(devices, savedId, logger)
+    }
     const descriptor = await this.real.selectDevice(devices, savedId, logger)
     this.emulator.setDisplayDevice(descriptor)
     return descriptor
   }
 
   storeSelection(descriptor: DeviceDescriptor): Promise<void> {
-    return this.real.storeSelection(descriptor)
+    return this.hardwareSelected
+      ? this.real.storeSelection(descriptor)
+      : Promise.resolve()
   }
 
   async init(opts: InitOptions): Promise<OutputHandle> {
+    if (!this.hardwareSelected) return this.emulator.init(opts)
+
     const emulatorHandle = await this.emulator.init(opts)
     const token = process.env["SIRENO_TOKEN"] ?? ""
     const realHandle = await this.real.init({

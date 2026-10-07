@@ -118,7 +118,7 @@ describe("buildDeckConfigMessage", () => {
     expect(n1Button?.type).toBe("core:back")
   })
 
-  it("computes n-1 as overlay-toggle when inOverlayMode=true", () => {
+  it("keeps the split-action back button at n-1 in overlay mode", () => {
     const overlayDeck: RuntimeDeck = {
       id: "emoji-overlay",
       name: "Emoji",
@@ -139,7 +139,7 @@ describe("buildDeckConfigMessage", () => {
     const buttons = msg.surfaces["emoji-overlay"]!.buttons
     const n1Button = buttons.find((b) => b.position === 14)
     expect(n1Button).toBeDefined()
-    expect(n1Button?.type).toBe("core:overlay-toggle")
+    expect(n1Button?.type).toBe("core:back")
     expect(msg.hasOverlayDeckAvailable).toBe(true)
     expect(msg.overlayDeckIcon).toBe("icon://emoji")
   })

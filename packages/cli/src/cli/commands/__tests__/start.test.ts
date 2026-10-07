@@ -567,6 +567,23 @@ describe("start", () => {
     ])
   })
 
+  it("does not turn remote mode into emulator mode", async () => {
+    setHappyPath()
+    const { spawnDetached } = await import("../spawn-daemon")
+    vi.mocked(spawnDetached).mockClear()
+    await start({
+      config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+      remote: true,
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      logger: silentLogger(),
+    })
+
+    const args = vi.mocked(spawnDetached).mock.calls.at(-1)?.[0].args
+    expect(args).toContain("--remote")
+    expect(args).not.toContain("--emulator")
+  })
+
   it("omits flags at their default values", async () => {
     setHappyPath()
     const { spawnDetached } = await import("../spawn-daemon")

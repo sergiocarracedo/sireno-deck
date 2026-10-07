@@ -396,16 +396,8 @@ const AppContent = () => {
               isCompact:
                 compactParam === "0" ? false : (message.isCompact ?? false),
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
-              overlayDeckIcon:
-                message.overlayDeckIcon ??
-                null ??
-                previous.overlayDeckIcon ??
-                null,
-              overlayDeckName:
-                message.overlayDeckName ??
-                null ??
-                previous.overlayDeckName ??
-                null,
+              overlayDeckIcon: message.overlayDeckIcon ?? null,
+              overlayDeckName: message.overlayDeckName ?? null,
               buttonErrors: Array.isArray(surface.buttonErrors)
                 ? surface.buttonErrors
                 : [],
