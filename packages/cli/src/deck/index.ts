@@ -32,6 +32,14 @@ export {
   type GestureListener,
   type MountedButton,
 } from "./runtime"
+export {
+  createHostPolicyCoordinator,
+  type HostPolicyCoordinator,
+} from "./runtime/host-policy-coordinator"
+export {
+  createDeckPresentationPublisher,
+  type DeckPresentationPublisher,
+} from "./deck-presentation-publisher"
 export { getHostContext, type HostContext } from "./host-context"
 export {
   computeSystemButtonForSlotN1,

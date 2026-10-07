@@ -97,7 +97,6 @@ load theme, pick a device, connect to the Stream Deck, create the runtime
 - `dispatchGesture(buttonId, gesture)` — single entry point for hardware AND emulator clicks.
 - `invokeAction` — bypasses the gesture stream and runs the action directly (used by frontend-UI clicks).
 - `setGestureListener(fn)` — addon-handler-bridge subscribes here.
-- `setActiveAppProvider` / `stopActiveAppPolling` — wires the active-app overlay loop.
 - `navStackDepth` — getter.
 
 Internal state:
@@ -110,10 +109,11 @@ Internal state:
   `navigateToDeck` while in overlay mode; pop via `goBack` (tap); dismissed
   by `core:overlay-toggle` dbl-tap or when the user holds `core:back`.
 
-The active-app loop polls `ActiveAppProvider` every 1 s, debounces for 200 ms,
-matches `process_name` / `window_name` against per-addon overlay-deck globs
-(via `system/glob-match.ts`), and applies or dismisses the overlay deck
-through `setOverlay`.
+`runtime/host-policy-coordinator.ts` is host-owned. It polls `ActiveAppProvider`
+every 1 s, debounces for 200 ms, matches `process_name` / `window_name` against
+the current overlay-deck catalog (via `system/glob-match.ts`), and applies or
+dismisses overlays through the runtime. It also owns session-provider lifecycle
+and restores a pre-lock overlay only when the latest focused app still matches.
 
 ### 3.3 Methods context — `deck/methods.ts`
 
@@ -230,6 +230,10 @@ One connection per frontend / config UI surface.
 - `registerCacheablePoller({id, intervalMs, poll})` — runs server-side, fans out.
 - `onMessage` / `onConnection` — host wiring.
 - `DEFAULT_KEY_COUNT = 15` (Stream Deck MK.2 / XL).
+
+`deck/deck-presentation-publisher.ts` owns all `deck-config` delivery. It
+subscribes to runtime presentation events, deduplicates normal broadcasts,
+handles forced refreshes, and sends the current deck to newly connected clients.
 
 ### 3.10 Protocol — `api/protocol-internal.ts`, `render/protocol.ts`
 

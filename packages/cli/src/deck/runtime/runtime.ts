@@ -4,18 +4,22 @@ import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
 import type { GestureKind } from "@/core/gesture-state"
 import type { ActiveAppProvider } from "@/system/providers/active-app"
-import type { SessionProvider, SessionState } from "@/system/providers/session"
+import {
+  createNullSessionProvider,
+  type SessionProvider,
+} from "@/system/providers/session"
 import { getRequiredCapability } from "@/system/requirements"
-import { compileDeckMatcher } from "@/system/glob-match"
 import type { Methods } from "../methods"
+import {
+  createHostPolicyCoordinator,
+  type HostPolicyCoordinator,
+} from "./host-policy-coordinator"
 import { describeEditorSurfaces } from "../editor-surfaces"
 import type {
   EditorAddonOwner,
   EditorSourceTarget,
   EditorSurfaceDescriptor,
 } from "../editor-surfaces"
-
-type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">
 
 export interface RuntimeButton {
   id: string
@@ -145,9 +149,20 @@ export interface Runtime {
   invokeAction(buttonId: string, gesture: GestureKind): Promise<void>
   setGestureListener(listener: GestureListener | null): void
   invalidate(): void
-  setActiveAppProvider(provider: ActiveAppProviderLike): void
+  setAvailableOverlayDeck(deckId: string | null): void
+  enterLock(): { activeDeckId: string; overlayDeckId: string | null }
+  restoreFromLock(snapshot: {
+    activeDeckId: string
+    overlayDeckId: string | null
+  }): void
+  /** @deprecated Host composition should use createHostPolicyCoordinator. */
+  setActiveAppProvider(
+    provider: Pick<ActiveAppProvider, "getActive" | "stop">,
+  ): void
+  /** @deprecated Host composition should use createHostPolicyCoordinator. */
   setSessionProvider(provider: SessionProvider): void
   isLockActive(): boolean
+  /** @deprecated Host composition should dispose its policy coordinator. */
   stopActiveAppPolling(): Promise<void>
   navStackDepth(): number
   hasOverlayDeckAvailable(): boolean
@@ -197,9 +212,13 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
   let brightness = 50
   let lockActive = false
-  let preLockActiveDeckId: string | null = null
-  let preLockOverlayDeckId: string | null = null
-  let sessionUnsubscribe: (() => void) | null = null
+  let legacyActiveApp: Pick<ActiveAppProvider, "getActive" | "stop"> = {
+    getActive: async () => null,
+    stop: async () => undefined,
+  }
+  let legacySessionUnsubscribe: (() => void) | null = null
+  let legacyLockSnapshot: ReturnType<Runtime["enterLock"]> | null = null
+  let legacyPolicy: HostPolicyCoordinator | null = null
 
   const deckById = (id: string): RuntimeDeck | undefined =>
     decks.find((d) => d.id === id)
@@ -283,21 +302,24 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     navStack[navStack.length - 1] ??
     mainDeck.id
 
-  const enterLockMode = (): void => {
-    if (lockActive) return
-    preLockActiveDeckId = snapshotRegularActiveDeckId()
-    preLockOverlayDeckId = overlayDeckId
+  const enterLock = (): {
+    activeDeckId: string
+    overlayDeckId: string | null
+  } => {
+    const snapshot = {
+      activeDeckId: snapshotRegularActiveDeckId(),
+      overlayDeckId,
+    }
+    if (lockActive) return snapshot
     lockActive = true
-    logger.info(
-      { preLockActiveDeckId, preLockOverlayDeckId },
-      "runtime: lock active",
-    )
+    logger.info(snapshot, "runtime: lock active")
     pubSub.publish("runtime:lock-mode", {
       active: true,
       reason: "session-locked",
     })
     pubSub.publish("runtime:activeDeck", { deckId: "core:lock" })
     pubSub.publish("runtime:invalidate", undefined)
+    return snapshot
   }
 
   const navigateToDeck = (
@@ -568,8 +590,6 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       if (lockActive && found.deckId === "core:lock") {
         if (LOCK_FOLDER_NAV_TYPES.has(found.button.type)) {
           lockActive = false
-          preLockActiveDeckId = null
-          preLockOverlayDeckId = null
           if (overlayDeckId !== null) setOverlay(null)
           pubSub.publish("runtime:lock-mode", {
             active: false,
@@ -770,252 +790,83 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   void store
 
-  const overlayDecks = (): Array<{
-    deck: RuntimeDeck
-    matcher: ReturnType<typeof compileDeckMatcher>
-    specificity: number
-  }> => {
-    const result: Array<{
-      deck: RuntimeDeck
-      matcher: ReturnType<typeof compileDeckMatcher>
-      specificity: number
-    }> = []
-    for (const deck of decks) {
-      const hasProcess =
-        deck.processNames !== undefined && deck.processNames.length > 0
-      const hasWindow =
-        deck.windowNames !== undefined && deck.windowNames.length > 0
-      if (!hasProcess && !hasWindow) continue
-      result.push({
-        deck,
-        matcher: compileDeckMatcher({
-          processNames: deck.processNames,
-          windowNames: deck.windowNames,
-        }),
-        specificity: (hasProcess ? 1 : 0) + (hasWindow ? 1 : 0),
-      })
-    }
-    return result
-  }
-
-  let activeAppPoll: ReturnType<typeof setInterval> | null = null
-  let activeAppProvider: ActiveAppProviderLike | null = null
-  let lastOverlayDeckId: string | null = overlayDeckId
-  let debounceTimer: ReturnType<typeof setTimeout> | null = null
-  let pendingOverlayDeckId: string | null = null
-  let latestActiveAppSnapshot: {
-    name: string
-    windowTitle: string | null
-    processId: number | null
-  } | null = null
-
-  const applyOverlay = (deckId: string | null): void => {
+  const setAvailableOverlayDeck = (deckId: string | null): void => {
     if (deckId !== null && deckById(deckId) === undefined) {
-      logger.warn({ deckId }, "active-app: overlay deck not found")
+      logger.warn({ deckId }, "setAvailableOverlayDeck: deck not found")
       return
     }
-    if (deckId === null) {
-      // ponytail: no overlay matches anymore. If we had one active, dismiss it.
-      if (overlayDeckId !== null) {
-        logger.info(
-          { prevOverlayId: overlayDeckId },
-          "active-app: dismissing previous overlay (no match)",
-        )
-        setOverlay(null, { source: "autoShow" })
-      }
-      lastOverlayDeckId = null
-      return
-    }
-    if (overlayDeckId !== null && deckId !== overlayDeckId) {
-      // ponytail: overlay mode is a routing branch. If the new match is
-      // auto-show it replaces the current overlay; if it's not auto-show the
-      // current overlay dismisses and the new match stays as available-only
-      // (manual toggle required). In both cases the previous overlay's
-      // overlayNavStacks entry is preserved for re-activation.
-      const newDeck = deckById(deckId)
-      if (newDeck === undefined) return
-      if (newDeck.autoShow === true) {
-        logger.info(
-          { prevOverlayId: overlayDeckId, newMatch: deckId },
-          "active-app: switching overlay (match moved, autoShow)",
-        )
-        setOverlay(deckId, { source: "autoShow" })
-      } else {
-        logger.info(
-          { prevOverlayId: overlayDeckId, newMatch: deckId },
-          "active-app: dismissing current overlay (new match is not autoShow)",
-        )
-        setOverlay(null, { source: "autoShow" })
-      }
-      lastOverlayDeckId = deckId
-      return
-    }
-    if (deckId === lastOverlayDeckId) return
-    const deck = deckById(deckId)
-    if (deck === undefined) return
-    logger.info(
-      { deckId, autoShow: deck.autoShow === true },
-      "active-app: applying overlay",
-    )
-    if (deck.autoShow !== true) {
-      lastOverlayDeckId = deckId
-      return
-    }
-    lastOverlayDeckId = deckId
-    setOverlay(deckId, { source: "autoShow" })
+    if (availableOverlayDeckId === deckId) return
+    availableOverlayDeckId = deckId
+    pubSub.publish("runtime:overlay-available", { deckId })
   }
 
-  const computeOverlayFor = (snapshot: {
-    name: string
-    windowTitle: string | null
-    processId: number | null
-  }): string | null => {
-    let bestId: string | null = null
-    let bestSpecificity = -1
-    for (const { deck, matcher, specificity } of overlayDecks()) {
-      if (!matcher(snapshot)) continue
-      if (specificity > bestSpecificity) {
-        bestId = deck.id
-        bestSpecificity = specificity
-      }
+  const restoreFromLock = (snapshot: {
+    activeDeckId: string
+    overlayDeckId: string | null
+  }): void => {
+    if (!lockActive) return
+    lockActive = false
+    if (snapshot.overlayDeckId !== null) {
+      setOverlay(snapshot.overlayDeckId, { source: "autoShow" })
+    } else {
+      if (overlayDeckId !== null) setOverlay(null)
+      navigateToDeck(snapshot.activeDeckId, { addToHistory: false })
     }
-    if (availableOverlayDeckId !== bestId) {
-      const prev = availableOverlayDeckId
-      availableOverlayDeckId = bestId
-      if (bestId !== null) {
-        logger.info(
-          {
-            from: prev,
-            to: bestId,
-            snapshot: {
-              name: snapshot.name,
-              windowTitle: snapshot.windowTitle,
-            },
-          },
-          "active-app: overlay deck available",
-        )
-      } else if (prev !== null) {
-        logger.info({ from: prev }, "active-app: no overlay deck matches")
-      }
-      pubSub.publish("runtime:overlay-available", { deckId: bestId })
-    }
-    return bestId
+    pubSub.publish("runtime:lock-mode", {
+      active: false,
+      reason: "session-unlocked",
+    })
+    pubSub.publish("runtime:invalidate", undefined)
   }
 
-  const scheduleOverlay = (deckId: string | null): void => {
-    pendingOverlayDeckId = deckId
-    if (debounceTimer !== null) clearTimeout(debounceTimer)
-    debounceTimer = setTimeout(() => {
-      debounceTimer = null
-      const next = pendingOverlayDeckId
-      pendingOverlayDeckId = null
-      applyOverlay(next)
-    }, 200)
+  const startLegacyPolicy = (): void => {
+    void legacyPolicy?.dispose()
+    legacyPolicy = createHostPolicyCoordinator({
+      runtime: {
+        enterLock,
+        getOverlay,
+        restoreFromLock,
+        setAvailableOverlayDeck,
+        setOverlay,
+      },
+      activeApp: legacyActiveApp,
+      session: createNullSessionProvider(),
+      decks,
+      logger,
+    })
+    legacyPolicy.start()
   }
 
-  const startActiveAppLoop = (provider: ActiveAppProviderLike): void => {
-    if (activeAppPoll !== null) return
-    logger.info("active-app: poll loop started")
-    activeAppPoll = setInterval(() => {
-      void provider.getActive().then((snapshot) => {
-        if (snapshot === null) {
-          latestActiveAppSnapshot = null
-          scheduleOverlay(null)
-          return
-        }
-        latestActiveAppSnapshot = snapshot
-        logger.debug(
-          {
-            snapshot: {
-              name: snapshot.name,
-              windowTitle: snapshot.windowTitle,
-            },
-          },
-          "active-app: snapshot",
-        )
-        scheduleOverlay(computeOverlayFor(snapshot))
-      })
-    }, 1000)
-  }
-
-  const stopActiveAppLoop = (): void => {
-    if (debounceTimer !== null) {
-      clearTimeout(debounceTimer)
-      debounceTimer = null
-    }
-    pendingOverlayDeckId = null
-    if (activeAppPoll !== null) {
-      clearInterval(activeAppPoll)
-      activeAppPoll = null
-    }
-  }
-
-  const setActiveAppProvider = (provider: ActiveAppProviderLike): void => {
-    activeAppProvider = provider
-    startActiveAppLoop(provider)
+  const setActiveAppProvider = (
+    provider: Pick<ActiveAppProvider, "getActive" | "stop">,
+  ): void => {
+    legacyActiveApp = provider
+    startLegacyPolicy()
   }
 
   const setSessionProvider = (provider: SessionProvider): void => {
-    if (sessionUnsubscribe !== null) {
-      sessionUnsubscribe()
-      sessionUnsubscribe = null
-    }
-    const handle = (state: SessionState): void => {
-      if (state === "locked" && !lockActive) {
-        enterLockMode()
+    legacySessionUnsubscribe?.()
+    legacySessionUnsubscribe = provider.subscribe((state) => {
+      if (state === "locked") {
+        legacyLockSnapshot = enterLock()
         return
       }
-      if (state === "locked" && lockActive) {
-        preLockActiveDeckId = snapshotRegularActiveDeckId()
-        preLockOverlayDeckId = overlayDeckId
-        logger.info("runtime: lock snapshot refreshed on re-lock")
-        return
-      }
-      if (state === "unlocked" && lockActive) {
-        lockActive = false
-        const overlaySnapshot = preLockOverlayDeckId
-        const activeSnapshot = preLockActiveDeckId
-        preLockActiveDeckId = null
-        preLockOverlayDeckId = null
-        if (
-          overlaySnapshot !== null &&
-          latestActiveAppSnapshot !== null &&
-          computeOverlayFor(latestActiveAppSnapshot) === overlaySnapshot
-        ) {
-          logger.info(
-            { overlayId: overlaySnapshot },
-            "runtime: overlay auto-resumed on unlock (trigger still matches)",
-          )
-          setOverlay(overlaySnapshot, { source: "autoShow" })
-        } else {
-          if (overlayDeckId !== null) setOverlay(null)
-          const restoreId = activeSnapshot ?? mainDeck.id
-          logger.info(
-            { restoreId, overlayWas: overlaySnapshot, triggerMatches: false },
-            "runtime: lock cleared, restoring previous deck",
-          )
-          navigateToDeck(restoreId, { addToHistory: false })
-        }
-        pubSub.publish("runtime:lock-mode", {
-          active: false,
-          reason: "session-unlocked",
-        })
-        pubSub.publish("runtime:invalidate", undefined)
-      }
-    }
-    sessionUnsubscribe = provider.subscribe(handle)
+      if (state !== "unlocked" || legacyLockSnapshot === null) return
+      restoreFromLock({
+        activeDeckId: legacyLockSnapshot.activeDeckId,
+        overlayDeckId:
+          legacyLockSnapshot.overlayDeckId === getOverlay()?.id
+            ? legacyLockSnapshot.overlayDeckId
+            : null,
+      })
+      legacyLockSnapshot = null
+    })
   }
 
   const stopActiveAppPolling = async (): Promise<void> => {
-    stopActiveAppLoop()
-    if (activeAppProvider !== null) {
-      try {
-        await activeAppProvider.stop()
-      } catch (err) {
-        logger.warn({ err }, "active-app: provider stop() failed")
-      }
-      activeAppProvider = null
-    }
+    const policy = legacyPolicy
+    legacyPolicy = null
+    await policy?.dispose()
   }
 
   const runtime: Runtime = {
@@ -1035,21 +886,23 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     invokeAction,
     setGestureListener,
     invalidate,
+    setAvailableOverlayDeck,
+    enterLock,
+    restoreFromLock,
     setActiveAppProvider,
     setSessionProvider,
     isLockActive: () => lockActive,
     stopActiveAppPolling,
     navStackDepth: () => navStack.length,
-    hasOverlayDeckAvailable: () =>
-      availableOverlayDeckId !== null || pendingOverlayDeckId !== null,
+    hasOverlayDeckAvailable: () => availableOverlayDeckId !== null,
     getAvailableOverlayDeckIcon: (): string | null => {
-      const id = availableOverlayDeckId ?? pendingOverlayDeckId
+      const id = availableOverlayDeckId
       if (id === null) return null
       const deck = deckById(id)
       return deck?.icon ?? null
     },
     getAvailableOverlayDeckName: (): string | null => {
-      const id = availableOverlayDeckId ?? pendingOverlayDeckId
+      const id = availableOverlayDeckId
       if (id === null) return null
       const deck = deckById(id)
       return deck?.name ?? null
