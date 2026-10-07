@@ -1,0 +1,34 @@
+ARCHITECTURE.md
+  h_31bfcf89e26281 112-116,234-237
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  h_31bfcf89e26281 285-287,299
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  h_31bfcf89e26281 88,108,119-122,141-151,359-361,382,455,838-839
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  h_31bfcf89e26281 341-343,355
+packages/cli/src/cli/commands/run.ts
+  h_31bfcf89e26281 37-38,202,238,342,349,1517-1519,1576-1584,1689-1725,1734,1752,1756,1771,1773,1917,1921,1950,1975,2113,2139
+packages/cli/src/deck/addon-handler-bridge.ts
+  h_31bfcf89e26281 90,277,283-308,310-322,324-341,345-350,352,354-361,364-365,367-382,384-387,389-392,394-396,398-402,404-456,458-463,465-466,468-489,493-497,545,563-585
+packages/cli/src/deck/deck-presentation-publisher.ts
+  h_31bfcf89e26281 1-116
+packages/cli/src/deck/index.ts
+  h_31bfcf89e26281 35-42
+packages/cli/src/deck/runtime/host-policy-coordinator.ts
+  h_31bfcf89e26281 1-168
+packages/cli/src/deck/runtime/runtime.ts
+  h_31bfcf89e26281 7-10,13-16,152-162,165,215-221,305-313,315,322,793,795,798-800,803-813,815-819,822-837,840-844,848-851,854-863,867-869,889-891,897,899,905
+packages/cli/src/render/ws-bridge.ts
+  h_31bfcf89e26281 53,278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e45ded32be2b162050dba7f6958ce31e9f5e31f4",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
