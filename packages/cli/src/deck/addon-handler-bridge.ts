@@ -87,6 +87,7 @@ const staticGlobalServiceModule = (addonName: string): AddonModule | null => {
 }
 
 export interface AddonBridgeHandle {
+  reconcile(decks: ReadonlyArray<RuntimeDeck>): Promise<void>
   dispose(): void
 }
 
@@ -273,176 +274,225 @@ export const bridgeAddonServices = async (
   const deckButtonCleanup = new Map<
     string,
     Array<{
+      handlerId: string
       buttonAbort: AbortController
       buttonService: AddonButtonService
       wrappedCtx: AddonButtonServiceContext<unknown>
     }>
   >()
+  const mountedButtonSignatures = new Map<string, string>()
 
-  for (const deck of decks) {
-    for (const button of deck.buttons) {
-      const buttonType = button.type
+  const mountButtons = async (
+    nextDecks: ReadonlyArray<RuntimeDeck>,
+  ): Promise<void> => {
+    for (const deck of nextDecks) {
+      for (const button of deck.buttons) {
+        const buttonType = button.type
 
-      let addonName: string | null = null
-      let resolvedButtonType: string | null = null
-      for (const addon of allAddons) {
-        if (addon.types.includes(buttonType)) {
-          addonName = addon.name
-          resolvedButtonType = buttonType
-          break
-        }
-        if (
-          typeof addon.defaultButton === "string" &&
-          addon.name === buttonType
-        ) {
-          addonName = addon.name
-          resolvedButtonType = addon.defaultButton
-          break
-        }
-      }
-
-      if (addonName === null || resolvedButtonType === null) continue
-
-      const globalMethods = addonMethods.get(addonName) ?? {}
-      const buttonMethods: Record<string, AddonServiceMethod> = {}
-      for (const [methodName, method] of Object.entries(globalMethods)) {
-        buttonMethods[namespacedKey(addonName, methodName)] = method
-      }
-
-      let addonMod: AddonModule | null = null
-      for (const addon of allAddons) {
-        if (addon.name !== addonName) continue
-        if (addon.frontendEntry === null) continue
-        try {
-          addonMod =
-            staticAddonModule(addon.name) ??
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ((await import(addon.frontendEntry)) as AddonModule)
-        } catch (err) {
-          // ponytail: silence here meant a failed import surfaced only as a
-          // button that ignored taps. See the matching catch above.
-          logger.error(
-            { addonName, entry: addon.frontendEntry, err },
-            "addon button handlers failed to load",
-          )
-        }
-        break
-      }
-
-      const exported = addonMod
-        ? (addonMod.manifest ??
-          (addonMod.default && typeof addonMod.default === "object"
-            ? addonMod.default
-            : null))
-        : null
-
-      if (exported === null) continue
-
-      const manifest = exported as {
-        readonly name?: string
-        readonly buttonTypes?: Record<
-          string,
-          {
-            readonly service?: AddonButtonTypeService & AddonButtonService
+        let addonName: string | null = null
+        let resolvedButtonType: string | null = null
+        for (const addon of allAddons) {
+          if (addon.types.includes(buttonType)) {
+            addonName = addon.name
+            resolvedButtonType = buttonType
+            break
           }
-        >
-      }
+          if (
+            typeof addon.defaultButton === "string" &&
+            addon.name === buttonType
+          ) {
+            addonName = addon.name
+            resolvedButtonType = addon.defaultButton
+            break
+          }
+        }
 
-      const buttonTypeEntry = manifest.buttonTypes?.[resolvedButtonType]
-      if (buttonTypeEntry?.service === undefined) continue
+        if (addonName === null || resolvedButtonType === null) continue
+        const handlerId = `${deck.id}:${button.id}`
+        const signature = JSON.stringify([
+          button.type,
+          button.config ?? null,
+          button.position ?? null,
+        ])
+        if (mountedButtonSignatures.get(handlerId) === signature) continue
 
-      const buttonService = buttonTypeEntry.service
-      const buttonCtx: AddonButtonServiceContext<unknown> = {
-        config: button.config ?? {},
-        buttonId: button.id,
-        ...(button.position !== undefined ? { position: button.position } : {}),
-        addonName,
-        methods: Object.freeze(buttonMethods),
-        coreMethods: methods,
-        publish: (channel: string, data: unknown) =>
-          pubSub.publish(channel, data),
-        executor,
-        signal: abortController.signal,
-        store,
-      }
+        const globalMethods = addonMethods.get(addonName) ?? {}
+        const buttonMethods: Record<string, AddonServiceMethod> = {}
+        for (const [methodName, method] of Object.entries(globalMethods)) {
+          buttonMethods[namespacedKey(addonName, methodName)] = method
+        }
 
-      const buttonAbort = new AbortController()
-      abortController.signal.addEventListener("abort", () =>
-        buttonAbort.abort(),
-      )
-
-      const wrappedCtx = {
-        ...buttonCtx,
-        signal: buttonAbort.signal,
-      }
-
-      const existing = deckButtonCleanup.get(deck.id) ?? []
-      existing.push({ buttonAbort, buttonService, wrappedCtx })
-      deckButtonCleanup.set(deck.id, existing)
-
-      try {
-        buttonService.onMount?.(wrappedCtx)
-      } catch (err) {
-        logger.error({ addonName, buttonType, err }, `addon onMount threw`)
-      }
-
-      const allowedGestures = buttonService.gestureHandlers
-      const handler = {
-        ...(allowedGestures?.includes("tap") && buttonService.onTap
-          ? {
-              async onTap() {
-                try {
-                  await buttonService.onTap?.(wrappedCtx)
-                } catch (err) {
-                  logger.error(
-                    { addonName, buttonType: resolvedButtonType, err },
-                    `addon onTap failed`,
-                  )
-                }
-              },
-            }
-          : {}),
-        ...(allowedGestures?.includes("dbl-tap") && buttonService.onDblTap
-          ? {
-              async onDblTap() {
-                try {
-                  await buttonService.onDblTap?.(wrappedCtx)
-                } catch (err) {
-                  logger.error(
-                    { addonName, buttonType: resolvedButtonType, err },
-                    `addon onDblTap failed`,
-                  )
-                }
-              },
-            }
-          : {}),
-        ...(allowedGestures?.includes("hold") && buttonService.onHold
-          ? {
-              async onHold() {
-                try {
-                  await buttonService.onHold?.(wrappedCtx)
-                } catch (err) {
-                  logger.error(
-                    { addonName, buttonType: resolvedButtonType, err },
-                    `addon onHold failed`,
-                  )
-                }
-              },
-            }
-          : {}),
-        dispose() {
-          buttonAbort.abort()
+        let addonMod: AddonModule | null = null
+        for (const addon of allAddons) {
+          if (addon.name !== addonName) continue
+          if (addon.frontendEntry === null) continue
           try {
-            buttonService.dispose?.(wrappedCtx)
+            addonMod =
+              staticAddonModule(addon.name) ??
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ((await import(addon.frontendEntry)) as AddonModule)
           } catch (err) {
-            logger.error({ addonName, buttonType, err }, `addon dispose failed`)
+            // ponytail: silence here meant a failed import surfaced only as a
+            // button that ignored taps. See the matching catch above.
+            logger.error(
+              { addonName, entry: addon.frontendEntry, err },
+              "addon button handlers failed to load",
+            )
           }
-        },
-      }
+          break
+        }
 
-      runtime.registerButtonHandler(`${deck.id}:${button.id}`, handler)
-      registeredHandlerIds.add(`${deck.id}:${button.id}`)
+        const exported = addonMod
+          ? (addonMod.manifest ??
+            (addonMod.default && typeof addonMod.default === "object"
+              ? addonMod.default
+              : null))
+          : null
+
+        if (exported === null) continue
+
+        const manifest = exported as {
+          readonly name?: string
+          readonly buttonTypes?: Record<
+            string,
+            {
+              readonly service?: AddonButtonTypeService & AddonButtonService
+            }
+          >
+        }
+
+        const buttonTypeEntry = manifest.buttonTypes?.[resolvedButtonType]
+        if (buttonTypeEntry?.service === undefined) continue
+
+        const buttonService = buttonTypeEntry.service
+        const buttonCtx: AddonButtonServiceContext<unknown> = {
+          config: button.config ?? {},
+          buttonId: button.id,
+          ...(button.position !== undefined
+            ? { position: button.position }
+            : {}),
+          addonName,
+          methods: Object.freeze(buttonMethods),
+          coreMethods: methods,
+          publish: (channel: string, data: unknown) =>
+            pubSub.publish(channel, data),
+          executor,
+          signal: abortController.signal,
+          store,
+        }
+
+        const buttonAbort = new AbortController()
+        abortController.signal.addEventListener("abort", () =>
+          buttonAbort.abort(),
+        )
+
+        const wrappedCtx = {
+          ...buttonCtx,
+          signal: buttonAbort.signal,
+        }
+
+        const existing = deckButtonCleanup.get(deck.id) ?? []
+        existing.push({ handlerId, buttonAbort, buttonService, wrappedCtx })
+        deckButtonCleanup.set(deck.id, existing)
+
+        try {
+          buttonService.onMount?.(wrappedCtx)
+        } catch (err) {
+          logger.error({ addonName, buttonType, err }, `addon onMount threw`)
+        }
+
+        const allowedGestures = buttonService.gestureHandlers
+        const handler = {
+          ...(allowedGestures?.includes("tap") && buttonService.onTap
+            ? {
+                async onTap() {
+                  try {
+                    await buttonService.onTap?.(wrappedCtx)
+                  } catch (err) {
+                    logger.error(
+                      { addonName, buttonType: resolvedButtonType, err },
+                      `addon onTap failed`,
+                    )
+                  }
+                },
+              }
+            : {}),
+          ...(allowedGestures?.includes("dbl-tap") && buttonService.onDblTap
+            ? {
+                async onDblTap() {
+                  try {
+                    await buttonService.onDblTap?.(wrappedCtx)
+                  } catch (err) {
+                    logger.error(
+                      { addonName, buttonType: resolvedButtonType, err },
+                      `addon onDblTap failed`,
+                    )
+                  }
+                },
+              }
+            : {}),
+          ...(allowedGestures?.includes("hold") && buttonService.onHold
+            ? {
+                async onHold() {
+                  try {
+                    await buttonService.onHold?.(wrappedCtx)
+                  } catch (err) {
+                    logger.error(
+                      { addonName, buttonType: resolvedButtonType, err },
+                      `addon onHold failed`,
+                    )
+                  }
+                },
+              }
+            : {}),
+          dispose() {
+            buttonAbort.abort()
+            try {
+              buttonService.dispose?.(wrappedCtx)
+            } catch (err) {
+              logger.error(
+                { addonName, buttonType, err },
+                `addon dispose failed`,
+              )
+            }
+          },
+        }
+
+        runtime.registerButtonHandler(handlerId, handler)
+        registeredHandlerIds.add(handlerId)
+        mountedButtonSignatures.set(handlerId, signature)
+      }
     }
+  }
+
+  await mountButtons(decks)
+
+  const unmountHandler = (handlerId: string): void => {
+    runtime.unregisterButtonHandler(handlerId)
+    registeredHandlerIds.delete(handlerId)
+    mountedButtonSignatures.delete(handlerId)
+    for (const [deckId, tracked] of deckButtonCleanup) {
+      const remaining = []
+      for (const entry of tracked) {
+        if (entry.handlerId !== handlerId) {
+          remaining.push(entry)
+          continue
+        }
+        try {
+          entry.buttonService.onUnmount?.(entry.wrappedCtx)
+        } catch (err) {
+          logger.error({ err }, "bridge onUnmount failed")
+        }
+        entry.buttonAbort.abort()
+      }
+      if (remaining.length === 0) deckButtonCleanup.delete(deckId)
+      else deckButtonCleanup.set(deckId, remaining)
+    }
+  }
+
+  const unmountButtons = (): void => {
+    for (const handlerId of [...registeredHandlerIds]) unmountHandler(handlerId)
+    deckButtonCleanup.clear()
   }
 
   const unsubscribeDeckInactive = pubSub.subscribe(
@@ -492,21 +542,7 @@ export const bridgeAddonServices = async (
     if (disposed) return
     disposed = true
     for (const cleanup of trackedCleanup) cleanup()
-    for (const handlerId of registeredHandlerIds) {
-      runtime.unregisterButtonHandler(handlerId)
-    }
-    registeredHandlerIds.clear()
-    for (const tracked of deckButtonCleanup.values()) {
-      for (const { buttonAbort, buttonService, wrappedCtx } of tracked) {
-        try {
-          buttonService.onUnmount?.(wrappedCtx)
-        } catch (err) {
-          logger.error({ err }, `bridge onUnmount failed`)
-        }
-        buttonAbort.abort()
-      }
-    }
-    deckButtonCleanup.clear()
+    unmountButtons()
     for (const [addonName, globalService] of addonGlobalServices) {
       try {
         const ctx: AddonServiceContext = {
@@ -524,5 +560,27 @@ export const bridgeAddonServices = async (
     abortController.abort()
   }
 
-  return { dispose }
+  return {
+    reconcile: async (nextDecks) => {
+      const nextSignatures = new Map<string, string>()
+      for (const deck of nextDecks) {
+        for (const button of deck.buttons) {
+          nextSignatures.set(
+            `${deck.id}:${button.id}`,
+            JSON.stringify([
+              button.type,
+              button.config ?? null,
+              button.position ?? null,
+            ]),
+          )
+        }
+      }
+      for (const [handlerId, signature] of mountedButtonSignatures) {
+        if (nextSignatures.get(handlerId) !== signature)
+          unmountHandler(handlerId)
+      }
+      await mountButtons(nextDecks)
+    },
+    dispose,
+  }
 }

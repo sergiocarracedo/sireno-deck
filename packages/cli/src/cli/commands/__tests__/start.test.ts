@@ -338,8 +338,9 @@ const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
     },
   })
   const fakeRuntime = {
-    setActiveAppProvider: vi.fn(),
-    setSessionProvider: vi.fn(),
+    setAvailableOverlayDeck: vi.fn(),
+    enterLock: vi.fn(() => ({ activeDeckId: "main", overlayDeckId: null })),
+    restoreFromLock: vi.fn(),
     setGestureListener: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
     getActiveDeck: vi.fn(() => undefined),
@@ -351,6 +352,7 @@ const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
     methods: {
       setKeyMacroProvider: () => undefined,
       setNotificationProvider: () => undefined,
+      setUrlProvider: () => undefined,
       setClipboardProvider: () => undefined,
       setRequirements: () => undefined,
       checkRequirement: () => true,

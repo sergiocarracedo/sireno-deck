@@ -85,6 +85,7 @@ vi.mock("@/render/ws-bridge", () => ({
       broadcast: vi.fn(),
       setAddonInventory: vi.fn(),
       setDeckTree: vi.fn(),
+      sendToCaller: vi.fn(),
       registerCacheablePoller: vi.fn(),
       onMessage: () => () => undefined,
       onConnection: () => () => undefined,
@@ -104,6 +105,7 @@ vi.mock("@/render/state-publisher", () => ({
   }),
 }))
 let configChangeCallback: (() => void) | null = null
+let presentationRefresh: ReturnType<typeof vi.fn> | null = null
 vi.mock("@/core/watcher", () => ({
   ConfigWatcher: vi.fn(function FakeConfigWatcher(_paths, opts) {
     configChangeCallback = opts.onChange
@@ -114,7 +116,10 @@ vi.mock("@/core/watcher", () => ({
   }),
 }))
 vi.mock("@/deck/addon-handler-bridge", () => ({
-  bridgeAddonServices: vi.fn(async () => undefined),
+  bridgeAddonServices: vi.fn(async () => ({
+    dispose: vi.fn(),
+    reconcile: vi.fn(async () => undefined),
+  })),
 }))
 vi.mock("@/cli/commands/addon-registry", () => ({
   collectBuiltinAddonRegistry: vi.fn(async () => ({
@@ -133,6 +138,17 @@ vi.mock("@/util/device-config", () => ({
 vi.mock("@/deck", () => ({
   createDeckRuntime: vi.fn(),
   injectSystemButtons: vi.fn((decks: ReadonlyArray<unknown>) => decks),
+  createHostPolicyCoordinator: vi.fn(() => ({
+    start: vi.fn(),
+    updateDecks: vi.fn(),
+    dispose: vi.fn(async () => undefined),
+  })),
+  createDeckPresentationPublisher: vi.fn(() => ({
+    start: vi.fn(),
+    refresh: (presentationRefresh = vi.fn()),
+    updateResolverOptions: vi.fn(),
+    dispose: vi.fn(),
+  })),
 }))
 
 const loaderMod = await import("@/config/loader")
@@ -340,8 +356,9 @@ const setHappyPath = (
   const fakeRuntime = {
     setDecks: vi.fn(),
     getActiveDeckId: vi.fn(() => "main"),
-    setActiveAppProvider: vi.fn(),
-    setSessionProvider: vi.fn(),
+    setAvailableOverlayDeck: vi.fn(),
+    enterLock: vi.fn(() => ({ activeDeckId: "main", overlayDeckId: null })),
+    restoreFromLock: vi.fn(),
     setGestureListener: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
     invalidate: vi.fn(),
@@ -362,6 +379,7 @@ const setHappyPath = (
     methods: {
       setKeyMacroProvider: () => undefined,
       setNotificationProvider: () => undefined,
+      setUrlProvider: () => undefined,
       setClipboardProvider: () => undefined,
       setRequirements: () => undefined,
       setDeckRebuilder: () => undefined,
@@ -434,6 +452,7 @@ describe("run", () => {
     vi.clearAllMocks()
     configChangeCallback = null
     capturedBridge = null
+    presentationRefresh = null
   })
   afterEach(() => {
     vi.restoreAllMocks()
@@ -816,15 +835,8 @@ describe("run", () => {
       buttons: [],
     })
     configChangeCallback!()
-    await waitFor(() => expect(capturedBridge!.broadcast).toHaveBeenCalled())
-    const deckFrames = capturedBridge!.broadcast.mock.calls.filter(
-      ([message]) => (message as { type?: string }).type === "deck-config",
-    )
-    expect(deckFrames).toHaveLength(1)
-    expect(deckFrames[0]![0]).toMatchObject({
-      type: "deck-config",
-      deckId: "main",
-    })
+    await waitFor(() => expect(presentationRefresh).toHaveBeenCalled())
+    expect(presentationRefresh).toHaveBeenCalledWith({ force: true })
     signals.trigger()
     await runPromise
   })

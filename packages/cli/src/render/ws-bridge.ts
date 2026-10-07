@@ -50,6 +50,7 @@ export interface WsBridge {
   setActiveTheme?(theme: { name: string; version?: number }): void
   setDeckTree(tree: Omit<DeckTreeMessage, "type">): void
   broadcast(message: WsMessage): void
+  sendToCaller?(socket: WebSocket, message: WsMessage): void
   registerCacheablePoller(
     channel: string,
     pollFn: () => unknown | Promise<unknown>,
@@ -274,6 +275,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
             if (client.readyState === client.OPEN) client.send(payload)
           }
         },
+        sendToCaller: (socket, message) => sendToSocket(socket, message),
         registerCacheablePoller: (channel, pollFn) => {
           cacheablePollers.set(channel, pollFn)
           const waiting = pendingChannelSubs.get(channel)
