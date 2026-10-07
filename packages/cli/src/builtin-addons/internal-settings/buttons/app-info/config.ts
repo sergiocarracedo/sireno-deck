@@ -6,7 +6,8 @@ export const configSchema = z
       .string()
       .min(1)
       .optional()
-      .default("addon://internal-settings/logo72x72.png"),
+      .default("addon://internal-settings/logo72x72.png")
+      .meta({ title: "Icon", "x-control": "icon" }),
   })
   .strict()
 

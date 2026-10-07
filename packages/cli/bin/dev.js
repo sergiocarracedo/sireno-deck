@@ -55,13 +55,23 @@ const LONG_LIVED_COMMANDS = new Set(["logs"])
 const firstArg = process.argv[2]
 const restArgs = process.argv.slice(2)
 
+const cleanNpmEnvironment = (env) =>
+  Object.fromEntries(
+    Object.entries(env).filter(
+      ([key]) => !key.toLowerCase().startsWith("npm_config_"),
+    ),
+  )
+
 const spawnTsx = (args, envExtra = {}) =>
   spawn(tsxBin, args, {
     stdio: "inherit",
     cwd: cliRoot,
     env: {
-      ...process.env,
-      SIRENO_CWD: process.cwd(),
+      ...cleanNpmEnvironment(process.env),
+      // pnpm runs package scripts from packages/cli. INIT_CWD preserves the
+      // directory where the user invoked `p dev`, so config discovery stays
+      // tied to that checkout rather than to a prior daemon's cache.
+      SIRENO_CWD: process.env.INIT_CWD || process.cwd(),
       TSX_TSCONFIG_PATH: tsconfigPath,
       ...envExtra,
     },

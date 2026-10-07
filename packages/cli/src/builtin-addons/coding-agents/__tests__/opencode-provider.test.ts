@@ -69,6 +69,7 @@ describe("OpenCodeProvider", () => {
   })
 
   it("keeps live instances when the OpenCode API is unreachable", async () => {
+    const warn = vi.spyOn(console, "warn")
     const provider = new OpenCodeProvider({
       baseUrl: "http://x",
       apiFactory: () =>
@@ -88,6 +89,7 @@ describe("OpenCodeProvider", () => {
         status: "running",
       }),
     ])
+    expect(warn).not.toHaveBeenCalled()
   })
 
   it("reads usage and context from OpenCode API-shaped responses", async () => {

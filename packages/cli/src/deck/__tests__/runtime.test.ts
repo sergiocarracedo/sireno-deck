@@ -1537,7 +1537,7 @@ describe("invokeAction — user actions", () => {
     expect(dispatch).toHaveBeenCalledWith("echo hold")
   })
 
-  it("user action wins over addon handler when both exist", async () => {
+  it("addon-owned gesture wins over configured user action", async () => {
     const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
@@ -1554,8 +1554,8 @@ describe("invokeAction — user actions", () => {
       .mockResolvedValue(undefined)
     runtime.registerButtonHandler("main:b1", { onTap: addonHandler })
     await runtime.invokeAction("b1", "tap")
-    expect(dispatch).toHaveBeenCalledWith("echo user")
-    expect(addonHandler).not.toHaveBeenCalled()
+    expect(addonHandler).toHaveBeenCalledOnce()
+    expect(dispatch).not.toHaveBeenCalled()
   })
 
   it("addon handler fires when no user action defined", async () => {

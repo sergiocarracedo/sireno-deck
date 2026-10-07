@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { ListBox, Select } from "@heroui/react"
+import { ListBox, Select, Toast } from "@heroui/react"
 
 import {
   getDeviceModel,
@@ -268,6 +268,9 @@ export const App = ({
               m.themeVariants !== null && typeof m.themeVariants === "object"
                 ? (m.themeVariants as EditorState["themeVariants"])
                 : {},
+            surfaces: Array.isArray(m.surfaces)
+              ? (m.surfaces as EditorState["surfaces"])
+              : [],
             buttonSchemas:
               m.buttonSchemas !== null && typeof m.buttonSchemas === "object"
                 ? (m.buttonSchemas as Record<string, Record<string, unknown>>)
@@ -385,13 +388,12 @@ export const App = ({
   }, [])
 
   useEffect(() => {
-    if (typeof document === "undefined") return
-    const handleChange = (): void => {
+    const handleFullscreenChange = (): void => {
       setIsFullscreen(document.fullscreenElement !== null)
     }
-    document.addEventListener("fullscreenchange", handleChange)
-    handleChange()
-    return () => document.removeEventListener("fullscreenchange", handleChange)
+    document.addEventListener("fullscreenchange", handleFullscreenChange)
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange)
   }, [])
 
   const onSelect = (path: string): void => {
@@ -441,6 +443,7 @@ export const App = ({
               device={deviceModel}
               token={token}
               onGesture={sendButtonAction}
+              runtimeDeckId={deckId || null}
               onDeckSelect={(selectedDeckId) =>
                 clientRef.current?.send(
                   JSON.stringify({
@@ -476,11 +479,9 @@ export const App = ({
     clientRef.current?.send(JSON.stringify({ type: "set-device", deviceId }))
   }
 
-  const toggleFullscreen = (): void => {
+  const enterFullscreen = (): void => {
     if (typeof document === "undefined") return
-    if (document.fullscreenElement !== null) {
-      void document.exitFullscreen()
-    } else {
+    if (document.fullscreenElement == null) {
       void document.documentElement.requestFullscreen()
     }
   }
@@ -532,11 +533,12 @@ export const App = ({
       }
       content={
         <>
+          <Toast.Provider placement="bottom end" />
           {deckOnly ? (
             <div
               ref={deckContainerRef}
               data-testid="deck-only-view"
-              className="flex h-full w-full items-center justify-center overflow-hidden px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+              className="flex h-full w-full items-center justify-center overflow-hidden"
             >
               {deckId === "" ? (
                 <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
@@ -561,6 +563,7 @@ export const App = ({
                     onIframeRef={(el) => {
                       iframeRef.current = el
                     }}
+                    bare
                   />
                 </div>
               )}
@@ -653,15 +656,15 @@ export const App = ({
               </div>
             </div>
           )}
-          {deckOnly && (
+          {deckOnly && !isFullscreen && (
             <button
               type="button"
-              onClick={toggleFullscreen}
-              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+              onClick={enterFullscreen}
+              aria-label="Enter fullscreen"
               data-testid="fullscreen-toggle"
               className="fixed top-[calc(env(safe-area-inset-top)+0.75rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-neutral-800/80 text-[10px] font-medium uppercase tracking-wide text-neutral-100 shadow-lg backdrop-blur hover:bg-neutral-700/80"
             >
-              {isFullscreen ? "Exit" : "Full"}
+              Full
             </button>
           )}
         </>

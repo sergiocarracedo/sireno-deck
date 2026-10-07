@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Input } from "@heroui/react"
+import { Button, Input } from "@heroui/react"
 
 import { categories } from "@/builtin-addons/emoji-selector/data/categories"
 
@@ -40,17 +40,20 @@ export const EmojiPicker = ({
               <h4 className="mb-1 text-sm text-muted">{category.label}</h4>
               <div className="grid grid-cols-8 gap-1 sm:grid-cols-10">
                 {category.emojis.map((emoji) => (
-                  <button
+                  <Button
                     key={`${category.id}:${emoji.char}`}
                     type="button"
+                    size="sm"
+                    variant={value === emoji.char ? "secondary" : "tertiary"}
+                    isIconOnly
                     aria-label={emoji.shortcode ?? emoji.char}
                     aria-pressed={value === emoji.char}
                     title={emoji.shortcode}
-                    className="size-9 rounded-md text-xl hover:bg-surface-secondary aria-pressed:bg-primary/20"
-                    onClick={() => onSelect(emoji.char)}
+                    className="size-9 min-w-9 rounded-md p-0 text-xl hover:outline hover:outline-2 hover:outline-primary"
+                    onPress={() => onSelect(emoji.char)}
                   >
                     {emoji.char}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </section>

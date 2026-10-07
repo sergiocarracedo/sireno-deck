@@ -84,6 +84,14 @@ describe("createGestureDetector", () => {
       expect(cb.mock.calls[0]![0]!.kind).toBe("hold")
     })
 
+    it("reports a timer-emitted hold once and releases the key", () => {
+      detect(down(0))
+      advance(HOLD_ACTION_DELAY_MS + 1)
+
+      expect(detect(up(HOLD_ACTION_DELAY_MS + 2))?.kind).toBe("hold")
+      expect(cb.mock.calls.map(([result]) => result?.kind)).toEqual(["hold"])
+    })
+
     it("up arriving after hold timer fires: returns hold (duration-based)", () => {
       detect(down(0))
       advance(HOLD_ACTION_DELAY_MS + 1)

@@ -25,7 +25,11 @@ const state: EditorState = {
   buttonSchemas: {
     "core:action": {
       type: "object",
-      properties: { command: { type: "string" } },
+      properties: {
+        command: { type: "string", title: "Config command" },
+        icon: { type: "string", title: "Icon", "x-control": "icon" },
+        label: { type: "string", title: "Label" },
+      },
     },
   },
   themeVariants: {
@@ -125,8 +129,8 @@ describe("EditorPage", () => {
       />,
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
-    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
-    fireEvent.change(screen.getByLabelText("Command"), {
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
+    fireEvent.change(screen.getByLabelText("Config command", { exact: true }), {
       target: { value: "whoami" },
     })
     fireEvent.click(screen.getByRole("button", { name: "Choose icon" }))
@@ -167,8 +171,7 @@ describe("EditorPage", () => {
       index: 0,
       button: {
         type: "core:action",
-        config: { command: "whoami" },
-        icon: "💖",
+        config: { command: "whoami", icon: "💖" },
       },
     })
   })
@@ -185,7 +188,7 @@ describe("EditorPage", () => {
       />,
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
-    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
     const validationRequest = JSON.parse(ws.sent.at(-1) ?? "{}") as {
       requestId: string
     }
@@ -220,6 +223,23 @@ describe("EditorPage", () => {
       expect(screen.getByAltText("SVG preview")).toBeInTheDocument(),
     )
     fireEvent.click(screen.getByRole("button", { name: "Apply" }))
+    const iconValidation = JSON.parse(ws.sent.at(-1) ?? "{}") as {
+      requestId: string
+    }
+    view.rerender(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        validation={{
+          requestId: iconValidation.requestId,
+          valid: true,
+          errors: [],
+        }}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
     fireEvent.click(screen.getByRole("button", { name: "Save button" }))
 
     const assetWrite = JSON.parse(ws.sent.at(-1) ?? "{}") as {
@@ -250,7 +270,7 @@ describe("EditorPage", () => {
     await waitFor(() =>
       expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toMatchObject({
         kind: "update",
-        button: { icon: `./assets/${assetWrite.filename}` },
+        button: { config: { icon: `./assets/${assetWrite.filename}` } },
       }),
     )
     const writeIndex = ws.sent.findIndex(
@@ -263,13 +283,23 @@ describe("EditorPage", () => {
     expect(mutationIndex).toBeGreaterThan(writeIndex)
   })
 
-  it("reveals button types only when creating a button", () => {
+  it("searches all user-configurable button types, including built-in addons", async () => {
     render(
       <EditorPage
         wsClient={client()}
         state={state}
         result={null}
-        addonInventory={inventory}
+        addonInventory={{
+          addons: [
+            {
+              ...inventory.addons[0]!,
+              name: "core",
+              internal: true,
+              buttonTypes: [{ type: "core:action", internal: false }],
+            },
+            ...inventory.addons,
+          ],
+        }}
       />,
     )
 
@@ -278,12 +308,40 @@ describe("EditorPage", () => {
       "true",
     )
     expect(
-      screen.queryByRole("button", { name: "test-addon:action" }),
+      screen.queryByRole("button", { name: /test-addon:action/ }),
     ).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole("button", { name: "New button" }))
     expect(
-      screen.getByRole("button", { name: "test-addon:action" }),
+      screen.queryByText("Select a button using its ⋮ menu."),
+    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText("Config command")).not.toBeInTheDocument()
+    fireEvent.change(screen.getByRole("textbox", { name: /Button type/ }), {
+      target: { value: "core:action" },
+    })
+    expect(
+      screen.getByRole("button", { name: /core:action/ }),
     ).toBeInTheDocument()
+    expect(screen.getByRole("group", { name: "core" })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: /core:action/ }))
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Add button" }),
+      ).toBeInTheDocument(),
+    )
+    expect(
+      screen.queryByRole("button", { name: "New button" }),
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }))
+    fireEvent.click(screen.getByRole("button", { name: "New button" }))
+    fireEvent.change(screen.getByRole("textbox", { name: /Button type/ }), {
+      target: { value: "test-addon:action" },
+    })
+    expect(
+      screen.getByRole("button", { name: /test-addon:action/ }),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: /core:action/ }),
+    ).not.toBeInTheDocument()
   })
 
   it("targets generated deck overrides with the addon owner", () => {
@@ -343,40 +401,144 @@ describe("EditorPage", () => {
       />,
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
-    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
     fireEvent.pointerDown(screen.getByTestId("deck-key-1"))
     fireEvent.pointerUp(screen.getByTestId("deck-key-1"))
 
-    expect(screen.getByLabelText("Command")).toHaveValue("date")
+    expect(
+      screen.getByLabelText("Config command", { exact: true }),
+    ).toHaveValue("date")
     expect(ws.sent.some((message) => message.includes("editor-mutate"))).toBe(
       false,
     )
   })
 
-  it("stages a palette button at an empty selected position", () => {
+  it("stages a palette button at the first available non-system position", async () => {
     const ws = client()
     vi.spyOn(window, "confirm").mockReturnValue(true)
     render(
       <EditorPage
         wsClient={ws}
-        state={state}
+        state={{
+          ...state,
+          surfaces: [
+            {
+              id: "main",
+              buttons: [{ type: "core:settings-entry", position: 14 }],
+            },
+          ],
+        }}
         result={null}
         addonInventory={inventory}
         frontendUrl="http://127.0.0.1:5180"
         device={DEVICE_MODELS.find((model) => model.id === "mk2")}
       />,
     )
-    fireEvent.click(screen.getByRole("button", { name: "Actions for key 4" }))
-    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
     fireEvent.click(screen.getByRole("button", { name: "New button" }))
-    fireEvent.click(screen.getByRole("button", { name: "test-addon:action" }))
+    fireEvent.change(screen.getByRole("textbox", { name: /Button type/ }), {
+      target: { value: "test-addon:action" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: /test-addon:action/ }))
 
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "First available" }),
+      ).toBeInTheDocument(),
+    )
+    const firstAvailable = screen.getByRole("button", {
+      name: "First available",
+    })
+    const positionZero = screen.getByRole("button", { name: "Position 0" })
+    expect(firstAvailable.parentElement).not.toBe(positionZero.parentElement)
     expect(
       screen.getByRole("button", { name: "Add button" }),
     ).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Position 2" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    )
+    expect(
+      screen
+        .getAllByRole("button", { name: /^Position/ })
+        .filter((button) => button.getAttribute("aria-pressed") === "true"),
+    ).toHaveLength(1)
+    fireEvent.click(screen.getByRole("button", { name: "Position 4" }))
+    expect(screen.getByRole("button", { name: "Position 4" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    )
     expect(
       ws.sent.some((entry) => JSON.parse(entry).type === "editor-mutate"),
     ).toBe(false)
+  })
+
+  it("confirms an occupied add position before staging an override", async () => {
+    const ws = client()
+    const props = {
+      wsClient: ws,
+      state: {
+        ...state,
+        buttonSchemas: {
+          ...state.buttonSchemas,
+          "test-addon:action": { type: "object", properties: {} },
+        },
+      },
+      result: null,
+      addonInventory: inventory,
+      frontendUrl: "http://127.0.0.1:5180",
+      device: DEVICE_MODELS.find((model) => model.id === "mk2"),
+    }
+    const view = render(<EditorPage {...props} />)
+    fireEvent.click(screen.getByRole("button", { name: "New button" }))
+    fireEvent.change(screen.getByRole("textbox", { name: /Button type/ }), {
+      target: { value: "test-addon:action" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: /test-addon:action/ }))
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Position 0" }),
+      ).toBeInTheDocument(),
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Position 0" }))
+    expect(
+      screen.getByRole("heading", { name: "Replace key 1?" }),
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(screen.getByRole("button", { name: "Position 2" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Position 0" }))
+    fireEvent.click(screen.getByRole("button", { name: "Replace key" }))
+    expect(screen.getByRole("button", { name: "Position 0" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    )
+    const validation = JSON.parse(
+      ws.sent
+        .filter(
+          (entry) => JSON.parse(entry).type === "editor-validation-request",
+        )
+        .at(-1) ?? "{}",
+    ) as { requestId: string }
+    view.rerender(
+      <EditorPage
+        {...props}
+        validation={{
+          requestId: validation.requestId,
+          valid: true,
+          errors: [],
+        }}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Add button" }))
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toMatchObject({
+      kind: "add-button",
+      replaceIndex: 0,
+      button: { position: 0 },
+    })
   })
 
   it("renders deck fields and dispatches an immutable-id deck update", () => {
@@ -408,11 +570,283 @@ describe("EditorPage", () => {
       />,
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
-    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
     expect(screen.getByRole("button", { name: "Position 0" })).toHaveAttribute(
       "aria-pressed",
       "true",
     )
+    expect(
+      screen.getByRole("button", { name: "Change type: core:action" }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Position 0" })).toHaveClass(
+      "aria-pressed:bg-white",
+    )
+    expect(screen.getByRole("button", { name: "Position 1" })).toHaveClass(
+      "bg-surface-secondary",
+    )
+  })
+
+  it("swaps an occupied position and keeps editing the same button", () => {
+    const ws = client()
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
+    fireEvent.click(screen.getByRole("button", { name: "Position 1" }))
+
+    expect(JSON.parse(ws.sent.at(-1) ?? "{}").mutation).toEqual({
+      kind: "move-position",
+      deckId: "main",
+      from: 0,
+      to: 1,
+    })
+    expect(screen.getByLabelText("Config command")).toHaveValue("date")
+    expect(screen.getByRole("button", { name: "Position 1" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    )
+  })
+
+  it("stages an edited button in the first available position", () => {
+    const ws = client()
+    render(
+      <EditorPage
+        wsClient={ws}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
+    fireEvent.click(screen.getByRole("button", { name: "First available" }))
+
+    expect(screen.getByRole("button", { name: "Position 2" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    )
+    expect(screen.getByLabelText("Config command")).toHaveValue("date")
+  })
+
+  it("changes an existing button type using its defaults and owned gestures", async () => {
+    render(
+      <EditorPage
+        wsClient={client()}
+        state={{
+          ...state,
+          config: {
+            decks: {
+              main: {
+                buttons: [
+                  {
+                    type: "core:action",
+                    position: 0,
+                    icon: "icon://play",
+                    label: "Keep this label",
+                    config: { command: "old" },
+                    actions: {
+                      tap: "macro://ctrl+a",
+                      hold: "macro://ctrl+h",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          buttonSchemas: {
+            ...state.buttonSchemas,
+            "test-addon:owned": {
+              type: "object",
+              properties: {
+                message: { type: "string", title: "Message" },
+              },
+            },
+          },
+        }}
+        result={null}
+        addonInventory={{
+          addons: [
+            {
+              ...inventory.addons[0]!,
+              buttonTypes: [
+                { type: "core:action", internal: false },
+                {
+                  type: "test-addon:owned",
+                  internal: false,
+                  defaultConfig: { message: "new default" },
+                  gestureHandlers: ["hold"],
+                },
+              ],
+            },
+          ],
+        }}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
+    fireEvent.click(
+      screen.getByRole("button", { name: "Change type: core:action" }),
+    )
+    expect(screen.queryByLabelText("Config command")).not.toBeInTheDocument()
+    expect(
+      screen.queryByText("Select a button using its ⋮ menu."),
+    ).not.toBeInTheDocument()
+    const typePicker = screen.getByRole("textbox", {
+      name: /Change button type/,
+    })
+    fireEvent.change(typePicker, { target: { value: "test-addon:owned" } })
+    fireEvent.click(screen.getByRole("button", { name: /test-addon:owned/ }))
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("Message")).toHaveValue("new default"),
+    )
+    expect(screen.getByLabelText("Message")).toHaveValue("new default")
+    expect(screen.queryByLabelText("Button label")).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Position 0" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Gesture actions" }))
+    expect(screen.getByRole("tab", { name: "Tap" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Double tap" })).toBeInTheDocument()
+    expect(screen.queryByRole("tab", { name: "Hold" })).not.toBeInTheDocument()
+  })
+
+  it("clears a selected button when switching decks with the same position", () => {
+    render(
+      <EditorPage
+        wsClient={client()}
+        state={{
+          ...state,
+          config: {
+            decks: {
+              main: {
+                name: "Main deck",
+                buttons: [{ type: "core:action", config: { command: "main" } }],
+              },
+              other: {
+                name: "Other deck",
+                buttons: [
+                  { type: "core:action", config: { command: "other" } },
+                ],
+              },
+            },
+          },
+        }}
+        result={null}
+        runtimeDeckId="main"
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
+    expect(screen.getByLabelText("Config command")).toHaveValue("main")
+
+    fireEvent.click(screen.getByRole("tab", { name: "Decks" }))
+    fireEvent.click(screen.getByRole("button", { name: /Other deck/ }))
+    fireEvent.click(screen.getByRole("tab", { name: "Buttons" }))
+
+    expect(screen.queryByLabelText("Config command")).not.toBeInTheDocument()
+    expect(
+      screen.getByText("Select a button using its ⋮ menu."),
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
+    expect(screen.getByLabelText("Config command")).toHaveValue("other")
+  })
+
+  it("does not render a tree-actions menu for a system key", () => {
+    render(
+      <EditorPage
+        wsClient={client()}
+        state={{
+          ...state,
+          surfaces: [
+            {
+              id: "main",
+              buttons: [{ type: "core:settings-entry", position: 14 }],
+            },
+          ],
+        }}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    expect(
+      screen.queryByRole("button", { name: "Actions for key 14" }),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Actions for key 13" }),
+    ).toBeInTheDocument()
+  })
+
+  it("keeps icon and label controls in the addon-specific form", () => {
+    render(
+      <EditorPage
+        wsClient={client()}
+        state={{
+          ...state,
+          config: {
+            decks: {
+              main: {
+                buttons: [
+                  { type: "date-time:time", config: { variant: "default" } },
+                ],
+              },
+            },
+          },
+          buttonSchemas: {
+            "date-time:time": {
+              type: "object",
+              properties: {
+                variant: { type: "string", enum: ["default", "big"] },
+              },
+            },
+          },
+        }}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
+    expect(
+      screen.queryByRole("button", { name: "Choose icon" }),
+    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText("Button label")).not.toBeInTheDocument()
+    expect(screen.getByLabelText("Theme variant")).toBeInTheDocument()
+  })
+
+  it("exposes tap, double-tap, and hold action editors", () => {
+    render(
+      <EditorPage
+        wsClient={client()}
+        state={state}
+        result={null}
+        frontendUrl="http://127.0.0.1:5180"
+        device={DEVICE_MODELS.find((model) => model.id === "mk2")}
+      />,
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
+    fireEvent.click(screen.getByRole("button", { name: "Gesture actions" }))
+    expect(screen.getByRole("tab", { name: "Tap" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Double tap" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Hold" })).toBeInTheDocument()
+    expect(screen.getByLabelText("Tap command")).toBeInTheDocument()
   })
 
   it("keeps generated buttons read-only", () => {
@@ -435,7 +869,7 @@ describe("EditorPage", () => {
       />,
     )
     fireEvent.click(screen.getByRole("button", { name: "Actions for key 0" }))
-    fireEvent.click(screen.getByRole("menuitem", { name: "Edit/select" }))
+    fireEvent.click(screen.getByRole("menuitem", { name: "Edit" }))
 
     expect(
       screen.queryByRole("button", { name: "Save button" }),

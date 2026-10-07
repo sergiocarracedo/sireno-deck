@@ -39,6 +39,13 @@ export interface ReconnectingDevice extends StreamDeckDevice {
 
 const DEFAULT_RETRY_DELAY_MS = 2_000
 
+const errorReason = (err: unknown): string => {
+  if (err instanceof Error) {
+    return err.message.length > 0 ? `${err.name}: ${err.message}` : err.name
+  }
+  return String(err)
+}
+
 export const createReconnectingDevice = (
   initial: StreamDeckDevice,
   deps: ReconnectingDeviceDeps,
@@ -75,7 +82,7 @@ export const createReconnectingDevice = (
     detachCurrent?.()
     detachCurrent = null
     deps.logger.warn(
-      { err: err instanceof Error ? err.message : String(err) },
+      { reason: errorReason(err) },
       "device: Stream Deck disconnected — holding the deck and watching for it to come back",
     )
     for (const h of errorHandlers) h(err)

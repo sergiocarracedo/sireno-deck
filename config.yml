@@ -102,6 +102,7 @@ decks:
           type: kpis
           metrics:
             - uptime
+        position: 13
 
   demo-decks-index: !include demos/demo-decks-index.yml
   demo-app-shortcuts: !include demos/demo-app-shortcuts.yml

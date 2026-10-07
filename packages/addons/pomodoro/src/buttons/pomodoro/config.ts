@@ -1,11 +1,22 @@
 import { z } from "zod"
 
 export const configSchema = z.object({
-  durationSec: z.number().int().positive().default(1500),
+  durationSec: z
+    .number()
+    .int()
+    .positive()
+    .default(1500)
+    .meta({ title: "Duration (seconds)" }),
   notification: z
     .object({
-      title: z.string().default("Pomodoro"),
-      body: z.string().default("Time's up!"),
+      title: z
+        .string()
+        .default("Pomodoro")
+        .meta({ title: "Notification title" }),
+      body: z
+        .string()
+        .default("Time's up!")
+        .meta({ title: "Notification message" }),
     })
     .default({
       title: "Pomodoro",

@@ -16,8 +16,34 @@ import {
   editorSourceValidationResultMessageSchema,
   editorAssetWriteMessageSchema,
 } from "../protocol"
+import { addonsInventoryMessageSchema } from "@/api/protocol-internal"
 
 describe("ws protocol v1", () => {
+  it("accepts addon-owned gesture metadata in the inventory", () => {
+    const result = addonsInventoryMessageSchema.safeParse({
+      type: "addons-inventory",
+      addons: [
+        {
+          name: "media",
+          addonIndex: 0,
+          internal: false,
+          source: "builtin",
+          buttonTypes: [
+            {
+              type: "media:player",
+              internal: false,
+              gestureHandlers: ["tap", "dbl-tap", "hold"],
+            },
+          ],
+          defaultButton: null,
+          decks: [],
+        },
+      ],
+    })
+
+    expect(result.success).toBe(true)
+  })
+
   it("bounds uploaded asset payloads", () => {
     const base = {
       type: "editor-asset-write" as const,

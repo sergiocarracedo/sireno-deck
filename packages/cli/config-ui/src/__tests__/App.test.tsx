@@ -1,13 +1,26 @@
 /** @vitest-environment jsdom */
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { fireEvent, render, screen } from "@testing-library/react"
 
 import { App } from "../App"
+import { SidePanel } from "../SidePanel"
 
 describe("App (emulator)", () => {
   beforeEach(() => {
     window.history.replaceState(null, "", "/")
+  })
+
+  it("uses a background only for the current sidebar item and on hover", () => {
+    render(<SidePanel activeSection="config" onSelect={() => undefined} />)
+    expect(screen.getByTestId("side-panel-config")).toHaveClass(
+      "bg-surface-secondary",
+      "hover:bg-surface-secondary",
+    )
+    expect(screen.getByTestId("side-panel-about")).toHaveClass(
+      "bg-transparent",
+      "hover:bg-surface-secondary",
+    )
   })
 
   it("renders the side panel and header by default", () => {
@@ -61,20 +74,31 @@ describe("App (emulator)", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("fits the device-only view to the dynamic mobile viewport and safe areas", () => {
+  it("fits the device-only view to the full viewport", () => {
     window.history.replaceState(null, "", "/?deckOnly=1")
     render(<App />)
 
     expect(screen.getByTestId("deck-only-view")).toHaveClass("h-full", "w-full")
-    expect(screen.getByTestId("fullscreen-toggle")).toHaveClass(
-      "top-[calc(env(safe-area-inset-top)+0.75rem)]",
-    )
+    expect(screen.getByTestId("deck-only-view")).not.toHaveClass("px-4")
   })
 
-  it("shows a fullscreen toggle in deck-only mode", () => {
+  it("offers one-way fullscreen entry without an exit control", () => {
     window.history.replaceState(null, "", "/?deckOnly=1")
+    const requestFullscreen = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(document.documentElement, "requestFullscreen", {
+      configurable: true,
+      value: requestFullscreen,
+    })
     render(<App />)
-    expect(screen.getByTestId("fullscreen-toggle")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("fullscreen-toggle"))
+
+    expect(requestFullscreen).toHaveBeenCalledOnce()
+    expect(screen.getByTestId("fullscreen-toggle")).toHaveTextContent("Full")
+    expect(screen.getByTestId("fullscreen-toggle")).toHaveAttribute(
+      "aria-label",
+      "Enter fullscreen",
+    )
   })
 
   it("updates the shell title when changing configuration views", () => {

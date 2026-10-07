@@ -97,8 +97,14 @@ describe("coding-agents:summary matrix rain", () => {
       />,
     )
 
-    expect(container.querySelector("style")?.textContent).toContain(
-      "color:var(--sireno-color-background)",
+    const styles = [...container.querySelectorAll("style")]
+      .map((style) => style.textContent ?? "")
+      .join("\n")
+    expect(styles).toContain("color:var(--sireno-color-fg)")
+    expect(styles).toContain("color:var(--sireno-color-foreground-contrast)")
+    expect(styles).not.toContain("--sireno-color-background")
+    expect(container.firstElementChild?.classList).toContain(
+      "text-[color:var(--sireno-color-fg)]",
     )
   })
 })

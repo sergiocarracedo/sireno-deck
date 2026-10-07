@@ -145,12 +145,18 @@ export const buildDeckConfigMessage = (
         resolverOptions,
         assetLookup,
       )
+      if (typeof b.label === "string" && b.label.length > 0)
+        resolvedConfig.label = b.label
       return {
         id: b.id,
         type: b.type,
         ...(Number.isFinite(position) ? { position } : {}),
         config: resolvedConfig,
-        ...(label !== undefined ? { label } : {}),
+        ...(typeof b.label === "string" && b.label.length > 0
+          ? { label: b.label }
+          : label !== undefined
+            ? { label }
+            : {}),
         ...(addon !== undefined ? { addonName: addon.name } : {}),
         ...(addon?.frontendEntry !== undefined && addon.frontendEntry !== null
           ? { frontendEntry: addon.frontendEntry }

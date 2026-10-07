@@ -575,7 +575,8 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
     // ponytail: --remote requires a way to authenticate subsequent module
     // requests after the HTML loads. Inject a small script that parses
     // `?token=X` from the URL and stores it in `document.cookie` so vite's
-    // middleware accepts the cascade of `/src/...` and asset requests.
+    // middleware accepts the cascade of `/src/...` and asset requests. Keep
+    // it in the address: the Config UI forwards it to its cross-origin iframe.
     transformIndexHtml: {
       order: "pre",
       handler: (html, ctx) => {
@@ -586,14 +587,19 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         // evaluation succeeds — values are irrelevant on the render path.
         const processShim = `<script>window.process=window.process||{env:{}};</script>`
         let injected = html.replace("<head>", `<head>${processShim}`)
-        if (process.env["SIRENO_REQUIRE_TOKEN"] === undefined) return injected
+        const requiredToken = process.env["SIRENO_REQUIRE_TOKEN"]
+        if (requiredToken === undefined) return injected
+        // Chromium's preload scanner fetches the entry module before inline
+        // scripts execute. Authenticate that first request explicitly; the
+        // cookie script below authenticates every import after it.
+        injected = injected.replace(
+          'src="/src/main.tsx"',
+          `src="/src/main.tsx?token=${encodeURIComponent(requiredToken)}"`,
+        )
         const script =
           `<script>(function(){try{var p=new URLSearchParams(location.search);` +
           `var t=p.get("token");if(t){document.cookie="sireno-token="+` +
-          `encodeURIComponent(t)+"; path=/; SameSite=Lax";` +
-          `p.delete("token");var q=p.toString();` +
-          `var u=location.pathname+(q?"?"+q:"")+location.hash;` +
-          `history.replaceState(null,"",u);}}catch(e){}})();</script>`
+          `encodeURIComponent(t)+"; path=/; SameSite=Lax";}}catch(e){}})();</script>`
         return injected.replace("<head>", `<head>${script}`)
       },
     },

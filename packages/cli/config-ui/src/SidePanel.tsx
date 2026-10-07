@@ -74,11 +74,11 @@ export const SidePanel = ({
               key={s.path}
               type="button"
               onPress={() => onSelect(s.path)}
-              variant={active ? "secondary" : "tertiary"}
+              variant="tertiary"
               data-testid={`side-panel-${s.path}`}
               aria-current={active ? "page" : undefined}
               title={collapsed ? s.label : undefined}
-              className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+              className={`w-full justify-start hover:bg-surface-secondary ${active ? "bg-surface-secondary" : "bg-transparent"} ${collapsed ? "justify-center px-0" : ""}`}
             >
               <s.icon size={17} aria-hidden="true" />
               {!collapsed && s.label}

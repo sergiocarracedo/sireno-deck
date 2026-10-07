@@ -97,7 +97,6 @@ load theme, pick a device, connect to the Stream Deck, create the runtime
 - `dispatchGesture(buttonId, gesture)` — single entry point for hardware AND emulator clicks.
 - `invokeAction` — bypasses the gesture stream and runs the action directly (used by frontend-UI clicks).
 - `setGestureListener(fn)` — addon-handler-bridge subscribes here.
-- `setActiveAppProvider` / `stopActiveAppPolling` — wires the active-app overlay loop.
 - `navStackDepth` — getter.
 
 Internal state:
@@ -110,10 +109,11 @@ Internal state:
   `navigateToDeck` while in overlay mode; pop via `goBack` (tap); dismissed
   by `core:overlay-toggle` dbl-tap or when the user holds `core:back`.
 
-The active-app loop polls `ActiveAppProvider` every 1 s, debounces for 200 ms,
-matches `process_name` / `window_name` against per-addon overlay-deck globs
-(via `system/glob-match.ts`), and applies or dismisses the overlay deck
-through `setOverlay`.
+`runtime/host-policy-coordinator.ts` is host-owned. It polls `ActiveAppProvider`
+every 1 s, debounces for 200 ms, matches `process_name` / `window_name` against
+the current overlay-deck catalog (via `system/glob-match.ts`), and applies or
+dismisses overlays through the runtime. It also owns session-provider lifecycle
+and restores a pre-lock overlay only when the latest focused app still matches.
 
 ### 3.3 Methods context — `deck/methods.ts`
 
@@ -188,13 +188,13 @@ n-1 (last) slot on a deck. The button type is computed **dynamically at
 broadcast time** from the current runtime mode, not baked in at startup:
 
 - Main deck → `core:settings-entry` (opens `internal-settings:settings`).
-- In overlay mode → `core:overlay-toggle` (tap = step back within overlay path;
-  dbl-tap = dismiss overlay).
-- Non-main regular deck, `navStackDepth > 1` → `core:back` (pops nav stack).
+- Non-main deck (including an active overlay) → `core:back` (tap = back;
+  dbl-tap = toggle the available overlay).
 - Else → `null` (the slot is free for a user button).
 
-The slot is purely declarative; the visual treatment of the n-1 tile is the
-`SplitActionSurface` (see §3.12).
+When an overlay is available, the frontend renders the n-1 `core:back` button
+as a `SplitActionSurface`: back on the primary side and overlay toggle on the
+secondary side (see §3.12).
 
 ### 3.7 Gesture state machine — `core/gesture-state.ts`
 
@@ -230,6 +230,10 @@ One connection per frontend / config UI surface.
 - `registerCacheablePoller({id, intervalMs, poll})` — runs server-side, fans out.
 - `onMessage` / `onConnection` — host wiring.
 - `DEFAULT_KEY_COUNT = 15` (Stream Deck MK.2 / XL).
+
+`deck/deck-presentation-publisher.ts` owns all `deck-config` delivery. It
+subscribes to runtime presentation events, deduplicates normal broadcasts,
+handles forced refreshes, and sends the current deck to newly connected clients.
 
 ### 3.10 Protocol — `api/protocol-internal.ts`, `render/protocol.ts`
 
@@ -581,7 +585,7 @@ hold also dismisses.
 | **Poller**               | A periodic publish in an addon global backend.                                                                                                                                                                                                                                                                                                                                                                                         |
 | **Subscription**         | A push-based publish (file watcher, socket).                                                                                                                                                                                                                                                                                                                                                                                           |
 | **Channel**              | A named pub/sub topic. Frontends subscribe via `useAddonChannel`.                                                                                                                                                                                                                                                                                                                                                                      |
-| **System Slot**          | The n-1 (last) position on a deck, reserved for a back / settings / overlay-toggle button. In overlay mode this slot carries `core:overlay-toggle`; in regular mode it carries `core:back` (or `core:settings-entry` on the main deck). Dynamically computed at broadcast time from the current runtime mode.                                                                                                                          |
+| **System Slot**          | The n-1 (last) position on a deck, reserved for a back / settings button. Non-main decks, including active overlays, carry `core:back`; when an overlay is available, the frontend renders it as a split action with overlay toggle as the secondary action. The main deck carries `core:settings-entry`.                                                                                                                              |
 | **Split Action Surface** | A two-tile surface for the system slot, divided by a diagonal line. Primary takes the action; secondary is decorative until further work.                                                                                                                                                                                                                                                                                              |
 | **Internal Addon**       | An addon (or a button / deck inside one) marked `internal: true` — hidden from user-facing config surfaces.                                                                                                                                                                                                                                                                                                                            |
 

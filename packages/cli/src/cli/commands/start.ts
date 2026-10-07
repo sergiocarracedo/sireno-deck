@@ -14,7 +14,10 @@ import {
   readProcCmdline,
 } from "./port-identity"
 
-import { resolveConfigPath as resolveRunConfigPath } from "./pipeline/helpers"
+import {
+  resolveConfigPath as resolveRunConfigPath,
+  resolveRunFolderConfigPath,
+} from "./pipeline/helpers"
 import type { ResolveConfigPathResult } from "./pipeline/helpers"
 import {
   acquireStartLock,
@@ -478,6 +481,13 @@ const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
     }
     return { path: explicit, source: "cli" }
   }
+  // A fresh `start` from a checkout must use that checkout's config rather
+  // than a global pointer left by another worktree. `restart` retains its
+  // cached flags and therefore remains the explicit "same session" command.
+  const runFolderConfig = resolveRunFolderConfigPath()
+  if (existsSync(runFolderConfig)) {
+    return { path: runFolderConfig, source: "run-folder" }
+  }
   // ponytail: the daemon honors the cached pointer first so the running
   // session keeps editing the same config it was launched with. When the
   // cached path is gone (e.g. worktree removed) we fall through to the
@@ -497,7 +507,9 @@ const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
 }
 
 const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
-  emulator: options.emulator === true || options.remote === true,
+  // Remote mode adds the browser surface; it does not replace attached
+  // hardware. Only an explicit --emulator selects the virtual output device.
+  emulator: options.emulator === true,
   remote: options.remote,
   httpPort: options.httpPort ?? 3939,
   ...(options.config !== undefined ? { config: options.config } : {}),

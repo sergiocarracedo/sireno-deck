@@ -6,6 +6,7 @@ import { RealOutputClient } from "../real"
 const mocks = vi.hoisted(() => ({
   connectStreamDeck: vi.fn(),
   pushBlackFrame: vi.fn(async () => undefined),
+  pushStartupScreen: vi.fn(async () => undefined),
   rendererStart: vi.fn(async () => undefined),
   rendererStop: vi.fn(async () => undefined),
   supervisorStop: vi.fn(async () => undefined),
@@ -28,6 +29,9 @@ vi.mock("@/render/browser-renderer", () => ({
 }))
 vi.mock("@/render/push-raw-image", () => ({
   pushRawImage: vi.fn(async () => undefined),
+}))
+vi.mock("@/render/push-startup-screen", () => ({
+  pushStartupScreen: mocks.pushStartupScreen,
 }))
 vi.mock("@/cli/commands/emulator-mode", () => ({
   DEFAULT_FRONTEND_PORT: 5180,
@@ -215,6 +219,10 @@ describe("RealOutputClient.init", () => {
 
     expect(mocks.rendererStop).toHaveBeenCalledTimes(1)
     expect(mocks.supervisorStop).toHaveBeenCalledTimes(1)
+    expect(mocks.pushStartupScreen).toHaveBeenCalledOnce()
+    expect(mocks.pushStartupScreen.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.rendererStart.mock.invocationCallOrder[0]!,
+    )
     // ponytail: the pipeline is handed a reconnecting WRAPPER around the raw
     // handle, so a USB disconnect (a KVM switching hosts) no longer kills the
     // daemon. The wrapper keeps the device's identity and delegates close(),

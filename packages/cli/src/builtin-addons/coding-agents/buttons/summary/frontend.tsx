@@ -30,7 +30,7 @@ interface SnapshotLike {
 // ponytail: inline keyframes — Tailwind's utility classes cover layout but
 // not a custom pulse. Defined once, referenced via `animation`.
 const BLINK_CSS =
-  "@keyframes sirenoCaBlink{0%,100%{background-color:transparent;color:var(--sireno-color-foreground)}50%{background-color:var(--sireno-color-accent);color:var(--sireno-color-background)}}"
+  "@keyframes sirenoCaBlink{0%,100%{background-color:transparent;color:var(--sireno-color-fg)}50%{background-color:var(--sireno-color-accent);color:var(--sireno-color-foreground-contrast)}}"
 
 // ponytail: matrix rain is pure CSS — strips translate down the column on
 // the compositor (no JS loop), and the character/geometry values are fixed at
@@ -72,7 +72,7 @@ const RAIN_COLUMNS = buildRainColumns(8)
 
 const RAIN_CSS = [
   "@keyframes sirenoCaFall{from{transform:translateY(-100%)}to{transform:translateY(100%)}}",
-  ".sirenoCaRain{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0.55;color:color-mix(in oklab,var(--sireno-frame-border,var(--sireno-color-accent)) 30%,transparent)}",
+  ".sirenoCaRain{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0.55;color:color-mix(in oklab,var(--sireno-frame-border,var(--sireno-color-frame)) 30%,transparent)}",
   ".sirenoCaRainSt{position:absolute;top:0;width:1.5ch;display:flex;flex-direction:column;align-items:center;line-height:1;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;will-change:transform;animation:sirenoCaFall linear infinite}",
   "@media (prefers-reduced-motion:reduce){.sirenoCaRainSt{animation:none}}",
 ].join("")
@@ -213,7 +213,7 @@ const SummaryFrontend = (props: AddonFrontendButtonProps<SummaryConfig>) => {
   return (
     <div
       key={blinkKey}
-      className="relative flex h-full w-full flex-col items-center justify-center gap-1 p-1 text-[color:var(--sireno-color-foreground)]"
+      className="relative flex h-full w-full flex-col items-center justify-center gap-1 p-1 text-[color:var(--sireno-color-fg)]"
       style={{
         animation: blinkKey > 0 ? "sirenoCaBlink 0.35s ease 3" : undefined,
       }}

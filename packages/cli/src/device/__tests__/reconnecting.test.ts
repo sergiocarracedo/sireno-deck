@@ -89,16 +89,21 @@ describe("createReconnectingDevice", () => {
     // The whole point: an SDK `error` used to be an unhandled EventEmitter
     // event, which the daemon's uncaughtException guard turned into an exit.
     const hw = fake()
+    const logger = { ...silentLogger, warn: vi.fn() } as unknown as pino.Logger
     const dev = createReconnectingDevice(hw, {
       serial: "S1",
       connect: vi.fn(async () => {
         throw new Error("not back")
       }),
-      logger: silentLogger,
+      logger,
       sleep: async () => undefined,
       retryDelayMs: 0,
     })
     expect(() => hw.emitError(new Error("USB gone"))).not.toThrow()
+    expect(logger.warn).toHaveBeenCalledWith(
+      { reason: "Error: USB gone" },
+      expect.stringContaining("Stream Deck disconnected"),
+    )
     expect(dev.isConnected()).toBe(false)
     // Writes while absent are dropped, not thrown.
     await expect(dev.fillKeyBuffer(1, Buffer.alloc(1))).resolves.toBeUndefined()

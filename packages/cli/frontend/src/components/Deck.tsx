@@ -145,9 +145,9 @@ const DeckButtonCell = ({
   buttonErrors,
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
-  const lastClickAtRef = useRef(0)
   const pendingTapTimerRef = useRef<number | null>(null)
   const holdTimerRef = useRef<number | null>(null)
+  const holdFiredRef = useRef(false)
   const clearHoldTimer = () => {
     if (holdTimerRef.current !== null) {
       window.clearTimeout(holdTimerRef.current)
@@ -164,6 +164,48 @@ const DeckButtonCell = ({
     },
     [],
   )
+
+  const handlePointerDown = () => {
+    clearHoldTimer()
+    holdFiredRef.current = false
+    holdTimerRef.current = window.setTimeout(() => {
+      holdTimerRef.current = null
+      holdFiredRef.current = true
+      fire("hold")
+    }, SPA_HOLD_DELAY_MS)
+  }
+  const handlePointerUp = () => {
+    clearHoldTimer()
+    if (holdFiredRef.current) {
+      holdFiredRef.current = false
+      return
+    }
+    if (pendingTapTimerRef.current !== null) {
+      window.clearTimeout(pendingTapTimerRef.current)
+      pendingTapTimerRef.current = null
+      fire("dbl-tap")
+      return
+    }
+    pendingTapTimerRef.current = window.setTimeout(() => {
+      pendingTapTimerRef.current = null
+      fire("tap")
+    }, SPA_DOUBLE_TAP_DELAY_MS)
+  }
+  const handlePointerLeave = () => {
+    clearHoldTimer()
+    holdFiredRef.current = false
+  }
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    // Pointer clicks are handled on pointerup; detail 0 is keyboard activation.
+    if (event.detail === 0) fire("tap")
+  }
+  const gestureProps = {
+    onClick: handleClick,
+    onPointerDown: handlePointerDown,
+    onPointerUp: handlePointerUp,
+    onPointerLeave: handlePointerLeave,
+    onPointerCancel: handlePointerLeave,
+  }
 
   // ponytail: per-button variant from user config beats deck-level
   // variant (which beats the legacy `buttonColor` enum). Unknown names
@@ -185,7 +227,7 @@ const DeckButtonCell = ({
         <ButtonFrame
           buttonType="core:temporary-error"
           variant="error"
-          onClick={() => fire("tap")}
+          {...gestureProps}
         >
           {renderSystemButton(
             "core:temporary-error",
@@ -198,31 +240,6 @@ const DeckButtonCell = ({
   }
   if (splitAction) {
     const overlayIcon = deckOverlayIcon ?? undefined
-    const handleClick = () => {
-      const now = Date.now()
-      if (now - lastClickAtRef.current < SPA_DOUBLE_TAP_DELAY_MS) {
-        lastClickAtRef.current = 0
-        window.clearTimeout(pendingTapTimerRef.current)
-        pendingTapTimerRef.current = null
-        fire("dbl-tap")
-        return
-      }
-      lastClickAtRef.current = now
-      window.clearTimeout(pendingTapTimerRef.current)
-      pendingTapTimerRef.current = window.setTimeout(() => {
-        pendingTapTimerRef.current = null
-        fire("tap")
-      }, SPA_DOUBLE_TAP_DELAY_MS)
-    }
-    const handlePointerDown = () => {
-      clearHoldTimer()
-      holdTimerRef.current = window.setTimeout(() => {
-        holdTimerRef.current = null
-        fire("hold")
-      }, SPA_HOLD_DELAY_MS)
-    }
-    const handlePointerUp = () => clearHoldTimer()
-    const handlePointerLeave = () => clearHoldTimer()
     return (
       <div
         style={{
@@ -237,10 +254,7 @@ const DeckButtonCell = ({
         <ButtonFrame
           buttonType={button.type}
           variant={effectiveVariant}
-          onClick={handleClick}
-          onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerLeave}
+          {...gestureProps}
         >
           <SplitActionSurface
             primary={renderSystemButton(button.type)}
@@ -290,7 +304,7 @@ const DeckButtonCell = ({
       <ButtonFrame
         buttonType={button.type}
         variant={effectiveVariant}
-        onClick={() => fire("tap")}
+        {...gestureProps}
       >
         <ErrorBoundary resetKey={button.id}>
           <ButtonSurface

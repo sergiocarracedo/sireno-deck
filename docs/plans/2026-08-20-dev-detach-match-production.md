@@ -134,6 +134,7 @@ Today the probe lives in `bin/dev.js` only because the special-case `start` bran
 
 - Delete `forkOffDev` (lines 522-552).
 - Add `startInBackground(options)`:
+
   ```ts
   const startInBackground = async (options: StartOptions): Promise<void> => {
     const { logger } = options
@@ -164,7 +165,9 @@ Today the probe lives in `bin/dev.js` only because the special-case `start` bran
     )
   }
   ```
+
 - Helpers:
+
   ```ts
   const resolveCliRoot = (): string => {
     const here = dirname(fileURLToPath(import.meta.url))
@@ -183,6 +186,7 @@ Today the probe lives in `bin/dev.js` only because the special-case `start` bran
     return args
   }
   ```
+
 - Replace the `if (isDevInvocation()) { await forkOffDev(options) }` branch at line 752 with `await startInBackground(options)`.
 - Delete the `import { superviseService } from "./service-supervisor"` at line 52.
 
