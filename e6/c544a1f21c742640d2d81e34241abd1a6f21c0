@@ -1,0 +1,60 @@
+ARCHITECTURE.md
+  h_31bfcf89e26281 191-192,195-197,588
+packages/cli/config-ui/src/App.tsx
+  h_31bfcf89e26281 148,390-398,482-488,659-669
+packages/cli/config-ui/src/__tests__/App.test.tsx
+  h_31bfcf89e26281 2,85-103
+packages/cli/frontend/src/App.tsx
+  h_31bfcf89e26281 399-400
+packages/cli/frontend/src/__tests__/app-navigation.test.tsx
+  h_31bfcf89e26281 104-151
+packages/cli/package.json
+  h_31bfcf89e26281 3
+packages/cli/src/cli/commands/__tests__/command-executor.test.ts
+  h_31bfcf89e26281 1-56
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  h_31bfcf89e26281 121,142
+packages/cli/src/cli/commands/__tests__/setup-addon-services.test.ts
+  h_31bfcf89e26281 1-86
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  h_31bfcf89e26281 570-586
+packages/cli/src/cli/commands/command-executor.ts
+  h_31bfcf89e26281 1-61
+packages/cli/src/cli/commands/run.ts
+  h_31bfcf89e26281 49,80,189,191-192,873,881,895,1044,1745
+packages/cli/src/cli/commands/start.ts
+  h_31bfcf89e26281 510-512
+packages/cli/src/cli/package-manager.ts
+  h_31bfcf89e26281 3,136-139,142
+packages/cli/src/deck/__tests__/position-settings-version-button.test.ts
+  h_31bfcf89e26281 1-43
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  h_31bfcf89e26281 34,37,61,67
+packages/cli/src/deck/position-settings-version-button.ts
+  h_31bfcf89e26281 1-20
+packages/cli/src/deck/runtime/host-policy-coordinator.ts
+  h_31bfcf89e26281 49,116-132
+packages/cli/src/deck/system-back-injection.ts
+  h_31bfcf89e26281 32-33
+packages/cli/src/device/__tests__/reconnecting.test.ts
+  h_31bfcf89e26281 92,98,103-106
+packages/cli/src/device/reconnecting.ts
+  h_31bfcf89e26281 42-48,85
+packages/cli/src/outputClient/remote-mirror.ts
+  h_31bfcf89e26281 13-17,28-35,43-45,52-54,58-59
+packages/cli/src/system/providers/active-app/__tests__/wayland-gnome.test.ts
+  h_31bfcf89e26281 148-191
+packages/cli/src/system/providers/active-app/wayland-gnome.ts
+  h_31bfcf89e26281 81-104,135,137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e6c544a1f21c742640d2d81e34241abd1a6f21c0",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
