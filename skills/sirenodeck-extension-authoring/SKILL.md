@@ -23,6 +23,7 @@ Create extensions in the user's own repository. Do not direct them to upload ext
 ## Theme path
 
 - Follow the current theme package/manifest schemas from `packages/cli/src/themes/` and a current theme in `packages/themes/`. Verify tokens, typography, font/assets licensing, and any CSS/UI overrides against the actual loader and theme docs.
+- `packages/themes/folio` is a minimal, source-only manifest example and is not currently available on npm. Do not suggest `sirenodeck install @sirenodeck/theme-folio` as a working command. For source-only themes, use the absolute theme directory as the `theme:` value after cloning the repo.
 - Test with the emulator and a representative deck/model before publishing.
 - When ready, fill `.github/ISSUE_TEMPLATE/theme-submission.md` and ask before opening/submitting the issue. Include public repository or npm URL, one-line description, palette/tokens, optional typography roles, screenshot/preview, custom component overrides, license, and tested config snippet.
 

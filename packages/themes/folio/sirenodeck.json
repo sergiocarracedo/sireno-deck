@@ -1,0 +1,100 @@
+{
+  "kind": "theme",
+  "apiVersion": 1,
+  "name": "folio",
+  "version": "0.1.0",
+  "description": "Soft ivory surfaces, graphite ink, and a measured blue accent. Inspired by the clarity of mobile operating systems, not their chrome.",
+  "colorTokens": {
+    "background": "#e9e8e3",
+    "frame": "#b9c0c1",
+    "foreground": "#202c31",
+    "foreground-contrast": "#ffffff",
+    "primary": "#205c79",
+    "accent": "#2e718c",
+    "muted": "#53666e",
+    "success": "#226954",
+    "danger": "#aa4051"
+  },
+  "variants": {
+    "default": {
+      "background": "#faf9f5",
+      "border": "#c6ccca",
+      "foreground": "#202c31"
+    },
+    "highlighted": {
+      "background": "#d8e9ee",
+      "border": "#79a9b9",
+      "foreground": "#173e50"
+    },
+    "error": {
+      "background": "#f7e3e4",
+      "border": "#dcaab0",
+      "foreground": "#812e3d"
+    },
+    "warning": {
+      "background": "#f8edd9",
+      "border": "#d8bd86",
+      "foreground": "#6b4c18"
+    },
+    "success": {
+      "background": "#e1efe9",
+      "border": "#9dc7b4",
+      "foreground": "#235941"
+    },
+    "blue": {
+      "background": "#e1edf3",
+      "border": "#9bbdcd",
+      "foreground": "#194c64"
+    },
+    "green": {
+      "background": "#e1efe9",
+      "border": "#9dc7b4",
+      "foreground": "#235941"
+    },
+    "purple": {
+      "background": "#eee8f4",
+      "border": "#c2afd3",
+      "foreground": "#55406b"
+    },
+    "cyan": {
+      "background": "#dcf0ef",
+      "border": "#96c8c5",
+      "foreground": "#205957"
+    },
+    "magenta": {
+      "background": "#f4e7ed",
+      "border": "#d5aec1",
+      "foreground": "#713f59"
+    },
+    "amber": {
+      "background": "#f8edd9",
+      "border": "#d8bd86",
+      "foreground": "#6b4c18"
+    },
+    "lime": {
+      "background": "#e9efd9",
+      "border": "#bdca91",
+      "foreground": "#485c26"
+    }
+  },
+  "typography": {
+    "main_text": {
+      "fontFamily": "system-ui",
+      "fontSize": 13,
+      "fontWeight": 600,
+      "letterSpacing": -0.2
+    },
+    "auxiliary_text": {
+      "fontFamily": "system-ui",
+      "fontSize": 9,
+      "fontWeight": 500,
+      "letterSpacing": 0.2
+    },
+    "monospace": {
+      "fontFamily": "ui-monospace",
+      "fontSize": 11,
+      "fontWeight": 500,
+      "letterSpacing": 0
+    }
+  }
+}

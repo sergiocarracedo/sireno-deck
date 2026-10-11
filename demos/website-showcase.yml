@@ -1,0 +1,70 @@
+# Isolated marketing capture config. Never use ~/.config/sirenodeck/config.yml.
+theme: default
+
+logging:
+  level: warn
+
+decks:
+  main:
+    name: Studio
+    buttons:
+      - position: 0
+        type: coding-agents:summary
+        config:
+          showCount: true
+      - position: 1
+        type: core:change-deck
+        config:
+          deck: demo-coding-agents
+          icon: icon://bot
+          label: Agents
+      - position: 2
+        type: date-time:time
+        config:
+          variant: big
+      - position: 3
+        type: date-time:date
+      - position: 4
+        type: weather:weather
+        config:
+          location:
+            latitude: 42.2304
+            longitude: -8.7256
+            name: Vigo
+      - position: 5
+        type: core:change-deck
+        config:
+          deck: demo-weather
+          icon: icon://cloud-sun
+          label: Weather
+      - position: 6
+        type: media:volume:down
+      - position: 7
+        type: media:volume:up
+      - position: 8
+        type: media:mute
+      - position: 9
+        type: core:change-deck
+        config:
+          deck: demo-media
+          icon: icon://music
+          label: Media
+      - position: 10
+        type: core:change-deck
+        config:
+          deck: demo-decks-index
+          icon: icon://layout-grid
+          label: Demos
+      - position: 11
+        type: media:player
+      - position: 12
+        type: system-status:system-status
+        config:
+          pages:
+            - type: kpis
+              metrics: [cpu, ram]
+
+  demo-coding-agents: !include demo-coding-agents.yml
+  demo-weather: !include demo-weather.yml
+  demo-media: !include demo-media.yml
+  demo-decks-index: !include demo-decks-index.yml

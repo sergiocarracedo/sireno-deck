@@ -21,6 +21,11 @@ manual Release Please run can combine selected packages into one release PR.
 Private (not published): `sirenodeck-workspace` (root), `sirenodeck-web`,
 `sirenodeck-videos`, `@sirenodeck/docs`.
 
+`packages/themes/folio` is a source-only third-party theme shown on the website.
+It is **not published** or configured for automated release; use a local path to
+try it. Do not publish it through this workflow until npm Trusted Publishing
+and release configuration have been set up separately.
+
 ### `@sirenodeck/sirenodeck` build & runtime
 
 The CLI is bundled via `tsdown` into a single ESM file at `dist/main.mjs`. The

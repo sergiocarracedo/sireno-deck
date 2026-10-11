@@ -1,0 +1,21 @@
+---
+const source = "https://github.com/sergiocarracedo/sireno-deck/tree/main/skills/sirenodeck-config"
+---
+
+<section id="agent-skill" class="px-6 py-24">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+    <div data-reveal>
+      <p class="font-mono text-xs font-semibold uppercase tracking-[0.25em] mb-4" style="color: var(--color-accent-2);">For your coding agent</p>
+      <h2 class="font-display text-4xl sm:text-5xl font-bold leading-[1.1] mb-5 text-fg">Your setup, explained in your own words.</h2>
+      <p class="text-lg leading-relaxed mb-4" style="color: var(--color-muted);">The optional Sireno Deck skill helps your agent find the right config, understand included YAML, and propose changes to decks, buttons, and themes. You review edits before they happen.</p>
+      <a href={source} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-semibold" style="color: var(--color-accent-2);">Read the config skill <i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+    </div>
+    <div class="rounded-xl p-6 sm:p-8" style="background: var(--color-surface); border: 1px solid var(--color-border);" data-reveal>
+      <p class="font-mono text-xs uppercase tracking-[0.14em] mb-5" style="color: var(--color-muted);">Install for your preferred agent</p>
+      <code class="block font-mono text-sm whitespace-pre-wrap break-all rounded-md p-4 mb-5" style="background: var(--color-bg); color: var(--color-accent);">sirenodeck skills</code>
+      <p class="text-sm mb-3" style="color: var(--color-muted);">Or install directly, without running Sireno Deck:</p>
+      <code class="block font-mono text-xs whitespace-pre-wrap break-all rounded-md p-4" style="background: var(--color-bg); color: var(--color-fg);">npx skills add {source} --skill sirenodeck-config --global</code>
+      <p class="text-xs mt-5" style="color: var(--color-muted);">Optional on first interactive startup. The agent asks before modifying your configuration.</p>
+    </div>
+  </div>
+</section>

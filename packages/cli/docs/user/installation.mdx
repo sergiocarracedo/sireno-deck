@@ -12,8 +12,8 @@ Get Sireno Deck running on your computer in minutes.
 
 ## Prerequisites
 
-- **Node.js** 20 or later
-- **pnpm**, npm, or Yarn (pnpm is preferred for addon and theme installs)
+- **Node.js** 20 or later for the npm install (the Homebrew formula handles its own dependencies)
+- **pnpm**, npm, or Yarn for npm installs (pnpm is preferred for addon and theme installs)
 - A Stream Deck device (optional — emulator available for testing)
 
 ## Quick Install
@@ -23,6 +23,14 @@ Install the CLI globally:
 ```bash
 pnpm i -g @sirenodeck/sirenodeck
 ```
+
+On macOS, you can instead use the Homebrew tap:
+
+```bash
+brew install sergiocarracedo/tap/sirenodeck
+```
+
+Choose one installation method; you do not need both Homebrew and npm.
 
 The addon installer checks for pnpm, npm, or Yarn and prefers pnpm.
 
@@ -41,7 +49,7 @@ skills CLI, or use `--agent <id>` to target specific agent(s).
 
 ```bash
 # Clone the repository
-git clone https://github.com/anomalyco/sireno-deck.git
+git clone https://github.com/sergiocarracedo/sireno-deck.git
 cd sireno-deck
 
 # Install dependencies
@@ -51,19 +59,19 @@ pnpm install
 pnpm build
 
 # Run directly
-pnpm sireno --help
+pnpm sirenodeck --help
 ```
 
 ## Verify Installation
 
 ```bash
-sireno --version
+sirenodeck --version
 ```
 
 You should see output like:
 
 ```
-sireno-deck v0.1.0
+sirenodeck v0.2.1
 ```
 
 ## Next Steps
@@ -71,3 +79,4 @@ sireno-deck v0.1.0
 - [Running the Service](/user/running-the-service) — Start the daemon
 - [Configuration Files](/user/configuration-files) — Set up your config
 - [Emulator vs Hardware](/user/emulator-vs-hardware) — Test without a device
+- [Visual Config UI](/user/visual-config-ui) — Edit a deck with a live preview

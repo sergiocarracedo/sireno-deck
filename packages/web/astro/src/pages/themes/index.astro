@@ -12,6 +12,7 @@ const official = themes.filter((t) => t.data.category === "official").sort((a, b
 const community = themes.filter((t) => t.data.category === "community").sort((a, b) => a.data.order - b.data.order)
 const submitIssueUrl =
   "https://github.com/sergiocarracedo/sireno-deck/issues/new?assignees=&labels=theme&template=theme-submission.md&title=New%20Theme%3A%20%3Cyour-theme-name%3E"
+const authoringSkillUrl = "https://github.com/sergiocarracedo/sireno-deck/tree/main/skills/sirenodeck-extension-authoring"
 ---
 
 <Layout title="Theme Registry — Sireno Deck" description="Browse and discover themes for Sireno Deck.">
@@ -34,6 +35,7 @@ const submitIssueUrl =
         <i data-lucide="plus" class="w-4 h-4"></i>
         Submit a theme
       </a>
+      <p class="mt-4 text-sm" style="color: var(--color-muted);">Creating a theme? <a href={authoringSkillUrl} target="_blank" rel="noopener noreferrer" class="underline" style="color: var(--color-accent-2);">Use the extension-authoring skill</a> to build and test it in your own repository before submitting.</p>
     </div>
   </section>
 

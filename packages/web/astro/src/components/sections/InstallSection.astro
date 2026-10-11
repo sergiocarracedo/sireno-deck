@@ -3,7 +3,7 @@
  * InstallSection — "Get started" with the real 4-step flow:
  *   1. install the CLI globally (pnpm/npm/yarn CommandTabs)
  *   2. `sirenodeck start` -> first-run onboarding generates the config
- *   3. edit ~/.config/sireno-deck/config.yml (+ link to full docs)
+  *   3. edit ~/.config/sirenodeck/config.yml (+ link to full docs)
  *   4. add 3rd-party addons & themes from npm (+ link to /addons/)
  *
  * Packaged builds (Flathub / DMG / MSI) are coming soon — shown as a muted
@@ -25,7 +25,7 @@ import CommandTabs from "../CommandTabs.astro";
       Up in 60 seconds
     </h2>
     <p class="text-lg mb-12" style="color: var(--color-muted);">
-      Requires Node 20+. Pick your package manager once — we remember it everywhere.
+      Install via npm (Node 20+) or Homebrew on macOS. For npm, pick your package manager once — we remember it everywhere.
     </p>
 
     <div class="flex flex-col gap-8 text-left" data-reveal-group>
@@ -36,12 +36,13 @@ import CommandTabs from "../CommandTabs.astro";
           <p class="text-sm font-semibold text-fg">Install the CLI</p>
         </div>
         <div class="px-6 pb-5">
-          <CommandTabs
+           <CommandTabs
             pnpm="pnpm i -g @sirenodeck/sirenodeck"
             npm="npm i -g @sirenodeck/sirenodeck"
             yarn="yarn global add @sirenodeck/sirenodeck"
             label="Install the CLI"
           />
+          <p class="mt-3 text-xs" style="color: var(--color-muted);">macOS: <code class="font-mono select-all" style="color: var(--color-accent);">brew install sergiocarracedo/tap/sirenodeck</code></p>
         </div>
       </div>
 
@@ -68,7 +69,7 @@ import CommandTabs from "../CommandTabs.astro";
           <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-fg">Make it yours</p>
             <div class="mt-2 rounded-md px-4 py-2.5 font-mono text-sm overflow-x-auto" style="background: var(--color-surface); color: var(--color-accent);">
-              ~/.config/sireno-deck/config.yml
+               ~/.config/sirenodeck/config.yml
             </div>
           </div>
         </div>

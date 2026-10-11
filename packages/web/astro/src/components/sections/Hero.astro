@@ -29,7 +29,7 @@ import HeroShader from "../hero/HeroShader.astro";
       Emulator, real hardware, and dev SPA — all from the same React interface.
     </p>
 
-    <div class="flex flex-wrap items-center justify-center gap-3 mb-16">
+    <div class="flex flex-wrap items-center justify-center gap-3 mb-5">
       <a
         href="#install"
         class="px-7 py-3 rounded-lg text-sm font-semibold transition-all hover:-translate-y-0.5"
@@ -49,15 +49,33 @@ import HeroShader from "../hero/HeroShader.astro";
       </a>
     </div>
 
+    <div class="mb-12 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs sm:text-sm">
+      <span class="font-mono uppercase tracking-[0.14em]" style="color: var(--color-muted);">On macOS</span>
+      <code class="max-w-full overflow-x-auto rounded-md px-3 py-2 font-mono select-all" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-accent);">brew install sergiocarracedo/tap/sirenodeck</code>
+    </div>
+
     <div
       class="mx-auto max-w-3xl rounded-xl overflow-hidden py-5 relative"
       style="background: #0A0D0E; border: 1px solid var(--color-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-accent-glow);"
     >
       <div class="relative aspect-video overflow-hidden rounded-md">
-        <video autoplay loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover block" aria-label="Sireno Deck themes demo">
+        <video id="hero-demo-video" autoplay loop muted playsinline preload="metadata" width="1280" height="720" poster="/captures/demo-decks-index.png" class="absolute inset-0 w-full h-full object-contain block" aria-label="Sireno Deck demo decks including illustrative coding agents, weather, and media">
           <source src="/video-hero.webm" type="video/webm" />
+          <img src="/captures/demo-decks-index.png" alt="Sireno Deck demo deck index" />
         </video>
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  const motion = window.matchMedia("(prefers-reduced-motion: reduce)")
+  const heroVideo = document.querySelector<HTMLVideoElement>("#hero-demo-video")
+  const syncMotion = () => {
+    if (!heroVideo) return
+    if (motion.matches) heroVideo.pause()
+    else void heroVideo.play().catch(() => {})
+  }
+  syncMotion()
+  motion.addEventListener("change", syncMotion)
+</script>
