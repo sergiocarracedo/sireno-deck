@@ -69,6 +69,7 @@ import { systemRequirements } from "./system-requirements"
 import { buildStandardProbeDeps } from "@/cli/probe-deps"
 import { onboardCodingAgents } from "@/cli/coding-agents-onboarding"
 import { resolveUserPath } from "@/cli/cwd"
+import { offerConfigSkillOnFirstRun } from "@/cli/skills-first-run"
 
 export interface StartOptions {
   readonly config?: string
@@ -939,6 +940,12 @@ const start = async (options: StartOptions): Promise<void> => {
   }
 
   if (!(await runFirstRunCheckIfNeeded(options, logger))) return
+
+  try {
+    await offerConfigSkillOnFirstRun()
+  } catch (error) {
+    logger.warn({ err: error }, "start: agent skill offer failed, continuing")
+  }
 
   await onboardCodingAgents(resolveConfigPath(options).path)
 

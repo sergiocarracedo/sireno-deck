@@ -26,6 +26,17 @@ pnpm i -g @sirenodeck/sirenodeck
 
 The addon installer checks for pnpm, npm, or Yarn and prefers pnpm.
 
+Install the optional global agent skill to configure and update decks with your
+preferred coding agent:
+
+```bash
+sirenodeck skills
+```
+
+The first interactive startup also offers to install it. Use `sirenodeck skills
+--yes` to skip the confirmation and install for all agents supported by the
+skills CLI, or use `--agent <id>` to target specific agent(s).
+
 ## From Source
 
 ```bash

@@ -22,9 +22,13 @@ theme: "default"
 
 ```yaml
 theme:
-  name: "my-theme"
-  path: "./themes/my-theme"
+  src: "@your-scope/my-sireno-theme"
+  global: true
 ```
+
+For a package installed locally with `sirenodeck install`, use its package name
+as a string. Use `{ src, global: true }` for a theme installed globally. The
+accepted config shape is defined by `ThemeEntrySchema`.
 
 ## Theme Structure
 

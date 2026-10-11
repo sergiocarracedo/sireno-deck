@@ -71,4 +71,9 @@ describe("buildCli", () => {
     // made `sirenodeck -V` answer with the package name and no version.
     expect(version).toMatch(/^\d+\.\d+\.\d+/)
   })
+
+  it("registers the optional skills installer command", async () => {
+    const { commands } = await buildCli()
+    expect(commands.map((command) => command.command)).toContain("skills")
+  })
 })

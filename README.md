@@ -63,7 +63,12 @@ sirenodeck status
 sirenodeck restart  [--logs]
 sirenodeck reload   [--logs]            # in-place reload via SIGUSR1
 sirenodeck logs     [--follow] [--lines <N>]
+sirenodeck skills   [--agent <id>] [--yes]
 ```
+
+`sirenodeck skills` offers to install the global config skill so your preferred
+coding agent can help configure and update decks. You can also install it with
+`npx skills add https://github.com/sergiocarracedo/sireno-deck/tree/main/skills/sirenodeck-config --skill sirenodeck-config --global`.
 
 `start` daemonizes (writes a PID under `$XDG_RUNTIME_DIR/sirenodeck/`; authentication tokens remain in daemon memory); the foreground recipe for development is `pnpm run dev start` (wraps `tsx watch`, ignoring `frontend/**` so Vite keeps running).
 

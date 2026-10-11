@@ -83,7 +83,6 @@ The system automatically adds page navigation buttons.
 
 | Type               | Description                                  |
 | ------------------ | -------------------------------------------- |
-| `core:blank`       | Empty button                                 |
 | `core:action`      | Execute shell commands or keyboard shortcuts |
 | `core:change-deck` | Navigate to another deck                     |
 | `core:toggle`      | Toggle between two states                    |
@@ -101,6 +100,7 @@ The system automatically adds page navigation buttons.
 | weather        | `weather:weather`                                                                   |
 | brightness     | `brightness:brightness`                                                             |
 | session        | `session:info`                                                                      |
+| coding-agents  | `coding-agents:summary`, `coding-agents:agent`                                      |
 
 ## System Buttons
 
@@ -115,12 +115,15 @@ The last button position is reserved for system functions:
 Highlight buttons with color:
 
 ```yaml
-# In deck definition
+# On a button definition
 decks:
   main:
-    buttonColor: "green"
     buttons:
-      - ...
+      - position: 0
+        type: "core:action"
+        buttonColor: "green"
+        actions:
+          tap: "xdg-open https://example.com"
 ```
 
 Options: `blue`, `green`, `purple`

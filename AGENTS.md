@@ -19,6 +19,7 @@ TypeScript (strict, ESM), React 19, Vite 6, Tailwind 4, Node ≥20, pnpm workspa
 - **Testing**: vitest, node default; jsdom for `frontend/` and `emulator/`. Co-located `__tests__/` dirs.
 - **Lint/format/typecheck**: `pnpm lint && pnpm format && pnpm typecheck` before pushing.
 - **ponytail mode**: shortest working solution, stdlib/native first, delete over add. Mark deliberate shortcuts with `ponytail:` comments.
+- **Agent skill sync**: when config schemas/discovery/includes, built-in addon button/deck manifests, theme contracts, addon authoring APIs, or website registry metadata change, review and update the matching root skill under `skills/`. Changes to `packages/addons/app-shortcuts/` must also review `packages/addons/app-shortcuts/skills/sirenodeck-app-shortcuts/`. Keep skill capability claims grounded in current schemas/manifests/docs and preserve each skill's ownership boundary.
 
 ## Worktrees
 

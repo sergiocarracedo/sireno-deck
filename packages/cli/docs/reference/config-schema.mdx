@@ -28,8 +28,8 @@ interface RawConfig {
 type ThemeEntry =
   | string
   | {
-      name?: string
-      path: string
+      src: string
+      global?: boolean
     }
 ```
 
@@ -37,10 +37,13 @@ type ThemeEntry =
 # Built-in theme
 theme: "default"
 
-# Custom theme
+# Installed theme package
+theme: "my-theme"
+
+# Globally installed theme package
 theme:
-  name: "my-theme"
-  path: "./themes/my-theme"
+  src: "my-theme"
+  global: true
 ```
 
 ## LoggingConfig
@@ -158,19 +161,17 @@ decks:
         actions:
           tap: "xdg-open https://example.com"
       - position: 1
-        type: "core:blank"
+        type: "date-time:time"
 
   vscode:
     name: "VS Code"
     icon: "icon://Code"
-    buttonColor: "green"
     paginated: true
     autoShow: true
-    isOverlay: true
     trigger:
       process_name: ["code", "code-oss"]
     buttons:
-      - { position: 0, type: "core:blank" }
+      - { position: 0, type: "date-time:time" }
 
 addons:
   - "date-time"
@@ -183,5 +184,5 @@ addons:
 
 lock:
   buttons:
-    - { position: 0, type: "core:blank" }
+    - { position: 0, type: "date-time:time" }
 ```

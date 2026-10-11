@@ -15,20 +15,16 @@ Sireno Deck uses a `config.yml` file to define your decks, buttons, addons, and 
 The config file is searched in this order:
 
 1. Explicit path via `--config` option
-2. `$SIRENO_CONFIG` environment variable
-3. Walk up from current directory looking for `config.yml`
-4. `$XDG_CONFIG_HOME/sireno-deck/config.yml`
-5. `~/.config/sireno-deck/config.yml`
+2. `$XDG_CONFIG_HOME/sirenodeck/config.yml` (defaults to `~/.config/sirenodeck/config.yml`)
+3. `./config.yml` in the current working directory
+
+The explicit path wins. Otherwise the XDG config is preferred over the current-directory config. Sireno Deck does not walk up parent directories.
 
 ## Config Structure
 
 ```yaml
 # Theme configuration
 theme: "default"
-# OR
-theme:
-  name: "mytheme"
-  path: "/path/to/theme"
 
 # Logging settings
 logging:
@@ -47,7 +43,7 @@ decks:
       window_name: "VSCode"
     autoShow: true
     buttons:
-      - { position: 0, type: "core:blank" }
+      - { position: 0, type: "date-time:time" }
       - position: 1
         type: "core:action"
         config:
@@ -71,32 +67,35 @@ addons:
       defaults:
         autoShow: false
       decks:
-        shortcuts:
+        my-addon:shortcuts:
           name: "Chrome Shortcuts"
           autoShow: true
-      someKey: value
 
 # Lock configuration (optional)
 lock:
   buttons:
-    - { position: 0, type: "core:blank" }
+    - { position: 0, type: "date-time:time" }
 ```
 
 ## Theme
 
 ```yaml
-# Use built-in theme
+# Use a built-in theme
 theme: "default"
+```
 
-# OR use an installed global theme
+Use a package installed for this config:
+
+```yaml
+theme: "my-theme"
+```
+
+Use a globally installed theme package:
+
+```yaml
 theme:
   src: "my-theme"
   global: true
-
-# OR use local theme
-theme:
-  name: "mytheme"
-  path: "./themes/my-theme"
 ```
 
 ## Logging
@@ -118,7 +117,7 @@ decks:
     icon: "icon://Deck"
     background: "#000000"
     buttons:
-      - { position: 0, type: "core:blank" }
+      - { position: 0, type: "date-time:time" }
       - position: 1
         type: "core:action"
         config:
@@ -137,10 +136,8 @@ decks:
   vscode:
     name: "VS Code"
     icon: "icon://Code"
-    buttonColor: "green"
     paginated: true
     autoShow: true
-    isOverlay: true
     trigger:
       process_name: ["code", "code-oss", "Code"]
       window_name: ["*Visual Studio Code*"]
@@ -161,8 +158,9 @@ decks:
     name: "Shortcuts"
     paginated: true
     buttons:
-      - { position: 0, type: "core:action", ... }
-      # ... more than keyCount - 2 buttons
+      - { position: 0, type: "date-time:time" }
+      - { position: 1, type: "date-time:date" }
+      - { position: 2, type: "date-time:analog-clock" }
 ```
 
 ## Buttons
@@ -180,10 +178,10 @@ decks:
     tap: "xdg-open https://example.com"
 
 # Short form (type only)
-- "core:blank"
+- "date-time:time"
 
 # Short form (type with position)
-- { position: 0, type: "core:blank" }
+- { position: 0, type: "date-time:time" }
 ```
 
 ### Button Position
@@ -227,7 +225,7 @@ Lock mode prevents accidental button presses. Only specific button types can esc
 ```yaml
 lock:
   buttons:
-    - { position: 0, type: "core:blank" }
+    - { position: 0, type: "date-time:time" }
 ```
 
 ## Includes

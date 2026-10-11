@@ -39,11 +39,21 @@ my-theme/
     "foreground-contrast": "#ffffff",
     "primary": "#3b82f6",
     "accent": "#8b5cf6",
+    "muted": "#94a3b8",
     "success": "#22c55e",
-    "danger": "#ef4444",
-    "tintBlue": "#3b82f6",
-    "tintGreen": "#22c55e",
-    "tintPurple": "#8b5cf6"
+    "danger": "#ef4444"
+  },
+  "variants": {
+    "default": {
+      "background": "#111827",
+      "border": "#374151",
+      "foreground": "#ffffff"
+    },
+    "error": {
+      "background": "#7f1d1d",
+      "border": "#ef4444",
+      "foreground": "#ffffff"
+    }
   },
   "typography": {
     "main_text": {
@@ -91,11 +101,13 @@ my-theme/
 | `foreground-contrast` | `--sireno-color-fg-contrast` | High-contrast text |
 | `primary`             | `--sireno-color-primary`     | Primary accent     |
 | `accent`              | `--sireno-color-accent`      | Secondary accent   |
+| `muted`               | `--sireno-color-muted`       | Secondary text     |
 | `success`             | `--sireno-color-success`     | Success state      |
 | `danger`              | `--sireno-color-danger`      | Error state        |
-| `tintBlue`            | `--sireno-color-tint-blue`   | Blue variant       |
-| `tintGreen`           | `--sireno-color-tint-green`  | Green variant      |
-| `tintPurple`          | `--sireno-color-tint-purple` | Purple variant     |
+
+`variants` is required and must include `default` and `error`. Each variant
+requires `background`, `border`, and `foreground`; additional variants are
+available for semantic styles and user-selected button colors.
 
 ## Typography
 
