@@ -44,26 +44,14 @@ const summaryTile = `<g transform="translate(448 240)">
         { count, label, color },
         i,
       ) => `<circle cx="25" cy="${68 + i * 37}" r="6" fill="${color}"/>
-        <text x="40" y="${74 + i * 37}" font-family="system-ui, sans-serif" font-size="15" font-weight="600" fill="#eef2f7">${count} ${label}</text>`,
+        <text x="40" y="${74 + i * 37}" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#eef2f7">${count} ${label}</text>`,
     )
     .join("")}
 </g>`
 
 const summarySvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1088" height="672" viewBox="0 0 1088 672">
   <rect width="1088" height="672" rx="24" fill="#080a0c"/>
-  ${tile(0, 0, "STUDIO", "Main deck", "WORKSPACE")}
-  ${tile(1, 0, "DATE", "Mon 12", "OCTOBER")}
-  ${tile(2, 0, "WEATHER", "20°C", "VIGO")}
-  ${tile(3, 0, "SYSTEM", "62%", "CPU")}
-  ${tile(4, 0, "FOCUS", "Ready", "START")}
-  ${tile(0, 1, "MEDIA", "Play", "NOW PLAYING")}
-  ${tile(1, 1, "PROJECT", "Build", "SIRENO DECK")}
   ${summaryTile}
-  ${tile(3, 1, "SESSIONS", "Open", "AGENT DECK")}
-  ${tile(4, 1, "VOLUME", "Muted", "INPUT")}
-  ${tile(0, 2, "TOOLS", "Console", "OPEN")}
-  ${tile(1, 2, "CLOCK", "12:54", "LOCAL")}
-  ${tile(4, 2, "NAVIGATION", "Back", "RETURN")}
 </svg>`
 
 const agentTile = (column, row, content, color = "#53738b") => {
