@@ -73,6 +73,7 @@ const EMPTY_DECK: DeckState = {
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
   "ws://127.0.0.1:52937") as string
+const ENV_WS_PROXY_URL = (import.meta.env.VITE_WS_PROXY_URL ?? "") as string
 
 const resolvePortFromWindow = (): number | undefined => {
   if (typeof window === "undefined") return undefined
@@ -81,6 +82,9 @@ const resolvePortFromWindow = (): number | undefined => {
 
 const wsUrl = (): string => {
   if (typeof window === "undefined") return ENV_WS_URL
+  // An explicit capture/debugging proxy is an endpoint, not a service bridge:
+  // retain its host instead of rewriting it to the page's current hostname.
+  if (ENV_WS_PROXY_URL.length > 0) return ENV_WS_PROXY_URL
   // ponytail: use the page's current hostname so the WS bridge is reachable
   // from whichever interface the browser used (LAN, Tailscale, VPN, etc.).
   const hostname = window.location.hostname

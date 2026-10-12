@@ -1,0 +1,333 @@
+{
+  "version": 1,
+  "mode": "standalone",
+  "viewport": { "width": 1440, "height": 1000 },
+  "frontend": {
+    "root": "../../cli/frontend",
+    "configFile": "../../cli/frontend/vite.config.ts",
+    "addons": [
+      {
+        "name": "coding-agents",
+        "frontend": {
+          "main": "../src/builtin-addons/coding-agents/manifest.ts"
+        },
+        "buttonTypes": {
+          "coding-agents:summary": "summaryFrontend",
+          "coding-agents:agent": "agentFrontend"
+        }
+      }
+    ],
+    "theme": {
+      "name": "default",
+      "manifestPath": "../../cli/src/themes/default/sirenodeck.json",
+      "css": ":root { --color-bg: #080a0c; --color-fg: #eef2f7; --sireno-color-background: #2e3540; --sireno-color-frame: #53738b; --sireno-color-foreground: #eef2f7; --sireno-color-foreground-contrast: #333; --sireno-color-primary: #7dd3fc; --sireno-color-accent: #c3f5ff; --sireno-color-muted: #b8bfc8; --sireno-color-success: #34d399; --sireno-color-danger: #ffb4ab; --sireno-frame-border: #53738b; }"
+    }
+  },
+  "ready": {
+    "selector": "[data-deck-id=\"main\"] [data-button-type=\"coding-agents:summary\"]",
+    "text": "6 running"
+  },
+  "initialMessages": [
+    {
+      "type": "hello-ack",
+      "version": 1,
+      "device": {
+        "id": "showcase",
+        "model": "mk2",
+        "keyCount": 15,
+        "label": "Showcase",
+        "transport": "emulated"
+      },
+      "config": {}
+    },
+    { "type": "assets", "deckId": "main", "assets": [] },
+    {
+      "type": "deck-config",
+      "deckId": "main",
+      "surfaces": {
+        "main": {
+          "id": "main",
+          "name": "Main",
+          "buttons": [
+            {
+              "id": "agents-summary",
+              "type": "coding-agents:summary",
+              "position": 7,
+              "config": { "showCount": true, "fallingLetters": false }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "state",
+      "channels": {
+        "coding-agents:agents": {
+          "byProvider": {
+            "opencode": [
+              {
+                "sessionId": "showcase-1",
+                "providerId": "opencode",
+                "title": "Refactor deck captures",
+                "status": "running",
+                "directory": "/works/sirenodeck",
+                "contextPercent": 72,
+                "cost": 1.48,
+                "contextTokens": 24600,
+                "createdAt": 11000,
+                "updatedAt": 11000
+              },
+              {
+                "sessionId": "showcase-3",
+                "providerId": "opencode",
+                "title": "Approve theme changes",
+                "status": "waiting_for_human",
+                "directory": "/works/theme-folio",
+                "contextPercent": 48,
+                "cost": 2.13,
+                "contextTokens": 31800,
+                "createdAt": 9000,
+                "updatedAt": 9000
+              },
+              {
+                "sessionId": "showcase-5",
+                "providerId": "opencode",
+                "title": "Trace bridge lifecycle",
+                "status": "running",
+                "directory": "/works/sirenodeck/packages/cli",
+                "contextPercent": 61,
+                "cost": 1.02,
+                "contextTokens": 19700,
+                "createdAt": 7000,
+                "updatedAt": 7000
+              },
+              {
+                "sessionId": "showcase-7",
+                "providerId": "opencode",
+                "title": "Add editor coverage",
+                "status": "running",
+                "directory": "/works/sirenodeck/packages/cli",
+                "contextPercent": 44,
+                "cost": 0.91,
+                "contextTokens": 15800,
+                "createdAt": 5000,
+                "updatedAt": 5000
+              },
+              {
+                "sessionId": "showcase-9",
+                "providerId": "opencode",
+                "title": "Tune card spacing",
+                "status": "running",
+                "directory": "/works/sirenodeck/packages/web",
+                "contextPercent": 55,
+                "cost": 0.77,
+                "contextTokens": 14200,
+                "createdAt": 3000,
+                "updatedAt": 3000
+              },
+              {
+                "sessionId": "showcase-11",
+                "providerId": "opencode",
+                "title": "Check theme tokens",
+                "status": "running",
+                "directory": "/works/sirenodeck/packages/themes",
+                "contextPercent": 37,
+                "cost": 0.49,
+                "contextTokens": 10300,
+                "createdAt": 1000,
+                "updatedAt": 1000
+              }
+            ],
+            "claude-code": [
+              {
+                "sessionId": "showcase-2",
+                "providerId": "claude-code",
+                "title": "Review release notes",
+                "status": "idle",
+                "directory": "/works/sirenodeck",
+                "contextPercent": 28,
+                "cost": 0.86,
+                "contextTokens": 12100,
+                "createdAt": 10000,
+                "updatedAt": 10000
+              },
+              {
+                "sessionId": "showcase-4",
+                "providerId": "claude-code",
+                "title": "Update visual config",
+                "status": "running",
+                "directory": "/works/sirenodeck/packages/web",
+                "contextPercent": 35,
+                "cost": 0.52,
+                "contextTokens": 8700,
+                "createdAt": 8000,
+                "updatedAt": 8000
+              },
+              {
+                "sessionId": "showcase-6",
+                "providerId": "claude-code",
+                "title": "Confirm package versions",
+                "status": "waiting_for_human",
+                "directory": "/works/sirenodeck",
+                "contextPercent": 83,
+                "cost": 0.27,
+                "contextTokens": 6200,
+                "createdAt": 6000,
+                "updatedAt": 6000
+              },
+              {
+                "sessionId": "showcase-8",
+                "providerId": "claude-code",
+                "title": "Inspect addon docs",
+                "status": "idle",
+                "directory": "/works/sirenodeck/packages/cli",
+                "contextPercent": 19,
+                "cost": 0.13,
+                "contextTokens": 3900,
+                "createdAt": 4000,
+                "updatedAt": 4000
+              },
+              {
+                "sessionId": "showcase-10",
+                "providerId": "claude-code",
+                "title": "Review publish workflow",
+                "status": "waiting_for_human",
+                "directory": "/works/sirenodeck",
+                "contextPercent": 91,
+                "cost": 1.64,
+                "contextTokens": 28900,
+                "createdAt": 2000,
+                "updatedAt": 2000
+              }
+            ]
+          },
+          "attention": [
+            "opencode:showcase-3",
+            "claude-code:showcase-6",
+            "claude-code:showcase-10"
+          ],
+          "icons": {}
+        }
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atMs": 0,
+      "kind": "snapshot",
+      "path": "captures/coding-agents-summary.png"
+    },
+    {
+      "atMs": 600,
+      "kind": "message",
+      "message": {
+        "type": "deck-config",
+        "deckId": "main",
+        "surfaces": {
+          "main": {
+            "id": "main",
+            "name": "Coding Agents",
+            "buttons": [
+              {
+                "id": "agents-0",
+                "type": "coding-agents:agent",
+                "position": 0,
+                "config": { "slot": 0 }
+              },
+              {
+                "id": "agents-1",
+                "type": "coding-agents:agent",
+                "position": 1,
+                "config": { "slot": 1 }
+              },
+              {
+                "id": "agents-2",
+                "type": "coding-agents:agent",
+                "position": 2,
+                "config": { "slot": 2 }
+              },
+              {
+                "id": "agents-3",
+                "type": "coding-agents:agent",
+                "position": 3,
+                "config": { "slot": 3 }
+              },
+              {
+                "id": "agents-4",
+                "type": "coding-agents:agent",
+                "position": 4,
+                "config": { "slot": 4 }
+              },
+              {
+                "id": "agents-5",
+                "type": "coding-agents:agent",
+                "position": 5,
+                "config": { "slot": 5 }
+              },
+              {
+                "id": "agents-6",
+                "type": "coding-agents:agent",
+                "position": 6,
+                "config": { "slot": 6 }
+              },
+              {
+                "id": "agents-7",
+                "type": "coding-agents:agent",
+                "position": 7,
+                "config": { "slot": 7 }
+              },
+              {
+                "id": "agents-8",
+                "type": "coding-agents:agent",
+                "position": 8,
+                "config": { "slot": 8 }
+              },
+              {
+                "id": "agents-9",
+                "type": "coding-agents:agent",
+                "position": 9,
+                "config": { "slot": 9 }
+              },
+              {
+                "id": "agents-10",
+                "type": "coding-agents:agent",
+                "position": 10,
+                "config": { "slot": 10 }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "atMs": 900,
+      "kind": "gesture",
+      "target": "frontend",
+      "message": {
+        "type": "state",
+        "channels": {
+          "runtime:gesture:agents-0": { "gesture": "tap", "at": 100 },
+          "runtime:gesture:agents-1": { "gesture": "tap", "at": 101 },
+          "runtime:gesture:agents-2": { "gesture": "tap", "at": 102 }
+        }
+      }
+    },
+    {
+      "atMs": 1000,
+      "kind": "gesture",
+      "target": "frontend",
+      "message": {
+        "type": "state",
+        "channels": {
+          "runtime:gesture:agents-2": { "gesture": "tap", "at": 103 }
+        }
+      }
+    },
+    {
+      "atMs": 1200,
+      "kind": "snapshot",
+      "path": "captures/coding-agents-deck.png"
+    }
+  ],
+  "video": { "path": "video-coding-agents.webm", "durationMs": 1800 }
+}

@@ -5,10 +5,12 @@ import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { readFileSync } from "node:fs"
 import { sirenoDeck2 } from "../src/vite/index"
+import { frontendBridgeUrl } from "../src/render/frontend-bridge-url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-const wsUrl = process.env["SIRENO_WS_URL"] ?? "ws://127.0.0.1:52937"
+const wsUrl = frontendBridgeUrl()
+const proxyUrl = process.env["SIRENO_WS_PROXY_URL"] ?? ""
 
 const addonsFromEnv = () => {
   const blob = process.env["SIRENO_ADDONS"]
@@ -121,6 +123,7 @@ export default defineConfig({
   },
   define: {
     "import.meta.env.VITE_WS_URL": JSON.stringify(wsUrl),
+    "import.meta.env.VITE_WS_PROXY_URL": JSON.stringify(proxyUrl),
     "import.meta.env.SIRENO_CONFIG_DIR": JSON.stringify(
       process.env["SIRENO_CONFIG_DIR"] ?? resolve(__dirname, "../../.."),
     ),

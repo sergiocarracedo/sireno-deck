@@ -3,8 +3,9 @@ import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import { resolve } from "node:path"
 import { sirenoDeck2 } from "../src/vite/index"
+import { frontendBridgeUrl } from "../src/render/frontend-bridge-url"
 
-const wsUrl = process.env["SIRENO_WS_URL"] ?? "ws://127.0.0.1:52937"
+const wsUrl = frontendBridgeUrl()
 const frontendUrl =
   process.env["SIRENO_FRONTEND_URL"] ?? "http://127.0.0.1:5180"
 

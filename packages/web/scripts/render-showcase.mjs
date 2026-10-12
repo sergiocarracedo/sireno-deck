@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Rebuild the website hero from checked-in demo deck captures. Never boot the
-// daemon or read the user's config: session statuses below are fictional.
+// Rebuild the website hero from checked-in demo captures. Never boot the
+// daemon or read the user's config; Coding Agents captures use scripted-demo.
 import { spawnSync } from "node:child_process"
 import { createRequire } from "node:module"
 import { fileURLToPath } from "node:url"
@@ -8,6 +8,7 @@ import { dirname, resolve } from "node:path"
 import { readFileSync } from "node:fs"
 
 const here = dirname(fileURLToPath(import.meta.url))
+const repoRoot = resolve(here, "../../..")
 const publicDir = resolve(here, "../astro/public")
 const captures = resolve(publicDir, "captures")
 const require = createRequire(resolve(here, "../astro/package.json"))
@@ -19,104 +20,23 @@ const escape = (text) =>
     .replaceAll("<", "&lt;")
     .replaceAll('"', "&quot;")
 
-const tile = (column, row, title, subtitle, detail, accent = "#7dd3fc") => {
-  const x = 32 + column * 208
-  const y = 32 + row * 208
-  return `<g transform="translate(${x} ${y})">
-    <rect width="192" height="192" rx="34" fill="#2e3540" stroke="#53738b" stroke-width="4"/>
-    <circle cx="28" cy="30" r="7" fill="${accent}"/>
-    <text x="46" y="37" font-family="system-ui, sans-serif" font-size="16" fill="#b8bfc8">${escape(title)}</text>
-    <text x="22" y="105" font-family="system-ui, sans-serif" font-size="23" font-weight="600" fill="#eef2f7">${escape(subtitle)}</text>
-    <text x="22" y="151" font-family="system-ui, sans-serif" font-size="14" fill="${accent}">${escape(detail)}</text>
-  </g>`
-}
-
-const summaryTile = `<g transform="translate(448 240)">
-  <rect width="192" height="192" rx="34" fill="#293b49" stroke="#75a8c5" stroke-width="4"/>
-  <text x="96" y="39" text-anchor="middle" font-family="system-ui, sans-serif" font-size="21" font-weight="700" fill="#eef2f7">Agents</text>
-  ${[
-    { count: 2, label: "idle", color: "#b8bfc8" },
-    { count: 6, label: "running", color: "#7dd3fc" },
-    { count: 3, label: "waiting for human", color: "#ffb4ab" },
-  ]
-    .map(
-      (
-        { count, label, color },
-        i,
-      ) => `<circle cx="25" cy="${68 + i * 37}" r="6" fill="${color}"/>
-        <text x="40" y="${74 + i * 37}" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#eef2f7">${count} ${label}</text>`,
-    )
-    .join("")}
-</g>`
-
-const summarySvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1088" height="672" viewBox="0 0 1088 672">
-  <rect width="1088" height="672" rx="24" fill="#080a0c"/>
-  ${summaryTile}
-</svg>`
-
-const agentTile = (column, row, content, color = "#53738b") => {
-  const x = 32 + column * 208
-  const y = 32 + row * 208
-  return `<g transform="translate(${x} ${y})">
-    <rect width="192" height="192" rx="34" fill="#2e3540" stroke="${color}" stroke-width="4"/>
-    ${content}
-  </g>`
-}
-
-const agentName = (column, row, provider, status, title, color) =>
-  agentTile(
-    column,
-    row,
-    `<circle cx="28" cy="33" r="7" fill="${color}"/>
-    <text x="45" y="39" font-family="system-ui, sans-serif" font-size="15" fill="#b8bfc8">${escape(provider)}</text>
-    <text x="22" y="86" font-family="system-ui, sans-serif" font-size="15" font-weight="600" fill="${color}">${escape(status)}</text>
-    <text x="22" y="127" font-family="system-ui, sans-serif" font-size="18" font-weight="600" fill="#eef2f7">${escape(title)}</text>`,
-    color,
-  )
-
-const agentDetails = (
-  column,
-  row,
-  firstLabel,
-  firstValue,
-  secondLabel,
-  secondValue,
-  color,
-) =>
-  agentTile(
-    column,
-    row,
-    `<text x="22" y="41" font-family="system-ui, sans-serif" font-size="14" fill="#b8bfc8">${escape(firstLabel)}</text>
-    <text x="22" y="81" font-family="system-ui, sans-serif" font-size="23" font-weight="600" fill="#eef2f7">${escape(firstValue)}</text>
-    <path d="M22 103h148" stroke="#53738b" stroke-width="2"/>
-    <text x="22" y="132" font-family="system-ui, sans-serif" font-size="14" fill="#b8bfc8">${escape(secondLabel)}</text>
-    <text x="22" y="165" font-family="system-ui, sans-serif" font-size="18" font-weight="600" fill="${color}">${escape(secondValue)}</text>`,
-    color,
-  )
-
-const deckSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1088" height="672" viewBox="0 0 1088 672">
-  <rect width="1088" height="672" rx="24" fill="#080a0c"/>
-  ${agentName(0, 0, "OpenCode", "RUNNING", "Refactor UI", "#7dd3fc")}
-  ${agentDetails(1, 0, "context", "72%", "project", "sireno-deck", "#7dd3fc")}
-  ${agentDetails(2, 0, "cost", "$1.48", "tokens", "24.6k", "#7dd3fc")}
-  ${agentName(3, 0, "Claude Code", "NEEDS YOU", "Review theme", "#ffb4ab")}
-  ${agentDetails(4, 0, "context", "48%", "project", "theme-folio", "#ffb4ab")}
-  ${agentName(0, 1, "OpenCode", "IDLE", "Tests ready", "#b8bfc8")}
-  ${agentDetails(1, 1, "cost", "$0.86", "tokens", "12.1k", "#b8bfc8")}
-  ${agentName(2, 1, "Claude Code", "RUNNING", "Write docs", "#7dd3fc")}
-  ${agentDetails(3, 1, "context", "35%", "project", "website", "#7dd3fc")}
-  ${agentDetails(4, 1, "cost", "$2.13", "tokens", "31.8k", "#7dd3fc")}
-  ${tile(4, 2, "NAVIGATION", "Back", "RETURN")}
-</svg>`
-
-await Promise.all([
-  sharp(Buffer.from(summarySvg))
-    .png()
-    .toFile(resolve(captures, "coding-agents-summary.png")),
-  sharp(Buffer.from(deckSvg))
-    .png()
-    .toFile(resolve(captures, "coding-agents-deck.png")),
-])
+const agentCapture = spawnSync(
+  "pnpm",
+  [
+    "--dir",
+    repoRoot,
+    "--filter",
+    "@sirenodeck/scripted-demo",
+    "demo",
+    "run",
+    resolve(here, "../scenes/coding-agents.json"),
+    "--output-root",
+    publicDir,
+  ],
+  { stdio: "inherit" },
+)
+if (agentCapture.status !== 0)
+  throw new Error("Could not capture Coding Agents frontend")
 
 const folio = JSON.parse(
   readFileSync(resolve(here, "../../themes/folio/sirenodeck.json"), "utf8"),

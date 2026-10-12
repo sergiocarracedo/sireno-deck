@@ -25,6 +25,7 @@ packages/web/
 ├── videos/                  # Remotion compositions
 ├── scripts/sync-tokens.mjs  # Pulls design tokens from packages/cli/src/themes/default/sirenodeck.json
 ├── scripts/render-showcase.mjs # Build the hero and Folio preview from demo assets
+├── scenes/                  # Declarative scripted-demo media timelines
 └── README.md
 ```
 
@@ -37,11 +38,13 @@ The Astro `predev` and `prebuild` scripts run the sync before starting; CI is ex
 ## Showcase media
 
 Run `pnpm --filter sirenodeck-web render-showcase` from the repository root
-(requires `ffmpeg` and the installed `sharp` dependency). The script reads
-checked-in `astro/public/captures/demo-*.png` made from demo deck configs, then
-generates `astro/public/video-hero.webm`. It also draws a **fictional** coding
-agents session deck to demonstrate the addon without connecting to a real agent,
-and a Folio theme preview from `packages/themes/folio/sirenodeck.json`.
+(requires `ffmpeg`, `sharp`, and the workspace `scripted-demo` package).
+The script reads checked-in `astro/public/captures/demo-*.png` made from demo
+deck configs, then generates `astro/public/video-hero.webm`. Coding Agents
+snapshots use the real addon and frontend with illustrative values supplied by
+the `scripted-demo` WebSocket bridge; no live agent provider is contacted. The
+scene is in `packages/web/scenes/coding-agents.json`. The Folio preview is
+generated from `packages/themes/folio/sirenodeck.json`.
 
 It neither starts Sireno Deck nor reads the user's config. Do not use
 `scripts/capture-decks.mjs` for routine video regeneration: its current cleanup
