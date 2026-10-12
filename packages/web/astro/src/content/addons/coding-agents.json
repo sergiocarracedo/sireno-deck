@@ -8,7 +8,10 @@
   "order": 11,
   "source": "cli",
   "featured": true,
-  "screenshots": ["/captures/coding-agents-demo.png"],
-  "screenshot": "/captures/coding-agents-demo.png",
+  "screenshots": [
+    "/captures/coding-agents-summary.png",
+    "/captures/coding-agents-deck.png"
+  ],
+  "screenshot": "/captures/coding-agents-summary.png",
   "decks": ["coding-agents:agents — live agent slots (paginated)"]
 }
