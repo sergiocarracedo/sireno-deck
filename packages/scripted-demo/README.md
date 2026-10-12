@@ -5,7 +5,7 @@
 ## Run a scene
 
 ```sh
-pnpm --filter @sirenodeck/scripted-demo demo run packages/web/scenes/coding-agents.json --output-root packages/web/astro/public
+pnpm --filter @sirenodeck/scripted-demo demo run packages/web/scenes/coding-agents.json --output-root .videos
 ```
 
 The tool starts a proxy and the frontend declared by the scene, drives the timeline, then shuts both down. `--output-root` is the base for all image and video paths in the scene.

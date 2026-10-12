@@ -1,16 +1,15 @@
 # packages/web
 
 Marketing site + documentation for Sireno Deck. The homepage hero is a loop
-rendered from demo-deck captures; older Remotion compositions remain in `videos/`.
+rendered from demo-deck captures and scripted live-frontend frames.
 
-Two packages within the root pnpm workspace:
+The Astro site is a package within the root pnpm workspace:
 
 - `astro/` — Astro 5 site with `@astrojs/starlight` for docs. Tailwind 4. Hosts the landing page and user/developer docs.
-- `videos/` — legacy Remotion compositions.
 
 ## Install and build
 
-The root workspace registers both `astro/` and `videos/`. From the repository root:
+From the repository root:
 
 ```bash
 pnpm install
@@ -22,7 +21,6 @@ pnpm --filter sirenodeck-web build
 ```
 packages/web/
 ├── astro/                   # Landing + docs (Astro)
-├── videos/                  # Remotion compositions
 ├── scripts/sync-tokens.mjs  # Pulls design tokens from packages/cli/src/themes/default/sirenodeck.json
 ├── scripts/render-showcase.mjs # Build the hero and Folio preview from demo assets
 ├── scenes/                  # Declarative scripted-demo media timelines
@@ -31,7 +29,7 @@ packages/web/
 
 ## Token sync
 
-`scripts/sync-tokens.mjs` reads `packages/cli/src/themes/default/sirenodeck.json` (read-only) and regenerates `astro/src/design/tokens.generated.ts` (writable). The Astro site and the Remotion compositions both consume `tokens.generated.ts` to stay visually aligned with the running deck.
+`scripts/sync-tokens.mjs` reads `packages/cli/src/themes/default/sirenodeck.json` (read-only) and regenerates `astro/src/design/tokens.generated.ts` (writable). The Astro site consumes `tokens.generated.ts` to stay visually aligned with the running deck.
 
 The Astro `predev` and `prebuild` scripts run the sync before starting; CI is expected to do the same.
 
@@ -40,7 +38,9 @@ The Astro `predev` and `prebuild` scripts run the sync before starting; CI is ex
 Run `pnpm --filter sirenodeck-web render-showcase` from the repository root
 (requires `ffmpeg`, `sharp`, and the workspace `scripted-demo` package).
 The script reads checked-in `astro/public/captures/demo-*.png` made from demo
-deck configs, then generates `astro/public/video-hero.webm`. Coding Agents
+deck configs, then generates media under the gitignored `/.videos/` directory.
+Astro serves it as `/media/` in development and emits it into the production
+build. Coding Agents
 snapshots use the real addon and frontend with illustrative values supplied by
 the `scripted-demo` WebSocket bridge; no live agent provider is contacted. The
 scene is in `packages/web/scenes/coding-agents.json`. The Folio preview is

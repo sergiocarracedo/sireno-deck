@@ -9,8 +9,9 @@ import { readFileSync } from "node:fs"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(here, "../../..")
-const publicDir = resolve(here, "../astro/public")
-const captures = resolve(publicDir, "captures")
+const mediaDir = resolve(repoRoot, ".videos")
+const captures = resolve(mediaDir, "captures")
+const sourceCaptures = resolve(here, "../astro/public/captures")
 const require = createRequire(resolve(here, "../astro/package.json"))
 const sharp = require("sharp")
 
@@ -31,7 +32,7 @@ const agentCapture = spawnSync(
     "run",
     resolve(here, "../scenes/coding-agents.json"),
     "--output-root",
-    publicDir,
+    mediaDir,
   ],
   { stdio: "inherit" },
 )
@@ -72,25 +73,16 @@ await sharp(Buffer.from(folioSvg))
   .toFile(resolve(captures, "folio-preview.png"))
 
 const scenes = [
-  "demo-decks-index.png",
-  "coding-agents-summary.png",
-  "coding-agents-deck.png",
-  "demo-weather.png",
-  "demo-media.png",
-  "demo-decks-index.png",
+  resolve(sourceCaptures, "demo-decks-index.png"),
+  resolve(captures, "coding-agents-summary.png"),
+  resolve(captures, "coding-agents-deck.png"),
+  resolve(sourceCaptures, "demo-weather.png"),
+  resolve(sourceCaptures, "demo-media.png"),
+  resolve(sourceCaptures, "demo-decks-index.png"),
 ]
 const args = ["-hide_banner", "-loglevel", "error", "-y"]
 for (const image of scenes)
-  args.push(
-    "-loop",
-    "1",
-    "-framerate",
-    "24",
-    "-t",
-    "3",
-    "-i",
-    resolve(captures, image),
-  )
+  args.push("-loop", "1", "-framerate", "24", "-t", "3", "-i", image)
 
 const normalize = scenes.map(
   (_, i) =>
@@ -116,7 +108,7 @@ args.push(
   "0",
   "-row-mt",
   "1",
-  resolve(publicDir, "video-hero.webm"),
+  resolve(mediaDir, "video-hero.webm"),
 )
 const result = spawnSync("ffmpeg", args, { stdio: "inherit" })
 if (result.status !== 0)

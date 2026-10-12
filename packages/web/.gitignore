@@ -13,7 +13,3 @@ coverage/
 .DS_Store
 .env
 .env.local
-
-# Remotion
-.remotion-cache/
-out/

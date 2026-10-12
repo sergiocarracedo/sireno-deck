@@ -10,7 +10,7 @@
     "primary": "#205c79",
     "accent": "#2e718c"
   },
-  "preview": "/captures/folio-preview.png",
+  "preview": "/media/captures/folio-preview.png",
   "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/themes/folio",
   "order": 3
 }

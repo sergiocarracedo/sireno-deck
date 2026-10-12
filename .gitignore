@@ -34,3 +34,6 @@ packages/cli/src/themes/*/theme.generated.css
 
 # capture temp config
 .sireno-capture.yml
+
+# Generated media from packages/scripted-demo
+.videos/
