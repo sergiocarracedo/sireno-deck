@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
+    "capture:showcase": "pnpm --filter sirenodeck-web render-showcase",
     "dev": "node packages/cli/bin/dev.js",
     "lint": "oxlint packages",
     "format": "oxfmt .",

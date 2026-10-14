@@ -13,8 +13,13 @@ From the repository root:
 
 ```bash
 pnpm install
+pnpm capture:showcase
 pnpm --filter sirenodeck-web build
 ```
+
+`pnpm capture:showcase` captures the scripted Coding Agents frontend, creates
+the Folio preview, and renders the WebM showcase videos in `/.videos/`. It
+does not build the Astro site.
 
 ## Layout
 
