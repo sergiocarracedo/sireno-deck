@@ -17,9 +17,9 @@ pnpm capture:showcase
 pnpm --filter sirenodeck-web build
 ```
 
-`pnpm capture:showcase` captures the scripted Coding Agents frontend, creates
-the Folio preview, and renders the WebM showcase videos in `/.videos/`. It
-does not build the Astro site.
+`pnpm capture:showcase` captures the real Coding Agents, Weather, and Media
+frontend components with illustrative bridge values, then renders the WebM
+showcase videos in `/.videos/`. It does not build the Astro site.
 
 ## Layout
 
@@ -27,7 +27,7 @@ does not build the Astro site.
 packages/web/
 ├── astro/                   # Landing + docs (Astro)
 ├── scripts/sync-tokens.mjs  # Pulls design tokens from packages/cli/src/themes/default/sirenodeck.json
-├── scripts/render-showcase.mjs # Build the hero and Folio preview from demo assets
+├── scripts/render-showcase.mjs # Capture showcase scenes and build the hero video
 ├── scenes/                  # Declarative scripted-demo media timelines
 └── README.md
 ```
@@ -40,16 +40,12 @@ The Astro `predev` and `prebuild` scripts run the sync before starting; CI is ex
 
 ## Showcase media
 
-Run `pnpm --filter sirenodeck-web render-showcase` from the repository root
-(requires `ffmpeg`, `sharp`, and the workspace `scripted-demo` package).
-The script reads checked-in `astro/public/captures/demo-*.png` made from demo
-deck configs, then generates media under the gitignored `/.videos/` directory.
-Astro serves it as `/media/` in development and emits it into the production
-build. Coding Agents
-snapshots use the real addon and frontend with illustrative values supplied by
-the `scripted-demo` WebSocket bridge; no live agent provider is contacted. The
-scene is in `packages/web/scenes/coding-agents.json`. The Folio preview is
-generated from `packages/themes/folio/sirenodeck.json`.
+Run `pnpm capture:showcase` from the repository root (requires `ffmpeg` and
+the workspace `scripted-demo` package). The script starts isolated Vite
+frontends, drives them through the scripted-demo WebSocket bridge, and records
+Playwright screenshots and WebM video under the gitignored `/.videos/`
+directory. Astro serves it as `/media/` in development and emits it into the
+production build. No live provider or user configuration is contacted.
 
 It neither starts Sireno Deck nor reads the user's config. Do not use
 `scripts/capture-decks.mjs` for routine video regeneration: its current cleanup

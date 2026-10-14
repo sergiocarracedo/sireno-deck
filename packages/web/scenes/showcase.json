@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "mode": "standalone",
+  "viewport": { "width": 1440, "height": 1000 },
+  "frontend": {
+    "root": "../../cli/frontend",
+    "configFile": "../../cli/frontend/vite.config.ts",
+    "addons": [
+      {
+        "name": "showcase",
+        "frontend": { "main": "../../web/scenes/showcase-manifest.ts" },
+        "buttonTypes": {
+          "media:player": "media:player",
+          "weather:weather": "weather:weather"
+        }
+      }
+    ],
+    "theme": {
+      "name": "default",
+      "manifestPath": "../../cli/src/themes/default/sirenodeck.json",
+      "css": ":root { --color-bg: #080a0c; --color-fg: #eef2f7; --sireno-color-background: #2e3540; --sireno-color-frame: #53738b; --sireno-color-foreground: #eef2f7; --sireno-color-foreground-contrast: #333; --sireno-color-primary: #7dd3fc; --sireno-color-accent: #c3f5ff; --sireno-color-muted: #b8bfc8; --sireno-color-success: #34d399; --sireno-color-danger: #ffb4ab; --sireno-frame-border: #53738b; }"
+    }
+  },
+  "ready": { "selector": "[data-deck-id=\"main\"] [data-button-type]" },
+  "initialMessages": [
+    {
+      "type": "hello-ack",
+      "version": 1,
+      "device": {
+        "id": "showcase",
+        "model": "mk2",
+        "keyCount": 15,
+        "label": "Showcase",
+        "transport": "emulated"
+      },
+      "config": {}
+    },
+    { "type": "assets", "deckId": "main", "assets": [] },
+    {
+      "type": "deck-config",
+      "deckId": "main",
+      "surfaces": {
+        "main": {
+          "id": "main",
+          "name": "Main",
+          "buttons": [
+            {
+              "id": "weather",
+              "type": "weather:weather",
+              "position": 4,
+              "config": {
+                "location": {
+                  "name": "Vigo",
+                  "latitude": 42.24,
+                  "longitude": -8.72
+                }
+              }
+            },
+            {
+              "id": "media",
+              "type": "media:player",
+              "position": 10,
+              "config": {}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "state",
+      "channels": {
+        "weather:current": {
+          "byCity": {
+            "42.24,-8.72": {
+              "available": true,
+              "temperature": 20,
+              "windSpeed": 12,
+              "description": "Partly cloudy",
+              "units": "metric",
+              "wmoCode": 2
+            }
+          }
+        },
+        "media:state": {
+          "title": "A Real Hero Capture",
+          "artist": "Sireno Deck",
+          "source": "Showcase",
+          "status": "pause",
+          "isPlaying": true,
+          "progress": 0.42,
+          "currentTime": 105,
+          "totalTime": 250,
+          "volume": 70,
+          "muted": false
+        }
+      }
+    }
+  ],
+  "timeline": [
+    { "atMs": 0, "kind": "snapshot", "path": "captures/demo-decks-index.png" },
+    {
+      "atMs": 400,
+      "kind": "message",
+      "message": {
+        "type": "deck-config",
+        "deckId": "main",
+        "surfaces": {
+          "main": {
+            "id": "main",
+            "name": "Weather",
+            "buttons": [
+              {
+                "id": "weather",
+                "type": "weather:weather",
+                "position": 7,
+                "config": {
+                  "location": {
+                    "name": "Vigo",
+                    "latitude": 42.24,
+                    "longitude": -8.72
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    { "atMs": 600, "kind": "snapshot", "path": "captures/demo-weather.png" },
+    {
+      "atMs": 800,
+      "kind": "message",
+      "message": {
+        "type": "deck-config",
+        "deckId": "main",
+        "surfaces": {
+          "main": {
+            "id": "main",
+            "name": "Media",
+            "buttons": [
+              {
+                "id": "media",
+                "type": "media:player",
+                "position": 7,
+                "config": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    { "atMs": 1000, "kind": "snapshot", "path": "captures/demo-media.png" }
+  ]
+}

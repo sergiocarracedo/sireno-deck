@@ -1,84 +1,41 @@
 #!/usr/bin/env node
-// Rebuild the website hero from checked-in demo captures. Never boot the
-// daemon or read the user's config; Coding Agents captures use scripted-demo.
+// Capture real frontend frames through scripted-demo and compose the website
+// hero. Never boot the daemon or read the user's config.
 import { spawnSync } from "node:child_process"
-import { createRequire } from "node:module"
 import { fileURLToPath } from "node:url"
 import { dirname, resolve } from "node:path"
-import { readFileSync } from "node:fs"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(here, "../../..")
 const mediaDir = resolve(repoRoot, ".videos")
 const captures = resolve(mediaDir, "captures")
-const sourceCaptures = resolve(here, "../astro/public/captures")
-const require = createRequire(resolve(here, "../astro/package.json"))
-const sharp = require("sharp")
-
-const escape = (text) =>
-  text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll('"', "&quot;")
-
-const agentCapture = spawnSync(
-  "pnpm",
-  [
-    "--dir",
-    repoRoot,
-    "--filter",
-    "@sirenodeck/scripted-demo",
-    "demo",
-    "run",
-    resolve(here, "../scenes/coding-agents.json"),
-    "--output-root",
-    mediaDir,
-  ],
-  { stdio: "inherit" },
-)
-if (agentCapture.status !== 0)
-  throw new Error("Could not capture Coding Agents frontend")
-
-const folio = JSON.parse(
-  readFileSync(resolve(here, "../../themes/folio/sirenodeck.json"), "utf8"),
-)
-const palette = folio.colorTokens
-const folioTile = (col, row, top, primary, bottom, tone = "default") => {
-  const variant = folio.variants[tone]
-  const x = 38 + col * 207
-  const y = 38 + row * 204
-  return `<g transform="translate(${x} ${y})">
-    <rect width="187" height="184" rx="31" fill="${variant.background}" stroke="${variant.border}" stroke-width="2"/>
-    <text x="22" y="39" font-family="system-ui, sans-serif" font-size="17" fill="${variant.foreground}">${escape(top)}</text>
-    <text x="22" y="104" font-family="system-ui, sans-serif" font-size="30" font-weight="600" fill="${variant.foreground}">${escape(primary)}</text>
-    <text x="22" y="150" font-family="system-ui, sans-serif" font-size="15" fill="${palette.primary}">${escape(bottom)}</text>
-  </g>`
-}
-const folioSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1088" height="672" viewBox="0 0 1088 672">
-  <rect width="1088" height="672" rx="25" fill="${palette.background}"/>
-  ${folioTile(0, 0, "STUDIO", "Folio", "MAIN DECK", "highlighted")}
-  ${folioTile(1, 0, "TIME", "12:54", "MONDAY")}
-  ${folioTile(2, 0, "WEATHER", "20°C", "Vigo", "cyan")}
-  ${folioTile(3, 0, "AGENTS", "3 online", "OpenCode · Claude", "blue")}
-  ${folioTile(4, 0, "SYSTEM", "62%", "CPU")}
-  ${folioTile(0, 1, "MUSIC", "Play", "NOW PLAYING", "purple")}
-  ${folioTile(1, 1, "VOLUME", "Down", "MEDIA")}
-  ${folioTile(2, 1, "VOLUME", "Up", "MEDIA")}
-  ${folioTile(3, 1, "MEETING", "Muted", "INPUT", "warning")}
-  ${folioTile(4, 1, "STATUS", "Ready", "CONNECTED", "success")}
-  ${folioTile(4, 2, "SETTINGS", "Adjust", "THEME")}
-</svg>`
-await sharp(Buffer.from(folioSvg))
-  .png()
-  .toFile(resolve(captures, "folio-preview.png"))
+const captureScene = (scene) =>
+  spawnSync(
+    "pnpm",
+    [
+      "--dir",
+      repoRoot,
+      "--filter",
+      "@sirenodeck/scripted-demo",
+      "demo",
+      "run",
+      resolve(here, `../scenes/${scene}.json`),
+      "--output-root",
+      mediaDir,
+    ],
+    { stdio: "inherit" },
+  )
+for (const scene of ["coding-agents", "showcase", "folio"])
+  if (captureScene(scene).status !== 0)
+    throw new Error(`Could not capture ${scene} frontend`)
 
 const scenes = [
-  resolve(sourceCaptures, "demo-decks-index.png"),
+  resolve(captures, "demo-decks-index.png"),
   resolve(captures, "coding-agents-summary.png"),
   resolve(captures, "coding-agents-deck.png"),
-  resolve(sourceCaptures, "demo-weather.png"),
-  resolve(sourceCaptures, "demo-media.png"),
-  resolve(sourceCaptures, "demo-decks-index.png"),
+  resolve(captures, "demo-weather.png"),
+  resolve(captures, "demo-media.png"),
+  resolve(captures, "demo-decks-index.png"),
 ]
 const args = ["-hide_banner", "-loglevel", "error", "-y"]
 for (const image of scenes)
@@ -113,4 +70,4 @@ args.push(
 const result = spawnSync("ffmpeg", args, { stdio: "inherit" })
 if (result.status !== 0)
   throw new Error("Could not render website hero video (ffmpeg required)")
-console.log("Rendered demo-only hero video with illustrative coding agent data")
+console.log("Rendered showcase media from scripted frontend captures")
