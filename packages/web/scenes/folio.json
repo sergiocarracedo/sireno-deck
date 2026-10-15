@@ -14,8 +14,7 @@
     ],
     "theme": {
       "name": "folio",
-      "manifestPath": "../../themes/folio/sirenodeck.json",
-      "css": ":root { --color-bg: #e9e8e3; --color-fg: #202c31; --sireno-color-background: #e9e8e3; --sireno-color-frame: #b9c0c1; --sireno-color-foreground: #202c31; --sireno-color-foreground-contrast: #ffffff; --sireno-color-primary: #205c79; --sireno-color-accent: #2e718c; --sireno-color-muted: #53666e; --sireno-color-success: #226954; --sireno-color-danger: #aa4051; --sireno-frame-border: #b9c0c1; }"
+      "manifestPath": "../../themes/folio/sirenodeck.json"
     }
   },
   "ready": {

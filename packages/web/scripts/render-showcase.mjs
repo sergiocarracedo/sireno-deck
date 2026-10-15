@@ -7,7 +7,7 @@ import { dirname, resolve } from "node:path"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(here, "../../..")
-const mediaDir = resolve(repoRoot, ".videos")
+const mediaDir = resolve(repoRoot, ".showcase")
 const captures = resolve(mediaDir, "captures")
 const captureScene = (scene) =>
   spawnSync(

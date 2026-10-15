@@ -36,4 +36,4 @@ packages/cli/src/themes/*/theme.generated.css
 .sireno-capture.yml
 
 # Generated media from packages/scripted-demo
-.videos/
+.showcase/

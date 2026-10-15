@@ -6,6 +6,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs"
+import { spawnSync } from "node:child_process"
 import { createServer as createNetServer } from "node:net"
 import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
@@ -18,6 +19,28 @@ const { chromium } = require("playwright")
 const { createServer } = await import("vite")
 
 const wait = (ms) => new Promise((resolveWait) => setTimeout(resolveWait, ms))
+
+const themeCss = (manifestPath, frontendRoot) => {
+  const cliRoot = resolve(frontendRoot, "..")
+  const compilerPath = resolve(cliRoot, "src/themes/css.ts")
+  const componentsPath = join(dirname(manifestPath), "components.css")
+  const script = `
+    import { existsSync, readFileSync } from "node:fs"
+    import { buildThemeCss } from ${JSON.stringify(compilerPath)}
+    const parsed = JSON.parse(readFileSync(${JSON.stringify(manifestPath)}, "utf8"))
+    const manifest = { ...parsed, fonts: parsed.fonts ?? [] }
+    const componentsPath = ${JSON.stringify(componentsPath)}
+    process.stdout.write(buildThemeCss(manifest, existsSync(componentsPath) ? [readFileSync(componentsPath, "utf8")] : []))
+  `
+  const result = spawnSync(
+    "pnpm",
+    ["--dir", cliRoot, "exec", "tsx", "-e", script],
+    { encoding: "utf8" },
+  )
+  if (result.status !== 0)
+    throw new Error(`Could not compile theme CSS: ${result.stderr}`)
+  return result.stdout
+}
 
 const availablePort = async () => {
   const server = createNetServer()
@@ -54,7 +77,8 @@ const frontendEnvironment = (scene, proxyUrl) => {
   mkdirSync(join(themeDirectory, ".sirenodeck"), { recursive: true })
   writeFileSync(
     join(themeDirectory, ".sirenodeck", "theme.css"),
-    scene.frontend.theme.css,
+    scene.frontend.theme.css ??
+      themeCss(scene.frontend.theme.manifestPath, scene.frontend.root),
   )
   environment["SIRENO_THEME_DIR"] = themeDirectory
   environment["SIRENO_THEME"] = JSON.stringify({

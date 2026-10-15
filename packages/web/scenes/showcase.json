@@ -17,8 +17,7 @@
     ],
     "theme": {
       "name": "default",
-      "manifestPath": "../../cli/src/themes/default/sirenodeck.json",
-      "css": ":root { --color-bg: #080a0c; --color-fg: #eef2f7; --sireno-color-background: #2e3540; --sireno-color-frame: #53738b; --sireno-color-foreground: #eef2f7; --sireno-color-foreground-contrast: #333; --sireno-color-primary: #7dd3fc; --sireno-color-accent: #c3f5ff; --sireno-color-muted: #b8bfc8; --sireno-color-success: #34d399; --sireno-color-danger: #ffb4ab; --sireno-frame-border: #53738b; }"
+      "manifestPath": "../../cli/src/themes/default/sirenodeck.json"
     }
   },
   "ready": { "selector": "[data-deck-id=\"main\"] [data-button-type]" },

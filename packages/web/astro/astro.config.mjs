@@ -14,7 +14,7 @@ import { dirname, extname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const here = dirname(fileURLToPath(import.meta.url))
-const generatedMediaDir = resolve(here, "../../../.videos")
+const generatedMediaDir = resolve(here, "../../../.showcase")
 const mediaFiles = (directory) => {
   if (!existsSync(directory)) return []
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {

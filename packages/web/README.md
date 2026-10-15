@@ -19,7 +19,7 @@ pnpm --filter sirenodeck-web build
 
 `pnpm capture:showcase` captures the real Coding Agents, Weather, and Media
 frontend components with illustrative bridge values, then renders the WebM
-showcase videos in `/.videos/`. It does not build the Astro site.
+showcase videos in `/.showcase/`. It does not build the Astro site.
 
 ## Layout
 
@@ -43,7 +43,7 @@ The Astro `predev` and `prebuild` scripts run the sync before starting; CI is ex
 Run `pnpm capture:showcase` from the repository root (requires `ffmpeg` and
 the workspace `scripted-demo` package). The script starts isolated Vite
 frontends, drives them through the scripted-demo WebSocket bridge, and records
-Playwright screenshots and WebM video under the gitignored `/.videos/`
+Playwright screenshots and WebM video under the gitignored `/.showcase/`
 directory. Astro serves it as `/media/` in development and emits it into the
 production build. No live provider or user configuration is contacted.
 
