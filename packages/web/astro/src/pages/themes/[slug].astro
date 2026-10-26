@@ -45,8 +45,8 @@ const isOfficial = t.category === "official"
             <span
               class="text-xs font-mono px-2 py-0.5 rounded"
               style={isOfficial
-                ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
-                : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"}
+                ? "background: color-mix(in srgb, var(--color-accent) 10%, transparent); color: var(--color-accent);"
+                : "background: color-mix(in srgb, var(--color-accent-2) 10%, transparent); color: var(--color-accent-2);"}
             >
               {isOfficial ? "official" : "community"}
             </span>

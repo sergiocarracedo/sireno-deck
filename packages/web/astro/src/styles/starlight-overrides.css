@@ -1,8 +1,8 @@
 /*
  * starlight-overrides.css
  * Bridges the marketing-site identity into the docs surface:
- * same palette (#0a0a0f dark) + same type stack (Instrument Serif display,
- * Source Sans 3 body, Source Code Pro mono). Fonts themselves come from the
+ * same palette (#0a0a0f dark) + same type stack (Geist sans,
+ * JetBrains Mono). Fonts themselves come from the
  * Google-Fonts import inside global.css, which is also registered on
  * Starlight's customCss.
  */
@@ -19,29 +19,22 @@
   /* Text */
   --sl-color-text: #e4e4e7;
   --sl-color-heading: #f4f4f5;
-  --sl-color-muted: #71717a;
+  --sl-color-muted: #a1a1aa;
 
-  /* Accent = site cyan */
-  --sl-color-accent-low: #0e2a33;
-  --sl-color-accent: #22d3ee;
-  --sl-color-accent-high: #a5f3fc;
-  --sl-color-text-accent: #22d3ee;
+  /* Blue accent with violet selected-state anchors */
+  --sl-color-accent-low: #172b52;
+  --sl-color-accent: var(--color-accent, #60a5fa);
+  --sl-color-accent-high: #bfdbfe;
+  --sl-color-text-accent: var(--color-accent, #60a5fa);
 
   /* Violet anchors for selected states */
   --sl-color-rose-low: #251a38;
-  --sl-color-rose: #a78bfa;
+  --sl-color-rose: var(--color-accent-2, #a78bfa);
   --sl-color-rose-high: #ddd6fe;
 
   /* Typography — mirrors the marketing tokens from global.css */
-  --sl-font: var(--font-body, "Source Sans 3"), system-ui, sans-serif;
-  --sl-font-mono: var(--font-mono, "Source Code Pro"), ui-monospace, monospace;
-}
-
-/* Display face for page titles so docs headlines read like the landing. */
-.sl-markdown-content h1,
-.starlight-hero h1,
-[starlight-page-title] h1 {
-  font-family: var(--font-display, "Instrument Serif"), Georgia, serif;
+  --sl-font: var(--font-body, "Geist"), system-ui, sans-serif;
+  --sl-font-mono: var(--font-mono, "JetBrains Mono"), ui-monospace, monospace;
 }
 
 /* Code blocks: match the site's terminal-chrome look. */

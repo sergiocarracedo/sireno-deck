@@ -17,7 +17,7 @@ interface Props {
   screenshotAlt?: string
   images?: string[]
   imagesAlt?: string
-  accent?: "cyan" | "violet"
+  accent?: "blue" | "violet"
 }
 
 const {
@@ -28,7 +28,7 @@ const {
   screenshotAlt = "",
   images,
   imagesAlt = "",
-  accent = "cyan",
+  accent = "blue",
 } = Astro.props
 
 const accentColor = accent === "violet" ? "var(--color-accent-2)" : "var(--color-accent)"

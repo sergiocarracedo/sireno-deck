@@ -12,7 +12,7 @@
 import { useEffect, useState } from "react"
 import { MeshGradient } from "@paper-design/shaders-react"
 
-const COLORS = ["#0a1220", "#164e63", "#123b5d", "#5b3c9f", "#0e7490"]
+const COLORS = ["#0a0a1a", "#1d4ed8", "#2563eb", "#7c3aed", "#4f46e5"]
 
 const prefersReducedMotion = () => {
   if (typeof window === "undefined") return false

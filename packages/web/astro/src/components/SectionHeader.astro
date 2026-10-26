@@ -3,16 +3,16 @@
  * SectionHeader — eyebrow + title (display font) + body copy.
  *
  * Variants:
- *   - "default"   — cyan accent eyebrow, plain title
+ *   - "default"   — blue accent eyebrow, plain title
  *   - "violet"    — violet accent eyebrow
- *   - "gradient"  — title with last word highlighted in cyan→violet gradient
+ *   - "gradient"  — title with last word highlighted in blue→violet gradient
  */
 interface Props {
   eyebrow?: string
   title: string
   highlight?: string
   body?: string
-  accent?: "cyan" | "violet" | "gradient"
+  accent?: "blue" | "violet" | "gradient"
   align?: "left" | "center"
 }
 
@@ -21,7 +21,7 @@ const {
   title,
   highlight,
   body,
-  accent = "cyan",
+  accent = "blue",
   align = "center",
 } = Astro.props
 
