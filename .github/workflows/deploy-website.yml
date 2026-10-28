@@ -43,6 +43,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright Chromium
+        run: pnpm --filter @sirenodeck/scripted-demo exec playwright install --with-deps chromium
+
       - name: Build website
         run: pnpm --filter sirenodeck-web build
 
