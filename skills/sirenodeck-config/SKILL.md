@@ -7,6 +7,24 @@ description: Configure and safely update Sireno Deck YAML decks, buttons, addons
 
 Help the user configure and update decks using their existing config and the current Sireno Deck implementation. Treat the user's files as authoritative. Do not guess unsupported fields, install packages, or write files without approval.
 
+## Offer the skills
+
+When the user may want this guidance available in a project, offer the config skill with this project-local command:
+
+```sh
+npx skills add https://github.com/sergiocarracedo/sireno-deck --skill sirenodeck-config
+```
+
+If they plan to create addons or themes, also offer the extension-authoring skill:
+
+```sh
+npx skills add https://github.com/sergiocarracedo/sireno-deck --skill sirenodeck-extension-authoring
+```
+
+Ask before running either command. Keep the offer optional and non-blocking; skip it if the user already has the skill or has declined. Do not suggest extension authoring unless addon/theme creation is relevant.
+
+Suggested wording: “Would you like me to add the Sireno Deck config skill to this project? If you’re planning to create addons or themes, I can add the extension-authoring skill too.”
+
 ## Locate and confirm the config
 
 1. Check an explicit path the user supplied first.

@@ -1,9 +1,4 @@
 ---
-/**
- * Nav — fixed top nav. Logo left, primary links center, GitHub CTA right.
- * Active link styled with `data-active` set by the page consumer via Astro.url.
- */
-
 const path = Astro.url.pathname
 const links = [
   { href: "/#features", label: "Features" },
@@ -12,45 +7,328 @@ const links = [
   { href: "/addons/", label: "Addons" },
   { href: "/user/installation/", label: "Docs" },
 ]
+const installHref = path === "/" ? "#install" : "/#install"
 ---
 
-<nav
-  class="fixed top-7 left-0 right-0 z-50 px-8 py-4 backdrop-blur-md"
-  style="background: rgba(10, 10, 15, 0.8); border-bottom: 1px solid var(--color-border);"
->
-  <div class="max-w-6xl mx-auto flex items-center justify-between">
-    <a href="/" class="flex items-center gap-3 font-display font-bold text-lg text-fg no-underline">
-      <img src="/logo-icon.png" alt="" class="h-9 w-9" />
-      Sireno Deck
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="wordmark" aria-label="SirenoDECK home">
+      <img src="/logo-icon.png" width="42" height="42" alt="" />
+      <span>Sireno<span class="wordmark-product">Deck</span></span>
     </a>
 
-    <ul class="hidden md:flex gap-8 list-none">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+      <span>Menu</span>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" /></svg>
+    </button>
+
+    <nav id="site-navigation" class="site-nav" aria-label="Main navigation">
       {
         links.map((l) => {
-          const active = path.startsWith(l.href.split("#")[0]!) && l.href !== "/#features" && l.href !== "/#config"
+          const sectionLink = l.href.startsWith("/#")
+          const active = !sectionLink && path.startsWith(l.href)
           return (
-            <li>
-              <a
-                href={l.href}
-                class="text-sm font-medium transition-colors"
-                style={active ? "color: var(--color-fg);" : "color: var(--color-muted);"}
-              >
-                {l.label}
-              </a>
-            </li>
+            <a href={l.href} aria-current={active ? "page" : undefined}>
+              {l.label}
+            </a>
           )
         })
       }
-    </ul>
-
-    <a
-      href="https://github.com/sergiocarracedo/sireno-deck"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-sm font-semibold px-5 py-2 rounded-md transition-all hover:-translate-y-px"
-      style="background: var(--color-accent); color: var(--color-bg);"
-    >
-      GitHub
-    </a>
+      <a class="nav-github" href="https://github.com/sergiocarracedo/sireno-deck" target="_blank" rel="noopener noreferrer">
+        GitHub <span aria-hidden="true">↗</span>
+      </a>
+      <a class="nav-start" href={installHref}>Get started <span aria-hidden="true">→</span></a>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme">
+        <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+        <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.6 15.6A8.8 8.8 0 0 1 8.4 3.4 8.8 8.8 0 1 0 20.6 15.6Z" />
+        </svg>
+      </button>
+    </nav>
   </div>
-</nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: blur(16px);
+  }
+
+  .site-header-inner {
+    display: flex;
+    width: min(100% - 3rem, 72rem);
+    min-height: 4.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-inline: auto;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--color-fg);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    text-decoration: none;
+  }
+
+  .wordmark img {
+    width: 2.625rem;
+    height: 2.625rem;
+  }
+
+  .wordmark-product {
+    margin-left: 0.28em;
+    color: var(--color-accent);
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.125rem;
+  }
+
+  .site-nav a,
+  .nav-toggle {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    background: transparent;
+    color: var(--color-muted);
+    font: 500 0.84rem/1 Geist, system-ui, sans-serif;
+    text-decoration: none;
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+  }
+
+  .site-nav a:hover {
+    color: var(--color-fg);
+    background: var(--color-surface);
+  }
+
+  .site-nav .nav-github {
+    margin-left: 0.35rem;
+    color: var(--color-fg);
+  }
+
+  .site-nav .nav-start {
+    min-height: 2.5rem;
+    border-color: color-mix(in srgb, var(--color-fg) 13%, transparent);
+    border-radius: 999px;
+    padding: 0.625rem 0.9375rem;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+  }
+
+  .site-nav .nav-start:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 85%, white);
+    background: color-mix(in srgb, var(--color-accent) 85%, white);
+    color: var(--color-on-accent);
+  }
+
+  .theme-toggle {
+    display: inline-grid;
+    width: 2.5rem;
+    min-height: 2.5rem;
+    flex: 0 0 2.5rem;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    padding: 0;
+    background: transparent;
+    color: var(--color-fg);
+    cursor: pointer;
+    transition: border-color 160ms ease, background-color 160ms ease;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .theme-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .theme-icon-dark {
+    display: none;
+  }
+
+  :global(html[data-theme="dark"]) .theme-icon-light {
+    display: block;
+  }
+
+  :global(html[data-theme="dark"]) .theme-icon-dark {
+    display: none;
+  }
+
+  :global(html[data-theme="light"]) .theme-icon-light {
+    display: none;
+  }
+
+  :global(html[data-theme="light"]) .theme-icon-dark {
+    display: block;
+  }
+
+  .nav-toggle {
+    display: none;
+    border-color: var(--color-border);
+    color: var(--color-fg);
+    cursor: pointer;
+  }
+
+  .nav-toggle svg {
+    width: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 1.6;
+  }
+
+  .site-nav a:focus-visible,
+  .nav-toggle:focus-visible,
+  .wordmark:focus-visible,
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 850px) {
+    .site-header-inner {
+      width: min(100% - 2rem, 72rem);
+    }
+
+    .site-nav {
+      gap: 0.25rem;
+    }
+
+    .site-nav a {
+      padding-inline: 0.55rem;
+      font-size: 0.78rem;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .site-header-inner {
+      position: relative;
+      min-height: 3.9rem;
+    }
+
+    .wordmark img {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    .nav-toggle {
+      display: inline-flex;
+    }
+
+    .site-nav {
+      position: absolute;
+      top: calc(100% + 1px);
+      right: -1rem;
+      left: -1rem;
+      display: none;
+      align-items: stretch;
+      gap: 0.2rem;
+      padding: 0.75rem 1rem 1rem;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg);
+    }
+
+    .site-nav[data-open] {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .site-nav a {
+      justify-content: flex-start;
+      min-height: 2.75rem;
+      padding-inline: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .site-nav .nav-github,
+    .site-nav .nav-start,
+    .site-nav .theme-toggle {
+      margin: 0;
+    }
+
+    .site-nav .nav-start {
+      justify-content: center;
+      margin-top: 0.25rem;
+    }
+
+    .site-nav .theme-toggle {
+      align-self: center;
+      margin-top: 0.25rem;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>(".site-header")
+  const toggle = header?.querySelector<HTMLButtonElement>(".nav-toggle")
+  const nav = header?.querySelector<HTMLElement>(".site-nav")
+  const themeToggle = header?.querySelector<HTMLButtonElement>(".theme-toggle")
+  const root = document.documentElement
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)")
+
+  const updateThemeLabel = () => {
+    const current = root.dataset.theme ?? (systemDark.matches ? "dark" : "light")
+    themeToggle?.setAttribute("aria-label", `Switch to ${current === "dark" ? "light" : "dark"} theme`)
+  }
+
+  themeToggle?.addEventListener("click", () => {
+    const current = root.dataset.theme ?? (systemDark.matches ? "dark" : "light")
+    const next = current === "dark" ? "light" : "dark"
+    root.dataset.theme = next
+    root.style.colorScheme = next
+    localStorage.setItem("color-scheme", next)
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", next === "dark" ? "#0a0a0f" : "#f3fcf4")
+    updateThemeLabel()
+  })
+
+  systemDark.addEventListener("change", (event) => {
+    if (localStorage.getItem("color-scheme")) return
+    root.dataset.theme = event.matches ? "dark" : "light"
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", event.matches ? "#0a0a0f" : "#f3fcf4")
+    updateThemeLabel()
+  })
+  updateThemeLabel()
+
+  toggle?.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true"
+    toggle.setAttribute("aria-expanded", String(!open))
+    nav?.toggleAttribute("data-open", !open)
+  })
+
+  nav?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      toggle?.setAttribute("aria-expanded", "false")
+      nav?.removeAttribute("data-open")
+    })
+  })
+</script>

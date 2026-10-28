@@ -12,7 +12,8 @@
 import { useEffect, useState } from "react"
 import { MeshGradient } from "@paper-design/shaders-react"
 
-const COLORS = ["#0a0a1a", "#1d4ed8", "#2563eb", "#7c3aed", "#4f46e5"]
+const DARK_COLORS = ["#071116", "#075985", "#2888c0", "#7c3aed", "#4f46e5"]
+const LIGHT_COLORS = ["#f3fcf4", "#bae6fd", "#1676a6", "#c4b5fd", "#7c3aed"]
 
 const prefersReducedMotion = () => {
   if (typeof window === "undefined") return false
@@ -21,20 +22,40 @@ const prefersReducedMotion = () => {
 
 export const PaperShader = () => {
   const [paused, setPaused] = useState(false)
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    typeof document === "undefined"
+      ? "dark"
+      : document.documentElement.dataset.theme === "light"
+        ? "light"
+        : "dark",
+  )
 
   useEffect(() => {
     setPaused(prefersReducedMotion())
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
     const onChange = () => setPaused(mq.matches)
     mq.addEventListener("change", onChange)
-    return () => mq.removeEventListener("change", onChange)
+
+    const root = document.documentElement
+    const themeObserver = new MutationObserver(() => {
+      setTheme(root.dataset.theme === "light" ? "light" : "dark")
+    })
+    themeObserver.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    })
+
+    return () => {
+      mq.removeEventListener("change", onChange)
+      themeObserver.disconnect()
+    }
   }, [])
 
   return (
     <MeshGradient
       width={1440}
       height={900}
-      colors={COLORS}
+      colors={theme === "light" ? LIGHT_COLORS : DARK_COLORS}
       distortion={0.85}
       swirl={0.18}
       grainMixer={0.0}

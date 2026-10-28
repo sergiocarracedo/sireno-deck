@@ -11,8 +11,7 @@ import PaperShader from "./PaperShader"
   <PaperShader client:only="react" />
   {/* Vignette so the headline keeps contrast over the moving canvas */}
   <div
-    class="absolute inset-0 pointer-events-none"
-    style="background: radial-gradient(ellipse 75% 65% at 50% 40%, transparent 42%, rgba(10, 10, 15, 0.38) 75%, rgba(10, 10, 15, 0.72) 100%);"
+    class="hero-vignette absolute inset-0 pointer-events-none"
   ></div>
 </div>
 
@@ -35,5 +34,14 @@ import PaperShader from "./PaperShader"
         color-mix(in srgb, var(--color-accent) 12%, transparent),
         transparent 55%
       );
+  }
+
+  .hero-vignette {
+    background: radial-gradient(
+      ellipse 75% 65% at 50% 40%,
+      transparent 42%,
+      color-mix(in srgb, var(--color-bg) 38%, transparent) 75%,
+      color-mix(in srgb, var(--color-bg) 72%, transparent) 100%
+    );
   }
 </style>

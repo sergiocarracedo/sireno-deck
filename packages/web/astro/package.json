@@ -9,6 +9,7 @@
     "sync-docs": "node ./scripts/sync-cli-docs.mjs",
     "sync-schemas": "cd ../../cli && pnpm exec tsx ../web/scripts/extract-addon-schemas.mjs",
     "sync-captures": "node ../scripts/capture-decks.mjs",
+    "capture-showcase": "node ../scripts/capture-showcase.mjs",
     "render-showcase": "node ../scripts/render-showcase.mjs",
     "predev": "pnpm run render-showcase && pnpm run sync-docs && pnpm run sync-tokens && pnpm run sync-schemas",
     "dev": "astro dev",

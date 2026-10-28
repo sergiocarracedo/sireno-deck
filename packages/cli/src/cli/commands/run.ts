@@ -96,6 +96,7 @@ import {
 import { getHostContext } from "@/deck/host-context"
 import { StatePublisher } from "@/render/state-publisher"
 import { startWsBridge, type WsBridge } from "@/render/ws-bridge"
+import { DEFAULT_BRIDGE_PORT } from "./emulator-mode"
 import { createConfigMutationService } from "@/config/mutation"
 import {
   createEditorMessageHandler,
@@ -1544,9 +1545,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       : []
     const lanHost = remote ? lanAddresses[0]?.address : undefined
     const bridgeHost: "127.0.0.1" | "0.0.0.0" = remote ? "0.0.0.0" : "127.0.0.1"
+    const bridgePort = options.port ?? DEFAULT_BRIDGE_PORT
 
     bridge = await startWsBridge({
-      port: 52937,
+      port: bridgePort,
       host: bridgeHost,
       ...(lanHost !== undefined ? { lanHost } : {}),
       expectedToken: process.env["SIRENO_TOKEN"] ?? "",

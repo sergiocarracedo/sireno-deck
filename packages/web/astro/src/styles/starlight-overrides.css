@@ -21,11 +21,11 @@
   --sl-color-heading: #f4f4f5;
   --sl-color-muted: #a1a1aa;
 
-  /* Blue accent with violet selected-state anchors */
-  --sl-color-accent-low: #172b52;
-  --sl-color-accent: var(--color-accent, #60a5fa);
-  --sl-color-accent-high: #bfdbfe;
-  --sl-color-text-accent: var(--color-accent, #60a5fa);
+  /* Logo-blue accent with violet selected-state anchors */
+  --sl-color-accent-low: #082f49;
+  --sl-color-accent: var(--color-accent, #2888c0);
+  --sl-color-accent-high: #bae6fd;
+  --sl-color-text-accent: var(--color-accent, #2888c0);
 
   /* Violet anchors for selected states */
   --sl-color-rose-low: #251a38;

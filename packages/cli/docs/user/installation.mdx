@@ -12,25 +12,33 @@ Get Sireno Deck running on your computer in minutes.
 
 ## Prerequisites
 
-- **Node.js** 20 or later for the npm install (the Homebrew formula handles its own dependencies)
-- **pnpm**, npm, or Yarn for npm installs (pnpm is preferred for addon and theme installs)
+- Homebrew on macOS or Linux; Windows users can use Homebrew through WSL
 - A Stream Deck device (optional — emulator available for testing)
 
 ## Quick Install
 
-Install the CLI globally:
-
-```bash
-pnpm i -g @sirenodeck/sirenodeck
-```
-
-On macOS, you can instead use the Homebrew tap:
+Install the CLI with Homebrew:
 
 ```bash
 brew install sergiocarracedo/tap/sirenodeck
 ```
 
-Choose one installation method; you do not need both Homebrew and npm.
+Homebrew is supported on macOS and Linux, including Windows Subsystem for Linux (WSL).
+
+## Node.js install (for developers and native Windows)
+
+For development environments, or to install on native Windows without WSL, use Node.js 20 or later and a package manager:
+
+```bash
+pnpm i -g @sirenodeck/sirenodeck
+```
+
+You can also use npm or Yarn:
+
+```bash
+npm i -g @sirenodeck/sirenodeck
+yarn global add @sirenodeck/sirenodeck
+```
 
 The addon installer checks for pnpm, npm, or Yarn and prefers pnpm.
 

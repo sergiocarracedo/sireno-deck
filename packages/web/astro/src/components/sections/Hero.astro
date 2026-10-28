@@ -7,19 +7,22 @@
  * demo video frame.
  */
 import HeroShader from "../hero/HeroShader.astro";
+import cliPackage from "../../../../../cli/package.json" with { type: "json" };
 ---
 
 <section class="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16">
   <HeroShader />
 
   <div class="relative z-10 text-center max-w-4xl mx-auto">
-    <p class="font-mono text-xs font-medium uppercase tracking-[0.25em] mb-6" style="color: var(--color-accent);">
-      Your Stream Deck, your rules
+    <p class="hero-version-pill">
+      <span class="hero-version-dot" aria-hidden="true"></span>
+      <span>SirenoDECK</span>
+      <span class="hero-version">v{cliPackage.version}</span>
     </p>
 
-    <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6">
+    <h1 class="hero-title font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6">
       Declarative control for<br />
-      <span style="background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+      <span class="hero-highlight">
         your Stream Deck
       </span>
     </h1>
@@ -29,11 +32,11 @@ import HeroShader from "../hero/HeroShader.astro";
       Emulator, real hardware, and dev SPA — all from the same React interface.
     </p>
 
-    <div class="flex flex-wrap items-center justify-center gap-3 mb-5">
+    <div class="flex flex-wrap items-center justify-center gap-3">
       <a
         href="#install"
-        class="px-7 py-3 rounded-lg text-sm font-semibold transition-all hover:-translate-y-0.5"
-        style="background: var(--color-accent); color: var(--color-bg);"
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap px-7 py-3 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5"
+        style="background: var(--color-accent); color: var(--color-on-accent);"
       >
         Get Started
       </a>
@@ -41,16 +44,32 @@ import HeroShader from "../hero/HeroShader.astro";
         href="https://github.com/sergiocarracedo/sireno-deck"
         target="_blank"
         rel="noopener noreferrer"
-        class="px-7 py-3 rounded-lg text-sm font-semibold transition-all"
-        style="background: transparent; color: var(--color-fg); border: 1px solid var(--color-border);"
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap px-7 py-3 rounded-full text-sm font-semibold transition-all"
+        style="background: transparent; color: var(--color-fg); border: 1px solid var(--color-fg);"
       >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 .297a12 12 0 0 0-3.794 23.383c.6.111.82-.26.82-.577v-2.234c-3.338.726-4.043-1.416-4.043-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.776.418-1.305.762-1.604-2.665-.304-5.467-1.333-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.536-1.524.117-3.176 0 0 1.008-.322 3.301 1.23a11.5 11.5 0 0 1 6.007 0c2.291-1.552 3.297-1.23 3.297-1.23.655 1.653.243 2.873.12 3.176.77.84 1.235 1.91 1.235 3.221 0 4.61-2.807 5.624-5.479 5.921.43.371.823 1.102.823 2.222v3.293c0 .319.216.694.825.576A12.001 12.001 0 0 0 12 .297Z" />
+        </svg>
         View on GitHub
-        <i data-lucide="arrow-right" class="w-4 h-4 inline-block -mt-0.5 ml-1"></i>
+        <span aria-hidden="true">↗</span>
       </a>
     </div>
 
-    <div class="mb-12 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs sm:text-sm">
-      <span class="font-mono uppercase tracking-[0.14em]" style="color: var(--color-muted);">On macOS</span>
+    <a
+      class="github-stars mb-10"
+      href="https://github.com/sergiocarracedo/sireno-deck"
+      target="_blank"
+      rel="noopener noreferrer"
+      data-github-stars-url="https://api.github.com/repos/sergiocarracedo/sireno-deck"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 .5C5.648.5.5 5.648.5 12c0 5.084 3.292 9.398 7.86 10.92.575.106.785-.25.785-.555 0-.273-.01-.996-.016-1.955-3.197.694-3.872-1.54-3.872-1.54-.523-1.328-1.277-1.681-1.277-1.681-1.044-.714.079-.699.079-.699 1.155.08 1.763 1.186 1.763 1.186 1.026 1.758 2.691 1.25 3.347.956.104-.743.401-1.25.73-1.538-2.552-.29-5.236-1.276-5.236-5.682 0-1.255.448-2.28 1.183-3.084-.119-.29-.512-1.457.112-3.038 0 0 .964-.309 3.159 1.178A10.97 10.97 0 0 1 12 5.76c.973.004 1.953.132 2.87.388 2.194-1.487 3.157-1.178 3.157-1.178.626 1.581.233 2.748.114 3.038.737.804 1.181 1.829 1.181 3.084 0 4.417-2.688 5.388-5.248 5.672.412.355.78 1.055.78 2.126 0 1.535-.014 2.773-.014 3.15 0 .308.207.667.79.554C20.211 21.394 23.5 17.083 23.5 12 23.5 5.648 18.352.5 12 .5Z" />
+      </svg>
+      <span>Star on GitHub</span>
+      <span class="github-stars-count"><span aria-hidden="true">★</span><strong data-github-star-count>—</strong></span>
+    </a>
+
+    <div class="mb-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs sm:text-sm">
       <code class="max-w-full overflow-x-auto rounded-md px-3 py-2 font-mono select-all" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-accent);">brew install sergiocarracedo/tap/sirenodeck</code>
     </div>
 
@@ -59,16 +78,125 @@ import HeroShader from "../hero/HeroShader.astro";
       style="background: #0A0D0E; border: 1px solid var(--color-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-accent-glow);"
     >
       <div class="relative aspect-video overflow-hidden rounded-md">
-        <video id="hero-demo-video" autoplay loop muted playsinline preload="metadata" width="1280" height="720" poster="/media/captures/demo-decks-index.png" class="absolute inset-0 w-full h-full object-contain block" aria-label="Sireno Deck demo decks including illustrative coding agents, weather, and media">
+        <video id="hero-demo-video" autoplay loop muted playsinline preload="metadata" width="1280" height="720" poster="/media/captures/hero-video-poster.png" class="absolute inset-0 w-full h-full object-contain block" aria-label="A live capture of the SirenoDECK website showcase using the default theme">
           <source src="/media/video-hero.webm" type="video/webm" />
-          <img src="/media/captures/demo-decks-index.png" alt="Sireno Deck demo deck index" />
+          <img src="/media/captures/hero-video-poster.png" alt="SirenoDECK default-theme deck" />
         </video>
       </div>
     </div>
   </div>
 </section>
 
+<style>
+  .hero-title {
+    letter-spacing: -0.075em;
+  }
+
+  .hero-highlight {
+    display: inline-block;
+    border-radius: 0.12em;
+    padding: 0.03em 0.2em 0.08em;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+    color: var(--color-bg);
+    -webkit-text-fill-color: var(--color-bg);
+  }
+
+  .hero-version-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0 0 1.5rem;
+    border: 1px solid color-mix(in srgb, var(--color-fg) 18%, transparent);
+    border-radius: 999px;
+    padding: 0.55rem 0.85rem;
+    background: color-mix(in srgb, var(--color-surface) 74%, transparent);
+    color: var(--color-fg);
+    font: 500 0.65rem/1 var(--font-mono);
+    letter-spacing: 0.08em;
+    backdrop-filter: blur(12px);
+  }
+
+  .hero-version-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: none;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 22%, transparent);
+  }
+
+  .hero-version {
+    color: var(--color-muted);
+  }
+
+  .github-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.38rem 0.45rem 0.38rem 0.7rem;
+    background: color-mix(in srgb, var(--color-surface) 74%, transparent);
+    color: var(--color-fg);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      border-color 200ms ease,
+      background-color 200ms ease,
+      transform 200ms ease;
+  }
+
+  .github-stars:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-accent);
+    background: var(--color-surface);
+  }
+
+  .github-stars > svg {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+  }
+
+  .github-stars-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 999px;
+    padding: 0.18rem 0.48rem;
+    background: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface));
+    color: var(--color-accent);
+    font-size: 0.76rem;
+  }
+
+  .github-stars-count > span {
+    color: #bd9900;
+  }
+</style>
+
 <script>
+  const starButton = document.querySelector<HTMLAnchorElement>("[data-github-stars-url]")
+  const starCount = document.querySelector<HTMLElement>("[data-github-star-count]")
+
+  if (starButton?.dataset.githubStarsUrl && starCount) {
+    fetch(starButton.dataset.githubStarsUrl, { headers: { Accept: "application/vnd.github+json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error("GitHub star count unavailable")
+        return response.json() as Promise<{ stargazers_count?: number }>
+      })
+      .then(({ stargazers_count }) => {
+        if (typeof stargazers_count === "number") {
+          starCount.textContent = new Intl.NumberFormat("en", {
+            notation: stargazers_count >= 1000 ? "compact" : "standard",
+            maximumFractionDigits: 1,
+          }).format(stargazers_count)
+        }
+      })
+      .catch(() => {})
+  }
+
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)")
   const heroVideo = document.querySelector<HTMLVideoElement>("#hero-demo-video")
   const syncMotion = () => {

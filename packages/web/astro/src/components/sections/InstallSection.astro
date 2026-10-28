@@ -1,13 +1,10 @@
 ---
 /**
  * InstallSection — "Get started" with the real 4-step flow:
- *   1. install the CLI globally (pnpm/npm/yarn CommandTabs)
+ *   1. install the CLI with Homebrew
  *   2. `sirenodeck start` -> first-run onboarding generates the config
-  *   3. edit ~/.config/sirenodeck/config.yml (+ link to full docs)
+ *   3. edit ~/.config/sirenodeck/config.yml (+ link to full docs)
  *   4. add 3rd-party addons & themes from npm (+ link to /addons/)
- *
- * Packaged builds (Flathub / DMG / MSI) are coming soon — shown as a muted
- * line with no commands to avoid confusion.
  */
 import CommandTabs from "../CommandTabs.astro";
 ---
@@ -25,7 +22,7 @@ import CommandTabs from "../CommandTabs.astro";
       Up in 60 seconds
     </h2>
     <p class="text-lg mb-12" style="color: var(--color-muted);">
-      Install via npm (Node 20+) or Homebrew on macOS. For npm, pick your package manager once — we remember it everywhere.
+      Install with Homebrew on macOS, Linux, or Windows through WSL.
     </p>
 
     <div class="flex flex-col gap-8 text-left" data-reveal-group>
@@ -36,13 +33,9 @@ import CommandTabs from "../CommandTabs.astro";
           <p class="text-sm font-semibold text-fg">Install the CLI</p>
         </div>
         <div class="px-6 pb-5">
-           <CommandTabs
-            pnpm="pnpm i -g @sirenodeck/sirenodeck"
-            npm="npm i -g @sirenodeck/sirenodeck"
-            yarn="yarn global add @sirenodeck/sirenodeck"
-            label="Install the CLI"
-          />
-          <p class="mt-3 text-xs" style="color: var(--color-muted);">macOS: <code class="font-mono select-all" style="color: var(--color-accent);">brew install sergiocarracedo/tap/sirenodeck</code></p>
+          <div class="rounded-md px-4 py-3 font-mono text-sm overflow-x-auto" style="background: var(--color-surface); color: var(--color-accent);">
+            brew install sergiocarracedo/tap/sirenodeck
+          </div>
         </div>
       </div>
 
@@ -102,15 +95,6 @@ import CommandTabs from "../CommandTabs.astro";
         </div>
       </div>
     </div>
-
-    {/* Packaged builds — coming soon, no commands */}
-    <p class="text-xs mt-10" style="color: var(--color-muted);">
-      Packaged builds —
-      <span class="font-semibold" style="color: var(--color-fg);">Flathub</span> ·
-      <span class="font-semibold" style="color: var(--color-fg);">DMG</span> ·
-      <span class="font-semibold" style="color: var(--color-fg);">MSI</span>
-      — coming soon.
-    </p>
 
     <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
       <a

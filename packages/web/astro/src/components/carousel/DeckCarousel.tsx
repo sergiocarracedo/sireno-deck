@@ -51,7 +51,7 @@ export const DeckCarouselClient = ({ slides, intervalMs = 7000 }: Props) => {
       className="relative w-full"
       role="region"
       aria-roledescription="carousel"
-      aria-label="Sireno Deck showcase"
+      aria-label="SirenoDECK showcase"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >

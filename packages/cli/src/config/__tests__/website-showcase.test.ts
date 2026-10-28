@@ -10,7 +10,9 @@ describe("website showcase config", () => {
       new URL("../../../../../demos/website-showcase.yml", import.meta.url),
     )
     const { config } = loadConfig({ configPath })
-    expect(config.decks?.main?.buttons?.[0]?.type).toBe("coding-agents:summary")
+    expect(config.decks?.main?.buttons?.[0]).toMatchObject({
+      type: "coding-agents:summary",
+    })
     expect(Object.keys(config.decks ?? {})).toContain("demo-weather")
     expect(Object.keys(config.decks ?? {})).toContain("demo-media")
   })

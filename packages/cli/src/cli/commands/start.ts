@@ -18,6 +18,11 @@ import {
   resolveConfigPath as resolveRunConfigPath,
   resolveRunFolderConfigPath,
 } from "./pipeline/helpers"
+import {
+  DEFAULT_BRIDGE_PORT,
+  DEFAULT_CONFIG_UI_PORT,
+  DEFAULT_FRONTEND_PORT,
+} from "./emulator-mode"
 import type { ResolveConfigPathResult } from "./pipeline/helpers"
 import {
   acquireStartLock,
@@ -1053,10 +1058,11 @@ const start = async (options: StartOptions): Promise<void> => {
   // SIGKILL that left orphans adopted by systemd), the port still binds
   // the orphan. ss -ltnp → SIGTERM every listener → 500ms grace → start.
   // Cost: bounded, no-op when the ports are free.
+  const bridgePort = options.port ?? DEFAULT_BRIDGE_PORT
   await killPortListeners(
     options.emulator === true
-      ? [5180, 3939, 52937, 52938]
-      : [5180, 3939, 52937],
+      ? [DEFAULT_FRONTEND_PORT, 3939, bridgePort, DEFAULT_CONFIG_UI_PORT]
+      : [DEFAULT_FRONTEND_PORT, 3939, bridgePort],
     logger,
   )
 

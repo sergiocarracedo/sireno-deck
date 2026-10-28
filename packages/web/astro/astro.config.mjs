@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const generatedMediaDir = resolve(here, "../../../.showcase")
+/** @param {string} directory @returns {string[]} */
 const mediaFiles = (directory) => {
   if (!existsSync(directory)) return []
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -23,6 +24,7 @@ const mediaFiles = (directory) => {
   })
 }
 
+/** @param {string} filePath @returns {string} */
 const mediaMime = (filePath) =>
   ({
     ".jpg": "image/jpeg",
@@ -31,6 +33,7 @@ const mediaMime = (filePath) =>
     ".webm": "video/webm",
   })[extname(filePath).toLowerCase()] ?? "application/octet-stream"
 
+/** @returns {import("vite").Plugin} */
 const scriptedDemoMedia = () => ({
   name: "scripted-demo-media",
   configureServer(server) {
@@ -55,7 +58,7 @@ const scriptedDemoMedia = () => ({
 })
 
 export default defineConfig({
-  site: "https://sirenodeck.fyi",
+  site: "https://deck.sireno.dev",
   integrations: [
     react(),
     starlight({

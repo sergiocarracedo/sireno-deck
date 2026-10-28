@@ -3,22 +3,26 @@
 
 /*
  * Sireno Deck — marketing site.
- * Visual direction: dark `#0a0a0f` palette with blue/violet accents,
+ * Visual direction: dark `#0a0a0f` palette with logo-blue/violet accents,
  * Geist typography, and JetBrains Mono for technical details.
  *
  * The in-app default theme (slate) is intentionally separate; this file is
  * the marketing site only.
  */
 @theme {
-  --color-bg: #0a0a0f;
-  --color-surface: #14141a;
-  --color-surface-raised: #1c1c24;
-  --color-fg: #e4e4e7;
-  --color-muted: #a1a1aa;
-  --color-border: #27272a;
-  --color-accent: #60a5fa;
-  --color-accent-2: #a78bfa;
-  --color-accent-glow: rgb(96 165 250 / 0.15);
+  --color-bg: light-dark(#f3fcf4, #0a0a0f);
+  --color-surface: light-dark(#ffffff, #14141a);
+  --color-surface-raised: light-dark(#eaf4ed, #1c1c24);
+  --color-fg: light-dark(#151d19, #e4e4e7);
+  --color-muted: light-dark(#536359, #a1a1aa);
+  --color-border: light-dark(#d9e4dc, #27272a);
+  --color-accent: light-dark(#1676a6, #2888c0);
+  --color-on-accent: light-dark(#ffffff, #071116);
+  --color-accent-2: light-dark(#7c3aed, #a78bfa);
+  --color-accent-glow: light-dark(
+    rgb(22 118 166 / 0.14),
+    rgb(40 136 192 / 0.18)
+  );
 
   --font-display: "Geist", system-ui, sans-serif;
   --font-body: "Geist", system-ui, sans-serif;
@@ -26,6 +30,7 @@
 }
 
 html {
+  color-scheme: light dark;
   background: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-body);
