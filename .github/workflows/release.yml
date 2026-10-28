@@ -115,31 +115,48 @@ jobs:
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Publish package
-        run: npm publish --provenance --tag "${{ steps.meta.outputs.dist_tag }}" --access public
-
-      - name: Verify published package
+      - name: Publish and verify package
         env:
           PACKAGE: ${{ needs.detect.outputs.package }}
           VERSION: ${{ steps.meta.outputs.version }}
           DIST_TAG: ${{ steps.meta.outputs.dist_tag }}
         run: |
-          for attempt in 1 2 3 4 5; do
-            PUBLISHED_VERSION=$(npm view "$PACKAGE@$VERSION" version)
-            if [[ "$PUBLISHED_VERSION" == "$VERSION" ]]; then
+          version_available() {
+            [[ "$(npm view "$PACKAGE@$VERSION" version 2>/dev/null || true)" == "$VERSION" ]]
+          }
+
+          # npm can accept a publish before its registry read API has indexed it.
+          # Avoid republishing an already-published version when a release is retried.
+          if ! version_available; then
+            if ! npm publish --provenance --tag "$DIST_TAG" --access public; then
+              echo "npm publish failed; checking whether the version was accepted already"
+            fi
+          else
+            echo "$PACKAGE@$VERSION is already published; skipping publish"
+          fi
+
+          for attempt in {1..24}; do
+            if version_available; then
               break
             fi
-            if [[ "$attempt" -eq 5 ]]; then
-              echo "expected npm version $VERSION, got $PUBLISHED_VERSION"
+            if [[ "$attempt" -eq 24 ]]; then
+              echo "npm did not make $PACKAGE@$VERSION available after 6 minutes"
               exit 1
             fi
-            sleep 5
+            sleep 15
           done
-          PUBLISHED_TAG=$(npm view "$PACKAGE" "dist-tags.$DIST_TAG")
-          if [[ "$PUBLISHED_TAG" != "$VERSION" ]]; then
-            echo "expected npm $DIST_TAG tag $VERSION, got $PUBLISHED_TAG"
-            exit 1
-          fi
+
+          for attempt in {1..24}; do
+            PUBLISHED_TAG=$(npm view "$PACKAGE" "dist-tags.$DIST_TAG" 2>/dev/null || true)
+            if [[ "$PUBLISHED_TAG" == "$VERSION" ]]; then
+              break
+            fi
+            if [[ "$attempt" -eq 24 ]]; then
+              echo "expected npm $DIST_TAG tag $VERSION, got ${PUBLISHED_TAG:-<unavailable>}"
+              exit 1
+            fi
+            sleep 15
+          done
           npm view "$PACKAGE" dist-tags --json
 
   homebrew:
