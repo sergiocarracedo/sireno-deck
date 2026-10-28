@@ -1,0 +1,14 @@
+.github/workflows/deploy-website.yml
+  h_31bfcf89e26281 46-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8cbf1bace5581c238cca74d96125b8253e3fa10b",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
