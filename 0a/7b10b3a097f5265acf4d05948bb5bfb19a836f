@@ -1,0 +1,81 @@
+packages/web/astro/src/components/sections/Hero.astro
+  h_31bfcf89e26281 10,17-20,23,25,35,38-39,47-48,50-52,54,58-72,81,83,90-130,132-178,180-199
+  h_31bfcf89e26281 131
+package.json
+  h_31bfcf89e26281 8
+packages/cli/docs/user/installation.mdx
+  h_31bfcf89e26281 15,20,23,26-30,33,36-41
+packages/cli/package.json
+  h_31bfcf89e26281 5
+packages/cli/src/builtin-addons/coding-agents/__tests__/backend.test.ts
+  h_31bfcf89e26281 75,101-119
+packages/cli/src/builtin-addons/coding-agents/global/backend.ts
+  h_31bfcf89e26281 265-266
+packages/cli/src/cli/commands/emulator-mode.ts
+  h_31bfcf89e26281 15-31
+packages/cli/src/cli/commands/run.ts
+  h_31bfcf89e26281 99,1548,1551
+packages/cli/src/cli/commands/start.ts
+  h_31bfcf89e26281 21-25,1061,1064-1065
+packages/cli/src/cli/commands/stop.ts
+  h_31bfcf89e26281 2,31,115
+packages/cli/src/config/__tests__/website-showcase.test.ts
+  h_31bfcf89e26281 13-15
+packages/web/astro/astro.config.mjs
+  h_31bfcf89e26281 18,27,36,61
+packages/web/astro/package.json
+  h_31bfcf89e26281 12
+packages/web/astro/src/components/Footer.astro
+  h_31bfcf89e26281 45,75
+packages/web/astro/src/components/Nav.astro
+  h_31bfcf89e26281 10,13-17,20-25,28-29,31-33,37-50,52-334
+packages/web/astro/src/components/carousel/DeckCarousel.tsx
+  h_31bfcf89e26281 54
+packages/web/astro/src/components/hero/HeroShader.astro
+  h_31bfcf89e26281 14,38-46
+packages/web/astro/src/components/hero/PaperShader.tsx
+  h_31bfcf89e26281 15-16,25-31,38-51,58
+packages/web/astro/src/components/sections/AgentSkillSection.astro
+  h_31bfcf89e26281 10,16
+packages/web/astro/src/components/sections/ConfigUiSection.astro
+  h_31bfcf89e26281 17
+packages/web/astro/src/components/sections/InstallSection.astro
+  h_31bfcf89e26281 4,6,25,36-38
+packages/web/astro/src/components/sections/RemoteSection.astro
+  h_31bfcf89e26281 90
+packages/web/astro/src/content/buttonSchemas.json
+  h_31bfcf89e26281 8,13,31,36,41,59,76-77,82,95-96,104-105,110,124-125,129,134-135,170-171,173-175,187-188,205,221,227,249-250,254-256,260-261,274-276,279,293,298,302-303,333,349,441,446,456-457,461-462,529,534,544-545,549-550,617,622,632-633,637,644-645,676-677,681-683,687,692,696,702-703,709-710,714,721,737,743-744,749-750,753,763,770,788,802,807
+packages/web/astro/src/layouts/Base.astro
+  h_31bfcf89e26281 22,43-56,62
+packages/web/astro/src/pages/addons/[slug].astro
+  h_31bfcf89e26281 40,260
+packages/web/astro/src/pages/addons/index.astro
+  h_31bfcf89e26281 22,30
+packages/web/astro/src/pages/index.astro
+  h_31bfcf89e26281 16
+packages/web/astro/src/pages/themes/[slug].astro
+  h_31bfcf89e26281 29
+packages/web/astro/src/pages/themes/index.astro
+  h_31bfcf89e26281 18,26
+packages/web/astro/src/styles/global.css
+  h_31bfcf89e26281 6,13-25,33
+packages/web/astro/src/styles/starlight-overrides.css
+  h_31bfcf89e26281 24-28
+packages/web/scripts/capture-showcase.mjs
+  h_31bfcf89e26281 1-263
+packages/web/scripts/render-showcase.mjs
+  h_31bfcf89e26281 2-3,5,33-36,38-57,60-61
+skills/sirenodeck-config/SKILL.md
+  h_31bfcf89e26281 10-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0a7b10b3a097f5265acf4d05948bb5bfb19a836f",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
