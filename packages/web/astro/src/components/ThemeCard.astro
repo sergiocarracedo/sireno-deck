@@ -3,7 +3,7 @@ import CommandTabs from "./CommandTabs.astro"
 
 /**
  * ThemeCard — single theme entry, used in /themes/ and the homepage.
- * Shows the real theme deck capture as the preview thumb.
+ * Shows the theme deck capture or an explicitly illustrative preview.
  */
 interface Props {
   id: string
@@ -34,7 +34,7 @@ const isOfficial = category === "official"
 >
   {preview ? (
     <div class="aspect-[16/10] overflow-hidden" style="border-bottom: 1px solid var(--color-border);">
-      <img src={preview} alt={`${displayName} preview`} class="w-full h-full object-cover" loading="lazy" />
+      <img src={preview} alt={id === "folio" ? "Illustrative Folio theme palette and variant preview" : `${displayName} preview`} class="w-full h-full object-cover" loading="lazy" />
     </div>
   ) : (
     <div
@@ -55,8 +55,8 @@ const isOfficial = category === "official"
         class="text-[0.6875rem] font-mono px-2 py-0.5 rounded"
         style={
           isOfficial
-            ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
-            : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"
+            ? "background: color-mix(in srgb, var(--color-accent) 10%, transparent); color: var(--color-accent);"
+            : "background: color-mix(in srgb, var(--color-accent-2) 10%, transparent); color: var(--color-accent-2);"
         }
       >
         {isOfficial ? "official" : "community"}

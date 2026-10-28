@@ -1,38 +1,57 @@
 # packages/web
 
-Marketing site + documentation for Sireno Deck, plus the Remotion compositions used as the hero/feature videos.
+Marketing site + documentation for Sireno Deck. The homepage hero is a loop
+rendered from demo-deck captures and scripted live-frontend frames.
 
-A self-contained pnpm workspace nested inside the Sireno Deck monorepo. Two members:
+The Astro site is a package within the root pnpm workspace:
 
-- `astro/` — Astro 5 site with `@astrojs/starlight` for docs. Tailwind 4. Hosts the landing page and `/docs/*`.
-- `videos/` — Remotion compositions that render the deck UI as MP4. Consumes the real `ButtonFrame` + surface components from `packages/cli/src/ui/`.
+- `astro/` — Astro 5 site with `@astrojs/starlight` for docs. Tailwind 4. Hosts the landing page and user/developer docs.
 
-## Why a nested workspace
+## Install and build
 
-Keeps the marketing-site dependency tree (Astro, Starlight, Tailwind, Remotion, `@remotion/*`) out of the daemon's workspace. The root monorepo's `pnpm-workspace.yaml` does not register `astro/` or `videos/` — only the nested declaration does. Install:
+From the repository root:
 
 ```bash
-cd packages/web
 pnpm install
+pnpm capture:showcase
+pnpm --filter sirenodeck-web build
 ```
+
+`pnpm capture:showcase` captures the real Coding Agents, Weather, and Media
+frontend components with illustrative bridge values, then renders the WebM
+showcase videos in `/.showcase/`. It does not build the Astro site.
 
 ## Layout
 
 ```
 packages/web/
 ├── astro/                   # Landing + docs (Astro)
-├── videos/                  # Remotion compositions
 ├── scripts/sync-tokens.mjs  # Pulls design tokens from packages/cli/src/themes/default/sirenodeck.json
-├── pnpm-workspace.yaml
+├── scripts/render-showcase.mjs # Capture showcase scenes and build the hero video
+├── scenes/                  # Declarative scripted-demo media timelines
 └── README.md
 ```
 
 ## Token sync
 
-`scripts/sync-tokens.mjs` reads `packages/cli/src/themes/default/sirenodeck.json` (read-only) and regenerates `astro/src/design/tokens.generated.ts` (writable). The Astro site and the Remotion compositions both consume `tokens.generated.ts` to stay visually aligned with the running deck.
+`scripts/sync-tokens.mjs` reads `packages/cli/src/themes/default/sirenodeck.json` (read-only) and regenerates `astro/src/design/tokens.generated.ts` (writable). The Astro site consumes `tokens.generated.ts` to stay visually aligned with the running deck.
 
 The Astro `predev` and `prebuild` scripts run the sync before starting; CI is expected to do the same.
 
+## Showcase media
+
+Run `pnpm capture:showcase` from the repository root (requires `ffmpeg` and
+the workspace `scripted-demo` package). The script starts isolated Vite
+frontends, drives them through the scripted-demo WebSocket bridge, and records
+Playwright screenshots and WebM video under the gitignored `/.showcase/`
+directory. Astro serves it as `/media/` in development and emits it into the
+production build. No live provider or user configuration is contacted.
+
+It neither starts Sireno Deck nor reads the user's config. Do not use
+`scripts/capture-decks.mjs` for routine video regeneration: its current cleanup
+uses broad process matches and is unsafe on a machine running a user daemon.
+
 ## Boundaries
 
-The rest of the Sireno Deck monorepo is **read-only** from this workspace. The Astro and Remotion projects do not depend on, link against, or modify anything in `packages/cli` or other root-level files. They reach into the deck UI via file-system relative paths for components and JSON for tokens.
+The website reads CLI docs, theme manifests and token JSON, but does not import
+daemon runtime code or start the service when rendering the site or its video.

@@ -17,7 +17,7 @@ interface Props {
   screenshotAlt?: string
   images?: string[]
   imagesAlt?: string
-  accent?: "cyan" | "violet"
+  accent?: "blue" | "violet"
 }
 
 const {
@@ -28,7 +28,7 @@ const {
   screenshotAlt = "",
   images,
   imagesAlt = "",
-  accent = "cyan",
+  accent = "blue",
 } = Astro.props
 
 const accentColor = accent === "violet" ? "var(--color-accent-2)" : "var(--color-accent)"
@@ -54,6 +54,13 @@ const accentColor = accent === "violet" ? "var(--color-accent-2)" : "var(--color
   {
     images && images.length > 1 ? (
       <MiniCarousel images={images} alt={imagesAlt} class="mt-auto pt-8" />
+    ) : images && images.length === 1 ? (
+      <div
+        class="mt-auto pt-8 rounded-lg overflow-hidden"
+        style="border: 1px solid var(--color-border); aspect-ratio: 16 / 10;"
+      >
+        <img src={images[0]} alt={imagesAlt} class="w-full h-full object-cover" loading="lazy" />
+      </div>
     ) : screenshot ? (
       <div
         class="mt-auto pt-8 rounded-lg overflow-hidden"

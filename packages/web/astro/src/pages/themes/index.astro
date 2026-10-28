@@ -12,9 +12,10 @@ const official = themes.filter((t) => t.data.category === "official").sort((a, b
 const community = themes.filter((t) => t.data.category === "community").sort((a, b) => a.data.order - b.data.order)
 const submitIssueUrl =
   "https://github.com/sergiocarracedo/sireno-deck/issues/new?assignees=&labels=theme&template=theme-submission.md&title=New%20Theme%3A%20%3Cyour-theme-name%3E"
+const authoringSkillUrl = "https://github.com/sergiocarracedo/sireno-deck/tree/main/skills/sirenodeck-extension-authoring"
 ---
 
-<Layout title="Theme Registry — Sireno Deck" description="Browse and discover themes for Sireno Deck.">
+<Layout title="Theme Registry — SirenoDECK" description="Browse and discover themes for SirenoDECK.">
   <section class="relative px-6 pt-32 pb-12 text-center overflow-hidden">
     <ShaderBackdrop variant="page" />
     <div class="relative">
@@ -22,7 +23,7 @@ const submitIssueUrl =
         Theme <span style="color: var(--color-accent-2);">Registry</span>
       </h1>
       <p class="text-lg max-w-xl mx-auto mb-8" style="color: var(--color-muted);">
-        Customize your Sireno Deck with beautiful themes or create your own.
+        Customize SirenoDECK with beautiful themes or create your own.
       </p>
       <a
         href={submitIssueUrl}
@@ -34,6 +35,7 @@ const submitIssueUrl =
         <i data-lucide="plus" class="w-4 h-4"></i>
         Submit a theme
       </a>
+      <p class="mt-4 text-sm" style="color: var(--color-muted);">Creating a theme? <a href={authoringSkillUrl} target="_blank" rel="noopener noreferrer" class="underline" style="color: var(--color-accent-2);">Use the extension-authoring skill</a> to build and test it in your own repository before submitting.</p>
     </div>
   </section>
 
@@ -85,7 +87,7 @@ const submitIssueUrl =
         >
           <div
             class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
-            style="background: rgba(167, 139, 250, 0.1);"
+            style="background: color-mix(in srgb, var(--color-accent-2) 10%, transparent);"
           >
             <i data-lucide="palette" class="w-8 h-8" style="color: var(--color-accent-2);"></i>
           </div>

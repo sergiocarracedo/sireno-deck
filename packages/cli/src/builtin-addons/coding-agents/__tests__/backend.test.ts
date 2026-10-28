@@ -72,6 +72,7 @@ describe("coding-agents globalService", () => {
     const noopCtx = { signal: new AbortController().signal } as never
     globalService.onUnload?.(noopCtx)
     loadProviders.mockClear()
+    vi.unstubAllEnvs()
   })
 
   it("exposes the shared channel on its poller", () => {
@@ -95,6 +96,25 @@ describe("coding-agents globalService", () => {
     expect(snapshot).toEqual(
       expect.objectContaining({ byProvider: expect.any(Object) }),
     )
+  })
+
+  it("keeps capture-only agent states stable across polling", async () => {
+    vi.stubEnv("SIRENO_CAPTURE_FAKE_AGENTS", "1")
+    const { ctx } = makeCtx()
+    await globalService.onLoad?.(ctx as never)
+
+    const snapshot = await globalService.pollers?.[0]?.poll(ctx as never)
+
+    expect(snapshot).toEqual(
+      expect.objectContaining({
+        byProvider: expect.objectContaining({
+          opencode: expect.arrayContaining([
+            expect.objectContaining({ status: "running" }),
+          ]),
+        }),
+      }),
+    )
+    expect(loadProviders).not.toHaveBeenCalled()
   })
 
   it("onUnload is a no-op when onLoad was not called", () => {

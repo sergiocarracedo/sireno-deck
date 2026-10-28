@@ -12,25 +12,52 @@ Get Sireno Deck running on your computer in minutes.
 
 ## Prerequisites
 
-- **Node.js** 20 or later
-- **pnpm**, npm, or Yarn (pnpm is preferred for addon and theme installs)
+- Homebrew on macOS or Linux; Windows users can use Homebrew through WSL
 - A Stream Deck device (optional — emulator available for testing)
 
 ## Quick Install
 
-Install the CLI globally:
+Install the CLI with Homebrew:
+
+```bash
+brew install sergiocarracedo/tap/sirenodeck
+```
+
+Homebrew is supported on macOS and Linux, including Windows Subsystem for Linux (WSL).
+
+## Node.js install (for developers and native Windows)
+
+For development environments, or to install on native Windows without WSL, use Node.js 20 or later and a package manager:
 
 ```bash
 pnpm i -g @sirenodeck/sirenodeck
 ```
 
+You can also use npm or Yarn:
+
+```bash
+npm i -g @sirenodeck/sirenodeck
+yarn global add @sirenodeck/sirenodeck
+```
+
 The addon installer checks for pnpm, npm, or Yarn and prefers pnpm.
+
+Install the optional global agent skill to configure and update decks with your
+preferred coding agent:
+
+```bash
+sirenodeck skills
+```
+
+The first interactive startup also offers to install it. Use `sirenodeck skills
+--yes` to skip the confirmation and install for all agents supported by the
+skills CLI, or use `--agent <id>` to target specific agent(s).
 
 ## From Source
 
 ```bash
 # Clone the repository
-git clone https://github.com/anomalyco/sireno-deck.git
+git clone https://github.com/sergiocarracedo/sireno-deck.git
 cd sireno-deck
 
 # Install dependencies
@@ -40,19 +67,19 @@ pnpm install
 pnpm build
 
 # Run directly
-pnpm sireno --help
+pnpm sirenodeck --help
 ```
 
 ## Verify Installation
 
 ```bash
-sireno --version
+sirenodeck --version
 ```
 
 You should see output like:
 
 ```
-sireno-deck v0.1.0
+sirenodeck v0.2.1
 ```
 
 ## Next Steps
@@ -60,3 +87,4 @@ sireno-deck v0.1.0
 - [Running the Service](/user/running-the-service) — Start the daemon
 - [Configuration Files](/user/configuration-files) — Set up your config
 - [Emulator vs Hardware](/user/emulator-vs-hardware) — Test without a device
+- [Visual Config UI](/user/visual-config-ui) — Edit a deck with a live preview

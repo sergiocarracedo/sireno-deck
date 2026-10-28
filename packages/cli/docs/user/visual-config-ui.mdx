@@ -1,0 +1,34 @@
+---
+title: Visual Config UI
+description: Edit and preview decks in your browser
+audience: user
+order: 7
+tags: [config, editor, emulator, preview]
+---
+
+# Visual Config UI
+
+Prefer not to edit YAML by hand? Start the emulator and open its browser UI:
+
+```bash
+sirenodeck start --emulator
+```
+
+The UI provides a live deck preview alongside an editor for deck and button
+settings. Select a deck, choose a button, edit its appearance or config, and
+review validation before applying the change. Your selected `config.yml`
+remains the source of truth; `!include` files are edited at their own paths.
+
+To use a project-specific config instead of your normal user config, pass an
+explicit path:
+
+```bash
+sirenodeck start --config ./demos/website-showcase.yml --emulator
+```
+
+Do not run multiple daemons in the same user runtime: stop an existing instance
+before starting another one. The website's demo video is generated from checked-in
+demo deck captures and illustrative agent statuses, not your personal config.
+
+See [Configuration Files](/user/configuration-files/) for YAML and
+[Emulator vs Hardware](/user/emulator-vs-hardware/) for the device view.

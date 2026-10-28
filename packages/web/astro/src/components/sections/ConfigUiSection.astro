@@ -1,0 +1,39 @@
+---
+/** The visual editor is a distinct surface from editing config.yml by hand. */
+---
+
+<section id="config-ui" class="px-6 py-24" style="background: var(--color-surface);">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-[0.8fr_1.2fr] gap-12 items-center">
+    <div data-reveal>
+      <p class="font-mono text-xs font-semibold uppercase tracking-[0.25em] mb-4" style="color: var(--color-accent);">Visual configuration</p>
+      <h2 class="font-display text-4xl sm:text-5xl font-bold leading-[1.1] mb-5 text-fg">Shape your deck.<br />See it as you go.</h2>
+      <p class="text-lg leading-relaxed mb-6" style="color: var(--color-muted);">The config UI pairs a live deck preview with an editor for your decks and buttons. Start in emulator mode to try changes before using hardware.</p>
+      <p class="font-mono text-sm mb-6 rounded-md px-4 py-3 overflow-x-auto" style="background: var(--color-bg); color: var(--color-accent); border: 1px solid var(--color-border);">sirenodeck start --emulator</p>
+      <a href="/user/emulator-vs-hardware/" class="inline-flex items-center gap-2 text-sm font-semibold" style="color: var(--color-accent);">Explore the emulator <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+    </div>
+    <figure class="rounded-xl overflow-hidden" style="background: #131821; border: 1px solid var(--color-border); box-shadow: 0 24px 64px rgba(0,0,0,.28);" data-reveal>
+      <div class="flex items-center gap-2 px-4 py-3 font-mono text-xs" style="border-bottom: 1px solid var(--color-border); color: var(--color-muted);">
+        <span class="size-2 rounded-full bg-rose-400/70"></span><span class="size-2 rounded-full bg-amber-300/70"></span><span class="size-2 rounded-full bg-emerald-400/70"></span>
+        <span class="ml-3">SirenoDECK · Configure</span>
+      </div>
+      <div class="grid sm:grid-cols-[8rem_1fr] min-h-64">
+        <div class="hidden sm:flex flex-col gap-3 p-4 text-xs font-mono" style="border-right: 1px solid var(--color-border); color: var(--color-muted);">
+          <span>◈ &nbsp;Config</span><span>▦ &nbsp;Device</span><span style="color: var(--color-accent);">▤ &nbsp;Decks</span><span>◉ &nbsp;Addons</span>
+        </div>
+        <div class="p-5 sm:p-7">
+          <div class="flex items-baseline justify-between gap-3 mb-5"><span class="font-display text-lg font-semibold text-fg">Weather demo</span><span class="text-xs font-mono" style="color: var(--color-muted);">demo-weather.yml</span></div>
+          <div class="flex flex-wrap gap-x-2 gap-y-4 items-start">
+            <img src="/media/captures/demo-weather.png" width="1088" height="672" alt="Weather demo deck preview with configured city tiles" class="w-full sm:w-[63%] rounded-md" loading="lazy" />
+            <div class="flex-1 min-w-28 rounded-lg p-3 font-mono text-[0.65rem] space-y-3" style="background: var(--color-surface); color: var(--color-muted);">
+              <p class="text-fg font-semibold">Button · Weather</p>
+              <p>Type <span class="block mt-1 text-fg">weather:weather</span></p>
+              <p>Location <span class="block mt-1 text-fg">Vigo</span></p>
+              <p class="rounded px-2 py-1.5 text-center" style="background: var(--color-accent); color: var(--color-bg);">Apply change</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption class="px-5 py-3 font-mono text-xs" style="border-top: 1px solid var(--color-border); color: var(--color-muted);">Illustrative editor layout · weather demo deck preview</figcaption>
+    </figure>
+  </div>
+</section>

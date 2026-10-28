@@ -37,7 +37,7 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
 ---
 
 <Layout
-  title={`${a.displayName} — Sireno Deck Addon`}
+  title={`${a.displayName} — SirenoDECK Addon`}
   description={a.description}
   ogImage={a.screenshot ?? a.screenshots[0]}
 >
@@ -59,8 +59,8 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
             <span
               class="text-xs font-mono px-2 py-0.5 rounded"
                style={!isCommunity
-                ? "background: rgba(34, 211, 238, 0.1); color: var(--color-accent);"
-                : "background: rgba(167, 139, 250, 0.1); color: var(--color-accent-2);"}
+                ? "background: color-mix(in srgb, var(--color-accent) 10%, transparent); color: var(--color-accent);"
+                : "background: color-mix(in srgb, var(--color-accent-2) 10%, transparent); color: var(--color-accent-2);"}
             >
                {kind}
             </span>
@@ -84,7 +84,7 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
         if (shots.length === 1) {
           return (
             <div class="rounded-xl overflow-hidden mb-12" style="border: 1px solid var(--color-border);">
-              <img src={shots[0]} alt={`${a.displayName} preview`} class="w-full block" />
+              <img src={shots[0]} alt={id === "coding-agents" ? "Illustrative Coding Agents session deck with fictional statuses" : `${a.displayName} preview`} class="w-full block" />
             </div>
           );
         }
@@ -117,6 +117,7 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
             <div class="rounded-xl p-6 lg:col-span-2" style="background: var(--color-surface); border: 1px solid var(--color-border);">
               <h2 id="heading-overview" class="font-display text-lg font-semibold mb-4">About this addon</h2>
               <p class="text-sm leading-relaxed" style="color: var(--color-muted);">{a.description}</p>
+              {id === "app-shortcuts" && <a href="https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/addons/app-shortcuts/skills/sirenodeck-app-shortcuts" target="_blank" rel="noopener noreferrer" class="block mt-3 text-sm underline" style="color: var(--color-accent);">Configure app shortcuts with its own skill</a>}
               {a.decks.length > 0 && <p class="mt-4 text-sm" style="color: var(--color-muted);">Publishes {a.decks.length} deck type{a.decks.length === 1 ? "" : "s"}.</p>}
             </div>
             <div class="rounded-xl p-6 flex flex-col gap-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
@@ -174,9 +175,10 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
               )}
             </ul>
           )}
-           {isCommunity && !a.npm && !a.repo && (
-            <p class="text-sm" style="color: var(--color-muted);">Community package.</p>
-          )}
+            {isCommunity && !a.npm && !a.repo && (
+             <p class="text-sm" style="color: var(--color-muted);">Community package.</p>
+           )}
+            <a href="https://github.com/sergiocarracedo/sireno-deck/tree/main/skills/sirenodeck-extension-authoring" target="_blank" rel="noopener noreferrer" class="text-sm underline" style="color: var(--color-accent);">Create your own addon with the authoring skill</a>
             </div>
           </div>
         </section>
@@ -255,7 +257,7 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
             <h2 id="heading-install" class="text-xs font-semibold uppercase tracking-widest px-6 pt-5 pb-3" style="color: var(--color-accent-2);">Install and configure</h2>
              {isBuiltIn ? (
               <p class="px-6 pb-5 text-sm" style="color: var(--color-muted);">
-                This official addon is included with Sireno Deck. Add its button
+                This official addon is included with SirenoDECK. Add its button
                 types or decks directly to your <code class="font-mono">config.yml</code>.
               </p>
             ) : a.npm ? (

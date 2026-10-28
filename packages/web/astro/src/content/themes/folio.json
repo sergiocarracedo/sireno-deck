@@ -1,0 +1,16 @@
+{
+  "displayName": "Folio",
+  "description": "Soft ivory tiles, graphite typography and a single deep-blue accent. A calm, tactile third-party theme inspired by the clarity of mobile interfaces.",
+  "category": "community",
+  "tags": ["light", "minimal", "editorial"],
+  "palette": {
+    "background": "#e9e8e3",
+    "frame": "#b9c0c1",
+    "foreground": "#202c31",
+    "primary": "#205c79",
+    "accent": "#2e718c"
+  },
+  "preview": "/media/captures/folio-preview.png",
+  "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/themes/folio",
+  "order": 3
+}

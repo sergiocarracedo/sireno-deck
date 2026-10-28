@@ -8,6 +8,8 @@ assignees: []
 
 Thanks for sharing your theme! Fill out the details below so we can list it in the [theme registry](/themes).
 
+Publish and maintain the theme in your own repository (and npm, if applicable). This issue requests a registry listing only; do not upload theme source code to the Sireno Deck repository. Attach or link a cover preview that maintainers can use on the listing.
+
 This form is opened automatically from the website's **Submit a theme**
 button. It pre-applies the `theme` label and uses this template as the
 issue body — provided the repo has the labels defined in
@@ -33,7 +35,8 @@ accent: #8a2be2
 ## Resources
 
 - **Repository or npm package:** _<link>_
-- **Screenshot(s):** _drag & drop, or attach a preview render of the deck in your theme_
+- **Cover screenshot:** _attach or link a representative preview render_
+- **Additional screenshot(s):** _optional_
 - **Custom components / UI overrides:** yes / no — if yes, list which React primitives you override
 
 ## Use

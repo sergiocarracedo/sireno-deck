@@ -24,6 +24,21 @@ By default, the CLI only logs errors. Use `--dev-mode` for normal operational ou
 
 ## Commands
 
+### skills
+
+Install the Sireno Deck config skill globally for one or more coding agents.
+Without `--agent`, the skills CLI lets you choose agents interactively.
+
+```bash
+sirenodeck skills
+sirenodeck skills --agent opencode --agent claude-code
+sirenodeck skills --yes
+```
+
+`--yes` skips confirmation; when no agent is specified, the skill is installed
+for all agents supported by the skills CLI. You can also install directly with
+`npx skills add https://github.com/sergiocarracedo/sireno-deck/tree/main/skills/sirenodeck-config --skill sirenodeck-config --global`.
+
 ### install
 
 Install an npm addon or theme and configure it in `config.yml`.

@@ -12,8 +12,23 @@ import {
   readAndValidateManifest,
 } from "@/themes/loader"
 
-export const DEFAULT_FRONTEND_PORT = 5180
-export const DEFAULT_CONFIG_UI_PORT = 52938
+const configuredPort = (name: string, fallback: number): number => {
+  const port = Number.parseInt(process.env[name] ?? "", 10)
+  return Number.isInteger(port) && port > 0 && port <= 65535 ? port : fallback
+}
+
+export const DEFAULT_FRONTEND_PORT = configuredPort(
+  "SIRENODECK_FRONTEND_PORT",
+  5180,
+)
+export const DEFAULT_CONFIG_UI_PORT = configuredPort(
+  "SIRENODECK_CONFIG_UI_PORT",
+  52938,
+)
+export const DEFAULT_BRIDGE_PORT = configuredPort(
+  "SIRENODECK_BRIDGE_PORT",
+  52937,
+)
 const DEFAULT_TIMEOUT_MS = 30_000
 // eslint-disable-next-line no-control-regex
 const ANSI_REGEX = /\u001b\[[0-9;]*m/g

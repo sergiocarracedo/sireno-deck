@@ -8,6 +8,8 @@ assignees: []
 
 Thanks for sharing your addon! Fill out the details below so we can list it in the [addon registry](/addons).
 
+Publish and maintain the addon in your own repository (and npm, if applicable). This issue requests a registry listing only; do not upload addon source code to the Sireno Deck repository. Attach or link a cover screenshot that maintainers can use on the listing.
+
 This form is opened automatically from the website's **Submit an addon**
 button. It pre-applies the `addon` label and uses this template as the
 issue body — provided the repo has the labels defined in
@@ -24,7 +26,8 @@ repo's default branch.
 ## Resources
 
 - **Repository:** _<link>_
-- **Screenshot(s):** _drag & drop or paste preview images of the button(s) on the deck_
+- **Cover screenshot:** _attach or link a representative preview image_
+- **Additional screenshot(s):** _optional button/deck previews_
 - **Button types added** (each as `<addon>:<type>`, e.g. `my-addon:hello`):
 
 ```

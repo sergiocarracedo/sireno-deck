@@ -5,10 +5,12 @@
       "properties": {
         "action": {
           "default": "up",
+          "title": "Brightness action",
           "type": "string",
           "enum": ["up", "down", "set"]
         },
         "value": {
+          "title": "Brightness (%)",
           "type": "integer",
           "minimum": 0,
           "maximum": 100
@@ -26,14 +28,17 @@
       "properties": {
         "showCount": {
           "default": true,
+          "title": "Show count",
           "type": "boolean"
         },
         "attentionOnly": {
           "default": false,
+          "title": "Attention only",
           "type": "boolean"
         },
         "fallingLetters": {
           "default": true,
+          "title": "Falling letters",
           "type": "boolean"
         }
       },
@@ -51,6 +56,7 @@
       "properties": {
         "slot": {
           "default": 0,
+          "title": "Agent slot",
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
@@ -67,10 +73,13 @@
       "type": "object",
       "properties": {
         "icon": {
+          "title": "Icon",
+          "x-control": "icon",
           "type": "string",
           "minLength": 1
         },
         "label": {
+          "title": "Label",
           "type": "string"
         }
       }
@@ -83,7 +92,8 @@
       "properties": {
         "deck": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "title": "Target deck"
         },
         "addToHistory": {
           "default": true,
@@ -91,10 +101,13 @@
           "type": "boolean"
         },
         "icon": {
+          "title": "Icon",
+          "x-control": "icon",
           "type": "string",
           "minLength": 1
         },
         "label": {
+          "title": "Label",
           "type": "string"
         }
       },
@@ -108,15 +121,18 @@
       "properties": {
         "key": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "title": "State key"
         },
         "default": {
           "default": false,
+          "title": "Initial state",
           "type": "boolean"
         }
       },
       "required": ["key"],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "title": "Boolean toggle"
     },
     "example": {}
   },
@@ -151,9 +167,12 @@
       "properties": {
         "channel": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "title": "Data channel"
         },
-        "fallback": {}
+        "fallback": {
+          "title": "Fallback value"
+        }
       },
       "required": ["channel"]
     },
@@ -165,6 +184,8 @@
       "properties": {
         "format": {
           "default": "DD/MM/YYYY HH:mm:ss",
+          "title": "Date and time format",
+          "description": "Tokens: YYYY/YY, MMMM/MMM/MM/M, dddd/ddd/d, DD/D, HH/H, hh/h, mm/m, ss/s, SSS, A/a. Rich tags: <strong>, <highlight>, <blink>, <dim>, <accent>, <danger>, <foreground>, <primary>, <success>, and <xxs> through <5xl>. Use &nbsp; for a non-breaking space.",
           "type": "string",
           "minLength": 1
         }
@@ -181,6 +202,7 @@
       "properties": {
         "variant": {
           "default": "default",
+          "title": "Time style",
           "type": "string",
           "enum": ["default", "big"]
         }
@@ -196,11 +218,13 @@
       "type": "object",
       "properties": {
         "locale": {
+          "title": "Locale",
           "type": "string",
           "minLength": 2,
           "maxLength": 35
         },
         "time_zone": {
+          "title": "Time zone",
           "type": "string",
           "minLength": 1
         }
@@ -222,15 +246,19 @@
       "properties": {
         "target_deck": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "title": "Target deck"
         },
         "icon": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "title": "Icon",
+          "x-control": "icon"
         },
         "label": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "title": "Label"
         }
       },
       "required": ["target_deck", "icon", "label"]
@@ -243,9 +271,12 @@
       "properties": {
         "emoji": {
           "type": "string",
-          "pattern": "^(?:[\\p{Extended_Pictographic}\\p{Emoji_Component}]\\uFE0F?(?:\\u200D[\\p{Extended_Pictographic}\\p{Emoji_Component}]\\uFE0F?)*|\\p{Regional_Indicator}{2})$"
+          "pattern": "^(?:[\\p{Extended_Pictographic}\\p{Emoji_Component}]\\uFE0F?(?:\\u200D[\\p{Extended_Pictographic}\\p{Emoji_Component}]\\uFE0F?)*|\\p{Regional_Indicator}{2})$",
+          "title": "Emoji",
+          "x-control": "emoji"
         },
         "shortcode": {
+          "title": "Shortcode",
           "type": "string"
         }
       },
@@ -259,14 +290,17 @@
       "properties": {
         "label": {
           "default": "Emojis",
+          "title": "Button label",
           "type": "string",
           "minLength": 1
         },
         "favorites": {
+          "title": "Favorite emoji",
           "type": "array",
           "items": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "x-control": "emoji"
           }
         }
       },
@@ -296,6 +330,7 @@
       "properties": {
         "step": {
           "default": 5,
+          "title": "Volume step",
           "type": "number",
           "exclusiveMinimum": 0
         }
@@ -311,6 +346,7 @@
       "properties": {
         "step": {
           "default": 5,
+          "title": "Volume step",
           "type": "number",
           "exclusiveMinimum": 0
         }
@@ -402,10 +438,12 @@
                               ]
                             },
                             "label": {
+                              "title": "Metric label",
                               "type": "string",
                               "minLength": 1
                             },
                             "shortLabel": {
+                              "title": "Short label",
                               "type": "string",
                               "minLength": 1,
                               "maxLength": 3
@@ -415,11 +453,13 @@
                           "additionalProperties": false
                         }
                       ]
-                    }
+                    },
+                    "title": "Metrics"
                   }
                 },
                 "required": ["type", "metrics"],
-                "additionalProperties": false
+                "additionalProperties": false,
+                "title": "Bar gauges"
               },
               {
                 "type": "object",
@@ -486,10 +526,12 @@
                               ]
                             },
                             "label": {
+                              "title": "Metric label",
                               "type": "string",
                               "minLength": 1
                             },
                             "shortLabel": {
+                              "title": "Short label",
                               "type": "string",
                               "minLength": 1,
                               "maxLength": 3
@@ -499,11 +541,13 @@
                           "additionalProperties": false
                         }
                       ]
-                    }
+                    },
+                    "title": "Metrics"
                   }
                 },
                 "required": ["type", "metrics"],
-                "additionalProperties": false
+                "additionalProperties": false,
+                "title": "Key metrics"
               },
               {
                 "type": "object",
@@ -570,10 +614,12 @@
                               ]
                             },
                             "label": {
+                              "title": "Metric label",
                               "type": "string",
                               "minLength": 1
                             },
                             "shortLabel": {
+                              "title": "Short label",
                               "type": "string",
                               "minLength": 1,
                               "maxLength": 3
@@ -583,17 +629,20 @@
                           "additionalProperties": false
                         }
                       ]
-                    }
+                    },
+                    "title": "Metrics"
                   },
                   "windowSeconds": {
                     "default": 60,
+                    "title": "History window (seconds)",
                     "type": "integer",
                     "exclusiveMinimum": 0,
                     "maximum": 60
                   }
                 },
                 "required": ["type", "metrics"],
-                "additionalProperties": false
+                "additionalProperties": false,
+                "title": "History chart"
               }
             ]
           }
@@ -624,41 +673,52 @@
             "properties": {
               "label": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "title": "Value label"
               },
               "command": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "title": "Shell command",
+                "x-control": "shell"
               },
               "formatter": {
                 "default": "raw",
+                "title": "Output format",
                 "type": "string",
                 "enum": ["raw", "strip", "line"]
               },
               "units": {
+                "title": "Units",
                 "type": "string"
               },
               "timeout_ms": {
+                "title": "Timeout (ms)",
                 "type": "integer",
                 "exclusiveMinimum": 0,
                 "maximum": 9007199254740991
               },
               "icon": {
+                "title": "Icon",
+                "x-control": "icon",
                 "type": "string"
               }
             },
             "required": ["label", "command"],
             "additionalProperties": false
-          }
+          },
+          "title": "Values"
         },
         "poll_interval_ms": {
           "default": 5000,
+          "title": "Refresh interval (ms)",
           "type": "integer",
           "exclusiveMinimum": 0,
           "maximum": 9007199254740991
         },
         "timeout_ms": {
           "default": 5000,
+          "title": "Command timeout (ms)",
           "type": "integer",
           "exclusiveMinimum": 0,
           "maximum": 9007199254740991
@@ -674,19 +734,23 @@
       "type": "object",
       "properties": {
         "location": {
+          "title": "Location",
           "type": "object",
           "properties": {
             "latitude": {
               "type": "number",
               "minimum": -90,
-              "maximum": 90
+              "maximum": 90,
+              "title": "Latitude"
             },
             "longitude": {
               "type": "number",
               "minimum": -180,
-              "maximum": 180
+              "maximum": 180,
+              "title": "Longitude"
             },
             "name": {
+              "title": "Location name",
               "type": "string",
               "minLength": 1
             }
@@ -696,12 +760,14 @@
         },
         "poll_interval_ms": {
           "default": 600000,
+          "title": "Refresh interval (ms)",
           "type": "integer",
           "exclusiveMinimum": 0,
           "maximum": 9007199254740991
         },
         "units": {
           "default": "metric",
+          "title": "Units",
           "type": "string",
           "enum": ["metric", "imperial"]
         }
@@ -719,6 +785,7 @@
       "properties": {
         "durationSec": {
           "default": 1500,
+          "title": "Duration (seconds)",
           "type": "integer",
           "exclusiveMinimum": 0,
           "maximum": 9007199254740991
@@ -732,10 +799,12 @@
           "properties": {
             "title": {
               "default": "Pomodoro",
+              "title": "Notification title",
               "type": "string"
             },
             "body": {
               "default": "Time's up!",
+              "title": "Notification message",
               "type": "string"
             }
           }

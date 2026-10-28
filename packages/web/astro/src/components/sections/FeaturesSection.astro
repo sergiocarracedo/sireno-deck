@@ -26,7 +26,7 @@ const features = [
   {
     icon: "puzzle",
     title: "Addons & Themes",
-    body: "Extensible plugin system with a well-defined API. Share addons via npm. Custom themes via YAML with color, typography, and more. Twelve addons included or distributed across the workspace.",
+    body: "Extensible plugin system with a well-defined API. Share addons via npm. Custom themes use a JSON manifest for color, typography, and more. Twelve addons included or distributed across the workspace.",
     images: [
       "/captures/web-snapshot-color-blue.png",
       "/captures/web-snapshot-color-green.png",
@@ -41,9 +41,12 @@ const features = [
   {
     icon: "bot",
     title: "Coding Agents",
-    body: "Specialized addon for AI coding agent integration. Live status of OpenCode + Claude Code sessions on the deck — see active agents, send prompts, manage contexts.",
-    images: ["/captures/web-snapshot-coding-agents.png", "/captures/coding-agents-agents-p1.png"],
-    imagesAlt: "Coding agents deck preview",
+    body: "Live status of OpenCode and Claude Code sessions on the deck — see active agents, send prompts, manage contexts. Preview uses illustrative sessions.",
+    images: [
+      "/media/captures/coding-agents-summary.png",
+      "/media/captures/coding-agents-deck.png",
+    ],
+    imagesAlt: "Illustrative coding agent summary and session details",
     accent: "violet" as const,
   },
 ]

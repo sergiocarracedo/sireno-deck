@@ -110,6 +110,13 @@ JSON frame; everything else is forbidden (enforced by B13).
 | May change | Internals: reconnect cache strategy, channel naming                               |
 | Failure    | Unauthenticated peer rejected; malformed frames rejected via `wsMessageSchema`    |
 
+**Capture proxy routing.** `SIRENO_WS_PROXY_URL` is an optional frontend-only
+environment override. When set, Vite embeds that endpoint for the frontend and
+config UI instead of the service bridge URL. The service still owns and listens
+on its original bridge; a capture or debugging proxy is a separate process that
+may forward to it. This override must not change runtime publication, addon
+backends, bridge protocol, or the service listener address.
+
 ### B3. Protocol contract
 
 The schema and version that both Node and SPAs agree on. Bumping it is a

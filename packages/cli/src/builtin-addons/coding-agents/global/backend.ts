@@ -262,6 +262,8 @@ const poller: AddonGlobalPoller = {
   intervalMs: POLLER_INTERVAL_MS,
   poll: async (ctx: AddonServiceContext) => {
     state.context = ctx
+    if (process.env["SIRENO_CAPTURE_FAKE_AGENTS"] === "1")
+      return publishSnapshot()
     await setStateFromProviders()
     fireNotices(state.lastSnapshot)
     return publishSnapshot()

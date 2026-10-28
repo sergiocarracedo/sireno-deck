@@ -167,6 +167,10 @@ vi.mock("../system-requirements", () => ({
   systemRequirementsCommand: { command: "system-requirements" },
 }))
 const inquirerConfirmMock = vi.fn()
+const skillsOfferMock = vi.fn(async () => undefined)
+vi.mock("@/cli/skills-first-run", () => ({
+  offerConfigSkillOnFirstRun: skillsOfferMock,
+}))
 vi.mock("@clack/prompts", () => ({
   intro: vi.fn(),
   outro: vi.fn(),
@@ -473,6 +477,7 @@ describe("start first-run wizard hook", () => {
     await startPromise
     expect(inquirerConfirmMock).not.toHaveBeenCalled()
     expect(systemRequirementsMock).not.toHaveBeenCalled()
+    expect(skillsOfferMock).toHaveBeenCalledTimes(1)
     expect(process.exitCode).toBe(0)
   })
 

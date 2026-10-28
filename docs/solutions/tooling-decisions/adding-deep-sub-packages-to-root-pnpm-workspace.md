@@ -10,16 +10,16 @@ applies_when:
   - A monorepo root `pnpm-workspace.yaml` glob (`packages/*`) does not reach sub-directories two levels deep
   - Sub-packages under a directory need to be first-class workspace members visible to root tooling
   - A project constraint requires that file/folder creation stay within a specific subtree
-tags: [pnpm, workspace, monorepo, astro, remotion]
+tags: [pnpm, workspace, monorepo, astro]
 ---
 
 # Adding Deep Sub-packages to Root pnpm Workspace
 
 ## Context
 
-The Sireno Deck marketing site (`packages/web/astro`, Astro + Starlight) and Remotion video compositions (`packages/web/videos`) needed to be visible to the root workspace so that `pnpm --filter` and root-level tooling could target them.
+The Sireno Deck marketing site (`packages/web/astro`, Astro + Starlight) needed to be visible to the root workspace so that `pnpm --filter` and root-level tooling could target it.
 
-The root `pnpm-workspace.yaml` declares `packages: ['packages/*']`. This glob resolves one directory level deep: it picks up `packages/cli`, `packages/web`, `packages/addons` (the directory itself, **not** its sub-packages), but **not** `packages/web/astro`, `packages/web/videos`, or `packages/addons/app-shortcuts` / `packages/addons/pomodoro`.
+The root `pnpm-workspace.yaml` declares `packages: ['packages/*']`. This glob resolves one directory level deep: it picks up `packages/cli`, `packages/web`, `packages/addons` (the directory itself, **not** its sub-packages), but **not** `packages/web/astro` or `packages/addons/app-shortcuts` / `packages/addons/pomodoro`.
 
 The project had a constraint: file/folder creation should stay within `packages/web/`. This meant the root `pnpm-workspace.yaml` could be **edited** (adding entries), but no new files or directories should be created outside `packages/web/`.
 
@@ -36,10 +36,9 @@ packages:
   - packages/*
   - packages/addons/*
   - packages/web/astro
-  - packages/web/videos
 ```
 
-Because `packages/web/` itself has **no `package.json`**, it is invisible to the root workspace glob (`packages/*`) — the glob stops at `packages/web` since it finds no manifest there. Adding `packages/web/astro` and `packages/web/videos` explicitly bypasses this gap. The same pattern applies to `packages/addons/`, which now hosts the third-party addons (e.g. `app-shortcuts`, `pomodoro`).
+Because `packages/web/` itself has **no `package.json`**, it is invisible to the root workspace glob (`packages/*`) — the glob stops at `packages/web` since it finds no manifest there. Adding `packages/web/astro` explicitly bypasses this gap. The same pattern applies to `packages/addons/`, which now hosts the third-party addons (e.g. `app-shortcuts`, `pomodoro`).
 
 After editing the root `pnpm-workspace.yaml`, run `pnpm install` to update the lockfile and register the new workspace members.
 
@@ -51,14 +50,13 @@ The filter syntax for private packages requires the path form:
 
 ```bash
 pnpm --filter "./packages/web/astro" build
-pnpm --filter "./packages/web/videos" typecheck
 ```
 
 Package-name filters (`--filter sirenodeck-web`) do not work for private packages in this configuration — use the `./path/to/package` form instead.
 
 ### One-way token sync from source-of-truth to consumers
 
-The design tokens live in `packages/cli/src/themes/default/sirenodeck.json`. A Node ESM script at `packages/web/scripts/sync-tokens.mjs` reads that file and writes a generated TypeScript module consumed by both Astro and Remotion:
+The design tokens live in `packages/cli/src/themes/default/sirenodeck.json`. A Node ESM script at `packages/web/scripts/sync-tokens.mjs` reads that file and writes a generated TypeScript module consumed by Astro:
 
 ```js
 // packages/web/scripts/sync-tokens.mjs
@@ -102,54 +100,13 @@ Hook it into the build lifecycle via `predev` and `prebuild` in `packages/web/as
 
 Source: `packages/web/scripts/sync-tokens.mjs`, `packages/web/astro/package.json`
 
-### Design system for Remotion
-
-Remotion cannot import `packages/cli/src/ui/*` directly (different TypeScript config, no React peer deps). `packages/web/videos/src/lib/DeckPrimitives.tsx` re-implements visual primitives with inline styles driven by the generated tokens:
-
-```tsx
-import { colors } from "../../../astro/src/design/tokens.generated"
-
-export const DeckButton = ({
-  variant = "default",
-  children,
-  style,
-  onClick,
-}) => {
-  const v = VARIANT_STYLES[variant]
-  return (
-    <div
-      style={{
-        ...style, // custom props first
-        width: "100%",
-        height: "100%", // then defaults
-        borderRadius: 14,
-        padding: 4,
-        background: v.background,
-        border: `1.5px solid ${v.border}`,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {children}
-    </div>
-  )
-}
-```
-
-`VARIANT_STYLES` uses `colors.danger`, `colors.tintBlue`, etc. Two compositions (`HeroLoop`, `OverlayDeckShowcase`) consume these primitives; two others (`ButtonVariants`, `DeckStack`) consume `colors` directly from `tokens.generated.ts`.
-
-Source: `packages/web/videos/src/lib/DeckPrimitives.tsx`
-
 ## When to Apply
 
 - When `packages: ['packages/*']` glob does not reach sub-packages two levels deep
 - When root-level `pnpm --filter` needs to target packages inside a directory that has no `package.json`
-- When a consuming package cannot directly import from a producer due to type or framework conflicts
 
 ## Related
 
 - Root `pnpm-workspace.yaml` — explicit deep sub-package entries
 - `packages/web/scripts/sync-tokens.mjs` — token sync script
 - `packages/web/astro/src/design/tokens.generated.ts` — generated token artifact
-- `packages/web/videos/src/lib/DeckPrimitives.tsx` — Remotion design system

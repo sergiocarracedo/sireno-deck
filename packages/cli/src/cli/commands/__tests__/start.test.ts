@@ -16,6 +16,9 @@ const CONTROL_SOCKET = join(tmpdir(), `sirenodeck-start-${process.pid}.sock`)
 vi.mock("@/config/loader", () => ({
   loadConfig: vi.fn(),
 }))
+vi.mock("@/cli/skills-first-run", () => ({
+  offerConfigSkillOnFirstRun: vi.fn(async () => undefined),
+}))
 vi.mock("@/addon/registry", () => ({
   AddonRegistry: vi.fn(),
 }))

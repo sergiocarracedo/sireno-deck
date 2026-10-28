@@ -1,4 +1,5 @@
 import type pino from "pino"
+import { DEFAULT_BRIDGE_PORT } from "./emulator-mode"
 
 import { join } from "node:path"
 
@@ -27,7 +28,7 @@ export interface StopOptions {
   readonly logger: pino.Logger
 }
 
-const DEFAULT_PORT = 52937
+const DEFAULT_PORT = DEFAULT_BRIDGE_PORT
 
 const killGracefully = async (
   pid: number,
@@ -111,7 +112,7 @@ export const stop = async ({ logger }: StopOptions): Promise<void> => {
     // daemon IS stopped from a process-management perspective.
     logger.warn(
       { port: DEFAULT_PORT },
-      "stop: daemon exited but port 52937 is still bound — check for orphans with `p dev status`",
+      `stop: daemon exited but port ${DEFAULT_PORT} is still bound — check for orphans with \`p dev status\``,
     )
   }
 

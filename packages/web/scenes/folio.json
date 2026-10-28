@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "mode": "standalone",
+  "viewport": { "width": 1440, "height": 1000 },
+  "frontend": {
+    "root": "../../cli/frontend",
+    "configFile": "../../cli/frontend/vite.config.ts",
+    "addons": [
+      {
+        "name": "showcase",
+        "frontend": { "main": "../../web/scenes/showcase-manifest.ts" },
+        "buttonTypes": { "weather:weather": "weather:weather" }
+      }
+    ],
+    "theme": {
+      "name": "folio",
+      "manifestPath": "../../themes/folio/sirenodeck.json"
+    }
+  },
+  "ready": {
+    "selector": "[data-deck-id=\"main\"] [data-button-type=\"weather:weather\"]"
+  },
+  "initialMessages": [
+    {
+      "type": "hello-ack",
+      "version": 1,
+      "device": {
+        "id": "folio",
+        "model": "mk2",
+        "keyCount": 15,
+        "label": "Folio",
+        "transport": "emulated"
+      },
+      "config": {}
+    },
+    { "type": "assets", "deckId": "main", "assets": [] },
+    {
+      "type": "deck-config",
+      "deckId": "main",
+      "surfaces": {
+        "main": {
+          "id": "main",
+          "name": "Folio",
+          "buttons": [
+            {
+              "id": "weather",
+              "type": "weather:weather",
+              "position": 7,
+              "config": {
+                "location": {
+                  "name": "Vigo",
+                  "latitude": 42.24,
+                  "longitude": -8.72
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "state",
+      "channels": {
+        "weather:current": {
+          "byCity": {
+            "42.24,-8.72": {
+              "available": true,
+              "temperature": 20,
+              "windSpeed": 12,
+              "description": "Partly cloudy",
+              "units": "metric",
+              "wmoCode": 2
+            }
+          }
+        }
+      }
+    }
+  ],
+  "timeline": [
+    { "atMs": 0, "kind": "snapshot", "path": "captures/folio-preview.png" }
+  ]
+}
