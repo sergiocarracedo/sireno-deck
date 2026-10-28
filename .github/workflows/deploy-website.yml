@@ -46,6 +46,9 @@ jobs:
       - name: Install Playwright Chromium
         run: pnpm --filter @sirenodeck/scripted-demo exec playwright install --with-deps chromium
 
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install --yes ffmpeg
+
       - name: Build website
         run: pnpm --filter sirenodeck-web build
 
