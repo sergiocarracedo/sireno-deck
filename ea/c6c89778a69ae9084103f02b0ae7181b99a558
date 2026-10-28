@@ -1,0 +1,14 @@
+.github/workflows/release.yml
+  h_31bfcf89e26281 118,124-139,142-143,146-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "eac6c89778a69ae9084103f02b0ae7181b99a558",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
