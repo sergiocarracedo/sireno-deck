@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/theme-neon-grids-0.1.1...@sirenodeck/theme-neon-grids-0.1.2) (2026-10-28)
+
+
+### Features
+
+* **config-ui:** make remote emulator phone-ready ([05d2c57](https://github.com/sergiocarracedo/sireno-deck/commit/05d2c5756872ba1d20ad5e2df9ca3cfbc90f6324))
+* **release:** rename cli package to sirenodeck ([1cd8714](https://github.com/sergiocarracedo/sireno-deck/commit/1cd87146c7a9ae2378db579fb0b78f64e018b742))
+
 ## [0.1.1](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/theme-neon-grids-0.1.0...@sirenodeck/theme-neon-grids-0.1.1) (2026-09-13)
 
 
