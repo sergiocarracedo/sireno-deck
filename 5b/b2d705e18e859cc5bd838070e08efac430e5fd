@@ -1,0 +1,16 @@
+packages/cli/src/util/__tests__/logger.test.ts
+  h_31bfcf89e26281 4-51
+packages/cli/src/util/logger.ts
+  h_31bfcf89e26281 93,132-147,181,243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5bb2d705e18e859cc5bd838070e08efac430e5fd",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
