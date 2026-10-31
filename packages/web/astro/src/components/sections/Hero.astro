@@ -8,6 +8,18 @@
  */
 import HeroShader from "../hero/HeroShader.astro";
 import cliPackage from "../../../../../cli/package.json" with { type: "json" };
+
+const brewCommand = "brew install sergiocarracedo/tap/sirenodeck";
+const agentPrompt = `Guide me through installing and starting Sireno Deck, one step at a time. Do not run any command that installs software, changes files, or modifies my system until you have explained it and I have explicitly confirmed.
+
+1. Check which operating system I use. Sireno Deck's Homebrew install instructions below are for macOS; if I use another system, explain the supported options and do not assume these commands apply.
+2. Check whether Homebrew is installed by running \`brew --version\` only after asking me. If it is installed, continue to step 4.
+3. If Homebrew is missing, explain that it is the package manager used to install Sireno Deck. Show me the official install command, \`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"\`, and link https://brew.sh so I can review it. Ask for my explicit confirmation before running it in Terminal. Afterward, help me add Homebrew to my shell environment using the correct instructions for my Mac (Apple Silicon or Intel), and verify it with \`brew --version\`.
+4. Explain that the next command installs Sireno Deck, then ask for confirmation before running \`brew install sergiocarracedo/tap/sirenodeck\`.
+5. Explain that starting Sireno Deck launches its local service, then ask for confirmation before running \`sirenodeck start\`. Help me verify it started and explain how to stop it if needed.
+6. Ask whether I also want to install the Sireno Deck agent skills. Do not run this until I explicitly confirm. Explain that it installs skills from the Sireno Deck repository, then run \`npx skills add sergiocarracedo/sireno-deck\` only after my confirmation. If \`npx\` is unavailable, explain that Node.js/npm is needed and ask before installing it.
+
+Keep the process interactive: explain each step in plain language, ask one question at a time, wait for my answers, and never imply a command succeeded unless you verified it.`;
 ---
 
 <section class="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16">
@@ -69,8 +81,26 @@ import cliPackage from "../../../../../cli/package.json" with { type: "json" };
       <span class="github-stars-count"><span aria-hidden="true">★</span><strong data-github-star-count>—</strong></span>
     </a>
 
-    <div class="mb-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs sm:text-sm">
-      <code class="max-w-full overflow-x-auto rounded-md px-3 py-2 font-mono select-all" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-accent);">brew install sergiocarracedo/tap/sirenodeck</code>
+    <div class="hero-install mb-10 mx-auto max-w-2xl">
+      <div class="hero-command-row">
+        <code id="hero-brew-command" class="hero-command">{brewCommand}</code>
+        <button class="hero-copy-button hero-copy-command-button" type="button" data-copy={brewCommand} aria-label="Copy Homebrew command" title="Copy Homebrew command">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="8" y="8" width="12" height="12" rx="2" />
+            <path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" />
+          </svg>
+        </button>
+      </div>
+      <p class="hero-agent-copy">
+        Want an AI assistant to help you get started? Copy this prompt and ask your agent to guide the installation and set up the Sireno Deck skills.
+      </p>
+      <button class="hero-copy-button hero-prompt-button" type="button" data-copy={agentPrompt}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="8" y="8" width="12" height="12" rx="2" />
+          <path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" />
+        </svg>
+        Copy agent prompt
+      </button>
     </div>
 
     <div
@@ -86,6 +116,8 @@ import cliPackage from "../../../../../cli/package.json" with { type: "json" };
     </div>
   </div>
 </section>
+
+<div class="hero-copy-toast" role="status" aria-live="polite" aria-atomic="true" data-copy-status hidden></div>
 
 <style>
   .hero-title {
@@ -127,6 +159,112 @@ import cliPackage from "../../../../../cli/package.json" with { type: "json" };
 
   .hero-version {
     color: var(--color-muted);
+  }
+
+  .hero-install {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-command-row {
+    display: flex;
+    max-width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 0.45rem;
+    background: var(--color-surface);
+  }
+
+  .hero-command {
+    overflow-x: auto;
+    padding: 0.45rem 0.5rem;
+    color: var(--color-accent);
+    font: 0.78rem/1.4 var(--font-mono);
+    white-space: nowrap;
+  }
+
+  .hero-copy-button {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 48%, var(--color-border));
+    border-radius: 999px;
+    padding: 0.5rem 0.8rem;
+    background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+    color: var(--color-fg);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 160ms ease, border-color 160ms ease;
+  }
+
+  .hero-copy-button svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .hero-copy-command-button {
+    border-radius: 0.4rem;
+  }
+
+  .hero-copy-button:hover {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 20%, var(--color-surface));
+  }
+
+  .hero-copy-button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .hero-agent-copy {
+    max-width: 38rem;
+    margin: 0;
+    color: var(--color-fg);
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+
+  .hero-copy-toast {
+    position: fixed;
+    z-index: 100;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: min(28rem, calc(100vw - 2rem));
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--color-surface);
+    color: var(--color-fg);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 24%);
+    font-size: 0.875rem;
+  }
+
+  .hero-copy-toast[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    .hero-command-row {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .hero-command {
+      max-width: 100%;
+    }
   }
 
   .github-stars {
@@ -177,6 +315,35 @@ import cliPackage from "../../../../../cli/package.json" with { type: "json" };
 </style>
 
 <script>
+  const copyStatus = document.querySelector<HTMLElement>("[data-copy-status]")
+  const copyButtons = document.querySelectorAll<HTMLButtonElement>("[data-copy]")
+  let toastTimeout: number | undefined
+
+  const showToast = (message: string) => {
+    if (!copyStatus) return
+    copyStatus.textContent = message
+    copyStatus.hidden = false
+    window.clearTimeout(toastTimeout)
+    toastTimeout = window.setTimeout(() => {
+      copyStatus.hidden = true
+    }, 3000)
+  }
+
+  for (const button of copyButtons) {
+    button.addEventListener("click", async () => {
+      if (!button.dataset.copy) return
+
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy)
+        showToast(button.dataset.copy.includes("npx skills add")
+          ? "Agent prompt copied to clipboard."
+          : "Homebrew command copied to clipboard.")
+      } catch {
+        showToast("Could not copy automatically. Please select and copy the text.")
+      }
+    })
+  }
+
   const starButton = document.querySelector<HTMLAnchorElement>("[data-github-stars-url]")
   const starCount = document.querySelector<HTMLElement>("[data-github-star-count]")
 

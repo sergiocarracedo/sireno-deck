@@ -22,11 +22,12 @@ const features = [
       "/captures/overlay-google-meet.png",
     ],
     imagesAlt: "Overlay deck preview",
+    links: [{ label: "Overlay deck guide", href: "/user/configuration-files/#overlay-deck" }],
   },
   {
     icon: "puzzle",
     title: "Addons & Themes",
-    body: "Extensible plugin system with a well-defined API. Share addons via npm. Custom themes use a JSON manifest for color, typography, and more. Twelve addons included or distributed across the workspace.",
+    body: "Extend Sireno Deck with installable addons and custom themes. Addons contribute button types and generated decks; themes customize the deck's visual style.",
     images: [
       "/captures/web-snapshot-color-blue.png",
       "/captures/web-snapshot-color-green.png",
@@ -37,17 +38,22 @@ const features = [
       "/captures/web-snapshot-color-lime.png",
     ],
     imagesAlt: "Tinted deck preview",
+    links: [
+      { label: "Browse addons", href: "/addons/" },
+      { label: "Browse themes", href: "/themes/" },
+    ],
   },
   {
     icon: "bot",
     title: "Coding Agents",
-    body: "Live status of OpenCode and Claude Code sessions on the deck — see active agents, send prompts, manage contexts. Preview uses illustrative sessions.",
+    body: "Monitor OpenCode and Claude Code sessions from the deck. See status counts, open a generated deck of session tiles, and inspect session details. Preview uses illustrative sessions.",
     images: [
       "/media/captures/coding-agents-summary.png",
       "/media/captures/coding-agents-deck.png",
     ],
     imagesAlt: "Illustrative coding agent summary and session details",
     accent: "violet" as const,
+    links: [{ label: "Overlay deck guide", href: "/user/configuration-files/#overlay-deck" }],
   },
 ]
 ---

@@ -90,6 +90,7 @@ const CONTEXT_FIELDS = [
   "addonConfigEntries",
   "icon",
   "fullPath",
+  "reason",
 ] as const
 
 const FORWARDED_CONTEXT_FIELDS = [
@@ -128,6 +129,22 @@ const formatLogTime = (value: unknown): string | null => {
   return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`
 }
 
+const formatContextValue = (key: string, value: unknown): string => {
+  if (key === "reason" && typeof value === "object" && value !== null) {
+    const reason = value as {
+      type?: unknown
+      message?: unknown
+      value?: unknown
+    }
+    if (typeof reason.message === "string" && reason.message.length > 0) {
+      const type = typeof reason.type === "string" ? reason.type : "Error"
+      return `${type}: ${reason.message}`
+    }
+    if (typeof reason.value === "string") return reason.value
+  }
+  return typeof value === "string" ? value : JSON.stringify(value)
+}
+
 export const formatHuman = (
   jsonLine: string,
   options: FormatHumanOptions = {},
@@ -161,7 +178,7 @@ export const formatHuman = (
   for (const key of CONTEXT_FIELDS) {
     const value = entry[key]
     if (value === undefined || value === null) continue
-    const display = typeof value === "string" ? value : JSON.stringify(value)
+    const display = formatContextValue(key, value)
     if (display.length === 0) continue
     ctxParts.push(`${colorize(DIM, `${key}:`)} ${display}`)
   }
@@ -223,8 +240,7 @@ class HumanWritable extends Writable {
           for (const key of CONTEXT_FIELDS) {
             const value = entry[key]
             if (value === undefined || value === null) continue
-            const display =
-              typeof value === "string" ? value : JSON.stringify(value)
+            const display = formatContextValue(key, value)
             if (display.length === 0) continue
             ctxParts.push(`${key}: ${display}`)
           }

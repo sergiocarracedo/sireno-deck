@@ -1,6 +1,11 @@
 {
   "displayName": "Core",
-  "description": "Core deck navigation: action, change-deck, page-nav, toggle, media-sample, lock. The runtime backbone — every config.yml uses these.",
+  "description": "The built-in button toolkit for actions, deck navigation, and stateful toggles. The runtime also injects the settings/back key on each deck.",
+  "capabilities": [
+    "core:action renders an optional icon and label, then runs its configured tap action.",
+    "core:change-deck opens a named deck; core:page-nav moves between pages of a paginated deck.",
+    "core:toggle displays and changes a boolean or command-reported state. The settings/back key is injected by the runtime; page navigation controls are injected for paginated decks."
+  ],
   "category": "official",
   "tags": ["navigation", "core", "required"],
   "icon": "anchor",
@@ -8,9 +13,7 @@
     "core:action",
     "core:change-deck",
     "core:page-nav",
-    "core:toggle",
-    "core:media-sample",
-    "core:lock"
+    "core:toggle"
   ],
   "order": 1,
   "source": "cli",

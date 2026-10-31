@@ -1,6 +1,10 @@
 {
   "displayName": "Value Display",
-  "description": "Display any shell command output as a button label. Stream values, run periodic refresh, format on the fly.",
+  "description": "Run configured shell commands on an interval and show their labeled output as compact rows on a deck button.",
+  "capabilities": [
+    "Each button can run up to four commands and display their labels, formatted output, and optional units.",
+    "Choose raw output, trimmed output, or the first non-empty line; configure refresh intervals and command timeouts per button/value."
+  ],
   "category": "official",
   "tags": ["productivity", "shell", "data"],
   "icon": "gauge",

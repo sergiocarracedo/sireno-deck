@@ -9,8 +9,55 @@ import {
 import { CHART_HISTORY_CHANNEL } from "./domain"
 import {
   SYSTEM_METRIC_IDS,
+  METRICS_CATALOG,
   type SystemMetricId,
+  type SystemMetricSnapshot,
 } from "./shared/metrics-catalog"
+
+const CAPTURE_METRIC_VALUES: Readonly<Record<SystemMetricId, number>> = {
+  battery: 86,
+  cpu: 42,
+  "cpu-boost": 1,
+  "cpu-voltages": 1_180,
+  disk: 54,
+  "disk-io": 1_240_000,
+  "fan-rpm": 1_260,
+  frequency: 3_400,
+  "gpu-temp": 58,
+  "gpu-usage": 27,
+  load: 1.4,
+  network: 64,
+  "network-read": 840_000,
+  "network-write": 126_000,
+  processes: 184,
+  ram: 68,
+  swap: 24,
+  temperature: 54,
+  uptime: 92_400,
+}
+
+const captureMetric = (id: SystemMetricId): SystemMetricSnapshot => {
+  const definition = METRICS_CATALOG[id]
+  const value = CAPTURE_METRIC_VALUES[id]
+  const max = definition.maxValue
+  return {
+    id,
+    label: definition.defaultLabel,
+    available: true,
+    value,
+    ...(definition.unit !== undefined ? { unit: definition.unit } : {}),
+    ...(max !== undefined
+      ? {
+          max,
+          percentage:
+            definition.formatter === "percent" ||
+            definition.formatter === "bool"
+              ? value
+              : (value / max) * 100,
+        }
+      : {}),
+  }
+}
 
 // ponytail: pollers are server-only; lazy-import live-metrics so the manifest
 // can be loaded by the frontend addon virtual module without dragging
@@ -25,6 +72,8 @@ function makePoller(metricId: SystemMetricId): AddonGlobalPoller {
     // metric would race on one channel); not worth the refactor today.
     intervalMs: POLL_INTERVAL_MS,
     poll: async () => {
+      if (process.env["SIRENO_CAPTURE_FAKE_METRICS"] === "1")
+        return captureMetric(metricId)
       const { probeMetric } = await import("./domain/live-metrics")
       const result = await probeMetric(metricId)
       if (result.value !== undefined && result.available) {

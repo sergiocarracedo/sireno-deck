@@ -1,7 +1,54 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 const loggerModule = await import("../logger")
-const { createLogger, createIsServiceMode, isOrphanedToInit } = loggerModule
+const { createLogger, createIsServiceMode, formatHuman } = loggerModule
+
+describe("formatHuman", () => {
+  it("includes the underlying message for an unhandled rejection", () => {
+    const line = JSON.stringify({
+      level: 60,
+      msg: "An asynchronous operation failed: Error: Could not load addon weather. See the stack trace for where it originated.",
+      reason: { type: "Error", message: "Could not load addon weather" },
+    })
+
+    expect(formatHuman(line)).toContain(
+      "reason: Error: Could not load addon weather",
+    )
+  })
+
+  it("includes the underlying message in interactive terminal output", () => {
+    const originalIsTTY = process.stdout.isTTY
+    const captured: string[] = []
+    const originalWrite = process.stdout.write.bind(process.stdout)
+    Object.defineProperty(process.stdout, "isTTY", {
+      configurable: true,
+      value: true,
+    })
+    process.stdout.write = ((chunk: string | Buffer): boolean => {
+      captured.push(typeof chunk === "string" ? chunk : chunk.toString("utf8"))
+      return true
+    }) as typeof process.stdout.write
+
+    try {
+      createLogger({ level: "fatal" }).fatal(
+        {
+          reason: { type: "Error", message: "Could not load addon weather" },
+        },
+        "An asynchronous operation failed: Error: Could not load addon weather. See the stack trace for where it originated.",
+      )
+    } finally {
+      process.stdout.write = originalWrite
+      Object.defineProperty(process.stdout, "isTTY", {
+        configurable: true,
+        value: originalIsTTY,
+      })
+    }
+
+    expect(captured.join("")).toContain(
+      "reason: Error: Could not load addon weather",
+    )
+  })
+})
 
 describe("isServiceMode (factory)", () => {
   const originalEnv = { ...process.env }

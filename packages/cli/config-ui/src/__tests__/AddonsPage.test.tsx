@@ -102,6 +102,26 @@ const inventory = {
 }
 
 describe("AddonsPage", () => {
+  it("does not expose the internal cli source label for builtin addons", () => {
+    const { container } = render(
+      <AddonsPage
+        addonInventory={{
+          addons: [
+            {
+              name: "system-status",
+              internal: false,
+              source: "cli",
+              buttonTypes: [],
+              defaultButton: null,
+              decks: [],
+            },
+          ],
+        }}
+      />,
+    )
+    expect(container.textContent).not.toContain("cli")
+  })
+
   it("renders loading state when inventory is null", () => {
     render(<AddonsPage addonInventory={null} />)
     expect(screen.getByText("loading…")).toBeInTheDocument()

@@ -1,3 +1,5 @@
+import packageJson from "../package.json" with { type: "json" }
+
 export const PACKAGE_NAME = "@sirenodeck/sirenodeck"
 /**
  * The name users actually type. `PACKAGE_NAME` is the npm package, which is
@@ -5,6 +7,6 @@ export const PACKAGE_NAME = "@sirenodeck/sirenodeck"
  * a string that is not a runnable command. Keep the two separate.
  */
 export const BIN_NAME = "sirenodeck"
-export const VERSION = "0.2.0"
+export const VERSION: string = packageJson.version
 export const SIRENO_ADDON_API_VERSION = 3
 export const PROTOCOL_VERSION = 3

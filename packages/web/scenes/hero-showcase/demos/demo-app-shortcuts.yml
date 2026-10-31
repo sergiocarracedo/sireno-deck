@@ -1,0 +1,138 @@
+name: App Shortcuts Demo
+buttons:
+  - position: 0
+    type: "core:action"
+    buttonColor: blue
+    actions:
+      tap: "true"
+    config:
+      icon: icon://code
+      label: VS Code
+  - position: 1
+    type: "core:action"
+    buttonColor: green
+    actions:
+      tap: "true"
+    config:
+      icon: icon://globe
+      label: Chrome
+  - position: 2
+    type: "core:action"
+    buttonColor: purple
+    actions:
+      tap: "true"
+    config:
+      icon: icon://message-square
+      label: Slack
+  - position: 3
+    type: "core:action"
+    buttonColor: cyan
+    actions:
+      tap: "true"
+    config:
+      icon: icon://message-circle
+      label: Discord
+  - position: 4
+    type: "core:action"
+    buttonColor: magenta
+    actions:
+      tap: "true"
+    config:
+      icon: icon://video
+      label: Teams
+  - position: 5
+    type: "core:action"
+    buttonColor: amber
+    actions:
+      tap: "true"
+    config:
+      icon: icon://video
+      label: Zoom
+  - position: 6
+    type: "core:action"
+    buttonColor: lime
+    actions:
+      tap: "true"
+    config:
+      icon: icon://globe
+      label: Firefox
+  - position: 7
+    type: "core:action"
+    buttonColor: blue
+    actions:
+      tap: "true"
+    config:
+      icon: icon://music
+      label: Spotify
+  - position: 8
+    type: "core:action"
+    buttonColor: green
+    actions:
+      tap: "true"
+    config:
+      icon: icon://terminal
+      label: Terminal
+  - position: 9
+    type: "core:action"
+    buttonColor: purple
+    actions:
+      tap: "true"
+    config:
+      icon: icon://message-circle
+      label: Telegram
+  - position: 10
+    type: "core:action"
+    buttonColor: cyan
+    actions:
+      tap: "true"
+    config:
+      icon: icon://mail
+      label: Thunderbird
+  - position: 11
+    type: "core:action"
+    buttonColor: magenta
+    actions:
+      tap: "true"
+    config:
+      icon: icon://message-circle
+      label: WhatsApp
+  - position: 12
+    type: "core:action"
+    buttonColor: amber
+    actions:
+      tap: "true"
+    config:
+      icon: icon://message-square
+      label: Signal
+  - position: 13
+    type: "core:action"
+    buttonColor: lime
+    actions:
+      tap: "true"
+    config:
+      icon: icon://image
+      label: GIMP
+  - position: 14
+    type: "core:action"
+    buttonColor: blue
+    actions:
+      tap: "true"
+    config:
+      icon: icon://book
+      label: Obsidian
+  - position: 15
+    type: "core:action"
+    buttonColor: green
+    actions:
+      tap: "true"
+    config:
+      icon: icon://calculator
+      label: Calculator
+  - position: 16
+    type: "core:action"
+    buttonColor: purple
+    actions:
+      tap: "true"
+    config:
+      icon: icon://terminal
+      label: Kitty

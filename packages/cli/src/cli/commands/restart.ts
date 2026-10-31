@@ -69,7 +69,17 @@ export const restart = async (options: RestartOptions): Promise<void> => {
     const snapshot = snapshotDaemonLog()
     const logPath = logPathFor()
     await stop({ logger })
-    await start(startOptions)
+    const launchResult = await start(startOptions)
+    if (launchResult !== "started") {
+      if (launchResult === "blocked") {
+        const message =
+          "Restart stopped before the daemon was launched. Resolve the requirement warning above, then retry."
+        logger.warn(message)
+        process.exitCode = 1
+        printRestartFailed(message)
+      }
+      return
+    }
     const outcome: StartOutcome = await waitForFullStart({
       port: startOptions.port ?? 52937,
       tcpTimeoutMs: 30_000,
@@ -82,8 +92,8 @@ export const restart = async (options: RestartOptions): Promise<void> => {
       printRestartComplete()
     } else {
       const message = outcome.tcpReady
-        ? "daemon: TCP bound but runtime state did not appear in 5s"
-        : "daemon: port 52937 did not accept connections in 30s"
+        ? "The daemon accepted connections but did not finish startup. Check `sirenodeck logs` for the cause."
+        : `SirenoDeck did not reopen its WebSocket on 127.0.0.1:${startOptions.port ?? 52937} within 30 seconds. Check \`sirenodeck logs\`; if another app owns the port, stop it or choose another with \`--port <port>\`.`
       logger.warn(message)
       process.exitCode = 1
       printRestartFailed(message)
@@ -126,8 +136,8 @@ export const restart = async (options: RestartOptions): Promise<void> => {
     printRestartComplete()
   } else {
     const message = outcome.tcpReady
-      ? "daemon: TCP bound but runtime state did not appear in 5s"
-      : "daemon: port 52937 did not accept connections in 30s"
+      ? "The daemon accepted connections but did not finish startup. Check `sirenodeck logs` for the cause."
+      : `SirenoDeck did not reopen its WebSocket on 127.0.0.1:${port} within 30 seconds. Check \`sirenodeck logs\`; if another app owns the port, stop it or choose another with \`--port <port>\`.`
     logger.warn(message)
     process.exitCode = 1
     printRestartFailed(message)

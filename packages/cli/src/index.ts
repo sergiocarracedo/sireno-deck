@@ -17,6 +17,7 @@ export {
   PACKAGE_NAME,
   PROTOCOL_VERSION,
   SIRENO_ADDON_API_VERSION,
+  VERSION as cliVersion,
 } from "./version"
 
 export {
@@ -70,5 +71,3 @@ export {
   type TemporaryErrorSurfaceProps,
   type ThemeUiPresentation,
 } from "./ui"
-
-export const cliVersion = "0.2.0"

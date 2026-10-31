@@ -1,0 +1,174 @@
+# Isolated hero capture config copied from the user's local setup.
+theme: default
+  #/works/opensource/sireno-deck/packages/themes/riptide
+  # /works/opensource/sireno-deck/packages/themes/neon-grids
+
+addons:
+  - src: ../../../../works/opensource/sireno/sireno-deck/packages/addons/pomodoro
+
+logging:
+  level: info
+
+decks:
+  main:
+    name: Main Deck
+    buttons:
+      - position: 0
+        type: "system-status:system-status"
+        config:
+          pages:
+            - type: bars
+              metrics:
+                - cpu
+                - ram
+                - swap
+            - type: kpis
+              metrics:
+                - disk-io
+                - network-read
+                - network-write
+            - type: kpis
+              metrics:
+                - temperature
+                - gpu-temp
+                - fan-rpm
+            - type: kpis
+              metrics:
+                - uptime
+                - load
+        actions:
+          tap: "true"
+      - position: 1
+        type: date-time:analog-clock
+      - position: 2
+        type: date-time:time
+        config:
+          variant: big
+
+      - position: 3
+        type: "date-time:date"
+        actions:
+          tap: "xdg-open https://calendar.google.com"
+      - position: 4
+        type: weather:weather
+        config:
+          location:
+            latitude: 42.2304
+            longitude: -8.7256
+            name: Vigo
+          units: metric
+
+      - position: 5
+        type: "system-status"
+        config:
+          pages:
+            - type: kpis
+              metrics:
+                - temperature
+
+      - position: 6
+        type: "system-status"
+        config:
+          pages:
+            - type: kpis
+              metrics:
+                - fan-rpm
+                - gpu-temp
+
+      - position: 7
+        type: "system-status"
+        config:
+          pages:
+            - type: kpis
+              metrics:
+                - frequency
+                - load
+                - uptime
+            - type: kpis
+              metrics:
+                - cpu-boost
+      - position: 8
+        type: media:mute
+        config: {}
+
+      - position: 9
+        type: "emoji-selector:launcher"
+        config:
+          favorites:
+            - "❤️"
+            - "🔥"
+            - "⭐"
+            - "😂"
+            - "👍"
+            - "🎉"
+            - "💯"
+            - "✨"
+            - "🙏"
+            - "❌"
+            - "✅"
+            - "⚠️"
+            - "ℹ️"
+      - position: 10
+        type: pomodoro:pomodoro
+        config:
+          durationSec: 300
+      - position: 11
+        type: core:change-deck
+        config:
+          deck: demo-decks-index
+          icon: icon://layout-grid
+          label: Demos
+
+      - position: 12
+        type: "media:player"
+      - position: 13
+        type: coding-agents:summary
+        config:
+          showCount: true
+  google-meet-demo:
+    name: Google Meet
+    icon: icon://video
+    autoShow: false
+    trigger:
+      process_name: [chromium]
+      window_name: ["*Google Meet*"]
+    buttons:
+      - position: 0
+        type: core:action
+        actions:
+          tap: "true"
+        config:
+          icon: icon://mic-off
+          label: Mute
+      - position: 1
+        type: core:action
+        actions:
+          tap: "true"
+        config:
+          icon: icon://video
+          label: Camera
+      - position: 2
+        type: core:action
+        actions:
+          tap: "true"
+        config:
+          icon: icon://hand
+          label: Raise hand
+      - position: 3
+        type: core:action
+        actions:
+          tap: "true"
+        config:
+          icon: icon://users
+          label: People
+
+  demo-decks-index: !include demos/demo-decks-index.yml
+  demo-app-shortcuts: !include demos/demo-app-shortcuts.yml
+  demo-system-status: !include demos/demo-system-status.yml
+  demo-media: !include demos/demo-media.yml
+  demo-weather: !include demos/demo-weather.yml
+  demo-emoji-selector: !include demos/demo-emoji-selector.yml
+  demo-date-time: !include demos/demo-date-time.yml
+  demo-value-display: !include demos/demo-value-display.yml
+  demo-core: !include demos/demo-core.yml
+  demo-pomodoro: !include demos/demo-pomodoro.yml

@@ -76,4 +76,12 @@ describe("buildCli", () => {
     const { commands } = await buildCli()
     expect(commands.map((command) => command.command)).toContain("skills")
   })
+
+  it("exposes onboard as the system-requirements setup command alias", async () => {
+    const { commands } = await buildCli()
+    const setup = commands.find(
+      (command) => command.command === "system-requirements",
+    )
+    expect(setup?.aliases).toContain("onboard")
+  })
 })

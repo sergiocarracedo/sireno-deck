@@ -27,24 +27,27 @@ const displayValue = (value: unknown) => {
         <tr>
           <th scope="col" class="px-3 py-2 font-semibold">Field</th>
           <th scope="col" class="px-3 py-2 font-semibold">Type</th>
-          <th scope="col" class="px-3 py-2 font-semibold">Details</th>
+          <th scope="col" class="px-3 py-2 font-semibold">Accepted values</th>
+          <th scope="col" class="px-3 py-2 font-semibold">What it does</th>
         </tr>
       </thead>
       <tbody>
         {properties.map(([name, field]) => {
           const enumValues = field.enum as unknown[] | undefined
-          const details = [
+          const acceptedValues = [
             required.has(name) ? "required" : "optional",
+            enumValues ? enumValues.map(displayValue).join(" | ") :
+              field.type === "boolean" ? "true | false" :
+                field.type === "integer" || field.type === "number"
+                  ? `${field.type}${field.minimum !== undefined ? ` ≥ ${displayValue(field.minimum)}` : ""}${field.maximum !== undefined ? `, ≤ ${displayValue(field.maximum)}` : ""}`
+                  : String(field.type ?? "value"),
             field.default !== undefined ? `default: ${displayValue(field.default)}` : "",
-            enumValues ? `values: ${enumValues.map(displayValue).join(", ")}` : "",
-            field.minimum !== undefined ? `min: ${displayValue(field.minimum)}` : "",
-            field.maximum !== undefined ? `max: ${displayValue(field.maximum)}` : "",
           ].filter(Boolean)
           return (
             <tr style="border-top: 1px solid var(--color-border);">
               <th scope="row" class="px-3 py-2 align-top font-mono font-medium" style="color: var(--color-accent);">{name}</th>
-              <td class="px-3 py-2 align-top font-mono" style="color: var(--color-muted);">{String(field.type ?? "value")}</td>
-              <td class="px-3 py-2 align-top" style="color: var(--color-muted);">{details.join(" · ") || "No constraints"}</td>
+              <td class="px-3 py-2 align-top font-mono" style="color: var(--color-muted);">{acceptedValues.join(" · ")}</td>
+              <td class="px-3 py-2 align-top" style="color: var(--color-muted);">{String(field.description ?? field.title ?? "No description provided by this schema.")}</td>
             </tr>
           )
         })}

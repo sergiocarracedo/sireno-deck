@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { mkdtempSync } from "node:fs"
+import { mkdtempSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
@@ -115,6 +115,36 @@ describe("coding-agents globalService", () => {
       }),
     )
     expect(loadProviders).not.toHaveBeenCalled()
+  })
+
+  it("updates the capture fixture from 1 idle/10 running/1 waiting to the later mix", async () => {
+    vi.stubEnv("SIRENO_CAPTURE_FAKE_AGENTS", "1")
+    const stageFile = join(
+      mkdtempSync(join(tmpdir(), "sirenodeck-agent-stage-")),
+      "stage.json",
+    )
+    writeFileSync(stageFile, JSON.stringify({ stage: "initial" }))
+    vi.stubEnv("SIRENO_CAPTURE_FAKE_AGENTS_FILE", stageFile)
+    const { ctx } = makeCtx()
+    await globalService.onLoad?.(ctx as never)
+    const poll = globalService.pollers?.[0]?.poll
+    const initial = (await poll?.(ctx as never)) as {
+      byProvider: Record<string, Array<{ status: string }>>
+    }
+    const count = (snapshot: typeof initial, status: string) =>
+      Object.values(snapshot.byProvider)
+        .flat()
+        .filter((agent) => agent.status === status).length
+
+    expect(count(initial, "idle")).toBe(1)
+    expect(count(initial, "running")).toBe(10)
+    expect(count(initial, "waiting_for_human")).toBe(1)
+
+    writeFileSync(stageFile, JSON.stringify({ stage: "updated" }))
+    const updated = (await poll?.(ctx as never)) as typeof initial
+    expect(count(updated, "running")).toBe(8)
+    expect(count(updated, "waiting_for_human")).toBe(2)
+    expect(count(updated, "compacting")).toBe(1)
   })
 
   it("onUnload is a no-op when onLoad was not called", () => {
