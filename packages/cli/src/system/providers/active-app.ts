@@ -47,6 +47,12 @@ export interface CreateActiveAppProviderOptions {
 export const createActiveAppProvider = async (
   options: CreateActiveAppProviderOptions,
 ): Promise<ActiveAppProvider> => {
+  const captureFile = process.env["SIRENO_CAPTURE_ACTIVE_APP_FILE"]
+  if (captureFile !== undefined) {
+    const { createCaptureFileActiveAppProvider } =
+      await import("./active-app/capture-file")
+    return createCaptureFileActiveAppProvider(captureFile)
+  }
   const platform = options.platform ?? process.platform
   if (platform === "linux") {
     if (options.executor === undefined) {

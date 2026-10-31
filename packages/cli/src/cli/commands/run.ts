@@ -1093,7 +1093,17 @@ const startSystemProviders = async (
           executor,
           logger,
         }),
-    createKeyMacroProvider({ platform, executor, env, logger, extraFsProbe }),
+    // ponytail: capture mode must not type emoji or Meet shortcuts into the
+    // operator's active desktop while the emulator records their gestures.
+    env["SIRENO_CAPTURE_DISABLE_KEYBOARD"] === "1"
+      ? Promise.resolve({ sendKey: async () => {}, stop: async () => {} })
+      : createKeyMacroProvider({
+          platform,
+          executor,
+          env,
+          logger,
+          extraFsProbe,
+        }),
     createNotificationProvider({
       platform,
       executor,

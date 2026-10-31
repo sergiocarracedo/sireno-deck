@@ -1,0 +1,30 @@
+name: Value Display Demo
+buttons:
+  - position: 0
+    type: "value-display:display"
+    config:
+      values:
+        - label: CPU
+          command: "printf '12'"
+          formatter: raw
+        - label: RAM
+          command: "printf '8192/16384'"
+          units: MB
+        - label: Up
+          command: "printf 'up 3 days'"
+          formatter: strip
+  - position: 1
+    type: "core:toggle"
+    config:
+      statusCommand: "printf 'Paused'"
+      intervalMs: 2000
+      timeoutMs: 5000
+      states:
+        Playing:
+          label: "<xl>Demo track</xl>"
+          icon: "icon://play"
+          onTap: "true"
+        Paused:
+          label: "Paused"
+          icon: "icon://pause"
+          onTap: "true"
