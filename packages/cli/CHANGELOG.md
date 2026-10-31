@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.1...@sirenodeck/sirenodeck-0.2.2) (2026-10-31)
+
+
+### Features
+
+* **cli,web:** improve onboarding and addon docs ([7449fa2](https://github.com/sergiocarracedo/sireno-deck/commit/7449fa2b342c322da906f6d951471494a7731705))
+* **cli,web:** improve onboarding and addon docs ([533dac7](https://github.com/sergiocarracedo/sireno-deck/commit/533dac79a7302712862198a5e673016af70fa895))
+* **web:** script reproducible hero showcase capture ([d22e382](https://github.com/sergiocarracedo/sireno-deck/commit/d22e382bc1b42d303130afe360d5aa59adee181d))
+
+
+### Bug Fixes
+
+* **cli:** show unhandled rejection reason ([373b87a](https://github.com/sergiocarracedo/sireno-deck/commit/373b87a9a38826594065dfb057edddea0714c07d))
+
 ## [0.2.1](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.0...@sirenodeck/sirenodeck-0.2.1) (2026-10-28)
 
 
