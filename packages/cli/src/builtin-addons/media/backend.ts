@@ -24,6 +24,21 @@ const FALLBACK_STATE: MediaPlayerState = {
 
 let provider: MediaStatusProvider | null = null
 let ctxRef: AddonServiceContext | null = null
+let captureMediaState: MediaPlayerState | null = null
+let captureStage = "playing"
+
+const captureMode = (): boolean =>
+  process.env["SIRENO_CAPTURE_FAKE_MEDIA"] === "1"
+
+const setCapturePlayback = (playing: boolean): void => {
+  captureStage = playing ? "playing" : "paused"
+  if (captureMediaState === null) return
+  captureMediaState = {
+    ...captureMediaState,
+    status: playing ? "play" : "pause",
+    isPlaying: playing,
+  }
+}
 
 const mapStatus = (
   playStatus: Awaited<
@@ -76,6 +91,21 @@ export const globalService: AddonGlobalService = {
       channel: "media:state",
       intervalMs: 1_000,
       poll: async (_ctx: AddonServiceContext): Promise<MediaPlayerState> => {
+        if (captureMode() && captureMediaState !== null) {
+          const stagePath = process.env["SIRENO_CAPTURE_FAKE_MEDIA_FILE"]
+          if (stagePath !== undefined) {
+            try {
+              const stage = JSON.parse(
+                (await import("node:fs")).readFileSync(stagePath, "utf8"),
+              ) as { stage?: unknown }
+              if (stage.stage === "paused" && captureStage !== "paused")
+                setCapturePlayback(false)
+            } catch {
+              // Keep the previous capture state while the stage file is being written.
+            }
+          }
+          return { ...captureMediaState }
+        }
         if (provider === null) return FALLBACK_STATE
         try {
           return buildState(await provider.getStatus())
@@ -88,12 +118,16 @@ export const globalService: AddonGlobalService = {
 
   methods: {
     play: wrap(async () => {
+      if (captureMode()) return setCapturePlayback(true)
       await provider?.play()
     }),
     pause: wrap(async () => {
+      if (captureMode()) return setCapturePlayback(false)
       await provider?.pause()
     }),
     toggle: wrap(async () => {
+      if (captureMode())
+        return setCapturePlayback(captureMediaState?.isPlaying !== true)
       await provider?.toggle()
     }),
     next: wrap(async () => {
@@ -121,6 +155,25 @@ export const globalService: AddonGlobalService = {
 
   onLoad: (ctx: AddonServiceContext) => {
     ctxRef = ctx
+    if (captureMode()) {
+      captureMediaState = {
+        title: "Night Drive",
+        artist: "Sireno Studio",
+        source: "Demo session",
+        status: "play",
+        isPlaying: true,
+        volume: 68,
+        progress: 42,
+        currentTime: 84,
+        totalTime: 200,
+        muted: false,
+      }
+      captureStage = "playing"
+      provider = null
+      return
+    }
+    captureMediaState = null
+    captureStage = "playing"
     provider = createMediaProvider(process.platform, {
       async run(
         command: string,
@@ -139,5 +192,6 @@ export const globalService: AddonGlobalService = {
   onUnload: () => {
     ctxRef = null
     provider = null
+    captureMediaState = null
   },
 }

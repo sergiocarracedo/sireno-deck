@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { systemStatusManifest } from "../manifest"
 
 describe("systemStatusManifest", () => {
+  afterEach(() => vi.unstubAllEnvs())
+
   it("registers exactly one button type", () => {
     expect(Object.keys(systemStatusManifest.buttonTypes)).toEqual([
       "system-status:system-status",
@@ -43,5 +45,23 @@ describe("systemStatusManifest", () => {
       "runtime:system-status:temperature",
       "runtime:system-status:uptime",
     ])
+  })
+
+  it("returns stable capture fixture values for every metric", async () => {
+    vi.stubEnv("SIRENO_CAPTURE_FAKE_METRICS", "1")
+    const pollers = systemStatusManifest.globalService?.pollers ?? []
+    const cpu = await pollers
+      .find((poller) => poller.id === "metric:cpu")
+      ?.poll({} as never)
+    const ram = await pollers
+      .find((poller) => poller.id === "metric:ram")
+      ?.poll({} as never)
+    const swap = await pollers
+      .find((poller) => poller.id === "metric:swap")
+      ?.poll({} as never)
+
+    expect(cpu).toMatchObject({ value: 42, percentage: 42, available: true })
+    expect(ram).toMatchObject({ value: 68, percentage: 68, available: true })
+    expect(swap).toMatchObject({ value: 24, percentage: 24, available: true })
   })
 })

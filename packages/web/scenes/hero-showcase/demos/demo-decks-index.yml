@@ -1,0 +1,56 @@
+name: Demo Decks
+buttons:
+  - position: 0
+    type: "core:change-deck"
+    config:
+      deck: demo-app-shortcuts
+      icon: icon://app-window
+      label: App Shortcuts
+  - position: 1
+    type: "core:change-deck"
+    config:
+      deck: demo-system-status
+      icon: icon://gauge
+      label: System Status
+  - position: 2
+    type: "core:change-deck"
+    config:
+      deck: demo-media
+      icon: icon://music
+      label: Media
+  - position: 3
+    type: "core:change-deck"
+    config:
+      deck: demo-weather
+      icon: icon://cloud-sun
+      label: Weather
+  - position: 4
+    type: "core:change-deck"
+    config:
+      deck: demo-emoji-selector
+      icon: icon://smile
+      label: Emoji
+  - position: 5
+    type: "core:change-deck"
+    config:
+      deck: demo-date-time
+      icon: icon://clock
+      label: Date/Time
+  - position: 6
+    type: "core:change-deck"
+    config:
+      deck: demo-value-display
+      icon: icon://chart-bar
+      label: Values
+  - position: 7
+    type: "core:change-deck"
+    config:
+      deck: demo-core
+      icon: icon://settings
+      label: Core
+  - position: 13
+    type: "core:change-deck"
+    config:
+      deck: "core:lock"
+      icon: icon://lock
+      label: Lock

@@ -256,14 +256,66 @@ const publishSnapshot = (): AgentsSnapshot => {
   return payload
 }
 
+let captureFakeStage: string | null = null
+
+const captureAgentsForStage = (stage: string): AgentsSnapshot => {
+  const statuses: Agent["status"][] =
+    stage === "updated"
+      ? [
+          ...Array.from({ length: 8 }, () => "running" as const),
+          "waiting_for_human",
+          "waiting_for_human",
+          "compacting",
+        ]
+      : [
+          "idle",
+          ...Array.from({ length: 10 }, () => "running" as const),
+          "waiting_for_human",
+        ]
+  const now = Date.now()
+  const agents: Agent[] = statuses.map((status, index) => ({
+    sessionId: `sireno-capture-${stage}-${index + 1}`,
+    providerId: index % 2 === 0 ? "opencode" : "claude-code",
+    title: `Showcase task ${index + 1}`,
+    status,
+    directory: "/works/sireno-deck",
+    updatedAt: now - index * 1_000,
+    createdAt: now - (index + 1) * 60_000,
+  }))
+  return mergeSnapshot(EMPTY_SNAPSHOT, {
+    opencode: agents.filter((agent) => agent.providerId === "opencode"),
+    "claude-code": agents.filter((agent) => agent.providerId === "claude-code"),
+  })
+}
+
+const syncCaptureFakeAgents = (): void => {
+  const stagePath = process.env["SIRENO_CAPTURE_FAKE_AGENTS_FILE"]
+  let stage = "initial"
+  if (stagePath !== undefined) {
+    try {
+      const payload = JSON.parse(readFileSync(stagePath, "utf8")) as {
+        stage?: unknown
+      }
+      if (payload.stage === "updated") stage = "updated"
+    } catch {
+      // Keep the initial values until the capture timeline writes a stage.
+    }
+  }
+  if (stage === captureFakeStage) return
+  state.lastSnapshot = captureAgentsForStage(stage)
+  captureFakeStage = stage
+}
+
 const poller: AddonGlobalPoller = {
   id: "agents",
   channel: CHANNEL,
   intervalMs: POLLER_INTERVAL_MS,
   poll: async (ctx: AddonServiceContext) => {
     state.context = ctx
-    if (process.env["SIRENO_CAPTURE_FAKE_AGENTS"] === "1")
+    if (process.env["SIRENO_CAPTURE_FAKE_AGENTS"] === "1") {
+      syncCaptureFakeAgents()
       return publishSnapshot()
+    }
     await setStateFromProviders()
     fireNotices(state.lastSnapshot)
     return publishSnapshot()
@@ -325,40 +377,7 @@ export const globalService: AddonGlobalService = {
     // provider polling and injects a deterministic agent list so web captures
     // show realistic "Agents" tiles without a live opencode / claude-code.
     if (process.env["SIRENO_CAPTURE_FAKE_AGENTS"] === "1") {
-      const now = Date.now()
-      const fake: Agent[] = [
-        {
-          sessionId: "sireno-capture-opencode-1",
-          providerId: "opencode" as ProviderId,
-          title: "Refactor capture pipeline",
-          status: "running" as const,
-          directory: "/works/sirenodeck",
-          updatedAt: now,
-          createdAt: now - 1000 * 60 * 12,
-        },
-        {
-          sessionId: "sireno-capture-opencode-2",
-          providerId: "opencode" as ProviderId,
-          title: "Fix flaky session tests",
-          status: "idle" as const,
-          directory: "/works/sirenodeck/packages/cli",
-          updatedAt: now - 1000 * 60 * 4,
-          createdAt: now - 1000 * 60 * 40,
-        },
-        {
-          sessionId: "sireno-capture-claude-1",
-          providerId: "claude-code" as ProviderId,
-          title: "Migrate themes",
-          status: "waiting_for_human" as const,
-          directory: "/works/sirenodeck/packages/web",
-          updatedAt: now - 1000 * 60 * 2,
-          createdAt: now - 1000 * 60 * 90,
-        },
-      ]
-      state.lastSnapshot = mergeSnapshot(state.lastSnapshot, {
-        opencode: fake.filter((a) => a.providerId === "opencode"),
-        "claude-code": fake.filter((a) => a.providerId === "claude-code"),
-      })
+      syncCaptureFakeAgents()
       publishSnapshot()
       return
     }
@@ -393,6 +412,7 @@ export const globalService: AddonGlobalService = {
     }
     state.providers.clear()
     state.lastSnapshot = EMPTY_SNAPSHOT
+    captureFakeStage = null
     state.lastSeenStatus.clear()
     state.throttle.reset()
     state.icons = {}

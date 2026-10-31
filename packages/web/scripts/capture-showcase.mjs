@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Capture the live website showcase without using or stopping the user's daemon.
+// Capture the isolated, storyboard-driven hero showcase through the emulator.
 import { spawn } from "node:child_process"
 import { createServer } from "node:net"
 import {
@@ -7,8 +7,10 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
   statSync,
+  writeFileSync,
 } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -16,28 +18,24 @@ import { fileURLToPath } from "node:url"
 const here = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(here, "../../..")
 const cliRoot = resolve(repoRoot, "packages/cli")
-const fallbackConfig = resolve(repoRoot, "demos/website-showcase.yml")
-const userConfig = resolve(
-  process.env["HOME"] ?? "",
-  ".config/sirenodeck/config.yml",
+const defaultScene = resolve(here, "../scenes/hero-showcase.json")
+const scenePath = resolve(
+  process.env["SIRENODECK_CAPTURE_SCENE"] ?? defaultScene,
 )
-const sourceConfig = resolve(
-  process.env["SIRENODECK_CAPTURE_CONFIG"] ??
-    (existsSync(userConfig) ? userConfig : fallbackConfig),
+const scene = JSON.parse(readFileSync(scenePath, "utf8"))
+if (
+  scene.version !== 1 ||
+  typeof scene.config !== "string" ||
+  !Array.isArray(scene.timeline) ||
+  !Number.isInteger(scene.durationMs) ||
+  scene.durationMs < 1000
 )
+  throw new Error(`Invalid hero capture scene: ${scenePath}`)
+const projectConfig = resolve(dirname(scenePath), scene.config)
 const output = resolve(
   process.argv[2] ?? resolve(repoRoot, "demos/website-showcase.webm"),
 )
-const configuredDuration = Number.parseInt(
-  process.env["SIRENODECK_CAPTURE_DURATION_MS"] ?? "15000",
-  10,
-)
-const durationMs =
-  Number.isInteger(configuredDuration) &&
-  configuredDuration >= 1000 &&
-  configuredDuration <= 120000
-    ? configuredDuration
-    : 15000
+const durationMs = scene.durationMs
 
 const run = (command, args, options = {}) =>
   new Promise((resolveRun, reject) => {
@@ -88,14 +86,25 @@ const ports = new Set()
 while (ports.size < 3) ports.add(await freePort())
 const [frontendPort, configUiPort, bridgePort] = ports
 
-const captureRoot = mkdtempSync(
-  resolve(process.env["TMPDIR"] ?? "/tmp/opencode", "sirenodeck-showcase-"),
-)
+const tempRoot = process.env["TMPDIR"] ?? "/tmp/opencode"
+mkdirSync(tempRoot, { recursive: true })
+const captureRoot = mkdtempSync(resolve(tempRoot, "sirenodeck-showcase-"))
 const config = resolve(captureRoot, "config.yml")
-cpSync(sourceConfig, config)
-const sourceDemos = resolve(dirname(sourceConfig), "demos")
+cpSync(projectConfig, config)
+const sourceDemos = resolve(dirname(projectConfig), "demos")
 if (existsSync(sourceDemos))
   cpSync(sourceDemos, resolve(captureRoot, "demos"), { recursive: true })
+const configText = readFileSync(config, "utf8").replaceAll(
+  "../../../../works/opensource/sireno/sireno-deck/packages/addons/pomodoro",
+  resolve(repoRoot, "packages/addons/pomodoro"),
+)
+writeFileSync(config, configText)
+const agentsStageFile = resolve(captureRoot, "agents-stage.json")
+const activeAppFile = resolve(captureRoot, "active-app.json")
+const mediaStageFile = resolve(captureRoot, "media-stage.json")
+writeFileSync(agentsStageFile, JSON.stringify({ stage: "initial" }))
+writeFileSync(activeAppFile, "null")
+writeFileSync(mediaStageFile, JSON.stringify({ stage: "playing" }))
 const env = {
   ...process.env,
   XDG_CONFIG_HOME: resolve(captureRoot, "config"),
@@ -103,9 +112,17 @@ const env = {
   XDG_STATE_HOME: resolve(captureRoot, "state"),
   XDG_RUNTIME_DIR: resolve(captureRoot, "runtime"),
   SIRENO_CAPTURE_FAKE_AGENTS: "1",
+  SIRENO_CAPTURE_FAKE_AGENTS_FILE: agentsStageFile,
+  SIRENO_CAPTURE_FAKE_METRICS: "1",
+  SIRENO_CAPTURE_FAKE_MEDIA: "1",
+  SIRENO_CAPTURE_FAKE_MEDIA_FILE: mediaStageFile,
+  SIRENO_CAPTURE_ACTIVE_APP_FILE: activeAppFile,
+  SIRENO_CAPTURE_DISABLE_KEYBOARD: "1",
+  SIRENO_CAPTURE_UNLOCKED: "1",
   SIRENODECK_FRONTEND_PORT: String(frontendPort),
   SIRENODECK_CONFIG_UI_PORT: String(configUiPort),
   SIRENODECK_BRIDGE_PORT: String(bridgePort),
+  SIRENODECK_DEMO_MODE: "1",
 }
 for (const name of [
   "XDG_CONFIG_HOME",
@@ -161,13 +178,14 @@ try {
 
   const pause = (ms) =>
     new Promise((resolveDelay) => setTimeout(resolveDelay, ms))
+  let captureStartedAt = Date.now()
+  const waitUntil = async (atMs) =>
+    pause(Math.max(0, captureStartedAt + atMs - Date.now()))
   const clickKey = async (position, expectedDeck) => {
     await run("agent-browser", [
       ...browserArgs,
-      "find",
-      "testid",
-      `deck-key-${position}`,
-      "click",
+      "eval",
+      `(() => { const key = document.querySelector('[data-testid="deck-key-${position}"]'); if (!key) throw new Error('Missing emulator key ${position}'); const rect = key.getBoundingClientRect(); const x = rect.x + rect.width / 2; const y = rect.y + rect.height / 2; for (const [type, buttons] of [['pointerdown', 1], ['pointerup', 0], ['click', 0]]) key.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 1, pointerType: 'mouse', isPrimary: true, clientX: x, clientY: y, button: 0, buttons })); return 'tapped'; })()`,
     ])
     if (expectedDeck) {
       await run("agent-browser", [
@@ -177,6 +195,11 @@ try {
         `document.querySelector('[data-testid=deck-frame]')?.dataset.deck === '${expectedDeck}'`,
       ])
     }
+  }
+  const doubleClickKey = async (position, expectedDeck) => {
+    await clickKey(position)
+    await pause(100)
+    await clickKey(position, expectedDeck)
   }
 
   const boundsOutput = await runForOutput("agent-browser", [
@@ -203,18 +226,24 @@ try {
     "--fps",
     "30",
   ])
-  const captureStartedAt = Date.now()
-  await pause(1800)
-  await clickKey(10) // Start the main-deck Pomodoro.
-  await pause(2600)
-  await clickKey(9, "emoji-selector")
-  await pause(1700)
-  await clickKey(1, "emoji-selector-smileys-p1")
-  await pause(2500)
-  await clickKey(14, "emoji-selector")
-  await pause(500)
-  await clickKey(14, "main")
-  await pause(Math.max(0, durationMs - (Date.now() - captureStartedAt)))
+  captureStartedAt = Date.now()
+  const tapGesture = async (position, deck) => {
+    await clickKey(position, deck)
+  }
+  for (const event of scene.timeline) {
+    await waitUntil(event.atMs)
+    if (event.kind === "tap") await tapGesture(event.position, event.deck)
+    else if (event.kind === "doubleTap")
+      await doubleClickKey(event.position, event.deck)
+    else if (event.kind === "agents")
+      writeFileSync(agentsStageFile, JSON.stringify({ stage: event.stage }))
+    else if (event.kind === "media")
+      writeFileSync(mediaStageFile, JSON.stringify({ stage: event.stage }))
+    else if (event.kind === "activeApp")
+      writeFileSync(activeAppFile, JSON.stringify(event.snapshot))
+    else throw new Error(`Unknown scene event kind: ${event.kind}`)
+  }
+  await waitUntil(durationMs)
   await run("agent-browser", [...browserArgs, "record", "stop"])
   recordingStarted = false
 

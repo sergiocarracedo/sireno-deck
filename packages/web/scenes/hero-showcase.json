@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "config": "hero-showcase/config.yml",
+  "durationMs": 39000,
+  "timeline": [
+    { "atMs": 1200, "kind": "tap", "position": 0 },
+    { "atMs": 1800, "kind": "tap", "position": 13 },
+    { "atMs": 2000, "kind": "agents", "stage": "updated" },
+    { "atMs": 3000, "kind": "tap", "position": 12 },
+    { "atMs": 6000, "kind": "media", "stage": "paused" },
+    { "atMs": 3500, "kind": "tap", "position": 10 },
+    {
+      "atMs": 5200,
+      "kind": "activeApp",
+      "snapshot": {
+        "name": "chromium",
+        "windowTitle": "Google Meet",
+        "processId": null
+      }
+    },
+    { "atMs": 7000, "kind": "tap", "position": 0, "deck": "main" },
+    { "atMs": 7900, "kind": "tap", "position": 1, "deck": "main" },
+    { "atMs": 8500, "kind": "tap", "position": 14, "deck": "main" },
+    { "atMs": 9500, "kind": "tap", "position": 9, "deck": "emoji-selector" },
+    {
+      "atMs": 10800,
+      "kind": "tap",
+      "position": 1,
+      "deck": "emoji-selector-smileys"
+    },
+    { "atMs": 11600, "kind": "tap", "position": 0 },
+    { "atMs": 12400, "kind": "tap", "position": 14, "deck": "emoji-selector" },
+    { "atMs": 13200, "kind": "tap", "position": 14, "deck": "main" },
+    {
+      "atMs": 15000,
+      "kind": "tap",
+      "position": 11,
+      "deck": "demo-decks-index"
+    },
+    { "atMs": 15000, "kind": "tap", "position": 14, "deck": "main" },
+    {
+      "atMs": 16000,
+      "kind": "tap",
+      "position": 11,
+      "deck": "demo-decks-index"
+    },
+    {
+      "atMs": 18100,
+      "kind": "tap",
+      "position": 0,
+      "deck": "demo-app-shortcuts"
+    },
+    {
+      "atMs": 19000,
+      "kind": "tap",
+      "position": 14,
+      "deck": "demo-decks-index"
+    },
+    {
+      "atMs": 21100,
+      "kind": "tap",
+      "position": 1,
+      "deck": "demo-system-status"
+    },
+    {
+      "atMs": 22000,
+      "kind": "tap",
+      "position": 14,
+      "deck": "demo-decks-index"
+    },
+    { "atMs": 24100, "kind": "tap", "position": 2, "deck": "demo-media" },
+    {
+      "atMs": 25000,
+      "kind": "tap",
+      "position": 14,
+      "deck": "demo-decks-index"
+    },
+    { "atMs": 27100, "kind": "tap", "position": 3, "deck": "demo-weather" },
+    {
+      "atMs": 28000,
+      "kind": "tap",
+      "position": 14,
+      "deck": "demo-decks-index"
+    },
+    { "atMs": 30100, "kind": "tap", "position": 5, "deck": "demo-date-time" },
+    {
+      "atMs": 31000,
+      "kind": "tap",
+      "position": 14,
+      "deck": "demo-decks-index"
+    },
+    {
+      "atMs": 33100,
+      "kind": "tap",
+      "position": 6,
+      "deck": "demo-value-display"
+    },
+    {
+      "atMs": 34000,
+      "kind": "tap",
+      "position": 14,
+      "deck": "demo-decks-index"
+    },
+    { "atMs": 34000, "kind": "tap", "position": 7, "deck": "demo-core" }
+  ]
+}
