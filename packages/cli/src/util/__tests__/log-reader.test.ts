@@ -73,7 +73,7 @@ describe("log-reader", () => {
       writeLogLine({
         level: 50,
         time: 1,
-        msg: "addon load error — addon './demo': Entry file not found: /tmp/demo/index.js",
+        msg: "Configured addon './demo' was skipped; its buttons and decks are unavailable. Entry file not found: /tmp/demo/index.js Fix the addon entry or remove it from addons[].",
       })
 
       expect(readDaemonEventsSince(logPath(), 0)[0]?.message).toContain(

@@ -68,9 +68,10 @@ const installProcessGuards = (
   logger: ReturnType<typeof createLogger>,
 ): void => {
   process.on("uncaughtException", (err, origin) => {
+    const summary = `${err.name}: ${err.message}`
     logger.fatal(
       { err, origin },
-      "uncaughtException — exiting to surface the failure",
+      `Unexpected error: ${summary}. See the stack trace for where it occurred.`,
     )
     killChildrenAndExit(logger, 1)
   })
@@ -89,12 +90,24 @@ const installProcessGuards = (
       typeof (promise as unknown as { stack?: unknown }).stack === "string"
         ? (promise as unknown as { stack: string }).stack
         : undefined
+    const summary =
+      reason instanceof Error
+        ? `${reason.name}: ${reason.message}`
+        : typeof reason === "string"
+          ? reason
+          : (() => {
+              try {
+                return JSON.stringify(reason) ?? String(reason)
+              } catch {
+                return String(reason)
+              }
+            })()
     logger.fatal(
       {
         reason: reasonDump,
         ...(stackDump !== undefined ? { stack: stackDump } : {}),
       },
-      "unhandledRejection — exiting to surface the failure",
+      `An asynchronous operation failed: ${summary}. See the stack trace for where it originated.`,
     )
     killChildrenAndExit(logger, 1)
   })

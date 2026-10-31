@@ -1,0 +1,17 @@
+{
+  "displayName": "Brightness",
+  "description": "Show the current screen brightness and adjust it from a deck button on supported macOS systems.",
+  "capabilities": [
+    "The tile shows the current brightness percentage and a progress bar, plus the configured tap action.",
+    "Configure a tap to increase, decrease, or set brightness to a chosen percentage. Current button control is macOS-specific."
+  ],
+  "category": "official",
+  "tags": ["system", "display", "brightness"],
+  "icon": "sun",
+  "buttonTypes": ["brightness:brightness"],
+  "order": 10,
+  "source": "cli",
+  "featured": false,
+  "screenshots": [],
+  "decks": []
+}

@@ -1,6 +1,11 @@
 {
   "displayName": "App Shortcuts",
-  "description": "Overlay decks for VS Code, OpenCode, Chrome, Claude Code, Slack, Teams, Discord, and Google Meet. The deck reshapes itself when you switch apps.",
+  "description": "A separately installed addon that provides app-specific shortcut overlays for VS Code, OpenCode, Chrome, Claude Code, Slack, Teams, Discord, and Google Meet.",
+  "capabilities": [
+    "Provides eight generated overlay decks and no user-facing button types; install @sirenodeck/addon-app-shortcuts separately.",
+    "Each deck displays shortcuts for its target app. Matching apps can make their overlay available or bring it forward when autoShow is enabled.",
+    "Overlay navigation is independent of your main deck and returns to the previous deck when dismissed or when its app trigger stops matching."
+  ],
   "category": "official",
   "tags": ["overlay", "shortcuts", "apps"],
   "icon": "layout-grid",

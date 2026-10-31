@@ -652,6 +652,7 @@ export const systemRequirementsCommand: CommandModule<
   SystemRequirementsArgs
 > = {
   command: "system-requirements",
+  aliases: ["onboard"],
   describe:
     "Detect system capabilities (key macro, clipboard, notification, active-app) and optionally install missing pieces",
   builder: (yargs) =>

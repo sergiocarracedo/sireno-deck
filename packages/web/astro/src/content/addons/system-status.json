@@ -1,6 +1,11 @@
 {
   "displayName": "System Status",
-  "description": "CPU, RAM, swap, disk, network, battery, and temperature metrics with bars, KPIs, and chart visualizations.",
+  "description": "Build system-monitor tiles from selectable CPU, memory, storage, network, battery, sensor, and uptime metrics.",
+  "capabilities": [
+    "Configure up to five pages per tile. Each page renders one to three metrics as bars or KPIs, or one to two metrics as a rolling chart.",
+    "Choose from 19 metric identifiers; supported views and availability depend on the metric and operating system. Unavailable readings are shown as unavailable rather than as zero.",
+    "On Apple Silicon, CPU/GPU temperature and fan readings require the optional macmon helper; other metrics also vary by platform."
+  ],
   "category": "official",
   "tags": ["system", "metrics", "monitoring"],
   "icon": "activity",

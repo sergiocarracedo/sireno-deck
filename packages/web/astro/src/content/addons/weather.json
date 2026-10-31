@@ -1,6 +1,10 @@
 {
   "displayName": "Weather",
-  "description": "Real-time weather with temperature, conditions, and forecast. Configure latitude / longitude, get automatic geocoding by name.",
+  "description": "Show current weather for a configured location using Open-Meteo; no API key is required.",
+  "capabilities": [
+    "Tap through pages for the current temperature and location, conditions and wind, the next two hourly forecasts, and the next two daily forecasts.",
+    "Configure a location with coordinates, choose metric or imperial units, and set the refresh interval. Availability depends on network access to Open-Meteo."
+  ],
   "category": "official",
   "tags": ["weather", "productivity"],
   "icon": "cloud-sun",

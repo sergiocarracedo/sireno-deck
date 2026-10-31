@@ -22,6 +22,8 @@ export const collections = {
     schema: z.object({
       displayName: z.string(),
       description: z.string(),
+      capabilities: z.array(z.string()).default([]),
+      deckDescription: z.string().optional(),
       category: addonCategory,
       source: addonSource.default("cli"),
       tags: z.array(z.string()).default([]),

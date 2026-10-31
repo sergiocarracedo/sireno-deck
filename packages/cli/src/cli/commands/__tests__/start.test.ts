@@ -421,7 +421,7 @@ describe("start", () => {
       homeDir: "/home",
       logger: silentLogger(),
     })
-    await startPromise
+    await expect(startPromise).resolves.toBe("started")
     expect(spawnDetached).toHaveBeenCalledTimes(1)
     expect(writePidMock).toHaveBeenCalledWith(99_999)
   })

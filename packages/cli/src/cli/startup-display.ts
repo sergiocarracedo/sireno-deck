@@ -15,6 +15,8 @@ import {
 } from "@/system/setup-wizard"
 
 import { cancel, intro, log, outro } from "@/cli/prompt"
+import { color } from "@/system/setup-wizard/format"
+import { VERSION } from "@/version"
 
 import {
   readDaemonEventsFromSnapshot,
@@ -174,20 +176,30 @@ const tryBind = (port: number): Promise<boolean> =>
     }
   })
 
-interface FeatureItem {
+export interface FeatureItem {
   readonly name: string
   readonly available: boolean
   readonly reason?: string
 }
 
-const formatFeaturesLine = (items: ReadonlyArray<FeatureItem>): string =>
-  items
-    .map((it) =>
-      it.available
-        ? `[✓ ${it.name}]`
-        : `[✗ ${it.name}${it.reason !== undefined ? ` — ${it.reason}` : ""}]`,
-    )
-    .join(" ")
+export const formatFeaturesList = (
+  items: ReadonlyArray<FeatureItem>,
+): string[] => [
+  "Features",
+  ...items.map(
+    (it) =>
+      `   ${it.name} ${it.available ? color.green("✓") : color.red("✗")}${!it.available && it.reason ? ` — ${it.reason}` : ""}`,
+  ),
+]
+
+export const printFeaturesList = (
+  items: ReadonlyArray<FeatureItem>,
+  write: (text: string) => void = (text) => process.stdout.write(text),
+): string[] => {
+  const lines = formatFeaturesList(items)
+  write(`${lines.slice(1).join("\n")}\n`)
+  return lines
+}
 
 const toFeatureItem = (
   name: string,
@@ -213,7 +225,7 @@ const deviceLabel = (
 }
 
 export interface BannerResult {
-  readonly featuresLine: string
+  readonly featuresLines: string[]
   readonly deviceLabel: string
 }
 
@@ -247,13 +259,19 @@ export const buildStartupBanner = async (
     toFeatureItem("http", http),
   ]
 
-  const featuresLine = formatFeaturesLine(items)
+  const featuresLines = formatFeaturesList(items)
   const label = deviceLabel(options.emulator, options.deviceModel, devices)
 
-  intro("Starting SirenoDeck")
+  intro(`Starting SirenoDeck v${VERSION}`)
   log.info(`Device: ${label}`)
-  log.info(featuresLine)
-  return { featuresLine, deviceLabel: label }
+  log.info("Features")
+  printFeaturesList(items)
+  if (items.some((item) => !item.available)) {
+    log.warn(
+      "Some features are unavailable. Run `sirenodeck onboard` to install missing dependencies.",
+    )
+  }
+  return { featuresLines, deviceLabel: label }
 }
 
 const toSystemCap = (

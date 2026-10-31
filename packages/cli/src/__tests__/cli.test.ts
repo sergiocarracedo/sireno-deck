@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import packageJson from "../../package.json" with { type: "json" }
 
 import { PROTOCOL_VERSION, SIRENO_ADDON_API_VERSION, cliVersion } from "@/index"
 import { createLogger } from "@/util/logger"
@@ -20,7 +21,7 @@ describe("package constants", () => {
   })
 
   it("exposes a semver cli version", () => {
-    expect(cliVersion).toMatch(/^\d+\.\d+\.\d+/)
+    expect(cliVersion).toBe(packageJson.version)
   })
 })
 

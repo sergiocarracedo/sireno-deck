@@ -928,7 +928,9 @@ const runFirstRunCheckIfNeeded = async (
   return true
 }
 
-const start = async (options: StartOptions): Promise<void> => {
+export type StartLaunchResult = "started" | "blocked" | "cancelled"
+
+const start = async (options: StartOptions): Promise<StartLaunchResult> => {
   const { logger } = options
 
   // ponytail: skip the first-run wizard in the daemon child. The forked
@@ -941,10 +943,12 @@ const start = async (options: StartOptions): Promise<void> => {
   // the wizard before forking, so the child has no business re-running it.
   if (isUnderServiceManager()) {
     await runInProcess(options)
-    return
+    return "started"
   }
 
-  if (!(await runFirstRunCheckIfNeeded(options, logger))) return
+  if (!(await runFirstRunCheckIfNeeded(options, logger))) {
+    return process.exitCode === 1 ? "blocked" : "cancelled"
+  }
 
   try {
     await offerConfigSkillOnFirstRun()
@@ -967,7 +971,7 @@ const start = async (options: StartOptions): Promise<void> => {
     const action = await promptConflict(existing)
     if (action === "cancel") {
       logger.info("start cancelled")
-      return
+      return "cancelled"
     }
     // ponytail: a supervised daemon cannot be restarted by killing it. launchd
     // with KeepAlive brings it back in about two seconds — measured — and the
@@ -1003,7 +1007,7 @@ const start = async (options: StartOptions): Promise<void> => {
           ? "start: service manager restarted the daemon (pid not yet visible)"
           : "start: daemon restarted by the service manager",
       )
-      return
+      return "started"
     }
     if (existing !== null) await stopExisting(existing, logger)
     else
@@ -1081,6 +1085,7 @@ const start = async (options: StartOptions): Promise<void> => {
   } else {
     await startProduction(options)
   }
+  return "started"
 }
 
 export default start

@@ -18,6 +18,7 @@ interface Props {
   images?: string[]
   imagesAlt?: string
   accent?: "blue" | "violet"
+  links?: Array<{ label: string; href: string }>
 }
 
 const {
@@ -29,6 +30,7 @@ const {
   images,
   imagesAlt = "",
   accent = "blue",
+  links = [],
 } = Astro.props
 
 const accentColor = accent === "violet" ? "var(--color-accent-2)" : "var(--color-accent)"
@@ -70,4 +72,35 @@ const accentColor = accent === "violet" ? "var(--color-accent-2)" : "var(--color
       </div>
     ) : null
   }
+  {links.length > 0 && (
+    <div class="mt-6 flex flex-wrap gap-2">
+      {links.map(({ label, href }) => (
+        <a
+          href={href}
+          class="feature-card-link inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors"
+        >
+          {label}
+        </a>
+      ))}
+    </div>
+  )}
 </div>
+
+<style>
+  .feature-card-link {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+    color: var(--color-fg);
+    text-decoration: none;
+  }
+
+  .feature-card-link:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .feature-card-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+</style>

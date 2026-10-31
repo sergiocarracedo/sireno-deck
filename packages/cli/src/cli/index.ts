@@ -175,7 +175,15 @@ const startCommand: CommandModule<object, StartArgs> = {
       const logSnapshot = snapshotDaemonLog()
       const logPath = join(resolveDaemonPaths().runtimeDir, "service.log")
       const startRequestedAt = Date.now()
-      const startPromise = start(options)
+      const launchResult = await start(options)
+      if (launchResult !== "started") {
+        if (launchResult === "blocked") {
+          const message =
+            "Startup stopped before the daemon was launched. Resolve the requirement warning above, then retry."
+          printStartupFailed(message)
+        }
+        return
+      }
       const outcome: StartOutcome = await waitForFullStart({
         port: options.port ?? 52937,
         tcpTimeoutMs: 30_000,
@@ -213,13 +221,16 @@ const startCommand: CommandModule<object, StartArgs> = {
         // ponytail: TCP never bound. Either the daemon crashed during
         // boot, or port 52937 is held by an unrelated process. Either
         // way, the start failed — the operator needs to know.
-        const message = `daemon: port ${options.port ?? 52937} did not accept connections in 30s`
+        const port = options.port ?? 52937
+        const message =
+          `SirenoDeck did not open its WebSocket on 127.0.0.1:${port} within 30 seconds. ` +
+          "The daemon may have exited during startup. Check `sirenodeck logs` for the cause; " +
+          "if another app is using this port, stop it or retry with `--port <port>`."
         logger.warn(message)
         process.exitCode = 1
         printStartupFailed(message)
         return
       }
-      await startPromise
     } catch (err) {
       printStartupFailed(err)
       const e = err as { issues?: unknown; message?: unknown }
