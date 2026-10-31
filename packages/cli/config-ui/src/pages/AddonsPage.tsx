@@ -191,9 +191,11 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
                 </span>
               )}
             </h3>
-            <span className="font-mono text-[10px] text-neutral-500">
-              {addon.path ?? addon.source}
-            </span>
+            {addon.source !== "cli" && (addon.path ?? addon.source) && (
+              <span className="font-mono text-[10px] text-neutral-500">
+                {addon.path ?? addon.source}
+              </span>
+            )}
           </div>
 
           <div className="mt-2 flex flex-wrap gap-1.5">

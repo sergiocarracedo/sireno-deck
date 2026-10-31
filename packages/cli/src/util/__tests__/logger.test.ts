@@ -7,7 +7,7 @@ describe("formatHuman", () => {
   it("includes the underlying message for an unhandled rejection", () => {
     const line = JSON.stringify({
       level: 60,
-      msg: "unhandledRejection — exiting to surface the failure",
+      msg: "An asynchronous operation failed: Error: Could not load addon weather. See the stack trace for where it originated.",
       reason: { type: "Error", message: "Could not load addon weather" },
     })
 
@@ -34,7 +34,7 @@ describe("formatHuman", () => {
         {
           reason: { type: "Error", message: "Could not load addon weather" },
         },
-        "unhandledRejection — exiting to surface the failure",
+        "An asynchronous operation failed: Error: Could not load addon weather. See the stack trace for where it originated.",
       )
     } finally {
       process.stdout.write = originalWrite

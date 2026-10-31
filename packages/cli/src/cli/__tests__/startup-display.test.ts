@@ -26,6 +26,8 @@ import {
   printAddonCheckResults,
   printDaemonEvents,
   printDaemonUrl,
+  formatFeaturesList,
+  printFeaturesList,
   printRestartComplete,
   printRestartFailed,
   printStopComplete,
@@ -151,6 +153,58 @@ describe("printDaemonEvents", () => {
     ])
     expect(logMock.error).toHaveBeenCalledWith(expect.stringContaining("[ws]"))
     expect(logMock.error).toHaveBeenCalledWith(expect.stringContaining("boom"))
+  })
+})
+
+describe("formatFeaturesList", () => {
+  it("prints compact feature rows without bullets and preserves missing reasons", () => {
+    expect(
+      formatFeaturesList([
+        { name: "keystrokes", available: true },
+        { name: "clipboard", available: false, reason: "wl-copy not found" },
+      ]),
+    ).toEqual([
+      "Features",
+      "   keystrokes ✓",
+      "   clipboard ✗ — wl-copy not found",
+    ])
+  })
+
+  it("colors available checks green and missing crosses red in a terminal", () => {
+    const original = process.stdout.isTTY
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: true,
+      configurable: true,
+    })
+    try {
+      const lines = formatFeaturesList([
+        { name: "keystrokes", available: true },
+        { name: "clipboard", available: false },
+      ])
+      expect(lines[1]).toContain("\u001b[32m✓\u001b[0m")
+      expect(lines[2]).toContain("\u001b[31m✗\u001b[0m")
+    } finally {
+      Object.defineProperty(process.stdout, "isTTY", {
+        value: original,
+        configurable: true,
+      })
+    }
+  })
+
+  it("writes the complete feature block with exactly one newline between rows", () => {
+    let output = ""
+    printFeaturesList(
+      [
+        { name: "keystrokes", available: true },
+        { name: "clipboard", available: false },
+        { name: "http", available: true },
+      ],
+      (text) => {
+        output += text
+      },
+    )
+    expect(output).toBe("   keystrokes ✓\n   clipboard ✗\n   http ✓\n")
+    expect(output).not.toContain("\n\n")
   })
 })
 

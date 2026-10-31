@@ -1,13 +1,17 @@
 {
   "displayName": "Media",
-  "description": "Media playback controls. Play, pause, skip, and volume control for any media application.",
+  "description": "Show the current system media track and playback state, with separate controls for playback, mute, and output volume.",
+  "capabilities": [
+    "The player tile displays track title, artist, playback status, elapsed time, and a progress bar when the operating-system media provider supplies them.",
+    "Additional buttons control play/pause, previous or next track, mute, and volume. Available controls depend on the platform media provider and active player."
+  ],
   "category": "official",
   "tags": ["system", "media", "volume"],
   "icon": "music",
   "buttonTypes": [
     "media:player",
-    "media:volume-up",
-    "media:volume-down",
+    "media:volume:up",
+    "media:volume:down",
     "media:mute"
   ],
   "screenshot": "/captures/web-snapshot-media.png",

@@ -460,12 +460,22 @@ const loadExternalAddonsIntoRegistry = async (
   }
   for (const issue of result.issues) {
     const payload = { source: issue.source, message: issue.message }
-    const detail = `addon '${issue.source}': ${issue.message}`
-    if (issue.level === "error")
-      logger.error(payload, `addon load error — ${detail}`)
-    else if (issue.level === "warning")
-      logger.warn(payload, `addon load warning — ${detail}`)
-    else logger.info(payload, `addon load info — ${detail}`)
+    if (issue.level === "error") {
+      logger.warn(
+        payload,
+        `Configured addon '${issue.source}' was skipped; its buttons and decks are unavailable. ${issue.message} Fix the addon entry or remove it from addons[].`,
+      )
+    } else if (issue.level === "warning") {
+      logger.warn(
+        payload,
+        `addon load warning — ${issue.source}: ${issue.message}`,
+      )
+    } else {
+      logger.info(
+        payload,
+        `addon load info — ${issue.source}: ${issue.message}`,
+      )
+    }
   }
   for (const loaded of result.addons) {
     try {
@@ -544,12 +554,14 @@ export const validateAndLoadConfig = async (
   // Per-button config errors are non-fatal: each broken button is replaced
   // with a `core:temporary-error` cell at its position and logged in full
   // (the incorrect config + the schema issues) so the operator can see
-  // exactly what went wrong without restarting the daemon. We only fail
-  // startup on structural problems (missing main, duplicate positions,
-  // unknown/invalid button types in non-config ways).
+  // exactly what went wrong without restarting the daemon. Unknown button
+  // types are also per-button failures: this lets the rest of the deck run
+  // when an optional addon is missing or a type has a typo.
   const validation = validateFull(config, registry)
   const structuralErrors = validation.issues.filter(
-    (i) => !i.path.includes(".config."),
+    (i) =>
+      !i.path.includes(".config.") &&
+      !(i.reason === "unknown-type" && i.deckId !== undefined),
   )
   if (structuralErrors.some((i) => i.level === "error")) {
     throw new Error(

@@ -117,6 +117,16 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
             <div class="rounded-xl p-6 lg:col-span-2" style="background: var(--color-surface); border: 1px solid var(--color-border);">
               <h2 id="heading-overview" class="font-display text-lg font-semibold mb-4">About this addon</h2>
               <p class="text-sm leading-relaxed" style="color: var(--color-muted);">{a.description}</p>
+              {a.capabilities.length > 0 && (
+                <ul class="mt-5 space-y-3 text-sm leading-relaxed">
+                  {a.capabilities.map((capability: string) => (
+                    <li class="flex items-start gap-2">
+                      <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style="background: var(--color-accent);"></span>
+                      <span style="color: var(--color-fg);">{capability}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
               {id === "app-shortcuts" && <a href="https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/addons/app-shortcuts/skills/sirenodeck-app-shortcuts" target="_blank" rel="noopener noreferrer" class="block mt-3 text-sm underline" style="color: var(--color-accent);">Configure app shortcuts with its own skill</a>}
               {a.decks.length > 0 && <p class="mt-4 text-sm" style="color: var(--color-muted);">Publishes {a.decks.length} deck type{a.decks.length === 1 ? "" : "s"}.</p>}
             </div>
@@ -238,14 +248,16 @@ const expandDetails = typeBlocks.filter((t) => t.body !== null).length === 1 || 
           <div class="rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
             <h2 id="heading-decks" class="font-display text-lg font-semibold mb-4">Decks</h2>
             {a.decks.length > 0 ? (
-              <ul class="space-y-3">
-                {a.decks.map((deck: string) => (
-                  <li class="rounded-lg p-4" style="background: var(--color-bg); border: 1px solid var(--color-border);">
-                    <code class="font-mono text-sm" style="color: var(--color-accent);">{deck}</code>
-                    <p class="mt-2 text-xs" style="color: var(--color-muted);">Use this deck id in a <code>core:change-deck</code> button or configure its generated deck through the addon settings.</p>
-                  </li>
-                ))}
-              </ul>
+              <>
+                {a.deckDescription && <p class="mb-4 text-sm leading-relaxed" style="color: var(--color-muted);">{a.deckDescription}</p>}
+                <ul class="space-y-3">
+                  {a.decks.map((deck: string) => (
+                    <li class="rounded-lg p-4" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+                      <code class="font-mono text-sm" style="color: var(--color-accent);">{deck}</code>
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : (
               <p class="text-sm" style="color: var(--color-muted);">This addon does not publish additional decks.</p>
             )}

@@ -1,6 +1,10 @@
 {
   "displayName": "Pomodoro",
-  "description": "Pomodoro timer with arc progress, blink on completion, OS notification, and a bundled bell sound.",
+  "description": "A configurable focus timer with a countdown, elapsed-time progress ring, pause/resume, and completion feedback.",
+  "capabilities": [
+    "The tile shows the remaining time and a ring that fills as the timer elapses; configure the duration per button.",
+    "Tap to start, pause, or resume. Hold to reset. When the timer finishes, the tile blinks and can use the configured completion notification and sound."
+  ],
   "category": "official",
   "tags": ["productivity", "timer", "focus"],
   "icon": "timer",

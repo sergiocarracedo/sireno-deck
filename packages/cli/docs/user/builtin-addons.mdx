@@ -249,31 +249,43 @@ No extra config:
 
 ### coding-agents
 
-Live status of OpenCode and Claude Code sessions.
+Monitor discovered OpenCode and Claude Code sessions. The summary button shows session status and opens a generated deck containing one tile per session. Agent tiles show session details, can reopen a session in a terminal when held, and dismiss its attention notice on double-tap.
 
 **Button Types:**
 
-- `coding-agents:summary` — Count of active agents.
-- `coding-agents:agent` — A specific agent session.
+- `coding-agents:summary` — Summary of discovered sessions; tap to open the generated agents deck.
+- `coding-agents:agent` — A position in the generated agents deck. The runtime assigns sessions to positions dynamically; this is not a way to pin a provider or session ID.
 
-**Configuration:**
+#### `coding-agents:summary` configuration
 
-`coding-agents:summary`:
+| Field            | Type and accepted values   | Default | Description                                                                                      |
+| ---------------- | -------------------------- | ------- | ------------------------------------------------------------------------------------------------ |
+| `showCount`      | Boolean: `true` or `false` | `true`  | Show the discovered session count on the summary tile.                                           |
+| `attentionOnly`  | Boolean: `true` or `false` | `false` | Show the attention state only when a session needs attention; otherwise show the normal summary. |
+| `fallingLetters` | Boolean: `true` or `false` | `true`  | Show the animated falling-letter background.                                                     |
+
+All fields are optional. For example, to hide the count and animation:
 
 ```yaml
 - position: 0
   type: "coding-agents:summary"
   config:
-    showCount: true
-    attentionOnly: false
+    showCount: false
+    attentionOnly: true
+    fallingLetters: false
 ```
 
-`coding-agents:agent`:
+#### `coding-agents:agent` configuration
+
+| Field  | Type and accepted values              | Default | Description                                                                                                                                                                       |
+| ------ | ------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `slot` | Non-negative integer (`0` or greater) | `0`     | Zero-based position in the generated session deck. Slot `0` is the first currently discovered session. Slot assignments are dynamic and are not tied to a provider or session ID. |
+
+This type is normally created by the addon in its generated deck. Configure `slot` only when placing an agent tile yourself:
 
 ```yaml
-- position: 0
+- position: 1
   type: "coding-agents:agent"
   config:
-    providerId: "opencode" # or "claude-code"
-    sessionId: "<session id>" # optional — latest when omitted
+    slot: 0 # first discovered session; 1 is the second, and so on
 ```

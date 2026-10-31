@@ -103,10 +103,16 @@ export const validateButton = (
   const base = { deckId, position }
   const issues: FullValidationIssue[] = []
   if (!registry.hasButtonType(btn.type)) {
+    const addonName = btn.type.split(":", 1)[0]
+    const availableTypes = registry.getAddon(addonName ?? "")?.buttonTypes
+    const hint =
+      availableTypes !== undefined
+        ? ` Available button types for '${addonName}': ${Object.keys(availableTypes).join(", ") || "none"}. Check the type spelling.`
+        : " Check the type spelling and confirm that its addon is installed and enabled."
     issues.push({
       level: "error",
       path: `${path}.type`,
-      message: `Unknown button type: ${btn.type}`,
+      message: `Unknown button type: ${btn.type}.${hint}`,
       reason: "unknown-type",
       ...base,
     })

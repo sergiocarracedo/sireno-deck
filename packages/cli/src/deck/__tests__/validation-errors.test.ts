@@ -13,6 +13,14 @@ vi.mock("@/addon/registry")
 const makeMockRegistry = (validTypes: Set<string>) => {
   const r = {
     hasButtonType: vi.fn().mockImplementation((t: string) => validTypes.has(t)),
+    getAddon: vi.fn().mockImplementation((name: string) => {
+      const buttonTypes = Object.fromEntries(
+        [...validTypes]
+          .filter((type) => type.startsWith(`${name}:`))
+          .map((type) => [type, {}]),
+      )
+      return Object.keys(buttonTypes).length > 0 ? { buttonTypes } : undefined
+    }),
     getButtonType: vi.fn().mockImplementation((t: string) => {
       if (!validTypes.has(t)) return undefined
       return {
@@ -30,8 +38,13 @@ const makeMockRegistry = (validTypes: Set<string>) => {
 
 describe("validateButton issues include deckId/position", () => {
   it("unknown type issues include deckId, position, and reason", () => {
-    const mockRegistry = makeMockRegistry(new Set())
-    const btn: RawButtonDef = { type: "unknown:thing", position: 3 }
+    const mockRegistry = makeMockRegistry(
+      new Set(["system-status:system-status"]),
+    )
+    const btn: RawButtonDef = {
+      type: "system-status:systFem-status",
+      position: 3,
+    }
     const result = validateButton(
       btn,
       mockRegistry,
@@ -44,6 +57,9 @@ describe("validateButton issues include deckId/position", () => {
     expect(result.issues[0]!.position).toBe(3)
     expect(result.issues[0]!.reason).toBe("unknown-type")
     expect(result.issues[0]!.message).toContain("Unknown button type")
+    expect(result.issues[0]!.message).toContain(
+      "Available button types for 'system-status': system-status:system-status",
+    )
   })
 
   it("malformed config issues include reason='malformed-config'", () => {

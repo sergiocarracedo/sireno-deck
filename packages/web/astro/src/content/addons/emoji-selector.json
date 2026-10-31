@@ -1,6 +1,10 @@
 {
   "displayName": "Emoji Selector",
-  "description": "Emoji picker with categories and favorites. Tap to launch, browse category decks, and copy any unicode emoji to the clipboard.",
+  "description": "Open a categorized, paginated emoji picker and type the selected emoji into the currently focused app.",
+  "capabilities": [
+    "The launcher opens a category deck with favorites and emoji groups; long categories paginate automatically.",
+    "Tap an emoji to type it into the focused app. Double-tap types its shortcode when one is available; this addon does not copy emojis to the clipboard."
+  ],
   "category": "official",
   "tags": ["emoji", "clipboard", "productivity"],
   "icon": "smile",
@@ -19,6 +23,6 @@
   "screenshot": "/captures/web-snapshot-emoji.png",
   "decks": [
     "emoji-selector — launcher / categories",
-    "emoji-selector-<category> — one deck per category"
+    "emoji-selector-<category> — one generated deck per category, with page suffixes for longer categories"
   ]
 }

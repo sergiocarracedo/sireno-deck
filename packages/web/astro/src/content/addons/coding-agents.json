@@ -1,6 +1,12 @@
 {
   "displayName": "Coding Agents",
-  "description": "Live status of OpenCode + Claude Code sessions on the deck. See active agents, send prompts, manage contexts.",
+  "description": "Monitor discovered OpenCode and Claude Code sessions from the deck. The summary shows session status counts; tapping it opens a generated deck with one dynamic tile per session.",
+  "capabilities": [
+    "The summary tile counts sessions by status and highlights sessions that need attention or have errors.",
+    "Agent tiles show the session provider, status, and title; tap to cycle through status, usage, project/context, and recent activity pages.",
+    "Hold an agent tile to reopen that session in a terminal when its CLI is available. Double-tap to dismiss its attention notice."
+  ],
+  "deckDescription": "Tapping the summary opens this generated deck. It creates one tile for each discovered OpenCode or Claude Code session, with pages added as needed when sessions exceed the available keys. Each tile can cycle through session details; hold it to reopen the session in a terminal, or double-tap to dismiss an attention notice.",
   "category": "official",
   "tags": ["ai", "agents", "coding"],
   "icon": "bot",
@@ -13,5 +19,5 @@
     "/media/captures/coding-agents-deck.png"
   ],
   "screenshot": "/media/captures/coding-agents-summary.png",
-  "decks": ["coding-agents:agents — live agent slots (paginated)"]
+  "decks": ["coding-agents:agents — generated session tiles"]
 }
