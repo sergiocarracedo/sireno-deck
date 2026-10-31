@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.3](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.2...@sirenodeck/sirenodeck-0.2.3) (2026-10-31)
+
+
+### Bug Fixes
+
+* **cli:** avoid npm peer conflicts in Homebrew formula ([c2b2370](https://github.com/sergiocarracedo/sireno-deck/commit/c2b23708a475af5868e696779268322da7d5e6ba))
+* **homebrew:** tolerate optional peer dependency mismatch ([3dc5c37](https://github.com/sergiocarracedo/sireno-deck/commit/3dc5c379406994588bcc49904b5b8a270d016928))
+
 ## [0.2.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.1...@sirenodeck/sirenodeck-0.2.2) (2026-10-31)
 
 
