@@ -3,7 +3,7 @@ name: release
 on:
   push:
     tags:
-      - "@sirenodeck/**-*"
+      - "@sirenodeck/**"
   workflow_dispatch:
     inputs:
       tag:
@@ -69,14 +69,95 @@ jobs:
   publish:
     name: Publish ${{ needs.detect.outputs.package }}
     needs: detect
-    uses: ./.github/workflows/publish-npm.yml
-    with:
-      package: ${{ needs.detect.outputs.package }}
-      package-path: ${{ needs.detect.outputs.package-path }}
-      needs-build: ${{ needs.detect.outputs.needs-build == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ needs.detect.outputs.package-path }}
     permissions:
       contents: read
       id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Update npm for Trusted Publishing
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        if: ${{ needs.detect.outputs.needs-build == 'true' }}
+        run: pnpm run build
+
+      - name: Determine version and dist-tag
+        id: meta
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-alpha.* ]]; then
+            echo "dist_tag=alpha" >> "$GITHUB_OUTPUT"
+          elif [[ "$VERSION" == *-beta.* ]]; then
+            echo "dist_tag=beta" >> "$GITHUB_OUTPUT"
+          else
+            echo "dist_tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Publish and verify package
+        env:
+          PACKAGE: ${{ needs.detect.outputs.package }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          DIST_TAG: ${{ steps.meta.outputs.dist_tag }}
+        run: |
+          version_available() {
+            [[ "$(npm view "$PACKAGE@$VERSION" version 2>/dev/null || true)" == "$VERSION" ]]
+          }
+
+          # npm can accept a publish before its registry read API has indexed it.
+          # Avoid republishing an already-published version when a release is retried.
+          if ! version_available; then
+            if ! npm publish --provenance --tag "$DIST_TAG" --access public; then
+              echo "npm publish failed; checking whether the version was accepted already"
+            fi
+          else
+            echo "$PACKAGE@$VERSION is already published; skipping publish"
+          fi
+
+          for attempt in {1..24}; do
+            if version_available; then
+              break
+            fi
+            if [[ "$attempt" -eq 24 ]]; then
+              echo "npm did not make $PACKAGE@$VERSION available after 6 minutes"
+              exit 1
+            fi
+            sleep 15
+          done
+
+          for attempt in {1..24}; do
+            PUBLISHED_TAG=$(npm view "$PACKAGE" "dist-tags.$DIST_TAG" 2>/dev/null || true)
+            if [[ "$PUBLISHED_TAG" == "$VERSION" ]]; then
+              break
+            fi
+            if [[ "$attempt" -eq 24 ]]; then
+              echo "expected npm $DIST_TAG tag $VERSION, got ${PUBLISHED_TAG:-<unavailable>}"
+              exit 1
+            fi
+            sleep 15
+          done
+          npm view "$PACKAGE" dist-tags --json
 
   homebrew:
     name: Update Homebrew tap

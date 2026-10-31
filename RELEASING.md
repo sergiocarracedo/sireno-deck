@@ -84,12 +84,13 @@ configured once at <https://www.npmjs.com/>:
 2. **Settings → Publishing access → Trusted Publishers → Add a trusted publisher.**
 3. Provider: **GitHub Actions**.
 4. Repository: `sergiocarracedo/sireno-deck`.
-5. Workflow filename: `publish-npm.yml`.
+5. Workflow filename: `release.yml`.
 
 This enables `npm publish --provenance` via OIDC — no `NPM_TOKEN` secret to
-manage or leak. If any package is missing this configuration, the
-`publish` step will fail with `npm error EUNKNOWNPROVIDER` and link to the
-setup page.
+manage or leak. The publish job runs directly in `release.yml`: npm Trusted
+Publishing does not accept a reusable workflow (`workflow_call`) as the
+publisher identity. If a package is missing this configuration, npm rejects
+the publish with an OIDC permission error.
 
 ## Daily workflow
 

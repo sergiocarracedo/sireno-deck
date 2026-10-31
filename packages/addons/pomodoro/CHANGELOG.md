@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/addon-pomodoro-0.1.1...@sirenodeck/addon-pomodoro-0.1.2) (2026-10-28)
+
+
+### Features
+
+* **config-ui:** improve form controls and runtime feedback ([dabec9c](https://github.com/sergiocarracedo/sireno-deck/commit/dabec9c0edff73627b345887522c5c432fa4ab01))
+* **config-ui:** make remote emulator phone-ready ([05d2c57](https://github.com/sergiocarracedo/sireno-deck/commit/05d2c5756872ba1d20ad5e2df9ca3cfbc90f6324))
+* **release:** rename cli package to sirenodeck ([1cd8714](https://github.com/sergiocarracedo/sireno-deck/commit/1cd87146c7a9ae2378db579fb0b78f64e018b742))
+
+
+### Bug Fixes
+
+* **addon-api:** let addons ship a separate browser bundle so host UI renders ([fdfae6f](https://github.com/sergiocarracedo/sireno-deck/commit/fdfae6f3c08b94aa294a488aef909285fe171257))
+* **macos:** make Sireno Deck work end to end on macOS ([b457cb1](https://github.com/sergiocarracedo/sireno-deck/commit/b457cb112b8bb34eccb2743d87a4d7642154001b))
+* **macos:** make the daemon start and repair the darwin providers ([2b05666](https://github.com/sergiocarracedo/sireno-deck/commit/2b05666663b17fa0c2db8266d8c2972265cf426b))
+
 ## [0.1.1](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/addon-pomodoro-0.1.0...@sirenodeck/addon-pomodoro-0.1.1) (2026-09-13)
 
 
