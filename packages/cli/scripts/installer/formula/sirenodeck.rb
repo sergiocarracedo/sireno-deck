@@ -9,7 +9,8 @@ class Sirenodeck < Formula
 
   def install
     libexec.install Dir["*"]
-    system "npm", "install", "--prefix", libexec, "--omit=dev", "--ignore-scripts=false"
+    system "npm", "install", "--prefix", libexec,
+           "--omit=dev", "--ignore-scripts=false", "--legacy-peer-deps"
     bin.install_symlink libexec/"bin/sirenodeck"
   end
 
