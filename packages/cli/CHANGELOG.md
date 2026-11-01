@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.5](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.4...@sirenodeck/sirenodeck-0.2.5) (2026-11-01)
+
+
+### Bug Fixes
+
+* **homebrew:** link the published CLI wrapper ([8483eca](https://github.com/sergiocarracedo/sireno-deck/commit/8483eca2806f19b08ed39aeea57935d15beba4ae))
+* **homebrew:** link the published CLI wrapper ([102e98c](https://github.com/sergiocarracedo/sireno-deck/commit/102e98c50c7d65598d278df679b9c5cf6bb97bd6))
+
 ## [0.2.4](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.3...@sirenodeck/sirenodeck-0.2.4) (2026-11-01)
 
 
