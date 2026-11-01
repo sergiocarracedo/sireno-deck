@@ -58,7 +58,7 @@ work without the frontend bundle.
 ```
 push to main
   ├─ CI                lint · format · typecheck · test
-  └─ website           deploys to GitHub Pages
+  └─ website           deploys to GitHub Pages for relevant changes
 
 Actions → release-please → Run workflow
   ├─ select CLI/web, and/or any addons/themes
@@ -66,7 +66,8 @@ Actions → release-please → Run workflow
 merge release PR       manually, after reviewing the version bumps/changelog
   ├─ tag pushed        e.g. @sirenodeck/sirenodeck-0.1.0-alpha.0
   └─ release           publishes each tagged package independently
-                        └─ publish-npm    npm publish --provenance --access public
+                        ├─ publish-npm    npm publish --provenance --access public
+                        └─ website        redeploys after a successful release
 ```
 
 `main` is the staging branch. It is safe to push there without publishing a new
