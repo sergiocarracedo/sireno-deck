@@ -1,15 +1,16 @@
 import type { AddonFrontendButton } from "@/addon/api"
-import { Text } from "@/ui/index"
-import logoUrl from "@/assets/logo72x72.png"
+import { Icon, Text } from "@/ui/index"
 
 import pkg from "../../../../../package.json" with { type: "json" }
 import type { ConfigSchema } from "./config"
 
 const version: string = typeof pkg.version === "string" ? pkg.version : "0.0.0"
 
-const AppInfoButtonFrontend: AddonFrontendButton<ConfigSchema> = () => (
+const AppInfoButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
+  config,
+}) => (
   <div className="flex h-full w-full items-center justify-center gap-1 flex-col">
-    <img src={logoUrl} width={40} height={40} alt="" />
+    <Icon source={config.icon} size={40} />
     <Text text={version} />
   </div>
 )
