@@ -198,9 +198,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release create "$RELEASE_TAG" --draft \
-              --title "@sirenodeck/sirenodeck ${RELEASE_TAG##*-}" \
+          ASSET_TAG="${RELEASE_TAG}-homebrew"
+          if ! gh release view "$ASSET_TAG" >/dev/null 2>&1; then
+            gh release create "$ASSET_TAG" --draft --target "$RELEASE_TAG" \
+              --title "@sirenodeck/sirenodeck ${RELEASE_TAG##*-} Homebrew archive" \
               --notes "CLI release archive for Homebrew and direct installation."
           fi
       - name: Attach CLI tarball to GitHub Release
@@ -209,11 +210,12 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
           ASSET_PATH: ${{ steps.pack.outputs.asset }}
         run: |
+          ASSET_TAG="${RELEASE_TAG}-homebrew"
           ASSET_NAME=$(basename "$ASSET_PATH")
-          if gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' | grep -Fxq "$ASSET_NAME"; then
-            echo "$ASSET_NAME is already attached to $RELEASE_TAG"
+          if gh release view "$ASSET_TAG" --json assets --jq '.assets[].name' | grep -Fxq "$ASSET_NAME"; then
+            echo "$ASSET_NAME is already attached to $ASSET_TAG"
           else
-            gh release upload "$RELEASE_TAG" "$ASSET_PATH"
+            gh release upload "$ASSET_TAG" "$ASSET_PATH"
           fi
       - name: Render formula
         working-directory: packages/cli
@@ -221,8 +223,9 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
           ASSET_PATH: ${{ steps.pack.outputs.asset }}
         run: |
+          ASSET_TAG="${RELEASE_TAG}-homebrew"
           ASSET_NAME=$(basename "$ASSET_PATH")
-          TAG_PATH=$(python3 -c 'from urllib.parse import quote; import os; print(quote(os.environ["RELEASE_TAG"], safe=""))')
+          TAG_PATH=$(ASSET_TAG="$ASSET_TAG" python3 -c 'from urllib.parse import quote; import os; print(quote(os.environ["ASSET_TAG"], safe=""))')
           URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_PATH}/${ASSET_NAME}"
           SHA256=$(sha256sum "$ASSET_PATH" | cut -d' ' -f1)
           sed -e "s|RELEASE_URL|${URL}|g" -e "s/SHA256/${SHA256}/g" \
@@ -246,4 +249,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
-        run: gh release edit "$RELEASE_TAG" --draft=false
+        run: gh release edit "${RELEASE_TAG}-homebrew" --draft=false
