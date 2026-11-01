@@ -7,7 +7,6 @@ on:
       - "packages/web/**"
       - "packages/cli/docs/**"
       - "packages/cli/src/**"
-      - "demos/website-showcase.webm"
       - "config.yml"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
