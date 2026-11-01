@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.7](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.6...@sirenodeck/sirenodeck-0.2.7) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** repair packaged startup and persist brightness ([#70](https://github.com/sergiocarracedo/sireno-deck/issues/70)) ([122123c](https://github.com/sergiocarracedo/sireno-deck/commit/122123c0bad844459aebb9be6a3d122ed0f18ecb))
+
 ## [0.2.6](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.5...@sirenodeck/sirenodeck-0.2.6) (2026-11-01)
 
 
