@@ -200,7 +200,9 @@ jobs:
         run: |
           ASSET_TAG="${RELEASE_TAG}-homebrew"
           if ! gh release view "$ASSET_TAG" >/dev/null 2>&1; then
-            gh release create "$ASSET_TAG" --draft --target "$RELEASE_TAG" \
+            git fetch origin "refs/tags/$RELEASE_TAG"
+            TARGET_COMMIT=$(git rev-parse 'FETCH_HEAD^{commit}')
+            gh release create "$ASSET_TAG" --draft --target "$TARGET_COMMIT" \
               --title "@sirenodeck/sirenodeck ${RELEASE_TAG##*-} Homebrew archive" \
               --notes "CLI release archive for Homebrew and direct installation."
           fi
