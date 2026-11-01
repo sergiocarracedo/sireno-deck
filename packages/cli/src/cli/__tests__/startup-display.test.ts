@@ -165,8 +165,8 @@ describe("formatFeaturesList", () => {
       ]),
     ).toEqual([
       "Features",
-      "│ ✓ keystrokes",
-      "│ ✗ clipboard — wl-copy not found",
+      "│  ✓ keystrokes",
+      "│  ✗ clipboard — wl-copy not found",
     ])
   })
 
@@ -203,7 +203,7 @@ describe("formatFeaturesList", () => {
         output += text
       },
     )
-    expect(output).toBe("│ ✓ keystrokes\n│ ✗ clipboard\n│ ✓ http\n")
+    expect(output).toBe("│  ✓ keystrokes\n│  ✗ clipboard\n│  ✓ http\n")
     expect(output).not.toContain("\n\n")
   })
 })

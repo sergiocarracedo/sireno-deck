@@ -147,6 +147,8 @@ export class RealOutputClient implements OutputClient {
     let configUiSupervisor: SuperviseHandle | null = null
 
     try {
+      this.deviceBrightness = opts.runtime.getBrightness()
+      await device.setBrightness(this.deviceBrightness)
       // ponytail: paint the waiting state directly to hardware before Vite or
       // Playwright starts; the deck must remain useful when its frontend is down.
       const logoCandidates = [
