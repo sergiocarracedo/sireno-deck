@@ -193,6 +193,16 @@ jobs:
           tar -tzf "$ASSET_PATH" | grep '^package/dist/' | sort > "$RUNNER_TEMP/packed-dist-files.txt"
           diff -u "$RUNNER_TEMP/expected-dist-files.txt" "$RUNNER_TEMP/packed-dist-files.txt"
           echo "asset=$ASSET_PATH" >> "$GITHUB_OUTPUT"
+      - name: Prepare draft GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --draft \
+              --title "@sirenodeck/sirenodeck ${RELEASE_TAG##*-}" \
+              --notes "CLI release archive for Homebrew and direct installation."
+          fi
       - name: Attach CLI tarball to GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -232,3 +242,8 @@ jobs:
           git -C homebrew-tap add Formula/sirenodeck.rb
           git -C homebrew-tap diff --cached --quiet || git -C homebrew-tap commit -m "Update sirenodeck formula"
           git -C homebrew-tap push
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: gh release edit "$RELEASE_TAG" --draft=false
