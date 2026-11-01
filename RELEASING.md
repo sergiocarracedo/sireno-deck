@@ -30,8 +30,8 @@ and release configuration have been set up separately.
 
 The CLI is bundled via `tsdown` into a single ESM file at `dist/main.mjs`. The
 `bin/sirenodeck.js` wrapper spawns the bundle with `process.execPath`. Native
-deps (`sharp`, `@elgato-stream-deck/node`, `dbus-next`, `get-windows`,
-`usocket`, `@julusian/jpeg-turbo`) are kept external — they ship prebuilt
+deps (`sharp`, `@elgato-stream-deck/node`, `dbus-next`, `usocket`,
+`@julusian/jpeg-turbo`) are kept external — they ship prebuilt
 `.node` binaries that a JS bundle cannot embed.
 
 Real-mode rendering (Playwright headless screenshots of the frontend SPA)

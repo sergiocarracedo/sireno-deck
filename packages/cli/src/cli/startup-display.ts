@@ -188,7 +188,7 @@ export const formatFeaturesList = (
   "Features",
   ...items.map(
     (it) =>
-      `   ${it.name} ${it.available ? color.green("✓") : color.red("✗")}${!it.available && it.reason ? ` — ${it.reason}` : ""}`,
+      `│ ${it.available ? color.green("✓") : color.red("✗")} ${it.name}${!it.available && it.reason ? ` — ${it.reason}` : ""}`,
   ),
 ]
 
