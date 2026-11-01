@@ -161,22 +161,61 @@ jobs:
 
   homebrew:
     name: Update Homebrew tap
-    needs: [detect, publish]
+    needs: detect
     if: needs.detect.outputs.package == '@sirenodeck/sirenodeck'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+      - name: Install dependencies
+        working-directory: packages/cli
+        run: pnpm install --frozen-lockfile
+      - name: Build and pack CLI
+        id: pack
+        working-directory: packages/cli
+        run: |
+          pnpm run build
+          ASSET_NAME=$(npm pack --silent --pack-destination "$RUNNER_TEMP")
+          ASSET_PATH="$RUNNER_TEMP/$ASSET_NAME"
+          test -f "$ASSET_PATH"
+          find dist -type f -printf 'package/dist/%P\n' | sort > "$RUNNER_TEMP/expected-dist-files.txt"
+          tar -tzf "$ASSET_PATH" | grep '^package/dist/' | sort > "$RUNNER_TEMP/packed-dist-files.txt"
+          diff -u "$RUNNER_TEMP/expected-dist-files.txt" "$RUNNER_TEMP/packed-dist-files.txt"
+          echo "asset=$ASSET_PATH" >> "$GITHUB_OUTPUT"
+      - name: Attach CLI tarball to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+          ASSET_PATH: ${{ steps.pack.outputs.asset }}
+        run: |
+          ASSET_NAME=$(basename "$ASSET_PATH")
+          if gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' | grep -Fxq "$ASSET_NAME"; then
+            echo "$ASSET_NAME is already attached to $RELEASE_TAG"
+          else
+            gh release upload "$RELEASE_TAG" "$ASSET_PATH"
+          fi
       - name: Render formula
+        working-directory: packages/cli
         env:
           RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+          ASSET_PATH: ${{ steps.pack.outputs.asset }}
         run: |
-          VERSION="${RELEASE_TAG#@sirenodeck/sirenodeck-}"
-          URL="https://registry.npmjs.org/@sirenodeck/sirenodeck/-/sirenodeck-${VERSION}.tgz"
-          SHA256=$(curl --fail --location "$URL" | sha256sum | cut -d' ' -f1)
-          sed -e "s/VERSION/${VERSION}/g" -e "s/SHA256/${SHA256}/g" \
+          ASSET_NAME=$(basename "$ASSET_PATH")
+          TAG_PATH=$(python3 -c 'from urllib.parse import quote; import os; print(quote(os.environ["RELEASE_TAG"], safe=""))')
+          URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_PATH}/${ASSET_NAME}"
+          SHA256=$(sha256sum "$ASSET_PATH" | cut -d' ' -f1)
+          sed -e "s|RELEASE_URL|${URL}|g" -e "s/SHA256/${SHA256}/g" \
             packages/cli/scripts/installer/formula/sirenodeck.rb > sirenodeck.rb
       - name: Checkout Homebrew tap
         uses: actions/checkout@v4
@@ -187,7 +226,7 @@ jobs:
       - name: Publish formula
         run: |
           mkdir -p homebrew-tap/Formula
-          cp sirenodeck.rb homebrew-tap/Formula/sirenodeck.rb
+          cp packages/cli/sirenodeck.rb homebrew-tap/Formula/sirenodeck.rb
           git -C homebrew-tap config user.name "github-actions[bot]"
           git -C homebrew-tap config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C homebrew-tap add Formula/sirenodeck.rb
