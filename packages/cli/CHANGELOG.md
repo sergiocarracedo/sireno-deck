@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.9](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.8...@sirenodeck/sirenodeck-0.2.9) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** package settings logo without binary import ([7d62585](https://github.com/sergiocarracedo/sireno-deck/commit/7d62585e60532943b6d658a198236ff2ed3a4e88))
+
 ## [0.2.8](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.7...@sirenodeck/sirenodeck-0.2.8) (2026-11-01)
 
 

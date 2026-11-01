@@ -1,6 +1,6 @@
 {
   "name": "@sirenodeck/sirenodeck",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "CLI for managing Elgato Stream Deck devices via a config-driven deck system.",
   "homepage": "https://deck.sireno.dev",
   "bugs": {
