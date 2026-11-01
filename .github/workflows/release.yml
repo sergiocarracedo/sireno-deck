@@ -226,7 +226,7 @@ jobs:
           URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_PATH}/${ASSET_NAME}"
           SHA256=$(sha256sum "$ASSET_PATH" | cut -d' ' -f1)
           sed -e "s|RELEASE_URL|${URL}|g" -e "s/SHA256/${SHA256}/g" \
-            packages/cli/scripts/installer/formula/sirenodeck.rb > sirenodeck.rb
+            scripts/installer/formula/sirenodeck.rb > sirenodeck.rb
       - name: Checkout Homebrew tap
         uses: actions/checkout@v4
         with:
