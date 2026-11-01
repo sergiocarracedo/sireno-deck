@@ -7,7 +7,7 @@ import {
   it,
   vi,
 } from "vitest"
-import { writeFileSync, mkdtempSync } from "node:fs"
+import { mkdirSync, writeFileSync, mkdtempSync } from "node:fs"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 
@@ -354,6 +354,8 @@ const setHappyPath = (
     },
   })
   const fakeRuntime = {
+    getBrightness: vi.fn(() => 50),
+    setBrightness: vi.fn(),
     setDecks: vi.fn(),
     getActiveDeckId: vi.fn(() => "main"),
     setAvailableOverlayDeck: vi.fn(),
@@ -461,16 +463,28 @@ describe("run", () => {
   it("runs full pipeline end-to-end with single connected device", async () => {
     const outputClient = setHappyPath()
     const signals = makeFakeSignals()
+    const xdgConfigHome = mkdtempSync(join(tmpdir(), "sirenodeck-settings-"))
+    mkdirSync(join(xdgConfigHome, "sirenodeck"), { recursive: true })
+    writeFileSync(
+      join(xdgConfigHome, "sirenodeck", "settings.json"),
+      JSON.stringify({ brightness: 72, activeDeck: "main" }),
+    )
     const runPromise = run({
       config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
-      xdgConfigHome: "/xdg",
+      xdgConfigHome,
       homeDir: "/home",
       signals,
       logger: silentLogger(),
     })
 
     await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const runtime = (
+      deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> }
+    ).createDeckRuntime.mock.results[0]!.value.runtime as {
+      setBrightness: ReturnType<typeof vi.fn>
+    }
+    expect(runtime.setBrightness).toHaveBeenCalledWith(72)
     signals.trigger()
     await runPromise
 
