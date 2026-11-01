@@ -8,20 +8,16 @@ import type pino from "pino"
 // runPipeline's finally block; the helper is preserved for that single use
 // site and stays best-effort because the device may be unplugged at the
 // moment of exit.
-const buildBlackBuffer = (keyCount: number): Buffer => {
-  const stride = 3 * 8
-  const total = keyCount * stride * 8
-  return Buffer.alloc(total)
-}
+const buildBlackBuffer = (): Buffer => Buffer.alloc(72 * 72 * 3)
 
 export const pushBlackFrame = async (
   device: StreamDeckDevice,
   logger: pino.Logger,
 ): Promise<void> => {
   try {
-    const buf = buildBlackBuffer(device.getKeyCount())
+    const buf = buildBlackBuffer()
     for (let i = 0; i < device.getKeyCount(); i++) {
-      await device.fillKeyBuffer(i, buf.subarray(0, 3 * 8 * 8))
+      await device.fillKeyBuffer(i, buf)
     }
     // ponytail: allow queued image writes to drain before the caller closes
     // the device; brightness is intentionally left unchanged.

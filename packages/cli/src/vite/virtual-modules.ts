@@ -270,7 +270,22 @@ const BROWSER_NODE_STUBS: ReadonlyArray<{
     hasDefault: false,
     names: ["readFile", "readdir", "stat"],
   },
-  { specifier: "node:path", hasDefault: false, names: ["join"] },
+  {
+    specifier: "node:path",
+    hasDefault: false,
+    names: [
+      "join",
+      "dirname",
+      "basename",
+      "isAbsolute",
+      "resolve",
+      "extname",
+      "relative",
+      "normalize",
+      "parse",
+      "sep",
+    ],
+  },
 ]
 
 const nodeStubSource = ({
