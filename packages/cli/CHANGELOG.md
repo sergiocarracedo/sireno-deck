@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.8](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.7...@sirenodeck/sirenodeck-0.2.8) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** ship runtime frontend and refresh stale services ([7301198](https://github.com/sergiocarracedo/sireno-deck/commit/730119865e09ea91808e58aec178c2be5b4bc78d))
+
 ## [0.2.7](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.6...@sirenodeck/sirenodeck-0.2.7) (2026-11-01)
 
 
