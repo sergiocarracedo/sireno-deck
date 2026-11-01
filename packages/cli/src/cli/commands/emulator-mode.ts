@@ -51,13 +51,35 @@ export const findWorkspaceRoot = (): string => {
   return here
 }
 
+const packageRoot = (): string | null => {
+  const here = dirname(fileURLToPath(import.meta.url))
+  const root = dirname(here)
+  return existsSync(join(root, "frontend", "vite.config.ts")) ? root : null
+}
+
+const resolveViteBin = (): string => {
+  let dir = packageRoot() ?? findWorkspaceRoot()
+  for (;;) {
+    const bin = join(dir, "node_modules", ".bin", "vite")
+    if (existsSync(bin)) return bin
+    const parent = dirname(dir)
+    if (parent === dir) return bin
+    dir = parent
+  }
+}
+
 export const resolveConfigUiCwd = (override?: string): string => {
   if (override !== undefined) return override
-  return resolvePath(findWorkspaceRoot(), "packages", "cli", "config-ui")
+  const root = packageRoot()
+  return root !== null
+    ? join(root, "config-ui")
+    : resolvePath(findWorkspaceRoot(), "packages", "cli", "config-ui")
 }
 
 export const resolveFrontendCwd = (): string =>
-  resolvePath(findWorkspaceRoot(), "packages", "cli", "frontend")
+  packageRoot() !== null
+    ? join(packageRoot()!, "frontend")
+    : resolvePath(findWorkspaceRoot(), "packages", "cli", "frontend")
 
 interface ViteSpawnOptions {
   port: number
@@ -124,7 +146,7 @@ const spawnViteAndWaitForReady = (
     if (emulatorMode !== undefined) {
       env["SIRENO_EMULATOR_MODE"] = String(emulatorMode)
     }
-    const viteBin = findWorkspaceRoot() + "/node_modules/.bin/vite"
+    const viteBin = resolveViteBin()
     const viteArgs = [
       "--config",
       resolvePath(cwd, "vite.config.ts"),
@@ -134,7 +156,7 @@ const spawnViteAndWaitForReady = (
     if (host !== undefined) {
       viteArgs.push("--host", host)
     }
-    const child = spawn(viteBin, viteArgs, {
+    const child = spawn(process.execPath, [viteBin, ...viteArgs], {
       cwd,
       env,
       stdio: ["ignore", "pipe", "pipe"],

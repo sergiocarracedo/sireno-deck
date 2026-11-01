@@ -25,7 +25,7 @@ describe("pushBlackFrame", () => {
     expect(device.fillKeyBuffer).toHaveBeenNthCalledWith(
       1,
       0,
-      Buffer.alloc(192),
+      Buffer.alloc(72 * 72 * 3),
     )
     expect(device.setBrightness).not.toHaveBeenCalled()
   })
