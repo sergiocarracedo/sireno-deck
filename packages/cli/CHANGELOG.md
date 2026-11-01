@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.4](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.3...@sirenodeck/sirenodeck-0.2.4) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** improve startup feature list formatting ([f0df303](https://github.com/sergiocarracedo/sireno-deck/commit/f0df303bbb8d0195890ae6f04770b2570d931cd5))
+* **cli:** remove unused get-windows dependency ([18139eb](https://github.com/sergiocarracedo/sireno-deck/commit/18139eb619523d473a57bc3ee44c6f30aa6ad528))
+* **cli:** remove unused get-windows dependency ([0ff8bb4](https://github.com/sergiocarracedo/sireno-deck/commit/0ff8bb408b1f56ed62bb7f541fcec05c99ca39de))
+
 ## [0.2.3](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.2...@sirenodeck/sirenodeck-0.2.3) (2026-10-31)
 
 
