@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.6](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.5...@sirenodeck/sirenodeck-0.2.6) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** include generated chunks in release archives ([7193adb](https://github.com/sergiocarracedo/sireno-deck/commit/7193adb63fc712535781027c3a8573078f29d312))
+* **cli:** ship generated bundle chunks ([e4d899b](https://github.com/sergiocarracedo/sireno-deck/commit/e4d899b6cd534fc27d0f4f8d6fdb20fbe2b31f99))
+
 ## [0.2.5](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.4...@sirenodeck/sirenodeck-0.2.5) (2026-11-01)
 
 
