@@ -77,6 +77,29 @@ const playing = (currentTime: number, totalTime: number): MediaStatus => ({
 })
 
 describe("media backend", () => {
+  it("advances capture playback and freezes it when paused", async () => {
+    vi.useFakeTimers()
+    vi.stubEnv("SIRENO_CAPTURE_FAKE_MEDIA", "1")
+    vi.stubEnv("SIRENO_CAPTURE_FAKE_MEDIA_FILE", "")
+    const { globalService } = await import("../backend")
+    const backend = globalService as unknown as BackendGlobalBackend
+    const { ctx } = makeCtx()
+    await backend.onLoad!(ctx)
+    await vi.advanceTimersByTimeAsync(3000)
+    const playingState = (await backend.pollers![0]!.poll(
+      ctx,
+    )) as MediaPlayerState
+    expect(playingState.currentTime).toBe(87)
+    await backend.methods!.pause!()
+    await vi.advanceTimersByTimeAsync(3000)
+    const pausedState = (await backend.pollers![0]!.poll(
+      ctx,
+    )) as MediaPlayerState
+    expect(pausedState.currentTime).toBe(87)
+    await backend.onUnload!(ctx)
+    vi.unstubAllEnvs()
+    vi.useRealTimers()
+  })
   beforeEach(() => {
     vi.clearAllMocks()
   })

@@ -22,7 +22,7 @@ const CAPTURE_METRIC_VALUES: Readonly<Record<SystemMetricId, number>> = {
   disk: 54,
   "disk-io": 1_240_000,
   "fan-rpm": 1_260,
-  frequency: 3_400,
+  frequency: 3.6,
   "gpu-temp": 58,
   "gpu-usage": 27,
   load: 1.4,

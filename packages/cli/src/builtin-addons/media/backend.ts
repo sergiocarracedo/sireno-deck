@@ -26,11 +26,30 @@ let provider: MediaStatusProvider | null = null
 let ctxRef: AddonServiceContext | null = null
 let captureMediaState: MediaPlayerState | null = null
 let captureStage = "playing"
+let captureUpdatedAt = 0
 
 const captureMode = (): boolean =>
   process.env["SIRENO_CAPTURE_FAKE_MEDIA"] === "1"
 
+const updateCaptureProgress = (): void => {
+  if (captureMediaState === null) return
+  const now = Date.now()
+  if (captureMediaState.isPlaying) {
+    const currentTime = Math.min(
+      captureMediaState.totalTime,
+      captureMediaState.currentTime + (now - captureUpdatedAt) / 1000,
+    )
+    captureMediaState = {
+      ...captureMediaState,
+      currentTime,
+      progress: computeProgress(currentTime, captureMediaState.totalTime),
+    }
+  }
+  captureUpdatedAt = now
+}
+
 const setCapturePlayback = (playing: boolean): void => {
+  updateCaptureProgress()
   captureStage = playing ? "playing" : "paused"
   if (captureMediaState === null) return
   captureMediaState = {
@@ -92,6 +111,7 @@ export const globalService: AddonGlobalService = {
       intervalMs: 1_000,
       poll: async (_ctx: AddonServiceContext): Promise<MediaPlayerState> => {
         if (captureMode() && captureMediaState !== null) {
+          updateCaptureProgress()
           const stagePath = process.env["SIRENO_CAPTURE_FAKE_MEDIA_FILE"]
           if (stagePath !== undefined) {
             try {
@@ -169,6 +189,7 @@ export const globalService: AddonGlobalService = {
         muted: false,
       }
       captureStage = "playing"
+      captureUpdatedAt = Date.now()
       provider = null
       return
     }

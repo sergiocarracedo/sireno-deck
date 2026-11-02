@@ -59,9 +59,17 @@ describe("systemStatusManifest", () => {
     const swap = await pollers
       .find((poller) => poller.id === "metric:swap")
       ?.poll({} as never)
+    const frequency = await pollers
+      .find((poller) => poller.id === "metric:frequency")
+      ?.poll({} as never)
 
     expect(cpu).toMatchObject({ value: 42, percentage: 42, available: true })
     expect(ram).toMatchObject({ value: 68, percentage: 68, available: true })
     expect(swap).toMatchObject({ value: 24, percentage: 24, available: true })
+    expect(frequency).toMatchObject({
+      value: 3.6,
+      unit: "GHz",
+      available: true,
+    })
   })
 })

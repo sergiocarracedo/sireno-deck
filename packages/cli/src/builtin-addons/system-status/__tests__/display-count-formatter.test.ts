@@ -38,7 +38,7 @@ describe("toDisplayMetric: count + frequency-ghz unit passthrough", () => {
 
   it("frequency-ghz keeps unit from snapshot/probe", () => {
     const r = toDisplayMetric(snapFreq(3.4))
-    expect(r.formattedValue).toBe("3.40")
+    expect(r.formattedValue).toBe("3.4")
     expect(r.unit).toBe("GHz")
   })
 

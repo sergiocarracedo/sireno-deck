@@ -273,10 +273,24 @@ const captureAgentsForStage = (stage: string): AgentsSnapshot => {
           "waiting_for_human",
         ]
   const now = Date.now()
+  const titles = [
+    "Review authentication flow",
+    "Fix dashboard loading state",
+    "Write API integration tests",
+    "Refactor configuration parser",
+    "Investigate memory usage",
+    "Update developer documentation",
+    "Add keyboard shortcuts",
+    "Improve deployment pipeline",
+    "Review database migration",
+    "Polish settings interface",
+    "Summarize code changes",
+    "Check release notes",
+  ]
   const agents: Agent[] = statuses.map((status, index) => ({
     sessionId: `sireno-capture-${stage}-${index + 1}`,
     providerId: index % 2 === 0 ? "opencode" : "claude-code",
-    title: `Showcase task ${index + 1}`,
+    title: titles[index]!,
     status,
     directory: "/works/sireno-deck",
     updatedAt: now - index * 1_000,

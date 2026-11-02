@@ -181,11 +181,19 @@ try {
   let captureStartedAt = Date.now()
   const waitUntil = async (atMs) =>
     pause(Math.max(0, captureStartedAt + atMs - Date.now()))
-  const clickKey = async (position, expectedDeck) => {
+  const waitForDeck = async (expectedDeck) => {
+    await run("agent-browser", [
+      ...browserArgs,
+      "wait",
+      "--fn",
+      `(() => { const deck = document.querySelector('[data-testid=deck-frame]')?.dataset.deck; const expected = ${JSON.stringify(expectedDeck)}; return deck === expected || deck === expected + '-p1'; })()`,
+    ])
+  }
+  const clickKey = async (position, expectedDeck, taps = 1) => {
     await run("agent-browser", [
       ...browserArgs,
       "eval",
-      `(() => { const key = document.querySelector('[data-testid="deck-key-${position}"]'); if (!key) throw new Error('Missing emulator key ${position}'); const rect = key.getBoundingClientRect(); const x = rect.x + rect.width / 2; const y = rect.y + rect.height / 2; for (const [type, buttons] of [['pointerdown', 1], ['pointerup', 0], ['click', 0]]) key.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 1, pointerType: 'mouse', isPrimary: true, clientX: x, clientY: y, button: 0, buttons })); return 'tapped'; })()`,
+      `(async () => { const key = document.querySelector('[data-testid="deck-key-${position}"]'); if (!key) throw new Error('Missing emulator key ${position}'); const rect = key.getBoundingClientRect(); const x = rect.x + rect.width / 2; const y = rect.y + rect.height / 2; const send = (type, buttons) => key.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 1, pointerType: 'mouse', isPrimary: true, clientX: x, clientY: y, button: 0, buttons })); for (let i = 0; i < ${taps}; i++) { if (i) await new Promise(resolve => setTimeout(resolve, 80)); send('pointerdown', 1); await new Promise(resolve => setTimeout(resolve, 160)); send('pointerup', 0); } return 'tapped'; })()`,
     ])
     if (expectedDeck) {
       const currentDeck = await runForOutput("agent-browser", [
@@ -196,18 +204,11 @@ try {
       console.log(
         `After tap ${position}, deck is ${currentDeck.trim().split(/\r?\n/).at(-1)}; waiting for ${expectedDeck}`,
       )
-      await run("agent-browser", [
-        ...browserArgs,
-        "wait",
-        "--fn",
-        `(() => { const deck = document.querySelector('[data-testid=deck-frame]')?.dataset.deck; const expected = ${JSON.stringify(expectedDeck)}; return deck === expected || deck === expected + '-p1'; })()`,
-      ])
+      await waitForDeck(expectedDeck)
     }
   }
   const doubleClickKey = async (position, expectedDeck) => {
-    await clickKey(position)
-    await pause(100)
-    await clickKey(position, expectedDeck)
+    await clickKey(position, expectedDeck, 2)
   }
 
   const boundsOutput = await runForOutput("agent-browser", [
@@ -249,6 +250,7 @@ try {
       writeFileSync(mediaStageFile, JSON.stringify({ stage: event.stage }))
     else if (event.kind === "activeApp")
       writeFileSync(activeAppFile, JSON.stringify(event.snapshot))
+    else if (event.kind === "waitDeck") await waitForDeck(event.deck)
     else throw new Error(`Unknown scene event kind: ${event.kind}`)
   }
   await waitUntil(durationMs)
