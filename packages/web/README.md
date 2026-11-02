@@ -40,6 +40,16 @@ The Astro `predev` and `prebuild` scripts run the sync before starting; CI is ex
 
 ## Showcase media
 
+Starting the Astro development server does not generate showcase media. To
+prepare or refresh the website media separately, run:
+
+```bash
+pnpm --filter sirenodeck-web render-showcase
+```
+
+The production build runs this preparation automatically. Existing media under
+`/.showcase/` remains available to the development server between runs.
+
 Run `pnpm capture:showcase` from the repository root (requires `ffmpeg` and
 the workspace `scripted-demo` package). The script starts isolated Vite
 frontends, drives them through the scripted-demo WebSocket bridge, and records

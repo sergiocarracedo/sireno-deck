@@ -19,10 +19,12 @@ interface Props {
 const {
   title,
   description = "Declarative control for your Elgato Stream Deck. Linux, macOS, Windows.",
-  ogTitle = "SirenoDECK",
-  ogDescription = "Buttons belong in your dotfiles.",
+  ogTitle = title,
+  ogDescription = description,
   ogImage,
 } = Astro.props
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href
+const imageUrl = ogImage ? new URL(ogImage, Astro.site ?? Astro.url).href : undefined
 ---
 
 <!doctype html>
@@ -35,10 +37,19 @@ const {
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:site_name" content="SirenoDECK" />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={ogDescription} />
     <meta property="og:type" content="website" />
-    {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site).href} />}
+    <meta property="og:url" content={canonicalUrl} />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    {imageUrl && <meta property="og:image:alt" content={ogTitle} />}
+    <meta name="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+    {imageUrl && <meta name="twitter:image:alt" content={ogTitle} />}
     <meta name="theme-color" content="#0a0a0f" />
     <meta name="color-scheme" content="light dark" />
     <script is:inline>

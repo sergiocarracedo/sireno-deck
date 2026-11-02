@@ -11,7 +11,7 @@
     "sync-captures": "node ../scripts/capture-decks.mjs",
     "capture-showcase": "node ../scripts/capture-showcase.mjs",
     "render-showcase": "node ../scripts/render-showcase.mjs",
-    "predev": "pnpm run render-showcase && pnpm run sync-docs && pnpm run sync-tokens && pnpm run sync-schemas",
+    "predev": "pnpm run sync-docs && pnpm run sync-tokens && pnpm run sync-schemas",
     "dev": "astro dev",
     "prebuild": "pnpm run render-showcase && pnpm run sync-docs && pnpm run sync-tokens && pnpm run sync-schemas",
     "build": "astro build",

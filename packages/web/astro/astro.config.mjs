@@ -1,8 +1,8 @@
 // @ts-check
-import { defineConfig } from "astro/config"
-import starlight from "@astrojs/starlight"
 import react from "@astrojs/react"
+import starlight from "@astrojs/starlight"
 import tailwindcss from "@tailwindcss/vite"
+import { defineConfig } from "astro/config"
 import {
   createReadStream,
   existsSync,
@@ -62,7 +62,7 @@ export default defineConfig({
   integrations: [
     react(),
     starlight({
-      title: "Sireno Deck Docs",
+      title: "SirenoDECK Docs",
       description:
         "Declarative Elgato Stream Deck control. Linux-first, dotfile-friendly, themable.",
       social: [

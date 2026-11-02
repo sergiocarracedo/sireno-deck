@@ -7,7 +7,6 @@
     { "atMs": 1800, "kind": "tap", "position": 13 },
     { "atMs": 2000, "kind": "agents", "stage": "updated" },
     { "atMs": 3000, "kind": "tap", "position": 12 },
-    { "atMs": 6000, "kind": "media", "stage": "paused" },
     { "atMs": 3500, "kind": "tap", "position": 10 },
     {
       "atMs": 5200,
@@ -18,15 +17,16 @@
         "processId": null
       }
     },
-    { "atMs": 7000, "kind": "tap", "position": 0, "deck": "main" },
+    { "atMs": 6000, "kind": "media", "stage": "paused" },
+    { "atMs": 6500, "kind": "activeApp", "snapshot": null },
+    { "atMs": 7000, "kind": "tap", "position": 14, "deck": "main" },
     { "atMs": 7900, "kind": "tap", "position": 1, "deck": "main" },
-    { "atMs": 8500, "kind": "tap", "position": 14, "deck": "main" },
     { "atMs": 9500, "kind": "tap", "position": 9, "deck": "emoji-selector" },
     {
       "atMs": 10800,
       "kind": "tap",
       "position": 1,
-      "deck": "emoji-selector-smileys"
+      "deck": "emoji-selector-smileys-p1"
     },
     { "atMs": 11600, "kind": "tap", "position": 0 },
     { "atMs": 12400, "kind": "tap", "position": 14, "deck": "emoji-selector" },

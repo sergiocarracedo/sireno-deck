@@ -188,11 +188,19 @@ try {
       `(() => { const key = document.querySelector('[data-testid="deck-key-${position}"]'); if (!key) throw new Error('Missing emulator key ${position}'); const rect = key.getBoundingClientRect(); const x = rect.x + rect.width / 2; const y = rect.y + rect.height / 2; for (const [type, buttons] of [['pointerdown', 1], ['pointerup', 0], ['click', 0]]) key.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 1, pointerType: 'mouse', isPrimary: true, clientX: x, clientY: y, button: 0, buttons })); return 'tapped'; })()`,
     ])
     if (expectedDeck) {
+      const currentDeck = await runForOutput("agent-browser", [
+        ...browserArgs,
+        "eval",
+        "document.querySelector('[data-testid=deck-frame]')?.dataset.deck ?? 'missing'",
+      ])
+      console.log(
+        `After tap ${position}, deck is ${currentDeck.trim().split(/\r?\n/).at(-1)}; waiting for ${expectedDeck}`,
+      )
       await run("agent-browser", [
         ...browserArgs,
         "wait",
         "--fn",
-        `document.querySelector('[data-testid=deck-frame]')?.dataset.deck === '${expectedDeck}'`,
+        `(() => { const deck = document.querySelector('[data-testid=deck-frame]')?.dataset.deck; const expected = ${JSON.stringify(expectedDeck)}; return deck === expected || deck === expected + '-p1'; })()`,
       ])
     }
   }
