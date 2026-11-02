@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.10](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.9...@sirenodeck/sirenodeck-0.2.10) (2026-11-02)
+
+
+### Bug Fixes
+
+* **web:** honor hero showcase storyboard ([28b4c0d](https://github.com/sergiocarracedo/sireno-deck/commit/28b4c0d18ca5968ec5f63450040b0a9c66de80c9))
+
 ## [0.2.9](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.8...@sirenodeck/sirenodeck-0.2.9) (2026-11-01)
 
 
