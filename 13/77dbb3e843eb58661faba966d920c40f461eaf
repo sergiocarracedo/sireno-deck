@@ -1,0 +1,65 @@
+packages/web/astro/astro.config.mjs
+  h_31bfcf89e26281 3
+  h_31bfcf89e26281 5,65
+packages/web/astro/src/components/Nav.astro
+  h_31bfcf89e26281 17
+.codex/hooks.json
+  h_31bfcf89e26281 1-31
+packages/web/README.md
+  h_31bfcf89e26281 43-52
+packages/web/astro/package.json
+  h_31bfcf89e26281 14
+packages/web/astro/src/components/hero/SeaBackdrop.astro
+  h_31bfcf89e26281 17,20-21,23
+packages/web/astro/src/components/hero/__tests__/balloon-path.test.ts
+  h_31bfcf89e26281 1-42
+packages/web/astro/src/components/hero/__tests__/dolphin-path.test.ts
+  h_31bfcf89e26281 1-38
+packages/web/astro/src/components/hero/__tests__/ocean-layout.test.ts
+  h_31bfcf89e26281 1-18
+packages/web/astro/src/components/hero/__tests__/sailboat-flag.test.ts
+  h_31bfcf89e26281 1-11
+packages/web/astro/src/components/hero/__tests__/sailboat-path.test.ts
+  h_31bfcf89e26281 1-44
+packages/web/astro/src/components/hero/__tests__/seagull-flight.test.ts
+  h_31bfcf89e26281 1-57
+packages/web/astro/src/components/hero/balloon-path.ts
+  h_31bfcf89e26281 1-23
+packages/web/astro/src/components/hero/dolphin-path.ts
+  h_31bfcf89e26281 1-19
+packages/web/astro/src/components/hero/ocean-layout.ts
+  h_31bfcf89e26281 1-4
+packages/web/astro/src/components/hero/sailboat-flag.ts
+  h_31bfcf89e26281 1-13
+packages/web/astro/src/components/hero/sailboat-path.ts
+  h_31bfcf89e26281 1-13
+packages/web/astro/src/components/hero/sea-scene.ts
+  h_31bfcf89e26281 3-7,49-120,133-146,170,172,174-176,178-204,206-257,263-274,286-288,300,303-318,320-336,338-399,406,431-432,435-436,439,441-442
+packages/web/astro/src/components/hero/seagull-flight.ts
+  h_31bfcf89e26281 1-49
+packages/web/astro/src/components/sections/Hero.astro
+  h_31bfcf89e26281 29-48,69,80,90-91,101,104-105,111-114,134-142,147-148,226-227,261-276,291
+packages/web/astro/src/content/buttonSchemas.json
+  h_31bfcf89e26281 32,38,44,63
+packages/web/astro/src/layouts/Base.astro
+  h_31bfcf89e26281 22-23,26-27,40-41,45-52
+packages/web/astro/src/pages/credits.astro
+  h_31bfcf89e26281 5-6,8-11
+packages/web/astro/src/pages/index.astro
+  h_31bfcf89e26281 18-19
+packages/web/scenes/hero-showcase.json
+  h_31bfcf89e26281 20-22,29
+packages/web/scripts/capture-showcase.mjs
+  h_31bfcf89e26281 191-198,203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1377dbb3e843eb58661faba966d920c40f461eaf",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
