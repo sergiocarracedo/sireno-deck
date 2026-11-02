@@ -54,7 +54,7 @@ function formatValue(
         value: value.toFixed(0),
       }
     case "frequency-ghz":
-      return { value: value.toFixed(2) }
+      return { value: value.toFixed(1) }
     case "percent":
       // ponytail: integers when stable, one decimal when low. High values
       // (10%+) hide <1% swing behind integer rounding; low values benefit

@@ -1,0 +1,24 @@
+---
+/** Decorative coastal world. A static background remains if WebGL is unavailable. */
+---
+
+<div aria-hidden="true" class="sea-backdrop absolute inset-0 z-0 overflow-hidden pointer-events-none">
+  <canvas data-sea-scene></canvas>
+  <div class="sea-vignette"></div>
+</div>
+
+<script>
+  import { mountSeaScene } from "./sea-scene"
+  document.querySelectorAll<HTMLCanvasElement>("[data-sea-scene]").forEach(mountSeaScene)
+</script>
+
+<style>
+  .sea-backdrop { background: linear-gradient(160deg, #081922 0%, #0b3443 55%, #071318 100%); }
+  canvas { width: 100%; height: 100%; display: block; }
+  .sea-vignette {
+    position: absolute; inset: 0;
+    background: rgba(5, 15, 22, .20);
+    opacity: 0;
+  }
+  :global([data-theme="light"]) .sea-vignette { background: rgba(236, 249, 250, .20); }
+</style>

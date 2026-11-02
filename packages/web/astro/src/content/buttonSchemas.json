@@ -29,16 +29,19 @@
         "showCount": {
           "default": true,
           "title": "Show count",
+          "description": "Show the number of discovered agent sessions on the summary tile.",
           "type": "boolean"
         },
         "attentionOnly": {
           "default": false,
           "title": "Attention only",
+          "description": "Show the attention state only when a session needs attention; otherwise show the normal summary.",
           "type": "boolean"
         },
         "fallingLetters": {
           "default": true,
           "title": "Falling letters",
+          "description": "Show the animated falling-letter background on the summary tile.",
           "type": "boolean"
         }
       },
@@ -57,6 +60,7 @@
         "slot": {
           "default": 0,
           "title": "Agent slot",
+          "description": "Zero-based position in the generated session deck. Slot 0 is the first discovered session; slots are assigned dynamically, so they are not fixed to a provider or session ID.",
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991

@@ -1,0 +1,31 @@
+---
+import Layout from "../layouts/Base.astro"
+
+const assets = [
+  { name: "Ocean", creator: "Poly by Google", url: "https://poly.pizza/m/faUostvShTI", license: "CC BY 3.0", licenseUrl: "https://creativecommons.org/licenses/by/3.0/", changes: "Tinted, tiled and animated for the coastal scene." },
+  { name: "Island", creator: "Poly by Google", url: "https://poly.pizza/m/1jUt3HwyHfn", license: "CC BY 3.0", licenseUrl: "https://creativecommons.org/licenses/by/3.0/", changes: "Removed its water and foam, then scaled and placed it in the coastal scene." },
+  { name: "Rock", creator: "Quaternius", url: "https://poly.pizza/m/RtLRqYjfMs", license: "CC0 1.0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/", changes: "Scaled and duplicated as islands." },
+  { name: "Lighthouse", creator: "Poly by Google", url: "https://poly.pizza/m/0t2ZYRBsqX-", license: "CC BY 3.0", licenseUrl: "https://creativecommons.org/licenses/by/3.0/", changes: "Scaled and placed in the coastal scene." },
+  { name: "Sailboat", creator: "Poly by Google", url: "https://poly.pizza/m/1d76pfN4Dne", license: "CC BY 3.0", licenseUrl: "https://creativecommons.org/licenses/by/3.0/", changes: "Scaled and animated for the coastal scene." },
+  { name: "Hot air balloon", creator: "Poly by Google", url: "https://poly.pizza/m/7Fej0Jd3_Di", license: "CC BY 3.0", licenseUrl: "https://creativecommons.org/licenses/by/3.0/", changes: "Scaled and animated for the coastal scene." },
+  { name: "Flying seagull", creator: "Poly by Google", url: "https://poly.pizza/m/6Tpj_vcWP3f", license: "CC BY 3.0", licenseUrl: "https://creativecommons.org/licenses/by/3.0/", changes: "Scaled, duplicated and animated, including its wings, for the coastal scene." },
+]
+---
+
+<Layout title="Asset credits — SirenoDECK" description="Credits and licenses for artwork used on the SirenoDECK website.">
+  <main class="max-w-4xl mx-auto px-6 pt-32 pb-24">
+    <p class="text-sm font-semibold mb-4" style="color: var(--color-accent);">MADE WITH THE COMMUNITY</p>
+    <h1 class="font-display text-4xl sm:text-6xl font-bold mb-6">Asset credits</h1>
+    <p class="text-lg max-w-2xl mb-12" style="color: var(--color-muted);">Our little corner of the sea is built with the generosity of these artists. Thank you for sharing your work.</p>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {assets.map((asset) => (
+        <article class="rounded-xl p-6" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+          <h2 class="font-display text-xl font-semibold mb-2"><a href={asset.url}>{asset.name} ↗</a></h2>
+          <p style="color: var(--color-muted);">By {asset.creator} · <a class="underline" href={asset.licenseUrl}>{asset.license}</a></p>
+          <p class="text-sm mt-4" style="color: var(--color-muted);">{asset.changes}</p>
+        </article>
+      ))}
+    </div>
+    <p class="text-sm mt-10" style="color: var(--color-muted);">Models are sourced from <a class="underline" href="https://poly.pizza/">Poly Pizza</a>. The mermaid character is original and inspired by the Sireno Deck logo.</p>
+  </main>
+</Layout>

@@ -60,7 +60,8 @@ const packageRoot = (): string | null => {
 const resolveViteBin = (): string => {
   let dir = packageRoot() ?? findWorkspaceRoot()
   for (;;) {
-    const bin = join(dir, "node_modules", ".bin", "vite")
+    // pnpm's .bin entry is a shell wrapper, not a JavaScript entry point.
+    const bin = join(dir, "node_modules", "vite", "bin", "vite.js")
     if (existsSync(bin)) return bin
     const parent = dirname(dir)
     if (parent === dir) return bin

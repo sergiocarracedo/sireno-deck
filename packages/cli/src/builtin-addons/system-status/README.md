@@ -123,7 +123,7 @@ rail, so there is nothing to read — this is not a gap waiting to be filled.
 | `count`         | `42` (≥100) / `5.4` (<100)                |
 | `bytes`         | `5.2 MB`                                  |
 | `rate-bytes`    | `5.2 MB/s` (uses KiB/MiB/GiB/TiB scaling) |
-| `frequency-ghz` | `3.40`                                    |
+| `frequency-ghz` | `3.4`                                     |
 | `uptime`        | `2h`                                      |
 | `bool`          | `ON` (≥0.5) / `OFF`                       |
 
