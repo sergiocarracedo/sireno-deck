@@ -22,10 +22,10 @@ const agentPrompt = `Guide me through installing and starting Sireno Deck, one s
 Keep the process interactive: explain each step in plain language, ask one question at a time, wait for my answers, and never imply a command succeeded unless you verified it.`;
 ---
 
-<section class="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16">
+<section class="relative min-h-[100svh] flex flex-col items-center justify-start sm:justify-center overflow-hidden px-6 pt-12 sm:pt-24 pb-16">
   <SeaBackdrop />
 
-  <div class="relative z-10 text-center max-w-4xl mx-auto">
+  <div class="relative z-10 w-full min-w-0 text-center max-w-4xl mx-auto">
     <div class="hero-badges">
       <p class="hero-version-pill">
         <span class="hero-version-dot" aria-hidden="true"></span>
@@ -47,7 +47,7 @@ Keep the process interactive: explain each step in plain language, ask one quest
       </a>
     </div>
 
-    <h1 class="hero-title font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6">
+    <h1 class="hero-title font-display text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6">
       Declarative control for<br />
       <span class="hero-highlight">
         your Stream Deck
@@ -275,12 +275,16 @@ Keep the process interactive: explain each step in plain language, ask one quest
     }
 
     .hero-command-row {
-      flex-direction: column;
       width: 100%;
     }
 
     .hero-command {
+      flex: 1;
+      min-width: 0;
       max-width: 100%;
+      text-align: left;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
   }
 
