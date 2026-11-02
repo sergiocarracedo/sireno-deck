@@ -249,17 +249,26 @@ const installHref = path === "/" ? "#install" : "/#install"
       top: calc(100% + 1px);
       right: -1rem;
       left: -1rem;
-      display: none;
+      display: flex;
+      flex-direction: column;
       align-items: stretch;
       gap: 0.2rem;
       padding: 0.75rem 1rem 1rem;
       border-bottom: 1px solid var(--color-border);
       background: var(--color-bg);
+      visibility: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-12px);
+      transition: opacity 220ms ease, transform 220ms ease, visibility 0s linear 220ms;
     }
 
     .site-nav[data-open] {
-      display: flex;
-      flex-direction: column;
+      visibility: visible;
+      pointer-events: auto;
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0s;
     }
 
     .site-nav a {
@@ -284,6 +293,10 @@ const installHref = path === "/" ? "#install" : "/#install"
       align-self: center;
       margin-top: 0.25rem;
     }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-nav { transition: none; }
   }
 </style>
 
