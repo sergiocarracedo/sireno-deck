@@ -75,6 +75,7 @@ import { buildStandardProbeDeps } from "@/cli/probe-deps"
 import { onboardCodingAgents } from "@/cli/coding-agents-onboarding"
 import { resolveUserPath } from "@/cli/cwd"
 import { offerConfigSkillOnFirstRun } from "@/cli/skills-first-run"
+import { resolveInstallRoot } from "../install-root"
 
 export interface StartOptions {
   readonly config?: string
@@ -83,6 +84,7 @@ export interface StartOptions {
   readonly remote?: boolean
   readonly deviceModel?: string
   readonly frontendUrl?: string
+  readonly configUiUrl?: string
   readonly intervalMs?: number
   readonly xdgConfigHome?: string
   readonly homeDir?: string
@@ -106,6 +108,7 @@ const toRunOptions = (
   remote: options.remote,
   deviceModel: options.deviceModel,
   frontendUrl: options.frontendUrl,
+  configUiUrl: options.configUiUrl,
   intervalMs: options.intervalMs,
   xdgConfigHome: options.xdgConfigHome,
   homeDir: options.homeDir,
@@ -116,6 +119,8 @@ const toRunOptions = (
 })
 
 const resolveFrontendDist = (): string => {
+  const installRoot = resolveInstallRoot()
+  if (installRoot !== null) return join(installRoot, "frontend", "dist")
   const here = dirname(fileURLToPath(import.meta.url))
   return resolvePath(here, "../../../frontend/dist")
 }
@@ -590,6 +595,11 @@ const runInProcessSetup = async (
   // letting it also override a fresh invocation made one past `--emulator`
   // run force every later plain `p dev start` into emulator mode.
   const runtimeFlags = buildRuntimeFlags(options)
+  const installRoot = resolveInstallRoot()
+  const installedFrontendUrl =
+    installRoot !== null && runtimeFlags.emulator !== true
+      ? `http://127.0.0.1:${runtimeFlags.httpPort}`
+      : undefined
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
 
@@ -605,6 +615,13 @@ const runInProcessSetup = async (
       remote: runtimeFlags.remote,
       deviceModel: runtimeFlags.deviceModel,
       httpPort: runtimeFlags.httpPort,
+      ...(options.frontendUrl === undefined &&
+      installedFrontendUrl !== undefined
+        ? {
+            frontendUrl: installedFrontendUrl,
+            configUiUrl: installedFrontendUrl,
+          }
+        : {}),
     },
     (pids) => {
       writeChildren({ pids: [...pids] })

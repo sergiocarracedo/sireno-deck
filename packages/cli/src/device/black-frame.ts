@@ -8,28 +8,19 @@ import type pino from "pino"
 // runPipeline's finally block; the helper is preserved for that single use
 // site and stays best-effort because the device may be unplugged at the
 // moment of exit.
-const buildBlackBuffer = (keyCount: number): Buffer => {
-  const stride = 3 * 8
-  const total = keyCount * stride * 8
-  return Buffer.alloc(total)
-}
+const buildBlackBuffer = (): Buffer => Buffer.alloc(72 * 72 * 3)
 
 export const pushBlackFrame = async (
   device: StreamDeckDevice,
   logger: pino.Logger,
 ): Promise<void> => {
   try {
-    const buf = buildBlackBuffer(device.getKeyCount())
+    const buf = buildBlackBuffer()
     for (let i = 0; i < device.getKeyCount(); i++) {
-      await device.fillKeyBuffer(i, buf.subarray(0, 3 * 8 * 8))
+      await device.fillKeyBuffer(i, buf)
     }
-    // ponytail: brightness is a feature report processed synchronously by the
-    // device firmware, so dimming to 0 is a guaranteed "off" signal even if the
-    // queued image writes above are dropped at USB disconnect.
-    await device.setBrightness(0)
-    // ponytail: give the queued USB writes a moment to drain before the caller
-    // closes the device; otherwise node-hid may flush to a closed handle and
-    // the panel keeps the last fully-rendered frame.
+    // ponytail: allow queued image writes to drain before the caller closes
+    // the device; brightness is intentionally left unchanged.
     await new Promise<void>((r) => setTimeout(r, 200))
     logger.info("black-frame: pushed")
   } catch (err) {

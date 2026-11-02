@@ -10,6 +10,12 @@ fix, and a citation to the originating commits.
   `Session.lockProvider` returning `null` because the OS provider
   construction awaited on the wrong promise.
 
+## build
+
+- [`published-cli-chunks-omitted-from-package`](build/published-cli-chunks-omitted-from-package.md) —
+  the CLI package allowlist omitted code-split chunks, breaking startup from
+  npm/Homebrew installations.
+
 ## conventions
 
 - [`cli-as-daemon-interface`](conventions/cli-as-daemon-interface.md) —

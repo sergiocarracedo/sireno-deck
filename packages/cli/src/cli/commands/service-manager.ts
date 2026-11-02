@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process"
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync, writeFileSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 import { platform } from "node:process"
@@ -19,6 +19,33 @@ export interface InvokeManagerOptions {
 }
 
 const DAEMON_NAME = "sirenodeck"
+
+export const refreshStaleUnit = (
+  content: string,
+  currentScript: string,
+  nodePath: string,
+  exists: (path: string) => boolean = existsSync,
+): string => {
+  const match = content.match(
+    /^ExecStart="([^"]+)" "([^"]+\/dist\/main\.mjs)" start$/m,
+  )
+  const oldScript = match?.[2]
+  if (
+    match === null ||
+    oldScript === undefined ||
+    oldScript === currentScript ||
+    !exists(currentScript)
+  )
+    return content
+  const brewUpgrade =
+    oldScript.includes("/Cellar/sirenodeck/") &&
+    currentScript.includes("/Cellar/sirenodeck/")
+  if (exists(oldScript) && !brewUpgrade) return content
+  return content.replace(
+    match[0],
+    `ExecStart="${nodePath}" "${currentScript}" start`,
+  )
+}
 
 const systemctl = (userLevel: boolean, args: ReadonlyArray<string>): void => {
   const cmd = userLevel ? "systemctl" : "systemctl"
@@ -123,6 +150,31 @@ export const ensureInstalled = async (
   const { logger, system = false } = options
   const userLevel = !system
   if (isUnitInstalled(userLevel)) {
+    if (currentOS() === "linux") {
+      const unitPath = userLevel
+        ? join(
+            homedir(),
+            ".config",
+            "systemd",
+            "user",
+            `${DAEMON_NAME}.service`,
+          )
+        : `/etc/systemd/system/${DAEMON_NAME}.service`
+      const content = readFileSync(unitPath, "utf8")
+      const currentScript = process.argv[1]
+      const updated =
+        currentScript === undefined
+          ? content
+          : refreshStaleUnit(content, currentScript, process.execPath)
+      if (updated !== content) {
+        writeFileSync(unitPath, updated)
+        systemctl(userLevel, ["daemon-reload"])
+        logger.info(
+          { unitPath },
+          "ensureInstalled: refreshed stale executable path",
+        )
+      }
+    }
     logger.debug({ userLevel }, "ensureInstalled: unit already present")
     return
   }

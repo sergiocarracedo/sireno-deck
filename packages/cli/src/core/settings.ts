@@ -34,9 +34,10 @@ const SETTINGS_FILE = "settings.json"
 const resolveXdgConfigHome = (): string =>
   process.env["XDG_CONFIG_HOME"] ?? join(homedir(), ".config")
 
-export const resolveSettingsPath = (): string => {
-  const dir = join(resolveXdgConfigHome(), SETTINGS_DIR)
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+export const resolveSettingsPath = (
+  xdgConfigHome: string = resolveXdgConfigHome(),
+): string => {
+  const dir = join(xdgConfigHome, SETTINGS_DIR)
   return join(dir, SETTINGS_FILE)
 }
 
@@ -71,6 +72,7 @@ export const loadSettings = (
 }
 
 export const atomicWriteJson = (path: string, data: unknown): void => {
+  mkdirSync(dirname(path), { recursive: true })
   const tmpPath = `${path}.${randomBytes(6).toString("hex")}.tmp`
   const fd = openSync(tmpPath, "w", 0o600)
   try {

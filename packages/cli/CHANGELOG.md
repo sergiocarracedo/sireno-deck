@@ -1,5 +1,73 @@
 # Changelog
 
+## [0.2.9](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.8...@sirenodeck/sirenodeck-0.2.9) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** package settings logo without binary import ([7d62585](https://github.com/sergiocarracedo/sireno-deck/commit/7d62585e60532943b6d658a198236ff2ed3a4e88))
+
+## [0.2.8](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.7...@sirenodeck/sirenodeck-0.2.8) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** ship runtime frontend and refresh stale services ([7301198](https://github.com/sergiocarracedo/sireno-deck/commit/730119865e09ea91808e58aec178c2be5b4bc78d))
+
+## [0.2.7](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.6...@sirenodeck/sirenodeck-0.2.7) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** repair packaged startup and persist brightness ([#70](https://github.com/sergiocarracedo/sireno-deck/issues/70)) ([122123c](https://github.com/sergiocarracedo/sireno-deck/commit/122123c0bad844459aebb9be6a3d122ed0f18ecb))
+
+## [0.2.6](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.5...@sirenodeck/sirenodeck-0.2.6) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** include generated chunks in release archives ([7193adb](https://github.com/sergiocarracedo/sireno-deck/commit/7193adb63fc712535781027c3a8573078f29d312))
+* **cli:** ship generated bundle chunks ([e4d899b](https://github.com/sergiocarracedo/sireno-deck/commit/e4d899b6cd534fc27d0f4f8d6fdb20fbe2b31f99))
+
+## [0.2.5](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.4...@sirenodeck/sirenodeck-0.2.5) (2026-11-01)
+
+
+### Bug Fixes
+
+* **homebrew:** link the published CLI wrapper ([8483eca](https://github.com/sergiocarracedo/sireno-deck/commit/8483eca2806f19b08ed39aeea57935d15beba4ae))
+* **homebrew:** link the published CLI wrapper ([102e98c](https://github.com/sergiocarracedo/sireno-deck/commit/102e98c50c7d65598d278df679b9c5cf6bb97bd6))
+
+## [0.2.4](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.3...@sirenodeck/sirenodeck-0.2.4) (2026-11-01)
+
+
+### Bug Fixes
+
+* **cli:** improve startup feature list formatting ([f0df303](https://github.com/sergiocarracedo/sireno-deck/commit/f0df303bbb8d0195890ae6f04770b2570d931cd5))
+* **cli:** remove unused get-windows dependency ([18139eb](https://github.com/sergiocarracedo/sireno-deck/commit/18139eb619523d473a57bc3ee44c6f30aa6ad528))
+* **cli:** remove unused get-windows dependency ([0ff8bb4](https://github.com/sergiocarracedo/sireno-deck/commit/0ff8bb408b1f56ed62bb7f541fcec05c99ca39de))
+
+## [0.2.3](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.2...@sirenodeck/sirenodeck-0.2.3) (2026-10-31)
+
+
+### Bug Fixes
+
+* **cli:** avoid npm peer conflicts in Homebrew formula ([c2b2370](https://github.com/sergiocarracedo/sireno-deck/commit/c2b23708a475af5868e696779268322da7d5e6ba))
+* **homebrew:** tolerate optional peer dependency mismatch ([3dc5c37](https://github.com/sergiocarracedo/sireno-deck/commit/3dc5c379406994588bcc49904b5b8a270d016928))
+
+## [0.2.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.1...@sirenodeck/sirenodeck-0.2.2) (2026-10-31)
+
+
+### Features
+
+* **cli,web:** improve onboarding and addon docs ([7449fa2](https://github.com/sergiocarracedo/sireno-deck/commit/7449fa2b342c322da906f6d951471494a7731705))
+* **cli,web:** improve onboarding and addon docs ([533dac7](https://github.com/sergiocarracedo/sireno-deck/commit/533dac79a7302712862198a5e673016af70fa895))
+* **web:** script reproducible hero showcase capture ([d22e382](https://github.com/sergiocarracedo/sireno-deck/commit/d22e382bc1b42d303130afe360d5aa59adee181d))
+
+
+### Bug Fixes
+
+* **cli:** show unhandled rejection reason ([373b87a](https://github.com/sergiocarracedo/sireno-deck/commit/373b87a9a38826594065dfb057edddea0714c07d))
+
 ## [0.2.1](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.0...@sirenodeck/sirenodeck-0.2.1) (2026-10-28)
 
 

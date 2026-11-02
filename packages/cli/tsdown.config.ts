@@ -9,7 +9,7 @@ export default defineConfig({
   dts: false,
   clean: true,
   // ponytail: native addons (sharp, @elgato-stream-deck/node, dbus-next,
-  // get-windows, usocket, @julusian/jpeg-turbo) ship prebuilt .node binaries
+  // usocket, @julusian/jpeg-turbo) ship prebuilt .node binaries
   // — a JS bundle cannot embed them. Same for playwright/playwright-core/vite,
   // which are large and have side-effecting postinstall scripts.
   deps: {
@@ -17,7 +17,6 @@ export default defineConfig({
       "sharp",
       "@elgato-stream-deck/node",
       "dbus-next",
-      "get-windows",
       "usocket",
       "@julusian/jpeg-turbo",
       "playwright",

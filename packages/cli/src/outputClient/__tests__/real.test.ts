@@ -203,7 +203,7 @@ describe("RealOutputClient.init", () => {
           url: "ws://127.0.0.1:52937",
           setDevice: vi.fn(),
         },
-        runtime: {},
+        runtime: { getBrightness: () => 64 },
         pubSub: {
           publish: vi.fn(),
           subscribe: vi.fn(() => () => undefined),
@@ -220,6 +220,7 @@ describe("RealOutputClient.init", () => {
     expect(mocks.rendererStop).toHaveBeenCalledTimes(1)
     expect(mocks.supervisorStop).toHaveBeenCalledTimes(1)
     expect(mocks.pushStartupScreen).toHaveBeenCalledOnce()
+    expect(device.setBrightness).toHaveBeenCalledWith(64)
     expect(mocks.pushStartupScreen.mock.invocationCallOrder[0]).toBeLessThan(
       mocks.rendererStart.mock.invocationCallOrder[0]!,
     )

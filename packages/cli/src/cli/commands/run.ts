@@ -111,6 +111,11 @@ import {
 import type { AddonInventoryEntry } from "@/api/protocol-internal"
 import { loadDeviceConfig } from "@/util/device-config"
 import {
+  createSettingsStore,
+  resolveSettingsPath,
+  type SettingsStore,
+} from "@/core/settings"
+import {
   collectAddonDefaultButtonConfig,
   materializeAddonDecks,
 } from "./addon-decks"
@@ -163,6 +168,7 @@ export interface RunOptions {
   readonly remote?: boolean
   readonly deviceModel?: string
   readonly frontendUrl?: string
+  readonly configUiUrl?: string
   readonly intervalMs?: number
   readonly xdgConfigHome?: string
   readonly homeDir?: string
@@ -902,7 +908,9 @@ const buildRuntime = (
     logger,
   )
   const token = process.env["SIRENO_TOKEN"] ?? ""
-  const configUiUrl = new URL(`http://127.0.0.1:${DEFAULT_CONFIG_UI_PORT}/`)
+  const configUiUrl = new URL(
+    options.configUiUrl ?? `http://127.0.0.1:${DEFAULT_CONFIG_UI_PORT}/`,
+  )
   if (token.length > 0) configUiUrl.searchParams.set("token", token)
   configUiUrl.hash = "/config"
   const runtimeDecks = injectConfigUiButton(allDecks, configUiUrl.toString())
@@ -1505,6 +1513,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   let configWatcher: ConfigWatcher | null = null
   let outputHandle: OutputHandle | null = null
   let currentOutputHandle: OutputHandle | null = null
+  let settingsStore: SettingsStore | null = null
+  let unsubscribeBrightnessSettings: (() => void) | null = null
   let unregisterSignal: (() => void) | null = null
   let unregisterReload: (() => void) | null = null
   let unsubscribeLockMode: (() => void) | null = null
@@ -1521,6 +1531,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   })
 
   try {
+    settingsStore = createSettingsStore({
+      path: resolveSettingsPath(xdgConfigHome),
+      logger,
+    })
     // Validate config first so a broken YAML exits before we ever touch
     // hardware or spawn an emulator.
     loadedConfig = await validateAndLoadConfig(options)
@@ -1544,8 +1558,13 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     decks = loaded.decks
     pubSub = loaded.pubSub
     runtime = loaded.runtime
+    runtime.setBrightness(settingsStore.get().brightness)
     methods = loaded.methods
     store = loaded.store
+    unsubscribeBrightnessSettings = pubSub.subscribe<{ value: number }>(
+      "methods:adjustBrightness",
+      ({ value }) => settingsStore?.update({ brightness: value }),
+    )
 
     providers = await startSystemProviders(options, methods)
     hostPolicy = createHostPolicyCoordinator({
@@ -1775,6 +1794,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       logger,
     })
     addonServicesDispose = () => addonServices?.dispose()
+    pubSub.publish("sireno:settings:brightness", {
+      value: runtime.getBrightness(),
+    })
 
     for (const deck of decks) {
       registerDeckIcon(deck, resolverOptions, logger)
@@ -1855,6 +1877,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       },
       ...(options.frontendUrl !== undefined
         ? { frontendUrl: options.frontendUrl }
+        : {}),
+      ...(options.configUiUrl !== undefined
+        ? { configUiUrl: options.configUiUrl }
         : {}),
       ...(options.port !== undefined ? { port: options.port } : {}),
       ...(options.intervalMs !== undefined
@@ -2082,6 +2107,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     await done
   } finally {
+    unsubscribeBrightnessSettings?.()
+    settingsStore?.close()
     if (unregisterSignal !== null) unregisterSignal()
     if (unregisterReload !== null) unregisterReload()
     if (bridgeSignal !== null) bridgeSignal.abort()

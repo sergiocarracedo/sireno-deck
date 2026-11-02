@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import manifestJson from "../sirenodeck.json" with { type: "json" }
 
 import settingsDeck from "../decks/settings"
+import { manifest } from "../index"
 
 describe("internal-settings sirenodeck.json", () => {
   it("declares kind=addon, apiVersion 1, and the expected name", () => {
@@ -17,6 +18,11 @@ describe("internal-settings sirenodeck.json", () => {
 })
 
 describe("internal-settings settings deck", () => {
+  it("uses the standard button frame for app info", () => {
+    expect(
+      manifest.buttonTypes["internal-settings:app-info"]?.service?.full,
+    ).not.toBe(true)
+  })
   it("returns the three buttons in order", () => {
     const deck = settingsDeck(0)
     expect(deck.name).toBe("Settings")

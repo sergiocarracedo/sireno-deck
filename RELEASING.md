@@ -28,10 +28,12 @@ and release configuration have been set up separately.
 
 ### `@sirenodeck/sirenodeck` build & runtime
 
-The CLI is bundled via `tsdown` into a single ESM file at `dist/main.mjs`. The
-`bin/sirenodeck.js` wrapper spawns the bundle with `process.execPath`. Native
-deps (`sharp`, `@elgato-stream-deck/node`, `dbus-next`, `get-windows`,
-`usocket`, `@julusian/jpeg-turbo`) are kept external — they ship prebuilt
+The CLI is bundled via `tsdown` into an ESM entry at `dist/main.mjs` and any
+lazy-loaded chunks under `dist/`. The full `dist/` directory must be included
+in release archives because the entry imports generated chunks at runtime. The
+`bin/sirenodeck.js` wrapper spawns the entry with `process.execPath`. Native
+deps (`sharp`, `@elgato-stream-deck/node`, `dbus-next`, `usocket`,
+`@julusian/jpeg-turbo`) are kept external — they ship prebuilt
 `.node` binaries that a JS bundle cannot embed.
 
 Real-mode rendering (Playwright headless screenshots of the frontend SPA)
@@ -56,7 +58,7 @@ work without the frontend bundle.
 ```
 push to main
   ├─ CI                lint · format · typecheck · test
-  └─ website           deploys to GitHub Pages
+  └─ website           deploys to GitHub Pages for relevant changes
 
 Actions → release-please → Run workflow
   ├─ select CLI/web, and/or any addons/themes
@@ -64,7 +66,8 @@ Actions → release-please → Run workflow
 merge release PR       manually, after reviewing the version bumps/changelog
   ├─ tag pushed        e.g. @sirenodeck/sirenodeck-0.1.0-alpha.0
   └─ release           publishes each tagged package independently
-                        └─ publish-npm    npm publish --provenance --access public
+                        ├─ publish-npm    npm publish --provenance --access public
+                        └─ website        redeploys after a successful release
 ```
 
 `main` is the staging branch. It is safe to push there without publishing a new
@@ -115,9 +118,11 @@ changelogs, and the manifest update.
 
 ## Homebrew tap
 
-CLI releases automatically update `sergiocarracedo/homebrew-tap` with a
-formula sourced from the published npm tarball. Configure a fine-grained
-`HOMEBREW_TAP_TOKEN` secret with Contents write access to that repository.
+CLI releases build and attach the packed CLI tarball to the GitHub Release, then
+update `sergiocarracedo/homebrew-tap` with a formula sourced from that asset.
+The Homebrew update runs independently of npm publishing. Configure a
+fine-grained `HOMEBREW_TAP_TOKEN` secret with Contents write access to that
+repository. Homebrew still uses npm to install the CLI's runtime dependencies.
 Users install it with:
 
 ```sh
