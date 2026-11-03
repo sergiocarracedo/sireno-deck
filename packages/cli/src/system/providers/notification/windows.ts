@@ -18,14 +18,14 @@ const shellQuote = (value: string): string =>
 // ponytail: raw toast template via PowerShell BurntToast-free path. Sufficient
 // for our "Pomodoro done" use case; richer XML templates are out of scope.
 const buildToastScript = (title: string, body: string): string => {
-  const safeTitle = title.replace(/[`$"\\]/g, "\\$&")
-  const safeBody = body.replace(/[`$"\\]/g, "\\$&")
+  const safeTitle = Buffer.from(title, "utf8").toString("base64")
+  const safeBody = Buffer.from(body, "utf8").toString("base64")
   return [
     "Add-Type -AssemblyName System.Windows.Forms | Out-Null",
     `$balloon = New-Object System.Windows.Forms.NotifyIcon`,
     `$balloon.Icon = [System.Drawing.SystemIcons]::Information`,
-    `$balloon.BalloonTipTitle = "${safeTitle}"`,
-    `$balloon.BalloonTipText = "${safeBody}"`,
+    `$balloon.BalloonTipTitle = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${safeTitle}'))`,
+    `$balloon.BalloonTipText = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${safeBody}'))`,
     `$balloon.Visible = $true`,
     `$balloon.ShowBalloonTip(5000)`,
     "Start-Sleep -Milliseconds 5500",
