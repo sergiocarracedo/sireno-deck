@@ -93,6 +93,112 @@ const externalScanned: ReadonlyArray<ScannedAddon> = [
 ]
 
 describe("bridgeAddonServices (third-party addon)", () => {
+  it("deactivates the departed overlay page and reactivates its parent on back", async () => {
+    const { runtime, pubSub, store, executor, decks, methods } = setup()
+    const fixture = await import("./__fixtures__/fake-external-addon")
+    fixture.__resetCapturedCtx()
+    const button = (id: string) => ({
+      id,
+      type: "fake-external:button",
+      position: 0,
+    })
+    const allDecks = [
+      ...decks,
+      { id: "overlay", name: "Overlay", buttons: [button("overlay-button")] },
+      { id: "page", name: "Page", buttons: [button("page-button")] },
+    ]
+    runtime.setDecks(allDecks)
+    const handle = await bridgeAddonServices({
+      runtime,
+      decks: allDecks,
+      scanned: [],
+      externalAddons: externalScanned,
+      executor,
+      pubSub,
+      store,
+      logger: silentLogger(),
+      signal: new AbortController().signal,
+      statePublisher: makeStatePublisher(),
+      bridge: makeBridge(),
+      methods,
+    })
+    runtime.setOverlay("overlay")
+    runtime.navigateToDeck("page")
+    const page = fixture
+      .__getButtonContexts()
+      .find((ctx) => ctx.buttonId === "page-button")!
+    expect(page.signal.aborted).toBe(false)
+    runtime.goBack()
+    expect(runtime.getActiveDeckId()).toBe("overlay")
+    expect(page.signal.aborted).toBe(true)
+    const overlayContexts = fixture
+      .__getButtonContexts()
+      .filter((ctx) => ctx.buttonId === "overlay-button")
+    expect(overlayContexts).toHaveLength(2)
+    expect(overlayContexts[1]!.signal.aborted).toBe(false)
+    handle.dispose()
+  })
+  it("releases a service-owned interruption when the bridge is disposed", async () => {
+    const { runtime, pubSub, store, executor, decks, methods } = setup()
+    const fixture = await import("./__fixtures__/fake-external-addon")
+    fixture.__resetCapturedCtx()
+    const allDecks = [...decks, { id: "alarm", name: "Alarm", buttons: [] }]
+    runtime.setDecks(allDecks)
+    const handle = await bridgeAddonServices({
+      runtime,
+      decks: allDecks,
+      scanned: [],
+      externalAddons: externalScanned,
+      executor,
+      pubSub,
+      store,
+      logger: silentLogger(),
+      signal: new AbortController().signal,
+      statePublisher: makeStatePublisher(),
+      bridge: makeBridge(),
+      methods,
+    })
+    const release = fixture.__getCapturedCtx()!.interruptDeck!("alarm")!
+    expect(runtime.getActiveDeckId()).toBe("alarm")
+    expect(fixture.__getButtonContexts()[0]!.signal.aborted).toBe(true)
+    release()
+    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(fixture.__getButtonContexts()[1]!.signal.aborted).toBe(false)
+    fixture.__getCapturedCtx()!.interruptDeck!("alarm")
+    handle.dispose()
+    expect(runtime.getActiveDeckId()).toBe("main")
+    release()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+  it("remounts a button with a fresh signal after returning to its deck", async () => {
+    const { runtime, pubSub, store, executor, decks, methods } = setup()
+    const fixture = await import("./__fixtures__/fake-external-addon")
+    fixture.__resetCapturedCtx()
+    const allDecks = [...decks, { id: "other", name: "Other", buttons: [] }]
+    runtime.setDecks(allDecks)
+    const handle = await bridgeAddonServices({
+      runtime,
+      decks: allDecks,
+      scanned: [],
+      externalAddons: externalScanned,
+      executor,
+      pubSub,
+      store,
+      logger: silentLogger(),
+      signal: new AbortController().signal,
+      statePublisher: makeStatePublisher(),
+      bridge: makeBridge(),
+      methods,
+    })
+    const first = fixture.__getButtonContexts()[0]!
+    runtime.navigateToDeck("other")
+    expect(first.signal.aborted).toBe(true)
+    runtime.goBack()
+    const contexts = fixture.__getButtonContexts()
+    expect(contexts).toHaveLength(2)
+    expect(contexts[1]!.signal.aborted).toBe(false)
+    handle.dispose()
+  })
   it("wires globalService from an external addon", async () => {
     const { runtime, pubSub, store, executor, decks, methods } = setup()
     const bridge = makeBridge()

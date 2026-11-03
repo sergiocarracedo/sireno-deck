@@ -19,6 +19,106 @@ import {
 } from "./__fixtures__/runtime-test-helpers"
 
 describe("createRuntime", () => {
+  it("navigating from an interruption to the underlying deck does not duplicate history", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "alarm" }),
+    ])
+    const release = runtime.interruptDeck("alarm")!
+    runtime.navigateToDeck("main")
+    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.navStackDepth()).toBe(1)
+    release()
+    runtime.goBack()
+    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.navStackDepth()).toBe(1)
+  })
+  it("supersedes an interruption when a newer overlay is selected", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "alarm" }),
+      makeDeck({ id: "overlay" }),
+    ])
+    const release = runtime.interruptDeck("alarm")!
+    runtime.setOverlay("overlay", { source: "autoShow" })
+    expect(runtime.getActiveDeckId()).toBe("overlay")
+    release()
+    expect(runtime.getActiveDeckId()).toBe("overlay")
+    runtime.setOverlay(null)
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+
+  it("back hold from an interruption returns to main and makes release stale", async () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "sub" }),
+      makeDeck({ id: "alarm", buttons: [{ id: "back", type: "core:back" }] }),
+    ])
+    runtime.navigateToDeck("sub")
+    const release = runtime.interruptDeck("alarm")!
+    await runtime.dispatchGesture("alarm:back", "hold")
+    expect(runtime.getActiveDeckId()).toBe("main")
+    release()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+
+  it("does not let stale releases overwrite newer interruptions or navigation", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "alarm" }),
+      makeDeck({ id: "alarm2" }),
+      makeDeck({ id: "next" }),
+    ])
+    const first = runtime.interruptDeck("alarm")!
+    const second = runtime.interruptDeck("alarm2")!
+    first()
+    expect(runtime.getActiveDeckId()).toBe("alarm2")
+    runtime.navigateToDeck("next")
+    expect(runtime.getActiveDeckId()).toBe("next")
+    second()
+    expect(runtime.getActiveDeckId()).toBe("next")
+    runtime.goBack()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+
+  it("never exposes an interruption through session lock or a stale release", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "core:lock" }),
+      makeDeck({ id: "alarm" }),
+    ])
+    const release = runtime.interruptDeck("alarm")!
+    const snapshot = runtime.enterLock()
+    expect(runtime.getActiveDeckId()).toBe("core:lock")
+    expect(runtime.interruptDeck("alarm")).toBeNull()
+    runtime.restoreFromLock(snapshot)
+    expect(runtime.getActiveDeckId()).toBe("main")
+    release()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+
+  it("interrupts and restores an overlay path without changing navigation history", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "regular" }),
+      makeDeck({ id: "overlay" }),
+      makeDeck({ id: "overlay-page" }),
+      makeDeck({ id: "alarm" }),
+    ])
+    runtime.navigateToDeck("regular")
+    runtime.setOverlay("overlay")
+    runtime.navigateToDeck("overlay-page")
+    const release = runtime.interruptDeck("alarm")!
+    expect(runtime.getActiveDeckId()).toBe("alarm")
+    release()
+    expect(runtime.getActiveDeckId()).toBe("overlay-page")
+    expect(runtime.getOverlay()?.id).toBe("overlay")
+    runtime.goBack()
+    expect(runtime.getActiveDeckId()).toBe("overlay")
+    runtime.setOverlay(null)
+    expect(runtime.getActiveDeckId()).toBe("regular")
+    expect(runtime.navStackDepth()).toBe(2)
+  })
   it("initial active deck = main", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true, buttons: [] }),

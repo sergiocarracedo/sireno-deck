@@ -133,6 +133,7 @@ export interface Runtime {
   deckExists(id: string): boolean
   setDecks(decks: ReadonlyArray<RuntimeDeck>): void
   navigateToDeck(id: string, options?: { addToHistory?: boolean }): void
+  interruptDeck(id: string): (() => void) | null
   goBack(): void
   setOverlay(
     deckId: string | null,
@@ -212,6 +213,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
   let brightness = 50
   let lockActive = false
+  let interruption: { deckId: string } | null = null
   let legacyActiveApp: Pick<ActiveAppProvider, "getActive" | "stop"> = {
     getActive: async () => null,
     stop: async () => undefined,
@@ -225,6 +227,11 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   const setDecks = (next: ReadonlyArray<RuntimeDeck>): void => {
     decks = next
+    if (interruption !== null && deckById(interruption.deckId) === undefined) {
+      const previous = interruption.deckId
+      interruption = null
+      pubSub.publish("runtime:deck-inactive", { deckId: previous })
+    }
     // ponytail: rebuild a global button-id → ref map so bare-id lookups in
     // findButton are O(1) instead of scanning all decks in deck order. Set
     // first-wins (not last-wins) to preserve the legacy scan behavior.
@@ -281,6 +288,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   const getActiveDeckId = (): string => {
     if (lockActive) return "core:lock"
+    if (interruption !== null) return interruption.deckId
     // ponytail: while overlay mode is on, transientDeckId (used by page-nav)
     // must take precedence — otherwise paginated overlay pages are invisible
     // to the runtime, and dismissing overlay after paginating restores the
@@ -302,6 +310,21 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     navStack[navStack.length - 1] ??
     mainDeck.id
 
+  const interruptDeck = (id: string): (() => void) | null => {
+    if (lockActive || deckById(id) === undefined) return null
+    const previous = getActiveDeckId()
+    const current = { deckId: id }
+    interruption = current
+    pubSub.publish("runtime:deck-inactive", { deckId: previous })
+    pubSub.publish("runtime:activeDeck", { deckId: id })
+    return () => {
+      if (interruption !== current) return
+      interruption = null
+      pubSub.publish("runtime:deck-inactive", { deckId: id })
+      pubSub.publish("runtime:activeDeck", { deckId: getActiveDeckId() })
+    }
+  }
+
   const enterLock = (): {
     activeDeckId: string
     overlayDeckId: string | null
@@ -312,6 +335,11 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     }
     if (lockActive) return snapshot
     lockActive = true
+    if (interruption !== null) {
+      const previous = interruption.deckId
+      interruption = null
+      pubSub.publish("runtime:deck-inactive", { deckId: previous })
+    }
     logger.info(snapshot, "runtime: lock active")
     pubSub.publish("runtime:lock-mode", {
       active: true,
@@ -344,6 +372,15 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ deckId: id }, "navigateToDeck: deck not found")
       return
     }
+    if (interruption !== null) {
+      const previous = interruption.deckId
+      interruption = null
+      pubSub.publish("runtime:deck-inactive", { deckId: previous })
+      if (getActiveDeckId() === resolvedId) {
+        pubSub.publish("runtime:activeDeck", { deckId: resolvedId })
+        return
+      }
+    }
     const previousActiveId = getActiveDeckId()
     if (overlayDeckId !== null) {
       // ponytail: while overlay mode is on, both change-deck (addToHistory:true)
@@ -371,12 +408,19 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   const goBack = (): void => {
+    if (interruption !== null) {
+      const previous = interruption.deckId
+      interruption = null
+      pubSub.publish("runtime:deck-inactive", { deckId: previous })
+      pubSub.publish("runtime:activeDeck", { deckId: getActiveDeckId() })
+      return
+    }
     if (overlayDeckId !== null) {
       const stack = overlayNavStacks.get(overlayDeckId)
       if (stack !== undefined && stack.length > 1) {
-        stack.pop()
+        const departed = stack.pop()!
         const prev = stack[stack.length - 1]!
-        pubSub.publish("runtime:deck-inactive", { deckId: prev })
+        pubSub.publish("runtime:deck-inactive", { deckId: departed })
         pubSub.publish("runtime:activeDeck", { deckId: prev })
       } else {
         setOverlay(null)
@@ -419,6 +463,12 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     if (deckId !== null && deckById(deckId) === undefined) {
       logger.warn({ deckId }, "setOverlay: deck not found")
       return
+    }
+    if (interruption !== null && deckId === overlayDeckId) return
+    if (interruption !== null && deckId !== overlayDeckId) {
+      const previous = interruption.deckId
+      interruption = null
+      pubSub.publish("runtime:deck-inactive", { deckId: previous })
     }
     if (deckId !== null && !overlayNavStacks.has(deckId)) {
       overlayNavStacks.set(deckId, [deckId])
@@ -503,6 +553,11 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       }
       if (gesture === "hold") {
         // ponytail: hold always goes to main, never toggles overlay
+        if (interruption !== null) {
+          const previous = interruption.deckId
+          interruption = null
+          pubSub.publish("runtime:deck-inactive", { deckId: previous })
+        }
         if (overlayDeckId !== null) setOverlay(null)
         navStack.length = 0
         navStack.push(mainDeck.id)
@@ -876,6 +931,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       deckById(id) !== undefined || deckById(`${id}-p1`) !== undefined,
     setDecks,
     navigateToDeck,
+    interruptDeck,
     goBack,
     setOverlay,
     getOverlay,

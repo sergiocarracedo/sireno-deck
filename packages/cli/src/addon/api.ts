@@ -340,6 +340,9 @@ export interface AddonGlobalSubscription {
 }
 
 export interface AddonServiceContext {
+  /** Show an existing deck until released. Returns null if unavailable or locked.
+   * A newer interruption or navigation supersedes the returned release handle. */
+  interruptDeck?: (deckId: string) => (() => void) | null
   /** Namespaced credential store when supported by the host; addons are trusted code. */
   credentials?: AddonCredentials
   /** Push data to the channel this poller/subscription is bound to. */

@@ -189,6 +189,11 @@ export const bridgeAddonServices = async (
   }
 
   for (const [addonName, globalService] of addonGlobalServices) {
+    const interruptions = new Set<() => void>()
+    abortController.signal.addEventListener("abort", () => {
+      for (const release of interruptions) release()
+      interruptions.clear()
+    })
     const primaryChannel = globalService.pollers?.[0]?.channel
     const pollersById = new Map<string, AddonGlobalPoller>()
     for (const poller of globalService.pollers ?? []) {
@@ -196,6 +201,17 @@ export const bridgeAddonServices = async (
     }
 
     const ctx: AddonServiceContext = {
+      interruptDeck: (deckId) => {
+        if (abortController.signal.aborted) return null
+        const release = runtime.interruptDeck(deckId)
+        if (release === null) return null
+        const ownedRelease = () => {
+          interruptions.delete(ownedRelease)
+          release()
+        }
+        interruptions.add(ownedRelease)
+        return ownedRelease
+      },
       credentials: scopeCredentials(credentialBackend, addonName),
       publish: (data: unknown) => {
         if (primaryChannel !== undefined) {
@@ -292,6 +308,7 @@ export const bridgeAddonServices = async (
       buttonAbort: AbortController
       buttonService: AddonButtonService
       wrappedCtx: AddonButtonServiceContext<unknown>
+      activate: () => void
     }>
   >()
   const mountedButtonSignatures = new Map<string, string>()
@@ -395,18 +412,40 @@ export const bridgeAddonServices = async (
           store,
         }
 
-        const buttonAbort = new AbortController()
+        let buttonAbort = new AbortController()
         abortController.signal.addEventListener("abort", () =>
           buttonAbort.abort(),
         )
 
-        const wrappedCtx = {
+        let wrappedCtx = {
           ...buttonCtx,
           signal: buttonAbort.signal,
         }
 
+        const entry = {
+          handlerId,
+          buttonAbort,
+          buttonService,
+          wrappedCtx,
+          activate: () => {
+            if (!buttonAbort.signal.aborted || abortController.signal.aborted)
+              return
+            buttonAbort = new AbortController()
+            wrappedCtx = { ...buttonCtx, signal: buttonAbort.signal }
+            entry.buttonAbort = buttonAbort
+            entry.wrappedCtx = wrappedCtx
+            try {
+              buttonService.onMount?.(wrappedCtx)
+            } catch (err) {
+              logger.error(
+                { addonName, buttonType, err },
+                `addon onMount threw`,
+              )
+            }
+          },
+        }
         const existing = deckButtonCleanup.get(deck.id) ?? []
-        existing.push({ handlerId, buttonAbort, buttonService, wrappedCtx })
+        existing.push(entry)
         deckButtonCleanup.set(deck.id, existing)
 
         try {
@@ -523,6 +562,7 @@ export const bridgeAddonServices = async (
       const tracked = deckButtonCleanup.get(deckId)
       if (tracked === undefined) return
       for (const { buttonAbort, buttonService, wrappedCtx } of tracked) {
+        if (buttonAbort.signal.aborted) continue
         try {
           buttonService.onUnmount?.(wrappedCtx)
         } catch (err) {
@@ -533,6 +573,19 @@ export const bridgeAddonServices = async (
     },
   )
   trackedCleanup.push(unsubscribeDeckInactive)
+  trackedCleanup.push(
+    pubSub.subscribe("runtime:activeDeck", (payload: unknown) => {
+      if (
+        typeof payload !== "object" ||
+        payload === null ||
+        !("deckId" in payload)
+      )
+        return
+      for (const entry of deckButtonCleanup.get(String(payload.deckId)) ?? []) {
+        entry.activate()
+      }
+    }),
+  )
 
   abortController.signal.addEventListener("abort", () => {
     for (const [addonName, globalService] of addonGlobalServices) {

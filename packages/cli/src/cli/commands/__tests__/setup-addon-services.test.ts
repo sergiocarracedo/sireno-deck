@@ -21,6 +21,62 @@ describe("deck presentation broadcasts", () => {
     vi.restoreAllMocks()
   })
 
+  it("presents the interruption above an overlay and restores the overlay page", () => {
+    const decks = injectSystemButtons(
+      [
+        { id: "main", name: "Main", isMain: true, buttons: [] },
+        { id: "overlay", name: "Overlay", buttons: [] },
+        { id: "overlay-page", name: "Overlay page", buttons: [] },
+        { id: "alarm", name: "Alarm", buttons: [] },
+      ],
+      15,
+    )
+    const pubSub = createPubSub({ debounceMs: 60_000 })
+    const runtime = createRuntime({
+      decks,
+      pubSub,
+      store: {} as never,
+      logger,
+      getMethods: () => ({}) as never,
+    })
+    const broadcast = vi.fn()
+    const presentation = createDeckPresentationPublisher({
+      runtime,
+      pubSub,
+      addonByType: new Map(),
+      bridge: { broadcast, onConnection: vi.fn() } as never,
+      isCompact: false,
+      resolverOptions: {} as never,
+      keyCount: 15,
+      assetLookup: () => undefined,
+      logger,
+    })
+    presentation.start()
+    runtime.setOverlay("overlay")
+    runtime.navigateToDeck("overlay-page")
+    const release = runtime.interruptDeck("alarm")!
+    const alarm = broadcast.mock.lastCall![0] as {
+      deckId: string
+      surfaces: Record<
+        string,
+        { buttons: Array<{ position?: number; type: string }> }
+      >
+    }
+    expect(alarm.deckId).toBe("alarm")
+    expect(
+      alarm.surfaces.alarm!.buttons.find((button) => button.position === 14)
+        ?.type,
+    ).toBe("core:back")
+    expect(runtime.getOverlay()?.id).toBe("overlay")
+    release()
+    expect(broadcast.mock.lastCall![0]).toMatchObject({
+      deckId: "overlay-page",
+    })
+    expect(runtime.getOverlay()?.id).toBe("overlay")
+    presentation.dispose()
+    pubSub.dispose()
+  })
+
   it("keeps the injected back button for the overlay split action", () => {
     const mainDeck: RuntimeDeck = {
       id: "main",
