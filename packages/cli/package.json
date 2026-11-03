@@ -108,6 +108,7 @@
     "@heroui/styles": "3.2.6",
     "@internationalized/date": "^3.12.4",
     "@meteocons/svg-static": "^0.1.0",
+    "@napi-rs/keyring": "2.1.2",
     "@react-aria/ssr": "^3.10.1",
     "@react-aria/utils": "^3.34.1",
     "@tailwindcss/vite": "^4.0.0",

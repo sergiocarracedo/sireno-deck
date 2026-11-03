@@ -19,6 +19,11 @@ import type { Methods } from "@/deck/methods"
 import type { Runtime, RuntimeDeck } from "@/deck/runtime"
 import type { StatePublisher } from "@/render/state-publisher"
 import type { WsBridge } from "@/render/ws-bridge"
+import {
+  scopeCredentials,
+  type CredentialBackend,
+} from "@/system/credentials/store"
+import { createNativeCredentialBackend } from "@/system/credentials/native"
 
 export interface BridgeAddonServicesParams {
   readonly runtime: Runtime
@@ -36,6 +41,9 @@ export interface BridgeAddonServicesParams {
   readonly statePublisher: Pick<StatePublisher, "registerChannel">
   readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
   readonly methods: Methods
+  /** Backend-only configuration keyed by the loaded addon manifest name. */
+  readonly addonServiceConfigs?: ReadonlyMap<string, unknown>
+  readonly credentialBackend?: CredentialBackend
   /** Optional host callback that re-materializes addon decks (dynamic decks). */
   readonly requestDeckRebuild?: () => void
 }
@@ -106,6 +114,8 @@ export const bridgeAddonServices = async (
     statePublisher,
     bridge,
     methods,
+    addonServiceConfigs,
+    credentialBackend = createNativeCredentialBackend(),
     requestDeckRebuild,
   } = params
   const logger = params.logger.child({ component: "addon-handler" })
@@ -186,6 +196,7 @@ export const bridgeAddonServices = async (
     }
 
     const ctx: AddonServiceContext = {
+      credentials: scopeCredentials(credentialBackend, addonName),
       publish: (data: unknown) => {
         if (primaryChannel !== undefined) {
           bridge.broadcast({
@@ -229,7 +240,10 @@ export const bridgeAddonServices = async (
     }
 
     try {
-      const result = globalService.onLoad?.(ctx)
+      const result = globalService.onLoad?.(
+        ctx,
+        addonServiceConfigs?.get(addonName),
+      )
       if (result instanceof Promise) {
         result.catch((err) => {
           logger.error({ addonName, err }, `addon onLoad failed`)
@@ -524,13 +538,14 @@ export const bridgeAddonServices = async (
     for (const [addonName, globalService] of addonGlobalServices) {
       try {
         const ctx: AddonServiceContext = {
+          credentials: scopeCredentials(credentialBackend, addonName),
           publish: () => {},
           poll: async () => {},
           signal: abortController.signal,
           executor,
           notify: methods.notify,
         }
-        globalService.onUnload?.(ctx)
+        globalService.onUnload?.(ctx, addonServiceConfigs?.get(addonName))
       } catch (err) {
         logger.error({ addonName, err }, `addon onUnload failed`)
       }
@@ -546,13 +561,14 @@ export const bridgeAddonServices = async (
     for (const [addonName, globalService] of addonGlobalServices) {
       try {
         const ctx: AddonServiceContext = {
+          credentials: scopeCredentials(credentialBackend, addonName),
           publish: () => {},
           poll: async () => {},
           signal: abortController.signal,
           executor,
           notify: methods.notify,
         }
-        globalService.onUnload?.(ctx)
+        globalService.onUnload?.(ctx, addonServiceConfigs?.get(addonName))
       } catch (err) {
         logger.error({ addonName, err }, `addon onUnload failed`)
       }

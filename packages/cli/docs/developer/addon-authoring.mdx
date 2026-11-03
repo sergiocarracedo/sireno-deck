@@ -230,6 +230,34 @@ export const manifest: AddonManifestV1 = {
 }
 ```
 
+Addon-wide backend settings can be supplied separately from deck settings:
+
+```yaml
+addons:
+  - src: ./my-addon
+    config:
+      service:
+        refreshSeconds: 60
+```
+
+The host passes `config.service` as the second argument to `onLoad` and
+`onUnload`. The addon must validate this value. Restart Sireno Deck to apply
+changes. Service settings are excluded from generated deck configuration,
+but the YAML file is ordinary configuration, not secure credential storage.
+String values in configuration can reference the daemon environment using
+`${env:VARIABLE_NAME}`. Missing variables fail config loading. Values remain
+strings and may still be exposed when used in frontend-visible settings; an
+environment reference is not a credential store.
+
+Global service contexts also expose an optional `credentials` API with
+`availability()`, `get(name)`, `set(name, value)`, and `delete(name)`. The
+host scopes it to the addon. Values are UTF-8 strings limited to 2,560 bytes;
+names use letters, digits, `.`, `_`, or `-` and are at most 128 characters.
+Check availability and handle failures without blocking startup. Linux requires
+an accessible Secret Service; the host does not fall back to a temporary
+kernel keyring. Native stores depend on the daemon's user login context.
+Installed addon code is trusted and this API is not a security sandbox.
+
 ## Store API
 
 Persist data per-addon:

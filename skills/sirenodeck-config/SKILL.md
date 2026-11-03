@@ -37,6 +37,8 @@ Suggested wording: “Would you like me to add the Sireno Deck config skill to t
 
 - Read the selected YAML and all reachable `!include` sources before changing anything. Include paths are relative to the file containing the include and must remain within that file's directory. Preserve include structure; edit the source file rather than a mentally inlined copy. Ask before creating an included file or changing the include graph.
 - Read the live schema/docs relevant to the request: `packages/cli/src/config/schemas.ts`, `packages/cli/src/builtin-addons/<addon>/`, and `packages/cli/docs/user/` or `packages/cli/docs/reference/`. Schemas and addon manifests are authoritative if docs/examples differ.
+- For addons that document addon-wide backend settings, use `addons[].config.service`; restart the service after changes. This is ordinary configuration, not secret storage.
+- String values may reference the daemon's environment as `${env:VARIABLE_NAME}`. Missing variables fail config loading; substituted values remain strings. These references do not make frontend-visible button or deck settings secret.
 - Confirm the requested addon or theme is built in or present in the selected config's addon/package environment. Built-in addons are available without listing them in `addons:`. External addons require explicit user consent before running `sirenodeck install <package> --config <path>`.
 - Check deck IDs and existing positions. Button positions are zero-based; the last physical key is normally reserved for settings/back. Do not move/delete other buttons to make room without asking.
 - For shell actions, treat commands as executable code: explain what they do and get approval before adding or changing a command.

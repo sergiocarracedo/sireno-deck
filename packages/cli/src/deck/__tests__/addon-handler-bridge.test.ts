@@ -11,6 +11,7 @@ import { getHostContext } from "../host-context"
 import { createMethods } from "../methods"
 import { createRuntime } from "../runtime"
 import { bridgeAddonServices } from "../addon-handler-bridge"
+import { unavailableCredentialBackend } from "@/system/credentials/store"
 
 const silentLogger = () => createLogger({ level: "silent" })
 
@@ -68,6 +69,55 @@ const setup = () => {
 }
 
 describe("bridgeAddonServices", () => {
+  it("passes addon-level config to the matching global service", async () => {
+    const { runtime, pubSub, store, executor, decks, methods } = setup()
+    const fixture = await import("./__fixtures__/fake-media-backend")
+    fixture.__resetCapturedCtx()
+    const config = { providers: [{ id: "personal" }] }
+    await bridgeAddonServices({
+      runtime,
+      decks,
+      scanned: baseScanned,
+      externalAddons: [],
+      executor,
+      pubSub,
+      store,
+      logger: silentLogger(),
+      signal: new AbortController().signal,
+      statePublisher: makeStatePublisher(),
+      bridge: makeBridge(),
+      methods,
+      addonServiceConfigs: new Map([["fake-media", config]]),
+    })
+    expect(fixture.__getCapturedConfig()).toEqual(config)
+  })
+
+  it("exposes a fail-closed credential store to addon services", async () => {
+    const { runtime, pubSub, store, executor, decks, methods } = setup()
+    const fixture = await import("./__fixtures__/fake-media-backend")
+    fixture.__resetCapturedCtx()
+    await bridgeAddonServices({
+      runtime,
+      decks,
+      scanned: baseScanned,
+      externalAddons: [],
+      executor,
+      pubSub,
+      store,
+      logger: silentLogger(),
+      signal: new AbortController().signal,
+      statePublisher: makeStatePublisher(),
+      bridge: makeBridge(),
+      methods,
+      credentialBackend: unavailableCredentialBackend,
+    })
+    const credentials = fixture.__getCapturedCtx()?.credentials
+    expect(await credentials?.availability()).toBe("unavailable")
+    await expect(credentials?.set("token", "secret")).rejects.toMatchObject({
+      code: "unavailable",
+    })
+  })
+
   it("registers each globalService poller with the state publisher", async () => {
     const { runtime, pubSub, store, executor, decks, methods } = setup()
     const bridge = makeBridge()

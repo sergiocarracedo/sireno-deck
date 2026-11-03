@@ -8,6 +8,7 @@ import type { GestureKind } from "@/core/gesture-state"
 
 export type { GestureKind }
 import type { Methods } from "@/deck/methods"
+import type { AddonCredentials } from "@/system/credentials/store"
 
 /** The runtime manifest API version (`AddonManifestV1`). */
 export const SIRENO_ADDON_API_VERSION = 1 as const
@@ -310,7 +311,8 @@ export interface AddonGlobalService {
   // onLoad/onUnload accept an optional addon-specific config (typed as
   // `unknown` since the runtime doesn't know the addon's config shape).
   // Built-in addons ignore it; third-party / builtin addons that need
-  // hydrated state can read it. The runtime calls these once per process.
+  // hydrated state can read addons[].config.service. Changes require restart;
+  // this ordinary config is not secure credential storage.
   readonly onLoad?: (
     ctx: AddonServiceContext,
     config?: unknown,
@@ -338,6 +340,8 @@ export interface AddonGlobalSubscription {
 }
 
 export interface AddonServiceContext {
+  /** Namespaced credential store when supported by the host; addons are trusted code. */
+  credentials?: AddonCredentials
   /** Push data to the channel this poller/subscription is bound to. */
   publish: (data: unknown) => void
   /**

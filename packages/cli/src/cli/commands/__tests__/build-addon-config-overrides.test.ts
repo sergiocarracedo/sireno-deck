@@ -1,11 +1,41 @@
 import { describe, expect, it } from "vitest"
 
-import { buildAddonConfigOverrides } from "../run"
+import { buildAddonConfigOverrides, buildAddonServiceConfigs } from "../run"
 import { createLogger } from "@/util/logger"
 
 const silentLogger = () => createLogger({ level: "silent" })
 
 describe("buildAddonConfigOverrides", () => {
+  it("keeps service config out of generated deck config", () => {
+    const entries = [
+      { src: "example", config: { service: { token: "secret" } } },
+    ]
+    const names = new Map([["example", "example-addon"]])
+    expect(
+      buildAddonConfigOverrides(entries, names, silentLogger()).get(
+        "example-addon",
+      )?.addonWideConfig,
+    ).toEqual({})
+    expect(
+      buildAddonServiceConfigs(entries, names).get("example-addon"),
+    ).toEqual({ token: "secret" })
+  })
+
+  it("does not supply config for disabled or unresolved addons", () => {
+    const entries = [
+      {
+        src: "disabled",
+        enabled: false,
+        config: { service: { enabled: true } },
+      },
+      { src: "missing", config: { service: { enabled: true } } },
+      "plain",
+    ]
+    expect(
+      buildAddonServiceConfigs(entries, new Map([["disabled", "disabled"]]))
+        .size,
+    ).toBe(0)
+  })
   it("keys overrides by manifest name, not by user-written src", () => {
     // ponytail: this is the bug — run.ts previously keyed by `src:` (path),
     // so `materializeAddonDecks.get(addon.name)` returned undefined and the
