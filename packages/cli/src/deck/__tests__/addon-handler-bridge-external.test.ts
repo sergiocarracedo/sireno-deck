@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest"
 import { resolve as resolvePath } from "node:path"
+import { mkdtemp, rm, stat } from "node:fs/promises"
+import { tmpdir } from "node:os"
+import { join, sep } from "node:path"
 
 import { createPubSub } from "@/core/pub-sub"
 import { createStore } from "@/core/store"
@@ -93,6 +96,38 @@ const externalScanned: ReadonlyArray<ScannedAddon> = [
 ]
 
 describe("bridgeAddonServices (third-party addon)", () => {
+  it("provides a persistent private directory scoped to the registered addon", async () => {
+    const root = await mkdtemp(join(tmpdir(), "sireno-addon-test-"))
+    try {
+      const { runtime, pubSub, store, executor, decks, methods } = setup()
+      const fixture = await import("./__fixtures__/fake-external-addon")
+      const handle = await bridgeAddonServices({
+        runtime,
+        decks,
+        scanned: [],
+        externalAddons: externalScanned,
+        executor,
+        pubSub,
+        store,
+        logger: silentLogger(),
+        signal: new AbortController().signal,
+        statePublisher: makeStatePublisher(),
+        bridge: makeBridge(),
+        methods,
+        addonDataRoot: root,
+      })
+      const directory = await fixture.__getCapturedCtx()!.getDataDirectory!()
+      expect(directory.startsWith(root + sep)).toBe(true)
+      expect(await fixture.__getCapturedCtx()!.getDataDirectory!()).toBe(
+        directory,
+      )
+      if (process.platform !== "win32")
+        expect((await stat(directory)).mode & 0o777).toBe(0o700)
+      handle.dispose()
+    } finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
   it("deactivates the departed overlay page and reactivates its parent on back", async () => {
     const { runtime, pubSub, store, executor, decks, methods } = setup()
     const fixture = await import("./__fixtures__/fake-external-addon")

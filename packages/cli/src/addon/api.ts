@@ -340,6 +340,8 @@ export interface AddonGlobalSubscription {
 }
 
 export interface AddonServiceContext {
+  /** Private persistent directory scoped by the host to this addon; not a credential store. */
+  getDataDirectory?: () => Promise<string>
   /** Show an existing deck until released. Returns null if unavailable or locked.
    * A newer interruption or navigation supersedes the returned release handle. */
   interruptDeck?: (deckId: string) => (() => void) | null

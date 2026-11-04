@@ -24,6 +24,7 @@ import {
   type CredentialBackend,
 } from "@/system/credentials/store"
 import { createNativeCredentialBackend } from "@/system/credentials/native"
+import { createAddonDataDirectory } from "@/addon/data-directory"
 
 export interface BridgeAddonServicesParams {
   readonly runtime: Runtime
@@ -44,6 +45,8 @@ export interface BridgeAddonServicesParams {
   /** Backend-only configuration keyed by the loaded addon manifest name. */
   readonly addonServiceConfigs?: ReadonlyMap<string, unknown>
   readonly credentialBackend?: CredentialBackend
+  /** Override the host application-data root, primarily for tests. */
+  readonly addonDataRoot?: string
   /** Optional host callback that re-materializes addon decks (dynamic decks). */
   readonly requestDeckRebuild?: () => void
 }
@@ -139,6 +142,7 @@ export const bridgeAddonServices = async (
 
   const addonModules = new Map<string, AddonModule>()
   const addonGlobalServices = new Map<string, AddonGlobalService>()
+  const addonDataDirectories = new Map<string, () => Promise<string>>()
   const addonMethods = new Map<
     string,
     Readonly<Record<string, AddonServiceMethod>>
@@ -189,6 +193,11 @@ export const bridgeAddonServices = async (
   }
 
   for (const [addonName, globalService] of addonGlobalServices) {
+    const getDataDirectory = createAddonDataDirectory(
+      addonName,
+      params.addonDataRoot,
+    )
+    addonDataDirectories.set(addonName, getDataDirectory)
     const interruptions = new Set<() => void>()
     abortController.signal.addEventListener("abort", () => {
       for (const release of interruptions) release()
@@ -201,6 +210,7 @@ export const bridgeAddonServices = async (
     }
 
     const ctx: AddonServiceContext = {
+      getDataDirectory,
       interruptDeck: (deckId) => {
         if (abortController.signal.aborted) return null
         const release = runtime.interruptDeck(deckId)
@@ -591,6 +601,7 @@ export const bridgeAddonServices = async (
     for (const [addonName, globalService] of addonGlobalServices) {
       try {
         const ctx: AddonServiceContext = {
+          getDataDirectory: addonDataDirectories.get(addonName),
           credentials: scopeCredentials(credentialBackend, addonName),
           publish: () => {},
           poll: async () => {},
@@ -614,6 +625,7 @@ export const bridgeAddonServices = async (
     for (const [addonName, globalService] of addonGlobalServices) {
       try {
         const ctx: AddonServiceContext = {
+          getDataDirectory: addonDataDirectories.get(addonName),
           credentials: scopeCredentials(credentialBackend, addonName),
           publish: () => {},
           poll: async () => {},
