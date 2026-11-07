@@ -2,8 +2,16 @@
   "name": "@sirenodeck/addon-calendar",
   "version": "0.0.0",
   "private": true,
+  "files": [
+    "dist",
+    "sirenodeck.json",
+    "SETUP.md"
+  ],
   "type": "module",
+  "main": "./dist/index.js",
   "scripts": {
+    "build": "tsdown && pnpm build:setup",
+    "build:setup": "tsc -p tsconfig.setup.json",
     "test": "vitest run src",
     "typecheck": "tsc --noEmit"
   },
@@ -13,7 +21,14 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "tsdown": "^0.22.14",
     "typescript": "^5.7.0",
     "vitest": "^4.1.0"
-  }
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "sirenoAddonApiVersion": 1
 }

@@ -1,0 +1,7 @@
+{
+  "kind": "addon",
+  "apiVersion": 1,
+  "name": "calendar",
+  "entry": "dist/index.js",
+  "frontendEntry": "dist/frontend.js"
+}

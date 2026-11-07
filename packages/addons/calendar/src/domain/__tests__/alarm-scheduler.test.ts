@@ -40,6 +40,36 @@ const item = (e: CalendarEvent, startMs: number) => ({ event: e, startMs })
 afterEach(() => vi.useRealTimers())
 
 describe("alarm scheduler", () => {
+  it("waits for already queued transitions when disposed", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(1000)
+    let unblock!: () => void
+    let block = false
+    const store = storage()
+    const scheduler = await createAlarmScheduler({
+      storage: {
+        ...store,
+        save: async (records) => {
+          if (block)
+            await new Promise<void>((resolve) => {
+              unblock = resolve
+            })
+          await store.save(records)
+        },
+      },
+      globalSettings: settings,
+      onAlert: () => {},
+    })
+    await scheduler.refresh("a", [item(event("a", "one"), 1000)])
+    block = true
+    const snooze = scheduler.snooze()
+    await Promise.resolve()
+    const disposing = scheduler.dispose()
+    unblock()
+    await snooze
+    await disposing
+    expect(store.records()[0]?.state).toBe("snoozed")
+  })
   it("fires on the clock, repeats, snoozes and advances the queue", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(1000)

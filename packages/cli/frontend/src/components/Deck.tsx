@@ -45,6 +45,9 @@ import { ErrorBoundary } from "./ErrorBoundary"
 ;(
   globalThis as { __codingAgentsUseAddonChannel?: typeof useAddonChannel }
 ).__codingAgentsUseAddonChannel = useAddonChannel
+;(
+  globalThis as { __calendarUseAddonChannel?: typeof useAddonChannel }
+).__calendarUseAddonChannel = useAddonChannel
 
 const BUTTON_SIZE = BUTTON_SIZE_PX
 export interface DeckButton {

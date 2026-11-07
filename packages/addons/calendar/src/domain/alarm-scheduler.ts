@@ -25,6 +25,7 @@ interface SchedulerOptions {
   }
   readonly globalSettings: AlarmSettings
   readonly onAlert: (alarm: AlarmRecord) => void
+  readonly onChange?: () => void
   readonly onError?: (error: unknown) => void
   readonly snoozeMinutes?: number
   readonly repeatMinutes?: number
@@ -73,14 +74,12 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
       Math.min(60_000, ...deadlines.map((deadline) => deadline - time)),
     )
     timer = setTimeout(() => {
-      void run(async () => {}).catch((error: unknown) =>
-        options.onError?.(error),
-      )
+      void run(async () => {}).catch(() => {})
     }, delay)
   }
   const run = (change: () => Promise<void>): Promise<void> => {
+    if (disposed) return Promise.resolve()
     const task = pending.then(async () => {
-      if (disposed) return
       await change()
       const next = advanceAlarms(alarms, now())
       if (next.some((record, index) => record !== alarms[index])) {
@@ -99,9 +98,11 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
         lastAlertAt = now()
         options.onAlert(current)
       } else if (!current) lastAlertId = undefined
+      options.onChange?.()
       arm()
     })
-    pending = task.catch(() => {
+    pending = task.catch((error: unknown) => {
+      options.onError?.(error)
       if (!disposed) arm()
     })
     return task
@@ -179,9 +180,10 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
         if (current)
           await replace(dismissOccurrence(alarms, current.occurrence))
       }),
-    dispose: () => {
+    dispose: async () => {
       disposed = true
       if (timer !== undefined) clearTimeout(timer)
+      await pending
     },
   }
 }
