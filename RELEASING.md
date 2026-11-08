@@ -117,9 +117,11 @@ freely — they don't trigger bumps but still appear in the changelog.
 2. Review the generated release PR and merge it manually.
 3. The resulting package tags trigger npm publishing automatically.
 
-The current release configuration targets stable CLI `0.3.0` and the first
-calendar release `0.1.0`. Remove the temporary `release-as` overrides after
-those releases are created so subsequent versions can advance normally.
+Grouped release PRs use the literal title `chore: release`; package versions
+are recorded per component in the release PR body. Keep this title pattern
+aligned with the generated PR because Release Please parses it when tagging a
+merged release. One-time `release-as` overrides should be removed after the
+target versions are recorded in the manifest.
 
 Do not edit package versions manually. The release PR owns version bumps,
 changelogs, and the manifest update.

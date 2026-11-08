@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "commit-search-depth": 200,
   "separate-pull-requests": false,
-  "group-pull-request-title-pattern": "chore: release ${version}",
+  "group-pull-request-title-pattern": "chore: release",
   "pull-request-title-pattern": "chore(${component}): release ${version}",
   "packages": {
     "packages/cli": {
@@ -13,8 +13,7 @@
       "include-v-in-tag": false,
       "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true,
-      "release-as": "0.3.0"
+      "bump-patch-for-minor-pre-major": true
     },
     "packages/addons/calendar": {
       "package-name": "@sirenodeck/addon-calendar",
@@ -24,8 +23,7 @@
       "include-v-in-tag": false,
       "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true,
-      "release-as": "0.1.0"
+      "bump-patch-for-minor-pre-major": true
     },
     "packages/addons/app-shortcuts": {
       "package-name": "@sirenodeck/addon-app-shortcuts",
