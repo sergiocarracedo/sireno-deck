@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.10...@sirenodeck/sirenodeck-0.3.0) (2026-11-08)
+
+
+### Features
+
+* add Google Calendar addon ([4037dc6](https://github.com/sergiocarracedo/sireno-deck/commit/4037dc63be35f3fdec6077219df0b1cbd2250e1c))
+* **calendar:** add calendar alarms and prepare stable 0.3 release ([2a934b4](https://github.com/sergiocarracedo/sireno-deck/commit/2a934b49d11baf53b7d4bc5388db690ce56d7a5d))
+* **calendar:** add modal alarms and calendar color presentation ([ef24231](https://github.com/sergiocarracedo/sireno-deck/commit/ef24231415cc8d823202108408dc034d6059550a))
+* **calendar:** save provider setup through the CLI ([6cedef1](https://github.com/sergiocarracedo/sireno-deck/commit/6cedef164b231d84ebf801deaba1ebf539bb4a9c))
+* checkpoint calendar addon groundwork ([605790c](https://github.com/sergiocarracedo/sireno-deck/commit/605790c17aabab1bc218d29364959deed8c67ce1))
+* google calendar ([6d8e7d5](https://github.com/sergiocarracedo/sireno-deck/commit/6d8e7d5b7b8a9b81fe906e69b5c56ba7b812a950))
+* support reversible addon deck interruptions ([b89bfa0](https://github.com/sergiocarracedo/sireno-deck/commit/b89bfa0a57e5e28ebcfeb97dd33b7f79b70376f0))
+
+
+### Bug Fixes
+
+* **cli:** replace running daemon with invoking start version ([09f1a91](https://github.com/sergiocarracedo/sireno-deck/commit/09f1a9120b099eb691b9a6996138e8afd12accc4))
+* prevent notification text from executing PowerShell ([1ba062f](https://github.com/sergiocarracedo/sireno-deck/commit/1ba062ff613d2da9d5e66fd9d74ce1e58e1a3e61))
+
 ## [0.2.10](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.2.9...@sirenodeck/sirenodeck-0.2.10) (2026-11-02)
 
 

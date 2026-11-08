@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/theme-neon-grids-0.1.2...@sirenodeck/theme-neon-grids-0.1.3) (2026-11-08)
+
+
+### Features
+
+* **calendar:** add calendar alarms and prepare stable 0.3 release ([2a934b4](https://github.com/sergiocarracedo/sireno-deck/commit/2a934b49d11baf53b7d4bc5388db690ce56d7a5d))
+* **calendar:** add modal alarms and calendar color presentation ([ef24231](https://github.com/sergiocarracedo/sireno-deck/commit/ef24231415cc8d823202108408dc034d6059550a))
+
 ## [0.1.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/theme-neon-grids-0.1.1...@sirenodeck/theme-neon-grids-0.1.2) (2026-10-28)
 
 
