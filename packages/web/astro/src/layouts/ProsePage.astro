@@ -1,0 +1,65 @@
+---
+import Base from "./Base.astro"
+
+interface Props {
+  title: string
+  description: string
+  eyebrow: string
+  intro: string
+}
+
+const { title, description, eyebrow, intro } = Astro.props
+---
+
+<Base title={`${title} — SirenoDECK`} description={description}>
+  <article class="prose-page max-w-4xl mx-auto px-6 pt-32 pb-24">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1 class="font-display text-4xl sm:text-6xl font-bold mb-6">{title}</h1>
+    <p class="intro">{intro}</p>
+    <slot />
+  </article>
+</Base>
+
+<style>
+  .eyebrow {
+    color: var(--color-accent);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .intro {
+    color: var(--color-muted);
+    font-size: 1.125rem;
+    line-height: 1.7;
+    max-width: 42rem;
+    margin-bottom: 3rem;
+  }
+
+  .prose-page :global(section) {
+    border-top: 1px solid var(--color-border);
+    padding-block: 2rem;
+  }
+
+  .prose-page :global(h2) {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .prose-page :global(section p) {
+    color: var(--color-muted);
+    line-height: 1.75;
+    max-width: 48rem;
+  }
+
+  .prose-page :global(section p + p) {
+    margin-top: 1rem;
+  }
+
+  .prose-page :global(section a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+</style>

@@ -1,12 +1,8 @@
 ---
-import Layout from "../layouts/Base.astro"
+import Layout from "../layouts/ProsePage.astro"
 ---
 
-<Layout title="Privacy policy — SirenoDECK" description="How Sireno Deck handles data in the application and on this website.">
-  <article class="privacy max-w-4xl mx-auto px-6 pt-32 pb-24">
-    <p class="eyebrow">YOUR DATA, YOUR DEVICE</p>
-    <h1 class="font-display text-4xl sm:text-6xl font-bold mb-6">Privacy policy</h1>
-    <p class="intro">Sireno Deck is an open-source project built to run on your own device. We do not collect your application usage data.</p>
+<Layout title="Privacy policy" description="How Sireno Deck handles data in the application and on this website." eyebrow="YOUR DATA, YOUR DEVICE" intro="Sireno Deck is an open-source project built to run on your own device. We do not collect your application usage data.">
 
     <section>
       <h2>Sireno Deck application</h2>
@@ -29,49 +25,4 @@ import Layout from "../layouts/Base.astro"
       <h2>Contact and changes</h2>
       <p>For privacy questions, please <a href="https://github.com/sergiocarracedo/sireno-deck/issues">open an issue on GitHub</a>. Issues are public, so please do not include sensitive information. We may update this policy as the project changes.</p>
     </section>
-  </article>
 </Layout>
-
-<style>
-  .eyebrow {
-    color: var(--color-accent);
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
-
-  .intro {
-    color: var(--color-muted);
-    font-size: 1.125rem;
-    line-height: 1.7;
-    max-width: 42rem;
-    margin-bottom: 3rem;
-  }
-
-  section {
-    border-top: 1px solid var(--color-border);
-    padding-block: 2rem;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
-
-  section p {
-    color: var(--color-muted);
-    line-height: 1.75;
-    max-width: 48rem;
-  }
-
-  section p + p {
-    margin-top: 1rem;
-  }
-
-  section a {
-    color: var(--color-accent);
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
-  }
-</style>
