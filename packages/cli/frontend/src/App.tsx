@@ -55,6 +55,7 @@ interface DeckState {
   id: string
   name: string
   buttons: DeckButton[]
+  isModal?: boolean
   isCompact?: boolean
   hasOverlayDeckAvailable?: boolean
   overlayDeckIcon?: string | null
@@ -379,6 +380,7 @@ const AppContent = () => {
                   | "amber"
                   | "lime"
                 variant?: string
+                isModal?: boolean
                 buttonErrors?: ButtonErrorState[]
               }
             >
@@ -391,6 +393,7 @@ const AppContent = () => {
               id: message.deckId,
               name: surface.name ?? message.deckId,
               buttons: surface.buttons,
+              isModal: surface.isModal === true,
               ...(surface.buttonColor !== undefined
                 ? { buttonColor: surface.buttonColor }
                 : {}),

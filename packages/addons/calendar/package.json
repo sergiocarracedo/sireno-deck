@@ -1,0 +1,43 @@
+{
+  "name": "@sirenodeck/addon-calendar",
+  "version": "0.0.0",
+  "description": "Calendar events and reminders for Sireno Deck",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergiocarracedo/sireno-deck.git",
+    "directory": "packages/addons/calendar"
+  },
+  "files": [
+    "dist",
+    "sirenodeck.json",
+    "SETUP.md"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown && pnpm build:setup",
+    "build:setup": "tsc -p tsconfig.setup.json",
+    "test": "vitest run src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ical.js": "^2.2.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "tsdown": "^0.22.14",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "sirenoAddonApiVersion": 1
+}

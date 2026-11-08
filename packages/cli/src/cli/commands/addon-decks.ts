@@ -239,6 +239,7 @@ export const collectAddonDefaultButtonConfig = (
     if (addon.defaultButton === undefined) continue
     let matchCount = 0
     for (const deck of userDecks) {
+      if (deck.addonOwner !== undefined) continue
       for (const btn of deck.buttons) {
         if (btn.type === addon.defaultButton || btn.type === addon.name) {
           if (matchCount > 0) {

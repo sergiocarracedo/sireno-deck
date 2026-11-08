@@ -16,6 +16,7 @@ const SYSTEM_BUTTON_LAYOUT: Record<
   { source: string; label: string; details?: string }
 > = {
   "core:back": { source: "icon://arrow-left", label: "Back" },
+  "core:modal-ok": { source: "icon://check", label: "OK" },
   "core:settings-entry": { source: "icon://settings", label: "Settings" },
   "core:overlay-toggle": { source: "icon://layers", label: "Overlay" },
   "core:temporary-error": {

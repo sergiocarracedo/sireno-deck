@@ -214,6 +214,7 @@ export const buildDeckConfigMessage = (
       [deck.id]: {
         id: deck.id,
         name: deck.name ?? deck.id,
+        ...(deck.isModal === true ? { isModal: true } : {}),
         buttons: finalButtons,
         ...(deck.buttonColor !== undefined
           ? { buttonColor: deck.buttonColor }

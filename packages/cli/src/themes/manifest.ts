@@ -3,6 +3,7 @@ import { z } from "zod"
 export const ThemeColorTokenSchema = z
   .object({
     background: z.string().min(1),
+    modalDeckBgr: z.string().min(1).optional(),
     frame: z.string().min(1),
     foreground: z.string().min(1),
     "foreground-contrast": z.string().min(1),

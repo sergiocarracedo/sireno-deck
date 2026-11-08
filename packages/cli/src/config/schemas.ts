@@ -159,12 +159,13 @@ export const AddonDeckDefaultsSchema = z
  * Phase 11: addon-config block under `addons[i]`. Hosts three shape variants:
  * - `defaults:` addon-wide deck defaults (applied before per-deck overrides)
  * - `decks:` record keyed by addon deck id, with per-deck overrides
- * - addon-wide opaque config (anything else; merged into `createDeck(s)({config})`)
+ * - `service:` addon-global backend settings (never merged into deck config)
  */
 export const AddonConfigSchema = z
   .object({
     defaults: AddonDeckDefaultsSchema.optional(),
     decks: z.record(z.string(), AddonDeckOverrideSchema).optional(),
+    service: z.record(z.string(), z.unknown()).optional(),
   })
   .strict()
 

@@ -19,6 +19,12 @@ import type { Methods } from "@/deck/methods"
 import type { Runtime, RuntimeDeck } from "@/deck/runtime"
 import type { StatePublisher } from "@/render/state-publisher"
 import type { WsBridge } from "@/render/ws-bridge"
+import {
+  scopeCredentials,
+  type CredentialBackend,
+} from "@/system/credentials/store"
+import { createNativeCredentialBackend } from "@/system/credentials/native"
+import { createAddonDataDirectory } from "@/addon/data-directory"
 
 export interface BridgeAddonServicesParams {
   readonly runtime: Runtime
@@ -36,6 +42,11 @@ export interface BridgeAddonServicesParams {
   readonly statePublisher: Pick<StatePublisher, "registerChannel">
   readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
   readonly methods: Methods
+  /** Backend-only configuration keyed by the loaded addon manifest name. */
+  readonly addonServiceConfigs?: ReadonlyMap<string, unknown>
+  readonly credentialBackend?: CredentialBackend
+  /** Override the host application-data root, primarily for tests. */
+  readonly addonDataRoot?: string
   /** Optional host callback that re-materializes addon decks (dynamic decks). */
   readonly requestDeckRebuild?: () => void
 }
@@ -106,6 +117,8 @@ export const bridgeAddonServices = async (
     statePublisher,
     bridge,
     methods,
+    addonServiceConfigs,
+    credentialBackend = createNativeCredentialBackend(),
     requestDeckRebuild,
   } = params
   const logger = params.logger.child({ component: "addon-handler" })
@@ -129,6 +142,7 @@ export const bridgeAddonServices = async (
 
   const addonModules = new Map<string, AddonModule>()
   const addonGlobalServices = new Map<string, AddonGlobalService>()
+  const addonDataDirectories = new Map<string, () => Promise<string>>()
   const addonMethods = new Map<
     string,
     Readonly<Record<string, AddonServiceMethod>>
@@ -179,6 +193,16 @@ export const bridgeAddonServices = async (
   }
 
   for (const [addonName, globalService] of addonGlobalServices) {
+    const getDataDirectory = createAddonDataDirectory(
+      addonName,
+      params.addonDataRoot,
+    )
+    addonDataDirectories.set(addonName, getDataDirectory)
+    const interruptions = new Set<() => void>()
+    abortController.signal.addEventListener("abort", () => {
+      for (const release of interruptions) release()
+      interruptions.clear()
+    })
     const primaryChannel = globalService.pollers?.[0]?.channel
     const pollersById = new Map<string, AddonGlobalPoller>()
     for (const poller of globalService.pollers ?? []) {
@@ -186,6 +210,37 @@ export const bridgeAddonServices = async (
     }
 
     const ctx: AddonServiceContext = {
+      getDataDirectory,
+      interruptDeck: (deckId, options) => {
+        if (abortController.signal.aborted) return null
+        const release = runtime.interruptDeck(deckId, options)
+        if (release === null) return null
+        const ownedRelease = () => {
+          interruptions.delete(ownedRelease)
+          release()
+        }
+        interruptions.add(ownedRelease)
+        return ownedRelease
+      },
+      showModal: (deckId, options) => {
+        if (abortController.signal.aborted) return null
+        let ownedRelease: () => void
+        const release = runtime.showModal(deckId, {
+          onOk: async () => {
+            interruptions.delete(ownedRelease)
+            if (abortController.signal.aborted) return
+            await options?.onOk?.()
+          },
+        })
+        if (release === null) return null
+        ownedRelease = () => {
+          interruptions.delete(ownedRelease)
+          release()
+        }
+        interruptions.add(ownedRelease)
+        return ownedRelease
+      },
+      credentials: scopeCredentials(credentialBackend, addonName),
       publish: (data: unknown) => {
         if (primaryChannel !== undefined) {
           bridge.broadcast({
@@ -229,7 +284,10 @@ export const bridgeAddonServices = async (
     }
 
     try {
-      const result = globalService.onLoad?.(ctx)
+      const result = globalService.onLoad?.(
+        ctx,
+        addonServiceConfigs?.get(addonName),
+      )
       if (result instanceof Promise) {
         result.catch((err) => {
           logger.error({ addonName, err }, `addon onLoad failed`)
@@ -278,6 +336,7 @@ export const bridgeAddonServices = async (
       buttonAbort: AbortController
       buttonService: AddonButtonService
       wrappedCtx: AddonButtonServiceContext<unknown>
+      activate: () => void
     }>
   >()
   const mountedButtonSignatures = new Map<string, string>()
@@ -381,18 +440,40 @@ export const bridgeAddonServices = async (
           store,
         }
 
-        const buttonAbort = new AbortController()
+        let buttonAbort = new AbortController()
         abortController.signal.addEventListener("abort", () =>
           buttonAbort.abort(),
         )
 
-        const wrappedCtx = {
+        let wrappedCtx = {
           ...buttonCtx,
           signal: buttonAbort.signal,
         }
 
+        const entry = {
+          handlerId,
+          buttonAbort,
+          buttonService,
+          wrappedCtx,
+          activate: () => {
+            if (!buttonAbort.signal.aborted || abortController.signal.aborted)
+              return
+            buttonAbort = new AbortController()
+            wrappedCtx = { ...buttonCtx, signal: buttonAbort.signal }
+            entry.buttonAbort = buttonAbort
+            entry.wrappedCtx = wrappedCtx
+            try {
+              buttonService.onMount?.(wrappedCtx)
+            } catch (err) {
+              logger.error(
+                { addonName, buttonType, err },
+                `addon onMount threw`,
+              )
+            }
+          },
+        }
         const existing = deckButtonCleanup.get(deck.id) ?? []
-        existing.push({ handlerId, buttonAbort, buttonService, wrappedCtx })
+        existing.push(entry)
         deckButtonCleanup.set(deck.id, existing)
 
         try {
@@ -509,6 +590,7 @@ export const bridgeAddonServices = async (
       const tracked = deckButtonCleanup.get(deckId)
       if (tracked === undefined) return
       for (const { buttonAbort, buttonService, wrappedCtx } of tracked) {
+        if (buttonAbort.signal.aborted) continue
         try {
           buttonService.onUnmount?.(wrappedCtx)
         } catch (err) {
@@ -519,18 +601,33 @@ export const bridgeAddonServices = async (
     },
   )
   trackedCleanup.push(unsubscribeDeckInactive)
+  trackedCleanup.push(
+    pubSub.subscribe("runtime:activeDeck", (payload: unknown) => {
+      if (
+        typeof payload !== "object" ||
+        payload === null ||
+        !("deckId" in payload)
+      )
+        return
+      for (const entry of deckButtonCleanup.get(String(payload.deckId)) ?? []) {
+        entry.activate()
+      }
+    }),
+  )
 
   abortController.signal.addEventListener("abort", () => {
     for (const [addonName, globalService] of addonGlobalServices) {
       try {
         const ctx: AddonServiceContext = {
+          getDataDirectory: addonDataDirectories.get(addonName),
+          credentials: scopeCredentials(credentialBackend, addonName),
           publish: () => {},
           poll: async () => {},
           signal: abortController.signal,
           executor,
           notify: methods.notify,
         }
-        globalService.onUnload?.(ctx)
+        globalService.onUnload?.(ctx, addonServiceConfigs?.get(addonName))
       } catch (err) {
         logger.error({ addonName, err }, `addon onUnload failed`)
       }
@@ -546,13 +643,15 @@ export const bridgeAddonServices = async (
     for (const [addonName, globalService] of addonGlobalServices) {
       try {
         const ctx: AddonServiceContext = {
+          getDataDirectory: addonDataDirectories.get(addonName),
+          credentials: scopeCredentials(credentialBackend, addonName),
           publish: () => {},
           poll: async () => {},
           signal: abortController.signal,
           executor,
           notify: methods.notify,
         }
-        globalService.onUnload?.(ctx)
+        globalService.onUnload?.(ctx, addonServiceConfigs?.get(addonName))
       } catch (err) {
         logger.error({ addonName, err }, `addon onUnload failed`)
       }

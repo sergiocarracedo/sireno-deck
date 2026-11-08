@@ -1,11 +1,14 @@
 import type { AddonServiceContext, AddonGlobalService } from "@/addon/api"
 
 let capturedCtx: AddonServiceContext | null = null
+let capturedConfig: unknown
 
 export const __getCapturedCtx = (): AddonServiceContext | null => capturedCtx
+export const __getCapturedConfig = (): unknown => capturedConfig
 
 export const __resetCapturedCtx = (): void => {
   capturedCtx = null
+  capturedConfig = undefined
 }
 
 export const manifest = {
@@ -24,8 +27,9 @@ export const manifest = {
         await capturedCtx?.poll("state")
       },
     },
-    onLoad: (ctx: AddonServiceContext) => {
+    onLoad: (ctx: AddonServiceContext, config?: unknown) => {
       capturedCtx = ctx
+      capturedConfig = config
       ctx.publish({ initial: true })
     },
   } satisfies AddonGlobalService,

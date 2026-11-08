@@ -15,6 +15,7 @@ export default defineConfig({
   deps: {
     neverBundle: [
       "sharp",
+      "@napi-rs/keyring",
       "@elgato-stream-deck/node",
       "dbus-next",
       "usocket",

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import {
   BUILTIN_CLI_ICONS,
@@ -29,10 +29,56 @@ const makeTempDir = (): string => {
 }
 
 afterEach(() => {
+  vi.unstubAllEnvs()
   while (tempRoots.length > 0) {
     const dir = tempRoots.pop()
     if (dir) rmSync(dir, { recursive: true, force: true })
   }
+})
+
+describe("environment variables in configuration", () => {
+  it("resolves values after YAML parsing and before validation", () => {
+    const dir = makeTempDir()
+    const file = join(dir, "config.yml")
+    vi.stubEnv("SIRENO_TEST_ADDON", "example-addon")
+    vi.stubEnv("SIRENO_TEST_VALUE", "a: [not, yaml]")
+    writeFileSync(
+      file,
+      'addons:\n  - src: "${env:SIRENO_TEST_ADDON}"\n    config:\n      service:\n        token: "${env:SIRENO_TEST_VALUE}"\ndecks:\n  main:\n    buttons: []\n',
+    )
+    expect(loadConfig({ configPath: file }).config.addons).toEqual([
+      {
+        src: "example-addon",
+        config: { service: { token: "a: [not, yaml]" } },
+      },
+    ])
+  })
+
+  it("fails clearly when a referenced variable is missing", () => {
+    const file = join(makeTempDir(), "config.yml")
+    vi.stubEnv("SIRENO_TEST_UNSET", undefined)
+    writeFileSync(
+      file,
+      'theme: "${env:SIRENO_TEST_UNSET}"\ndecks:\n  main:\n    buttons: []\n',
+    )
+    expect(() => loadConfig({ configPath: file })).toThrow(
+      /SIRENO_TEST_UNSET.*theme/,
+    )
+  })
+
+  it("resolves variables in included YAML", () => {
+    const dir = makeTempDir()
+    vi.stubEnv("SIRENO_TEST_DECK_NAME", "Included deck")
+    writeFileSync(
+      join(dir, "decks.yml"),
+      'main:\n  name: "${env:SIRENO_TEST_DECK_NAME}"\n  buttons: []\n',
+    )
+    writeFileSync(join(dir, "config.yml"), "decks: !include decks.yml\n")
+    expect(
+      loadConfig({ configPath: join(dir, "config.yml") }).config.decks.main
+        ?.name,
+    ).toBe("Included deck")
+  })
 })
 
 describe("BUILTIN_CLI_ICONS", () => {

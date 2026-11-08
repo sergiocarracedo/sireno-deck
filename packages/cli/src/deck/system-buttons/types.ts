@@ -3,6 +3,7 @@
 // system button. Keeping the system-button surface small and deliberate.
 export const SYSTEM_BUTTON_TYPES = [
   "core:back",
+  "core:modal-ok",
   "core:settings-entry",
   "core:overlay-toggle",
   "core:temporary-error",

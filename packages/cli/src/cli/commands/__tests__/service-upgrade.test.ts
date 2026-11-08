@@ -17,10 +17,10 @@ describe("service upgrade", () => {
     expect(updated).toContain("RestartSec=42")
   })
 
-  it("does not rewrite a live custom command", () => {
+  it("uses the invoking CLI even if another installation still exists", () => {
     const unit = '[Service]\nExecStart="/node" "/custom/dist/main.mjs" start\n'
     expect(
       refreshStaleUnit(unit, "/current/dist/main.mjs", "/node", () => true),
-    ).toBe(unit)
+    ).toContain('ExecStart="/node" "/current/dist/main.mjs" start')
   })
 })

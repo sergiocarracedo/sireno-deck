@@ -6,6 +6,7 @@
   "description": "Synthwave theme: black background, electric-cyan primary with magenta/pink contrast, deck-wide perspective grid, neon-line icons on purple radial.",
   "colorTokens": {
     "background": "#000000",
+    "modalDeckBgr": "#000000",
     "frame": "#ff00ff",
     "foreground": "#ff5fd0",
     "foreground-contrast": "#ffffff",

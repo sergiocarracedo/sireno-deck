@@ -8,6 +8,10 @@ import { getOriginalCwd } from "@/cli/cwd"
 import { IncludeResolutionError, resolveIncludes } from "./include-resolver"
 import { RawConfigSchema, type RawConfig } from "./schemas"
 import { expandButtonReferences } from "./reference-expander"
+import {
+  MissingEnvironmentVariableError,
+  resolveEnvironmentVariables,
+} from "./environment"
 
 export interface LoadConfigOptions {
   configPath: string
@@ -169,7 +173,19 @@ export const loadConfig = ({
 }: LoadConfigOptions): LoadConfigResult => {
   const configDir = dirname(configPath)
   const raw = loadConfigFile(configPath)
-  const expanded = expandButtonReferences(raw, configDir)
+  let expanded: unknown
+  try {
+    expanded = resolveEnvironmentVariables(
+      expandButtonReferences(raw, configDir),
+    )
+  } catch (err) {
+    if (err instanceof MissingEnvironmentVariableError) {
+      throw new ConfigLoadError(err.message, [
+        { message: err.message, path: err.configPath },
+      ])
+    }
+    throw err
+  }
   const result = RawConfigSchema.safeParse(expanded)
   if (!result.success) {
     // ponytail: recurse into unionErrors so the user sees the actual

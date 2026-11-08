@@ -207,6 +207,7 @@ export interface SetupAddonServicesOptions {
   readonly resolverOptions: ReturnType<typeof buildResolverOptions>
   /** Optional host callback that re-materializes addon decks (dynamic decks). */
   readonly requestDeckRebuild?: () => void
+  readonly addonServiceConfigs?: ReadonlyMap<string, unknown>
 }
 
 export interface SetupAddonServicesResult {
@@ -245,6 +246,7 @@ export const setupAddonServices = (
     methods,
     logger,
     requestDeckRebuild,
+    addonServiceConfigs,
   } = options
 
   const addonBridge = bridgeAddonServices({
@@ -260,6 +262,7 @@ export const setupAddonServices = (
     bridge,
     store,
     methods,
+    ...(addonServiceConfigs !== undefined ? { addonServiceConfigs } : {}),
     ...(requestDeckRebuild !== undefined ? { requestDeckRebuild } : {}),
   })
 
@@ -699,6 +702,7 @@ export const buildAddonConfigOverrides = (
     const {
       decks: perDeckRaw,
       defaults,
+      service: _service,
       ...rest
     } = cfg as {
       decks?: Record<
@@ -706,6 +710,7 @@ export const buildAddonConfigOverrides = (
         import("@/cli/commands/addon-decks").AddonDeckOverride
       >
       defaults?: { autoShow?: boolean }
+      service?: unknown
     } & Record<string, unknown>
     // ponytail: key on the loaded addon's manifest name — that's what
     // materializeAddonDecks looks up. The user wrote `src:` (path or npm
@@ -726,6 +731,21 @@ export const buildAddonConfigOverrides = (
     })
   }
   return overrides
+}
+
+export const buildAddonServiceConfigs = (
+  addonEntries: ReadonlyArray<import("@/config/schemas").RawAddonEntry>,
+  addonSpecToName: ReadonlyMap<string, string>,
+): Map<string, unknown> => {
+  const configs = new Map<string, unknown>()
+  for (const entry of addonEntries) {
+    if (typeof entry === "string" || entry.enabled === false) continue
+    const name = addonSpecToName.get(entry.src)
+    if (name !== undefined && entry.config?.service !== undefined) {
+      configs.set(name, entry.config.service)
+    }
+  }
+  return configs
 }
 
 const buildRuntime = (
@@ -990,6 +1010,8 @@ export const applyConfigErrorReplacements = (
         path,
         deck.id,
         position,
+        deck.addonOwner !== undefined &&
+          btn.type.startsWith(`${deck.addonOwner.addonName}:`),
       )
       if (issues.length === 0) continue
 
@@ -1159,12 +1181,16 @@ interface AddonRegistryBundle {
 // full core kit (any @sirenodeck/sirenodeck/ui component). Falls back to the
 // dist entry when src/index.ts doesn't exist (npm-cached third-party
 // addons ship compiled output only).
-const browserFrontendMain = (entry: string): string => {
+const browserFrontendMain = (entry: string, dedicated = false): string => {
   const dir = dirname(entry)
   // Entry lives in <pkg>/dist (JSON-manifest addons, compiled) or directly
   // in <pkg> (regex-scanned builtins' index.ts). Normalize to pkg root.
   const pkgRoot = basename(dir) === "dist" ? dirname(dir) : dir
-  const src = resolvePath(pkgRoot, "src", "index.ts")
+  const src = resolvePath(
+    pkgRoot,
+    "src",
+    dedicated ? "frontend-entry.ts" : "index.ts",
+  )
   return existsSync(src) ? src : entry
 }
 
@@ -1172,7 +1198,12 @@ export const addonSpecFromScanned = (s: ScannedAddon) => ({
   name: s.name,
   frontend:
     s.browserEntry != null
-      ? { main: browserFrontendMain(s.browserEntry) }
+      ? {
+          main: browserFrontendMain(
+            s.browserEntry,
+            s.browserEntry !== s.frontendEntry,
+          ),
+        }
       : s.frontendEntry !== null
         ? { main: browserFrontendMain(s.frontendEntry) }
         : undefined,
@@ -1788,6 +1819,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       keyCount: descriptor.keyCount,
       resolverOptions,
       requestDeckRebuild,
+      addonServiceConfigs: buildAddonServiceConfigs(
+        loadedConfig.config.addons ?? [],
+        loadedConfig.addonSpecToName,
+      ),
       ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
       signal: bridgeSignal.signal,
       store,

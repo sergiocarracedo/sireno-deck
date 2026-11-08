@@ -47,6 +47,11 @@ jobs:
               PACKAGE_PATH='packages/addons/pomodoro'
               NEEDS_BUILD='true'
               ;;
+            '@sirenodeck/addon-calendar-'*)
+               PACKAGE='@sirenodeck/addon-calendar'
+              PACKAGE_PATH='packages/addons/calendar'
+              NEEDS_BUILD='true'
+              ;;
             '@sirenodeck/theme-neon-grids-'*)
                PACKAGE='@sirenodeck/theme-neon-grids'
               PACKAGE_PATH='packages/themes/neon-grids'

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { resolve } from "node:path"
 
 import { AddonRegistry } from "@/addon/registry"
 import {
@@ -102,6 +103,18 @@ describe("daemon vs browser addon entry points", () => {
     expect(addon!.browserEntry).toBe(BROWSER_ENTRY)
     // No <pkg>/src/index.ts on disk here, so the spec keeps the bundle as-is.
     expect(addonSpecFromScanned(addon!).frontend?.main).toBe(BROWSER_ENTRY)
+  })
+
+  it("uses a dedicated browser entry even when the addon has a Node source entry", () => {
+    const root = resolve("packages/addons/calendar")
+    const addon = {
+      ...build()[0]!,
+      frontendEntry: resolve(root, "dist/index.js"),
+      browserEntry: resolve(root, "dist/frontend.js"),
+    }
+    expect(addonSpecFromScanned(addon).frontend?.main).toBe(
+      resolve(root, "src/frontend-entry.ts"),
+    )
   })
 
   it("falls back to the single entry for addons with no browser bundle", () => {

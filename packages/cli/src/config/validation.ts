@@ -99,6 +99,7 @@ export const validateButton = (
   path: string,
   deckId?: string,
   position?: number,
+  allowInternal = false,
 ): ButtonValidationResult => {
   const base = { deckId, position }
   const issues: FullValidationIssue[] = []
@@ -119,7 +120,10 @@ export const validateButton = (
     return { issues, schemaIssues: [] }
   }
   const def = registry.getButtonType(btn.type)!
-  if (isSystemButtonType(btn.type) || def.def.service.internal === true) {
+  if (
+    isSystemButtonType(btn.type) ||
+    (!allowInternal && def.def.service.internal === true)
+  ) {
     issues.push({
       level: "error",
       path: `${path}.type`,

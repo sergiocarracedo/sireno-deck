@@ -6,6 +6,7 @@
   "description": "Light theme for Sireno Deck.",
   "colorTokens": {
     "background": "#f5f7fa",
+    "modalDeckBgr": "#dde3ea",
     "frame": "#9eb4c5",
     "foreground": "#1a202c",
     "foreground-contrast": "#fafafa",

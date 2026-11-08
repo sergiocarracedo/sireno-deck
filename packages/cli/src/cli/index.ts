@@ -36,6 +36,7 @@ import {
 } from "@/util/daemon"
 import { cancel, intro, log } from "./prompt"
 import { skillsCommand } from "./commands/skills"
+import { addonSetupCommand } from "./commands/addon-setup"
 
 export interface GlobalOptions {
   verbose?: boolean
@@ -360,6 +361,7 @@ export const buildCli = async (): Promise<{
       logsCommand as CommandModule<object, GlobalOptions>,
       systemRequirementsCommand as CommandModule<object, GlobalOptions>,
       installCommand as CommandModule<object, GlobalOptions>,
+      addonSetupCommand as CommandModule<object, GlobalOptions>,
       skillsCommand as CommandModule<object, GlobalOptions>,
     ],
     packageName: PACKAGE_NAME,

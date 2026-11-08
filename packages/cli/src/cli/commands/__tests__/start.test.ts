@@ -432,14 +432,19 @@ describe("start", () => {
    * command would spawn then loses the race for the instance lock. Restarting
    * has to go through the manager that owns the process.
    */
-  it("restarts through the service manager instead of spawning a rival daemon", async () => {
+  it("stops the installed service and replaces a development daemon with the invoking CLI", async () => {
     setHappyPath()
     const daemon = await import("@/util/daemon")
     const { invokeManager } = await import("../service-manager")
     const { spawnDetached } = await import("../spawn-daemon")
-    // A daemon is up, and it is the one the service manager owns.
+    const identity = await import("../port-identity")
+    vi.spyOn(identity, "isOurDaemon").mockReturnValue(true)
+    vi.spyOn(process, "kill").mockReturnValue(true)
     vi.mocked(daemon.readPid).mockReturnValue(4242)
-    vi.mocked(daemon.isRunning).mockReturnValue(true)
+    vi.mocked(daemon.isRunning)
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false)
     const ttyDescriptor = Object.getOwnPropertyDescriptor(
       process.stdin,
       "isTTY",
@@ -465,9 +470,28 @@ describe("start", () => {
     }
 
     expect(invokeManager).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "restart" }),
+      expect.objectContaining({ action: "stop" }),
     )
-    expect(spawnDetached).not.toHaveBeenCalled()
+    expect(spawnDetached).toHaveBeenCalledOnce()
+  })
+
+  it("does not signal an unrelated process referenced by the pid file", async () => {
+    setHappyPath()
+    const daemon = await import("@/util/daemon")
+    const identity = await import("../port-identity")
+    const kill = vi.spyOn(process, "kill").mockReturnValue(true)
+    vi.spyOn(identity, "isOurDaemon").mockReturnValue(false)
+    vi.mocked(daemon.readPid).mockReturnValue(4242)
+    vi.mocked(daemon.isRunning).mockReturnValue(true)
+    await expect(
+      start({
+        config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+        logger: silentLogger(),
+      }),
+    ).rejects.toThrow("Refusing to stop unverified daemon PID 4242")
+    expect(kill).not.toHaveBeenCalled()
+    vi.mocked(daemon.readPid).mockReturnValue(undefined as never)
+    vi.mocked(daemon.isRunning).mockReturnValue(false)
   })
 
   it("does not warn about the production frontend dist in dev mode", async () => {

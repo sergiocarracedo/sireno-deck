@@ -18,6 +18,25 @@ afterEach(() => {
 })
 
 describe("buildDeckConfigMessage — full flag", () => {
+  it("sends the modal flag and replaces the last-slot Back with OK", () => {
+    const msg = buildDeckConfigMessage(
+      {
+        id: "modal",
+        name: "Modal",
+        isModal: true,
+        buttons: [{ id: "back", type: "core:back", position: 14 }],
+      },
+      new Map(),
+      {},
+      { navStackDepth: 1, hasOverlayDeckAvailable: true },
+      15,
+    )
+    expect(msg.surfaces.modal?.isModal).toBe(true)
+    expect(
+      msg.surfaces.modal?.buttons.find((button) => button.position === 14)
+        ?.type,
+    ).toBe("core:modal-ok")
+  })
   it("forwards button.full onto the serialized payload", () => {
     const deck = {
       id: "test-deck",

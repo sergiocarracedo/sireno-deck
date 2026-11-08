@@ -1,6 +1,7 @@
 packages:
   - packages/*
   - packages/addons/app-shortcuts
+  - packages/addons/calendar
   - packages/addons/pomodoro
   - packages/web/astro
 

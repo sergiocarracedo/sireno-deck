@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { confirm, isCancel, select } from "@/cli/prompt"
+import { confirm } from "@/cli/prompt"
 import type pino from "pino"
 
 import {
@@ -409,34 +409,6 @@ const killPortListeners = async (
   await new Promise((r) => setTimeout(r, 500))
 }
 
-const promptConflict = async (
-  pid: number | null,
-): Promise<"restart" | "cancel"> => {
-  const who = pid === null ? "" : ` with pid ${pid}`
-  if (!process.stdin.isTTY) {
-    throw new Error(
-      `Daemon already running${who} (non-interactive: not stopping)`,
-    )
-  }
-  const answer = await select<"restart" | "cancel">({
-    message: `Daemon already running${who}.`,
-    options: [
-      {
-        value: "restart",
-        label: "restart",
-        hint: "Stop the existing daemon and start a new one",
-      },
-      {
-        value: "cancel",
-        label: "cancel",
-        hint: "Exit without changes",
-      },
-    ],
-  })
-  if (isCancel(answer)) return "cancel"
-  return answer
-}
-
 const stopExisting = async (
   pid: number,
   logger: pino.Logger,
@@ -449,23 +421,20 @@ const stopExisting = async (
     removeStartLock()
     return
   }
+  if (!isOurDaemon(pid))
+    throw new Error(`Refusing to stop unverified daemon PID ${pid}`)
   logger.info({ pid }, "stopping existing daemon")
   try {
     process.kill(pid, "SIGTERM")
   } catch (err) {
-    logger.warn({ err, pid }, "failed to send SIGTERM to existing daemon")
+    throw new Error(`Failed to stop existing daemon ${pid}`, { cause: err })
   }
-  const deadline = Date.now() + 5_000
+  const deadline = Date.now() + 20_000
   while (Date.now() < deadline && isRunning(pid)) {
     await new Promise((r) => setTimeout(r, 100))
   }
   if (isRunning(pid)) {
-    logger.warn({ pid }, "existing daemon did not exit in 5s, sending SIGKILL")
-    try {
-      process.kill(pid, "SIGKILL")
-    } catch (err) {
-      logger.warn({ err, pid }, "failed to send SIGKILL to existing daemon")
-    }
+    throw new Error(`Existing daemon ${pid} did not exit after SIGTERM`)
   }
   await terminateChildren({ logger, timeoutMs: 2_000 })
   removePidFile()
@@ -982,57 +951,21 @@ const start = async (options: StartOptions): Promise<StartLaunchResult> => {
   // children as strangers. Asking first also means the answer can come from
   // the instance lock, which is the one source that cannot be stale: a daemon
   // holds it for exactly as long as it is alive.
+  if (isUnitInstalled()) await invokeManager({ action: "stop", logger })
   const existing = readPid()
   const lockHeld = await isSocketLive(instanceLockPath(resolveDaemonPaths()))
   if (lockHeld || (existing !== null && isRunning(existing))) {
-    const action = await promptConflict(existing)
-    if (action === "cancel") {
-      logger.info("start cancelled")
-      return "cancelled"
-    }
-    // ponytail: a supervised daemon cannot be restarted by killing it. launchd
-    // with KeepAlive brings it back in about two seconds — measured — and the
-    // daemon we would spawn here loses the race for the instance lock and dies
-    // with "another sirenodeck daemon is already running". Before the lock
-    // existed the same race simply produced TWO daemons, which is how this
-    // machine ended up with one from 09:39 and another from 16:54 fighting
-    // over the same ports. The manager owns the process, so the manager is
-    // what restarts it; the config and flags go through the state files, the
-    // same way `startProduction` hands them over.
-    if (isUnitInstalled()) {
-      const resolvedRestart = resolveConfigPath(options)
-      writeConfigPath(resolvedRestart.path)
-      writeFlags(buildRuntimeFlags(options))
-      logger.info(
-        { configPath: resolvedRestart.path },
-        "start: daemon is service-managed — restarting through the service manager",
+    if (lockHeld && (existing === null || !isRunning(existing)))
+      throw new Error(
+        "A daemon holds the instance lock but has no live PID; refusing to stop an unidentified process",
       )
-      await invokeManager({ action: "restart", logger })
-      const deadline = Date.now() + 10_000
-      let restarted: number | null = null
-      while (Date.now() < deadline) {
-        await new Promise((r) => setTimeout(r, 200))
-        const pid = readPid()
-        if (pid !== null && pid !== existing && isRunning(pid)) {
-          restarted = pid
-          break
-        }
-      }
-      logger.info(
-        { pid: restarted },
-        restarted === null
-          ? "start: service manager restarted the daemon (pid not yet visible)"
-          : "start: daemon restarted by the service manager",
-      )
-      return "started"
-    }
     if (existing !== null) await stopExisting(existing, logger)
     else
-      // The lock is held but nothing wrote a pid file. There is no process to
-      // signal by pid, so the port reap below is what clears it.
-      logger.warn(
-        "start: a daemon holds the instance lock but left no pid file — falling back to the port reap",
+      throw new Error(
+        "A daemon holds the instance lock but has no PID; refusing to stop an unidentified process",
       )
+    if (await isSocketLive(instanceLockPath(resolveDaemonPaths())))
+      throw new Error("The previous daemon still holds the instance lock")
     removePidFile()
     removeDaemonControl(resolveDaemonPaths())
     removeRuntimeStateFile()

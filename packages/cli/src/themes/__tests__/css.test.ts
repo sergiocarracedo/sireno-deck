@@ -35,6 +35,21 @@ const baseManifest: ThemeJsonManifest = ThemeJsonManifestSchema.parse({
 })
 
 describe("themes/css", () => {
+  it("emits an optional theme-defined modal background", () => {
+    const manifest = ThemeJsonManifestSchema.parse({
+      ...baseManifest,
+      colorTokens: {
+        ...baseManifest.colorTokens,
+        modalDeckBgr: "#dde3ea",
+      },
+    })
+    expect(buildThemeCss(manifest, [])).toContain(
+      "--sireno-color-modal-deck-bgr: #dde3ea;",
+    )
+    expect(buildThemeCss(baseManifest, [])).not.toContain(
+      "--sireno-color-modal-deck-bgr:",
+    )
+  })
   it("emits effect tokens (glow/shadow/blur) on :root", () => {
     const css = buildThemeCss(baseManifest, [])
     expect(css).toContain("--sireno-glow-sm")
