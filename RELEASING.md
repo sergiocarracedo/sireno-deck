@@ -1,12 +1,12 @@
 # Releasing
 
 Sireno Deck uses [release-please](https://github.com/googleapis/release-please) to
-bump versions in a manually requested release PR, then GitHub Actions + npm
+bump versions in a release PR, then GitHub Actions + npm
 Trusted Publishing ship each changed package to npm.
 
 ## Packages
 
-Five packages live under the [`@sirenodeck`](https://www.npmjs.com/org/sirenodeck)
+Six packages live under the [`@sirenodeck`](https://www.npmjs.com/org/sirenodeck)
 organization. Each one tracks its own version and ships independently. A
 manual Release Please run can combine selected packages into one release PR.
 
@@ -15,6 +15,7 @@ manual Release Please run can combine selected packages into one release PR.
 | `@sirenodeck/sirenodeck`          | `packages/cli`                  | Yes (tsdown)           |
 | `@sirenodeck/addon-app-shortcuts` | `packages/addons/app-shortcuts` | Yes                    |
 | `@sirenodeck/addon-pomodoro`      | `packages/addons/pomodoro`      | Yes                    |
+| `@sirenodeck/addon-calendar`      | `packages/addons/calendar`      | Yes                    |
 | `@sirenodeck/theme-neon-grids`    | `packages/themes/neon-grids`    | No                     |
 | `@sirenodeck/theme-riptide`       | `packages/themes/riptide`       | No                     |
 
@@ -60,9 +61,8 @@ push to main
   ├─ CI                lint · format · typecheck · test
   └─ website           deploys to GitHub Pages for relevant changes
 
-Actions → release-please → Run workflow
-  ├─ select CLI/web, and/or any addons/themes
-  └─ release-please    opens one release PR for the selected packages
+push to main / manually run release-please
+  └─ release-please    opens one release PR for packages with releasable changes
 merge release PR       manually, after reviewing the version bumps/changelog
   ├─ tag pushed        e.g. @sirenodeck/sirenodeck-0.1.0-alpha.0
   └─ release           publishes each tagged package independently
@@ -73,14 +73,12 @@ merge release PR       manually, after reviewing the version bumps/changelog
 `main` is the staging branch. It is safe to push there without publishing a new
 package version. The website still deploys from every relevant `main` push.
 
-The CLI/web selection releases the CLI package; the website itself is private
-and has no npm version. Multiple addons and themes can be selected in the same
-workflow run and are combined into one release PR. Packages with no releasable
-changes are omitted.
+The website itself is private and has no npm version. Packages with no
+releasable changes are omitted from the combined release PR.
 
 ## One-time setup (npm Trusted Publishing)
 
-For each of the five packages listed above, the npm Trusted Publisher must be
+For each of the six packages listed above, the npm Trusted Publisher must be
 configured once at <https://www.npmjs.com/>:
 
 1. Open the package page (under the `@sirenodeck` org).
@@ -88,6 +86,12 @@ configured once at <https://www.npmjs.com/>:
 3. Provider: **GitHub Actions**.
 4. Repository: `sergiocarracedo/sireno-deck`.
 5. Workflow filename: `release.yml`.
+6. Allow direct `npm publish` (new trusted-publisher configurations may default
+   to staged publishing only).
+
+The calendar package is not currently present on the public npm registry; its
+initial package ownership and trusted publisher must be established before the
+automated publish can succeed. Do not assume a registry 404 proves name ownership.
 
 This enables `npm publish --provenance` via OIDC — no `NPM_TOKEN` secret to
 manage or leak. The publish job runs directly in `release.yml`: npm Trusted
@@ -108,10 +112,14 @@ freely — they don't trigger bumps but still appear in the changelog.
 
 ## Creating a release
 
-1. Open **Actions → release-please → Run workflow**.
-2. Select `CLI/web` and/or any addons and themes to release.
-3. Review the generated release PR and merge it manually.
-4. The resulting package tags trigger npm publishing automatically.
+1. Merge the intended changes to `main`; release-please also supports a manual
+   run from **Actions → release-please**.
+2. Review the generated release PR and merge it manually.
+3. The resulting package tags trigger npm publishing automatically.
+
+The current release configuration targets stable CLI `0.3.0` and the first
+calendar release `0.1.0`. Remove the temporary `release-as` overrides after
+those releases are created so subsequent versions can advance normally.
 
 Do not edit package versions manually. The release PR owns version bumps,
 changelogs, and the manifest update.
@@ -136,9 +144,6 @@ brew install sergiocarracedo/tap/sirenodeck
 2. Add the entry to [`release-please-config.json`](release-please-config.json).
 3. Add the matching entry to [`release-please-manifest.json`](release-please-manifest.json)
    at the current version (often `0.1.0`).
-4. Add the package selection input to
-   [`.github/workflows/release-please.yml`](.github/workflows/release-please.yml)
-   and its path mapping.
-5. Add the tag pattern to [`.github/workflows/release.yml`](.github/workflows/release.yml)
+4. Add the tag pattern to [`.github/workflows/release.yml`](.github/workflows/release.yml)
    (`detect` job) so the right package path and `needs-build` flag are picked.
-6. Claim the npm name under `@sirenodeck` and configure the Trusted Publisher.
+5. Claim the npm name under `@sirenodeck` and configure the Trusted Publisher.

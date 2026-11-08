@@ -14,8 +14,18 @@
       "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
-      "prerelease": true,
-      "prerelease-type": "alpha"
+      "release-as": "0.3.0"
+    },
+    "packages/addons/calendar": {
+      "package-name": "@sirenodeck/addon-calendar",
+      "component": "@sirenodeck/addon-calendar",
+      "release-type": "node",
+      "include-component-in-tag": true,
+      "include-v-in-tag": false,
+      "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "release-as": "0.1.0"
     },
     "packages/addons/app-shortcuts": {
       "package-name": "@sirenodeck/addon-app-shortcuts",
