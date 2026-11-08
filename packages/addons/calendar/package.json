@@ -1,6 +1,6 @@
 {
   "name": "@sirenodeck/addon-calendar",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Calendar events and reminders for Sireno Deck",
   "license": "GPL-3.0-or-later",
   "repository": {
