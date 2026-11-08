@@ -1,0 +1,77 @@
+---
+import Layout from "../layouts/Base.astro"
+---
+
+<Layout title="Privacy policy — SirenoDECK" description="How Sireno Deck handles data in the application and on this website.">
+  <article class="privacy max-w-4xl mx-auto px-6 pt-32 pb-24">
+    <p class="eyebrow">YOUR DATA, YOUR DEVICE</p>
+    <h1 class="font-display text-4xl sm:text-6xl font-bold mb-6">Privacy policy</h1>
+    <p class="intro">Sireno Deck is an open-source project built to run on your own device. We do not collect your application usage data.</p>
+
+    <section>
+      <h2>Sireno Deck application</h2>
+      <p>The CLI processes the information it needs to operate on your device. Depending on your configuration, this can include configuration files, device and system information, application state, and logs. This data stays on your device unless you choose to share it or configure a feature that communicates with another service.</p>
+      <p>Some features connect directly to external services to do their job. For example, the calendar addon connects to your calendar provider when you set it up, and weather features request weather data. Those providers receive the information needed to handle the request under their own privacy policies.</p>
+    </section>
+
+    <section>
+      <h2>Third-party addons</h2>
+      <p>Addons made by third parties can access and process data independently, including sending it to external services. We do not control their behavior or privacy practices and are not responsible for them. Review an addon's source, permissions, and privacy policy before installing it.</p>
+    </section>
+
+    <section>
+      <h2>Website</h2>
+      <p>We do not use the website to collect user data for analytics or advertising. Your browser stores your theme preference locally if you choose one. You can remove it through your browser's site-data settings.</p>
+      <p>To deliver the website, your browser requests fonts from Google Fonts and an icon script from unpkg. The homepage also requests the project's star count from GitHub. These providers, and the website's hosting provider, may receive technical information such as your IP address and request details under their own policies.</p>
+    </section>
+
+    <section>
+      <h2>Contact and changes</h2>
+      <p>For privacy questions, please <a href="https://github.com/sergiocarracedo/sireno-deck/issues">open an issue on GitHub</a>. Issues are public, so please do not include sensitive information. We may update this policy as the project changes.</p>
+    </section>
+  </article>
+</Layout>
+
+<style>
+  .eyebrow {
+    color: var(--color-accent);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .intro {
+    color: var(--color-muted);
+    font-size: 1.125rem;
+    line-height: 1.7;
+    max-width: 42rem;
+    margin-bottom: 3rem;
+  }
+
+  section {
+    border-top: 1px solid var(--color-border);
+    padding-block: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  section p {
+    color: var(--color-muted);
+    line-height: 1.75;
+    max-width: 48rem;
+  }
+
+  section p + p {
+    margin-top: 1rem;
+  }
+
+  section a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+</style>
