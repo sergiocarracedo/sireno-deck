@@ -10,6 +10,12 @@ export default [
     clean: false,
     dts: false,
     external: ["react", "react/jsx-runtime", "zod"],
+    alias: {
+      "@sirenodeck/sirenodeck/ui/surfaces/IconLabelSurface": new URL(
+        "./src/stubs/icon-label.ts",
+        import.meta.url,
+      ).pathname,
+    },
     outExtensions: () => ({ js: ".js" }),
   }),
   defineConfig({
@@ -19,7 +25,7 @@ export default [
     outDir: "dist",
     clean: false,
     dts: false,
-    external: ["react", "react/jsx-runtime"],
+    external: ["react", "react/jsx-runtime", /^@sirenodeck\/sirenodeck\//],
     outputOptions: { entryFileNames: "frontend.js" },
   }),
 ]

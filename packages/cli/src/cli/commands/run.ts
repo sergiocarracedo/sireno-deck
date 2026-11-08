@@ -1010,6 +1010,8 @@ export const applyConfigErrorReplacements = (
         path,
         deck.id,
         position,
+        deck.addonOwner !== undefined &&
+          btn.type.startsWith(`${deck.addonOwner.addonName}:`),
       )
       if (issues.length === 0) continue
 
@@ -1179,12 +1181,16 @@ interface AddonRegistryBundle {
 // full core kit (any @sirenodeck/sirenodeck/ui component). Falls back to the
 // dist entry when src/index.ts doesn't exist (npm-cached third-party
 // addons ship compiled output only).
-const browserFrontendMain = (entry: string): string => {
+const browserFrontendMain = (entry: string, dedicated = false): string => {
   const dir = dirname(entry)
   // Entry lives in <pkg>/dist (JSON-manifest addons, compiled) or directly
   // in <pkg> (regex-scanned builtins' index.ts). Normalize to pkg root.
   const pkgRoot = basename(dir) === "dist" ? dirname(dir) : dir
-  const src = resolvePath(pkgRoot, "src", "index.ts")
+  const src = resolvePath(
+    pkgRoot,
+    "src",
+    dedicated ? "frontend-entry.ts" : "index.ts",
+  )
   return existsSync(src) ? src : entry
 }
 
@@ -1192,7 +1198,12 @@ export const addonSpecFromScanned = (s: ScannedAddon) => ({
   name: s.name,
   frontend:
     s.browserEntry != null
-      ? { main: browserFrontendMain(s.browserEntry) }
+      ? {
+          main: browserFrontendMain(
+            s.browserEntry,
+            s.browserEntry !== s.frontendEntry,
+          ),
+        }
       : s.frontendEntry !== null
         ? { main: browserFrontendMain(s.frontendEntry) }
         : undefined,
