@@ -52,6 +52,15 @@ importers:
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.0
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      react:
+        specifier: ^19.0.0
+        version: 19.2.7
+      tsdown:
+        specifier: ^0.22.14
+        version: 0.22.14(@volar/typescript@2.4.28)(tsx@4.22.4)(typescript@5.9.3)
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
