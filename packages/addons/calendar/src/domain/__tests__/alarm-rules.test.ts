@@ -37,13 +37,21 @@ describe("calendar alarm rules", () => {
     ).toEqual([0])
   })
 
-  it("prefers notification reminders and deduplicates offsets", () => {
+  it("ignores calendar reminders by default and merges them only when enabled", () => {
     expect(
       resolveAlarmOffsets(
         { ...event, notificationReminders: [1, -5, -5] },
         global,
       ),
-    ).toEqual([-5, 1])
+    ).toEqual([-5, 0, 1])
+    expect(
+      resolveAlarmOffsets(
+        { ...event, notificationReminders: [-1440, -5] },
+        global,
+        undefined,
+        true,
+      ),
+    ).toEqual([-1440, -5, 0, 1])
     expect(
       resolveAlarmOffsets({ ...event, notificationReminders: [] }, global),
     ).toEqual([-5, 0, 1])
@@ -51,9 +59,14 @@ describe("calendar alarm rules", () => {
 
   it("does not alarm disabled calendars or cancelled events", () => {
     expect(
-      resolveAlarmOffsets({ ...event, notificationReminders: [-5] }, global, {
-        enabled: false,
-      }),
+      resolveAlarmOffsets(
+        { ...event, notificationReminders: [-5] },
+        global,
+        {
+          enabled: false,
+        },
+        true,
+      ),
     ).toEqual([])
     expect(
       resolveAlarmOffsets({ ...event, status: "cancelled" }, global),

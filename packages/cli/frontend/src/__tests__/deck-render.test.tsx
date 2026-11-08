@@ -32,6 +32,15 @@ const DECK = {
 const MODEL = getDeviceModel("mk2")
 
 describe("Deck", () => {
+  it("renders modal backgrounds with the default button surface color", () => {
+    const { container } = render(
+      <Deck deck={{ ...DECK, isModal: true }} deviceModel={MODEL} />,
+    )
+    expect(
+      container.querySelector('[data-deck-id="main"]')?.getAttribute("style"),
+    ).toContain("--sireno-color-modal-deck-bgr")
+    expect(container.querySelectorAll("[data-empty-cell]")).toHaveLength(0)
+  })
   it("renders a button per entry with the right data-button-type", () => {
     const { container } = render(<Deck deck={DECK} deviceModel={MODEL} />)
     expect(container.querySelectorAll("[data-button-type]")).toHaveLength(4)

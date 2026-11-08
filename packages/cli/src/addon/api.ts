@@ -344,7 +344,15 @@ export interface AddonServiceContext {
   getDataDirectory?: () => Promise<string>
   /** Show an existing deck until released. Returns null if unavailable or locked.
    * A newer interruption or navigation supersedes the returned release handle. */
-  interruptDeck?: (deckId: string) => (() => void) | null
+  interruptDeck?: (
+    deckId: string,
+    options?: { onBack?: () => void | Promise<void> },
+  ) => (() => void) | null
+  /** Queue a modal deck; OK closes it and invokes onOk. The returned handle cancels it. */
+  showModal?: (
+    deckId: string,
+    options?: { onOk?: () => void | Promise<void> },
+  ) => (() => void) | null
   /** Namespaced credential store when supported by the host; addons are trusted code. */
   credentials?: AddonCredentials
   /** Push data to the channel this poller/subscription is bound to. */

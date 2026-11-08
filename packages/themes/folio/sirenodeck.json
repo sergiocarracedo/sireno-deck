@@ -6,6 +6,7 @@
   "description": "Soft ivory surfaces, graphite ink, and a measured blue accent. Inspired by the clarity of mobile operating systems, not their chrome.",
   "colorTokens": {
     "background": "#e9e8e3",
+    "modalDeckBgr": "#e9e8e3",
     "frame": "#b9c0c1",
     "foreground": "#202c31",
     "foreground-contrast": "#ffffff",

@@ -10,6 +10,7 @@ export interface RuntimeDeck {
     config?: unknown
   }>
   isMain?: boolean
+  isModal?: boolean
   processNames?: ReadonlyArray<string>
   windowNames?: ReadonlyArray<string>
   autoShow?: boolean
@@ -28,6 +29,7 @@ export const computeSystemButtonForSlotN1 = (
   state: RuntimeState,
 ): SystemButtonType | null => {
   if (state.lockActive === true) return null
+  if (deck.isModal) return "core:modal-ok"
   if (deck.isMain) return "core:settings-entry"
   // `core:back` gives the split surface distinct tap (back) and dbl-tap
   // (overlay toggle) actions, including while an overlay is active.

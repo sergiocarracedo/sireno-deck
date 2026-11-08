@@ -110,6 +110,56 @@ describe("validateButton issues include deckId/position", () => {
 })
 
 describe("error clears on rebuild", () => {
+  it("retains internal buttons on addon-owned generated decks", () => {
+    const registry = makeMockRegistry(new Set(["calendar:navigate"]))
+    vi.mocked(registry.getButtonType).mockReturnValue({
+      def: { service: { internal: true } },
+    } as ReturnType<AddonRegistry["getButtonType"]>)
+    const decks = [
+      {
+        id: "calendar:events",
+        name: "Calendar",
+        addonOwner: {
+          addonIndex: 0,
+          addonName: "calendar",
+          overrideKey: "calendar:events",
+          capabilities: ["set-addon-deck-override"],
+        },
+        buttons: [
+          { id: "nav", type: "calendar:navigate", position: 0, config: {} },
+        ],
+      },
+    ] as ReadonlyArray<RuntimeDeck>
+    const result = applyConfigErrorReplacements(
+      decks,
+      { decks: {} } as import("@/config/schemas").RawConfig,
+      registry,
+      silentLogger,
+    )
+    expect(result.decks[0]!.buttons[0]!.type).toBe("calendar:navigate")
+  })
+
+  it("still rejects addon internal buttons in user decks", () => {
+    const registry = makeMockRegistry(new Set(["calendar:navigate"]))
+    vi.mocked(registry.getButtonType).mockReturnValue({
+      def: { service: { internal: true } },
+    } as ReturnType<AddonRegistry["getButtonType"]>)
+    const result = applyConfigErrorReplacements(
+      [
+        {
+          id: "main",
+          name: "Main",
+          buttons: [
+            { id: "nav", type: "calendar:navigate", position: 0, config: {} },
+          ],
+        },
+      ],
+      { decks: {} } as import("@/config/schemas").RawConfig,
+      registry,
+      silentLogger,
+    )
+    expect(result.decks[0]!.buttons[0]!.type).toBe("core:temporary-error")
+  })
   it("invalid button replaced by core:temporary-error; corrected config restores button", () => {
     const invalidRegistry = makeMockRegistry(new Set(["valid:button"]))
     const validRegistry = makeMockRegistry(new Set(["valid:button"]))

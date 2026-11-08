@@ -66,6 +66,7 @@ export interface Deck {
   id: string
   name: string
   buttons: DeckButton[]
+  isModal?: boolean
   buttonColor?:
     | "blue"
     | "green"
@@ -384,7 +385,8 @@ export const Deck = ({
   const width = columns * BUTTON_SIZE + (columns - 1) * resolvedGap + pad * 2
   const height = rows * BUTTON_SIZE + (rows - 1) * resolvedGap + pad * 2
   const n1Position = model.keyCount - 1
-  const splitAtN1 = deck.hasOverlayDeckAvailable === true
+  const splitAtN1 =
+    deck.hasOverlayDeckAvailable === true && deck.isModal !== true
   const errorPositions = new Set(
     (deck.buttonErrors ?? []).map((error) => error.position),
   )
@@ -416,7 +418,7 @@ export const Deck = ({
       .filter((p) => p < model.keyCount),
   )
   const emptyCells: ReactNode[] = []
-  if (!compact) {
+  if (!compact && deck.isModal !== true) {
     for (let position = 0; position < model.keyCount; position += 1) {
       if (occupiedPositions.has(position)) continue
       const col = (position % columns) + 1
@@ -449,6 +451,12 @@ export const Deck = ({
           gap: `${resolvedGap}px`,
           width,
           height,
+          ...(deck.isModal
+            ? {
+                backgroundColor:
+                  "var(--sireno-color-modal-deck-bgr, var(--sireno-variant-default-bg))",
+              }
+            : {}),
         } as CSSProperties
       }
       data-deck-id={deck.id}

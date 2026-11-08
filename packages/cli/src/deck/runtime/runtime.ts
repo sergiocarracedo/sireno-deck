@@ -50,6 +50,7 @@ export interface RuntimeDeck {
   id: string
   name: string
   buttons: ReadonlyArray<RuntimeButton>
+  isModal?: boolean
   isMain?: boolean
   processNames?: ReadonlyArray<string>
   windowNames?: ReadonlyArray<string>
@@ -133,7 +134,14 @@ export interface Runtime {
   deckExists(id: string): boolean
   setDecks(decks: ReadonlyArray<RuntimeDeck>): void
   navigateToDeck(id: string, options?: { addToHistory?: boolean }): void
-  interruptDeck(id: string): (() => void) | null
+  interruptDeck(
+    id: string,
+    options?: { onBack?: () => void | Promise<void> },
+  ): (() => void) | null
+  showModal(
+    id: string,
+    options?: { onOk?: () => void | Promise<void> },
+  ): (() => void) | null
   goBack(): void
   setOverlay(
     deckId: string | null,
@@ -213,7 +221,17 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
   let brightness = 50
   let lockActive = false
-  let interruption: { deckId: string } | null = null
+  const modals: Array<{ deckId: string; onOk?: () => void | Promise<void> }> =
+    []
+  let deferredOverlay: {
+    deckId: string | null
+    source?: "autoShow" | "manual"
+  } | null = null
+  let interruption: {
+    deckId: string
+    onBack?: () => void | Promise<void>
+    backPending?: boolean
+  } | null = null
   let legacyActiveApp: Pick<ActiveAppProvider, "getActive" | "stop"> = {
     getActive: async () => null,
     stop: async () => undefined,
@@ -227,6 +245,14 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   const setDecks = (next: ReadonlyArray<RuntimeDeck>): void => {
     decks = next
+    const activeModal = modals[0]
+    for (let i = modals.length - 1; i >= 0; i--) {
+      if (deckById(modals[i]!.deckId) === undefined) modals.splice(i, 1)
+    }
+    if (!lockActive && activeModal && modals[0] !== activeModal) {
+      pubSub.publish("runtime:deck-inactive", { deckId: activeModal.deckId })
+      pubSub.publish("runtime:activeDeck", { deckId: getActiveDeckId() })
+    }
     if (interruption !== null && deckById(interruption.deckId) === undefined) {
       const previous = interruption.deckId
       interruption = null
@@ -283,11 +309,14 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     const id = getActiveDeckId()
     const deck = deckById(id)
     if (deck === undefined) throw new Error(`Active deck '${id}' not found`)
-    return deck
+    return !lockActive && modals[0]?.deckId === id
+      ? { ...deck, isModal: true }
+      : deck
   }
 
   const getActiveDeckId = (): string => {
     if (lockActive) return "core:lock"
+    if (modals[0]) return modals[0].deckId
     if (interruption !== null) return interruption.deckId
     // ponytail: while overlay mode is on, transientDeckId (used by page-nav)
     // must take precedence — otherwise paginated overlay pages are invisible
@@ -310,10 +339,42 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     navStack[navStack.length - 1] ??
     mainDeck.id
 
-  const interruptDeck = (id: string): (() => void) | null => {
+  const showModal = (
+    id: string,
+    options?: { onOk?: () => void | Promise<void> },
+  ): (() => void) | null => {
+    if (!deckById(id)) return null
+    const previous = getActiveDeckId()
+    const entry = { deckId: id, onOk: options?.onOk }
+    modals.push(entry)
+    if (!lockActive && modals[0] === entry) {
+      pubSub.publish("runtime:deck-inactive", { deckId: previous })
+      pubSub.publish("runtime:activeDeck", { deckId: id })
+    }
+    return () => {
+      const index = modals.indexOf(entry)
+      if (index < 0) return
+      const wasActive = index === 0 && !lockActive
+      modals.splice(index, 1)
+      if (wasActive) {
+        pubSub.publish("runtime:deck-inactive", { deckId: id })
+        pubSub.publish("runtime:activeDeck", { deckId: getActiveDeckId() })
+        if (modals.length === 0 && deferredOverlay) {
+          const pending = deferredOverlay
+          deferredOverlay = null
+          setOverlay(pending.deckId, { source: pending.source })
+        }
+      }
+    }
+  }
+
+  const interruptDeck = (
+    id: string,
+    options?: { onBack?: () => void | Promise<void> },
+  ): (() => void) | null => {
     if (lockActive || deckById(id) === undefined) return null
     const previous = getActiveDeckId()
-    const current = { deckId: id }
+    const current = { deckId: id, onBack: options?.onBack }
     interruption = current
     pubSub.publish("runtime:deck-inactive", { deckId: previous })
     pubSub.publish("runtime:activeDeck", { deckId: id })
@@ -354,6 +415,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     id: string,
     navOptions?: { addToHistory?: boolean },
   ): void => {
+    if (!lockActive && modals.length > 0) return
     if (id === getActiveDeckId()) return
     let resolvedId = id
     let target = deckById(id)
@@ -408,6 +470,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   const goBack = (): void => {
+    if (!lockActive && modals.length > 0) return
     if (interruption !== null) {
       const previous = interruption.deckId
       interruption = null
@@ -460,6 +523,13 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     deckId: string | null,
     opts?: { source?: "autoShow" | "manual" },
   ): void => {
+    if (!lockActive && modals.length > 0) {
+      deferredOverlay = {
+        deckId,
+        ...(opts?.source ? { source: opts.source } : {}),
+      }
+      return
+    }
     if (deckId !== null && deckById(deckId) === undefined) {
       logger.warn({ deckId }, "setOverlay: deck not found")
       return
@@ -546,8 +616,43 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   const handleSystemButton = (type: string, gesture: GestureKind): boolean => {
+    if (
+      (type === "core:back" || type === "core:modal-ok") &&
+      !lockActive &&
+      modals[0]
+    ) {
+      if (gesture === "tap" || gesture === "hold") {
+        const entry = modals.shift()!
+        pubSub.publish("runtime:deck-inactive", { deckId: entry.deckId })
+        pubSub.publish("runtime:activeDeck", { deckId: getActiveDeckId() })
+        if (modals.length === 0 && deferredOverlay) {
+          const pending = deferredOverlay
+          deferredOverlay = null
+          setOverlay(pending.deckId, { source: pending.source })
+        }
+        if (entry.onOk)
+          void Promise.resolve()
+            .then(entry.onOk)
+            .catch((err) => logger.error({ err }, "modal OK action failed"))
+      }
+      return true
+    }
     if (type === "core:back") {
       if (gesture === "tap") {
+        if (interruption?.onBack) {
+          const current = interruption
+          if (current.backPending) return true
+          current.backPending = true
+          void Promise.resolve()
+            .then(current.onBack)
+            .catch((err) =>
+              logger.error({ err }, "interruption back action failed"),
+            )
+            .finally(() => {
+              current.backPending = false
+            })
+          return true
+        }
         goBack()
         return true
       }
@@ -636,6 +741,8 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ buttonId }, "invokeAction: button not found")
       return
     }
+
+    if (!lockActive && modals[0] && found.deckId !== modals[0].deckId) return
 
     try {
       if (handleSystemButton(found.button.type, gesture)) {
@@ -827,6 +934,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ buttonId }, "dispatchGesture: button not found")
       return
     }
+    if (!lockActive && modals[0] && found.deckId !== modals[0].deckId) return
     gestureListener?.(found.button.id, {
       gesture,
       at: Date.now(),
@@ -872,6 +980,13 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       reason: "session-unlocked",
     })
     pubSub.publish("runtime:invalidate", undefined)
+    if (modals[0])
+      pubSub.publish("runtime:activeDeck", { deckId: modals[0].deckId })
+    else if (deferredOverlay) {
+      const pending = deferredOverlay
+      deferredOverlay = null
+      setOverlay(pending.deckId, { source: pending.source })
+    }
   }
 
   const startLegacyPolicy = (): void => {
@@ -932,6 +1047,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     setDecks,
     navigateToDeck,
     interruptDeck,
+    showModal,
     goBack,
     setOverlay,
     getOverlay,

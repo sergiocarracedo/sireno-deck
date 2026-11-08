@@ -10,6 +10,50 @@ const json = (body: unknown) =>
   new Response(JSON.stringify(body), { status: 200 })
 
 describe("Google Calendar read adapter", () => {
+  it("adds calendar names and colors, with event colors taking precedence", async () => {
+    const fetcher = vi.fn(async (input: string | URL | Request) => {
+      const path = new URL(String(input)).pathname
+      if (path.endsWith("/calendarList"))
+        return json({
+          items: [{ id: "c", summary: "Feverup", backgroundColor: "#9955cc" }],
+        })
+      if (path.endsWith("/colors"))
+        return json({ event: { "5": { background: "#ffff00" } } })
+      return json({
+        items: [
+          {
+            id: "a",
+            start: { dateTime: "2026-11-04T10:00:00Z" },
+            end: { dateTime: "2026-11-04T11:00:00Z" },
+          },
+          {
+            id: "b",
+            summary: "Cita luz",
+            colorId: "5",
+            start: { dateTime: "2026-11-04T12:00:00Z" },
+            end: { dateTime: "2026-11-04T13:00:00Z" },
+          },
+        ],
+      })
+    })
+    const provider = createGoogleCalendarProvider({
+      instanceId: "a",
+      calendarIds: ["c"],
+      ...range,
+      authorizedFetch: fetcher,
+    })
+    const events = await provider.fetchEvents()
+    expect(events[0]).toMatchObject({
+      calendarName: "Feverup",
+      calendarColor: "#9955cc",
+      title: "",
+    })
+    expect(events[1]).toMatchObject({
+      calendarName: "Feverup",
+      calendarColor: "#9955cc",
+      eventColor: "#ffff00",
+    })
+  })
   it("discovers pages and fetches only selected calendars with stable recurring identities and reminders", async () => {
     const fetcher = vi.fn(
       async (input: string | URL | Request, init?: RequestInit) => {
@@ -26,6 +70,7 @@ describe("Google Calendar read adapter", () => {
                     {
                       id: "work/a",
                       summary: "Work",
+                      backgroundColor: "#aabbcc",
                       timeZone: "Europe/Madrid",
                     },
                   ],
@@ -88,7 +133,12 @@ describe("Google Calendar read adapter", () => {
       fetch: fetcher,
     })
     expect(await provider.listCalendars()).toEqual([
-      { id: "work/a", name: "Work", timeZone: "Europe/Madrid" },
+      {
+        id: "work/a",
+        name: "Work",
+        timeZone: "Europe/Madrid",
+        color: "#aabbcc",
+      },
       { id: "other", name: "Other" },
     ])
     const result = await provider.readEvents()
@@ -182,7 +232,7 @@ describe("Google Calendar read adapter", () => {
       authorizedFetch: fetcher,
     })
     expect(await empty.fetchEvents()).toEqual([])
-    expect(fetcher).toHaveBeenCalledTimes(1)
+    expect(fetcher).toHaveBeenCalledTimes(2)
   })
 
   it("sanitizes HTTP and transport errors and preserves stale snapshots", async () => {

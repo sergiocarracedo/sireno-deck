@@ -40,6 +40,26 @@ const item = (e: CalendarEvent, startMs: number) => ({ event: e, startMs })
 afterEach(() => vi.useRealTimers())
 
 describe("alarm scheduler", () => {
+  it("merges configured and calendar offsets only when opted in", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(0)
+    const store = storage()
+    const scheduler = await createAlarmScheduler({
+      storage: store,
+      globalSettings: { enabled: true, offsetsMinutes: [-5, 0] },
+      useCalendarReminders: true,
+      onAlert: () => {},
+    })
+    await scheduler.refresh("a", [
+      item(event("a", "one", [-1440, -5]), 100_000_000),
+    ])
+    expect(
+      store
+        .records()
+        .map((record) => (record.dueAtMs - record.eventStartMs) / 60_000),
+    ).toEqual([-1440, -5, 0])
+    await scheduler.dispose()
+  })
   it("waits for already queued transitions when disposed", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(1000)
@@ -98,6 +118,40 @@ describe("alarm scheduler", () => {
     scheduler.dispose()
   })
 
+  it("snoozes every reminder for the active event occurrence together", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(100_000)
+    const store = storage()
+    const scheduler = await createAlarmScheduler({
+      storage: store,
+      globalSettings: settings,
+      snoozeMinutes: 5,
+      onAlert: () => {},
+    })
+    const first = event("a", "one", [-5, 0])
+    await scheduler.refresh("a", [
+      item(first, 100_000),
+      item(event("a", "two"), 100_000),
+    ])
+    expect(scheduler.active()?.occurrence).toBe(
+      JSON.stringify(["a", "cal", "one", "one"]),
+    )
+    await scheduler.snooze()
+    expect(scheduler.active()?.occurrence).not.toBe(
+      JSON.stringify(["a", "cal", "one", "one"]),
+    )
+    expect(
+      store
+        .records()
+        .filter(
+          (record) =>
+            record.occurrence === JSON.stringify(["a", "cal", "one", "one"]),
+        )
+        .every((record) => record.state === "snoozed"),
+    ).toBe(true)
+    await scheduler.dispose()
+  })
+
   it("preserves unchanged offsets, resets moves, and isolates failed provider refreshes", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(100_000)
@@ -105,6 +159,7 @@ describe("alarm scheduler", () => {
     const scheduler = await createAlarmScheduler({
       storage: store,
       globalSettings: settings,
+      useCalendarReminders: true,
       onAlert: () => {},
     })
     const a = event("a", "one", [-1, 0, 0])

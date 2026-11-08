@@ -5,6 +5,7 @@ import {
   type ProviderSnapshot,
 } from "./domain/provider-cache.js"
 import { refreshGoogleToken } from "./auth/google-auth.js"
+import { localDay } from "./presentation.js"
 import { createGoogleCalendarProvider } from "./providers/google/index.js"
 import { join } from "node:path"
 import { createHash } from "node:crypto"
@@ -80,6 +81,35 @@ export const createCalendarRuntime = (options: {
         join(options.dataDirectory, "alarms-v1.json"),
       ),
       globalSettings: config.alarms,
+      useCalendarReminders: config.useCalendarReminders,
+      keepStoredAlarm: (alarm) => {
+        if (config.useCalendarReminders) return true
+        try {
+          const id: unknown = JSON.parse(alarm.id)
+          const identity: unknown = JSON.parse(alarm.occurrence)
+          if (
+            !Array.isArray(id) ||
+            id[0] !== alarm.occurrence ||
+            !Array.isArray(identity) ||
+            typeof identity[1] !== "string" ||
+            typeof id[1] !== "number"
+          )
+            return false
+          const provider = config.providers.find(
+            (item) => item.id === identity[0],
+          )
+          if (!provider) return false
+          const settings =
+            provider.type !== "ical"
+              ? (provider.calendarAlarms?.[identity[1]] ??
+                provider.alarms ??
+                config.alarms)
+              : (provider.alarms ?? config.alarms)
+          return settings.enabled && settings.offsetsMinutes.includes(id[1])
+        } catch {
+          return false
+        }
+      },
       snoozeMinutes: config.snoozeMinutes,
       repeatMinutes: config.repeatMinutes,
       missedGraceMinutes: config.missedGraceMinutes,
@@ -145,8 +175,13 @@ export const createCalendarRuntime = (options: {
         ...(p.type === "ical" ? [] : Object.values(p.calendarAlarms ?? {})),
       ]),
     ].flatMap((settings) => (settings?.enabled ? settings.offsetsMinutes : []))
+    const startOfToday = new Date(now())
+    startOfToday.setHours(0, 0, 0, 0)
     const timeMin = new Date(
-      now() - (config.missedGraceMinutes + Math.max(0, ...offsets)) * 60_000,
+      Math.min(
+        startOfToday.getTime(),
+        now() - (config.missedGraceMinutes + Math.max(0, ...offsets)) * 60_000,
+      ),
     ).toISOString()
     const timeMax = new Date(
       now() +
@@ -217,10 +252,23 @@ export const createCalendarRuntime = (options: {
   const visibleEvents = () =>
     snapshots
       .flatMap((s) => s.events)
-      .filter(
-        (event) =>
-          startTime(event) <= now() + config.lookaheadDays * 86_400_000,
-      )
+      .filter((event) => {
+        const current = now()
+        const notEnded =
+          event.time.kind === "timed"
+            ? Date.parse(event.time.end) > current
+            : event.time.endDateExclusive >
+              new Intl.DateTimeFormat("en-CA", {
+                timeZone: event.time.timeZone,
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              }).format(new Date(current))
+        return (
+          notEnded &&
+          startTime(event) <= current + config.lookaheadDays * 86_400_000
+        )
+      })
       .sort((a, b) => startTime(a) - startTime(b))
   const snapshot = () => {
     const active = scheduler?.active()
@@ -231,7 +279,8 @@ export const createCalendarRuntime = (options: {
         .find((event) => occurrenceKey(event.identity) === active.occurrence)
     const visible = visibleEvents()
     const display = (event: CalendarEvent) => ({
-      title: event.title,
+      title:
+        event.title.trim() || event.calendarName || event.identity.calendarId,
       time: event.time,
       day:
         event.time.kind === "all-day"
@@ -241,7 +290,19 @@ export const createCalendarRuntime = (options: {
               month: "2-digit",
               day: "2-digit",
             }).format(new Date(event.time.start)),
-      calendar: event.identity.calendarId,
+      calendar: event.calendarName ?? event.identity.calendarId,
+      color: (() => {
+        const provider = config.providers.find(
+          (item) => item.id === event.identity.providerInstanceId,
+        )
+        return (
+          event.eventColor ??
+          event.calendarColor ??
+          (provider?.type !== "ical"
+            ? provider?.calendarColors?.[event.identity.calendarId]
+            : undefined)
+        )
+      })(),
       location: event.location,
       hasLink: !!safeEventUrl(event.externalUrl),
     })
@@ -253,7 +314,10 @@ export const createCalendarRuntime = (options: {
       events,
       detail: detail ? display(detail) : undefined,
       alarm: active
-        ? { title: alarmEvent?.title ?? "Calendar reminder" }
+        ? {
+            title: alarmEvent?.title ?? "Calendar reminder",
+            startMs: active.eventStartMs,
+          }
         : undefined,
       error,
       page: page % (events.length + 1),
@@ -279,6 +343,14 @@ export const createCalendarRuntime = (options: {
       safeEventUrl(
         visibleEvents().find(
           (event) => occurrenceKey(event.identity) === selected,
+        )?.externalUrl,
+      ),
+    nextUrl: () =>
+      safeEventUrl(
+        visibleEvents().find((event) =>
+          event.time.kind === "all-day"
+            ? event.time.startDate >= localDay(new Date(now()))
+            : startTime(event) >= now(),
         )?.externalUrl,
       ),
     snooze: () => scheduler?.snooze(),

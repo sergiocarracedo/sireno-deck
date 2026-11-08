@@ -10,13 +10,13 @@ One addon contains provider adapters and a shared alarm engine. A provider type 
 
 Adapters normalize events into a provider-independent model with stable provider-instance, calendar, event and recurring-occurrence identities; title; start and end; all-day status and timezone; cancellation status; available details and external link; and notification-style reminders. Email and other reminder actions do not become addon alarms. Document provider limitations.
 
-Selected calendars are merged chronologically. Refreshes follow current event data: moved events reschedule future alarms, cancelled events remove alarms, and changed details update the display. Event lookahead is configurable and defaults to seven days. Scheduling must account for reminders due before an event enters the visible lookahead window.
+Selected calendars are merged chronologically. The deck hides ended events while keeping ongoing events; all-day events end at the exclusive end date in the calendar timezone. Refreshes follow current event data: moved events reschedule future alarms, cancelled events remove alarms, and changed details update the display. Event lookahead is configurable and defaults to seven days. Scheduling must account for reminders due before an event enters the visible lookahead window.
 
 Google and Microsoft authentication will support user-supplied OAuth app credentials initially, with a path to shared app credentials later. Treat tokens, credentials and secret feed URLs as secrets; never publish them to the frontend or include them in logs.
 
 ## Alarm configuration and behavior
 
-Users can configure or disable global alarm defaults. Calendar-specific settings replace global settings and can also disable alarms. For an enabled calendar, notification-style event reminders take priority when present; otherwise use the applicable configured offsets. Support multiple offsets before, at, or after an event starts. For all-day events, addon-defined offsets use a configurable local reference time.
+Users can configure or disable global alarm defaults. Calendar-specific settings replace global settings and can also disable alarms. The default custom offsets are five minutes before and at the start; provider notification reminders are ignored unless `useCalendarReminders` is enabled, in which case they are merged with custom offsets. Support multiple offsets before, at, or after an event starts. For all-day events, addon-defined offsets use a configurable local reference time.
 
 Each alarm is identified by provider instance, calendar, event occurrence and reminder. Queue active alarms one at a time. Tap snoozes the current alarm for a configurable duration; hold dismisses that alarm; double-tap dismisses all alarms for the event occurrence. Snoozing or dismissing reveals the next queued alarm; a snoozed alarm returns when due.
 

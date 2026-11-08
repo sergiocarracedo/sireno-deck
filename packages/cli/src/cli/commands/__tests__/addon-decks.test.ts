@@ -4,7 +4,10 @@ import type { Logger } from "pino"
 import { AddonRegistry } from "@/addon/registry"
 import type { AddonManifestV1 } from "@/addon/api"
 import type { RuntimeDeck } from "@/deck/runtime"
-import { materializeAddonDecks } from "../addon-decks"
+import {
+  collectAddonDefaultButtonConfig,
+  materializeAddonDecks,
+} from "../addon-decks"
 import { createLogger } from "@/util/logger"
 
 const silentLogger = () => createLogger({ level: "silent" })
@@ -53,6 +56,38 @@ const mockRegistry = (addons: AddonManifestV1[]): AddonRegistry => {
   }
   return reg
 }
+
+it("does not treat generated addon buttons as user launchers", () => {
+  const registry = mockRegistry([
+    fakeManifestWithDecks("calendar", {}, "calendar:upcoming"),
+  ])
+  const logger = silentLogger()
+  const warn = vi.spyOn(logger, "warn")
+  const decks: RuntimeDeck[] = [
+    {
+      id: "main",
+      name: "Main",
+      buttons: [
+        { id: "a", type: "calendar:upcoming", config: { selected: true } },
+      ],
+    },
+    {
+      id: "calendar:alarm",
+      name: "Alarm",
+      addonOwner: {
+        addonIndex: 0,
+        addonName: "calendar",
+        overrideKey: "calendar:alarm",
+        capabilities: ["set-addon-deck-override"],
+      },
+      buttons: [{ id: "b", type: "calendar:upcoming", config: {} }],
+    },
+  ]
+  expect(
+    collectAddonDefaultButtonConfig(registry, decks, logger).get("calendar"),
+  ).toEqual({ selected: true })
+  expect(warn).not.toHaveBeenCalled()
+})
 
 describe("materializeAddonDecks", () => {
   it("merges addon-generated decks alongside user decks", () => {

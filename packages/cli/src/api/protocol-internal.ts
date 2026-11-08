@@ -86,6 +86,7 @@ export const deckConfigSurfaceSchema = z.object({
   id: z.string(),
   name: z.string(),
   buttons: z.array(deckConfigSurfaceButtonSchema),
+  isModal: z.boolean().optional(),
   buttonColor: z.string().optional(),
   variant: z.string().optional(),
   buttonErrors: z

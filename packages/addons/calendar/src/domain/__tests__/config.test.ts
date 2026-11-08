@@ -28,6 +28,8 @@ describe("calendar service configuration", () => {
       ],
     })
     expect(result.snoozeMinutes).toBe(5)
+    expect(result.alarms).toEqual({ enabled: true, offsetsMinutes: [-5, 0] })
+    expect(result.useCalendarReminders).toBe(false)
     expect(result.repeatMinutes).toBe(1)
     expect(result.missedGraceMinutes).toBe(60)
     expect(result.allDayTime).toBe("09:00")

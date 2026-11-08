@@ -15,6 +15,15 @@ const event = z
       })
       .strict(),
     title: z.string(),
+    calendarName: z.string().optional(),
+    calendarColor: z
+      .string()
+      .regex(/^#[0-9a-f]{6}$/i)
+      .optional(),
+    eventColor: z
+      .string()
+      .regex(/^#[0-9a-f]{6}$/i)
+      .optional(),
     time: z.discriminatedUnion("kind", [
       z
         .object({
@@ -114,6 +123,9 @@ export const createProviderStorage = (path: string) => {
               ({
                 identity,
                 title,
+                calendarName,
+                calendarColor,
+                eventColor,
                 time,
                 status,
                 notificationReminders,
@@ -121,6 +133,9 @@ export const createProviderStorage = (path: string) => {
               }) => ({
                 identity,
                 title,
+                calendarName,
+                calendarColor,
+                eventColor,
                 time,
                 status,
                 notificationReminders,

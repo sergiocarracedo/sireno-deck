@@ -34,23 +34,26 @@ export const createCalendarDecks = (
     for (let page = 0; page < pages; page++) {
       const buttons: Button[] = entries
         .slice(page * pageSize, (page + 1) * pageSize)
-        .map((entry, position) => ({ ...entry, position }))
+        .map((entry, position) => ({ ...entry, position: position + 1 }))
       if (switchTo)
         buttons.push({
-          type: "calendar:navigate",
-          position: keyCount - 3,
+          type: "core:change-deck",
+          position: 0,
           config: {
-            target: switchTo,
+            deck: switchTo,
             label: switchTo === "calendar:days" ? "By day" : "All events",
+            icon: "icon://calendar-days",
           },
         })
       if (pages > 1)
         buttons.push({
-          type: "calendar:navigate",
+          type: "core:page-nav",
           position: keyCount - 2,
           config: {
-            target: id((page + 1) % pages),
-            label: `Next ${page + 1}/${pages}`,
+            currentPage: page + 1,
+            totalPages: pages,
+            prevDeckId: id(Math.max(0, page - 1)),
+            nextDeckId: id(Math.min(pages - 1, page + 1)),
           },
         })
       decks[id(page)] = { name, buttons }
@@ -60,7 +63,7 @@ export const createCalendarDecks = (
     type: "calendar:event",
     config: { slot },
   }))
-  paginate("calendar:events", "Calendar", entries, "calendar:days")
+  paginate("calendar:deck", "Calendar", entries, "calendar:days")
   const days = [...new Set(events.map((event) => event.day))]
   paginate(
     "calendar:days",
@@ -69,7 +72,7 @@ export const createCalendarDecks = (
       type: "calendar:day",
       config: { day, target: `calendar:day-${day}` },
     })),
-    "calendar:events",
+    "calendar:deck",
   )
   for (const day of days)
     paginate(
@@ -81,5 +84,63 @@ export const createCalendarDecks = (
     name: "Event details",
     buttons: [{ type: "calendar:detail", position: 0, config: {} }],
   }
+  const columns =
+    keyCount === 32
+      ? 8
+      : keyCount === 15
+        ? 5
+        : keyCount === 6
+          ? 3
+          : Math.max(3, Math.ceil(Math.sqrt(keyCount)))
+  const rows = Math.ceil(keyCount / columns)
+  const center =
+    (rows >= 3 ? Math.floor((rows - 1) / 2) : 0) * columns +
+    Math.floor(columns / 2)
+  const buttons: Button[] = [
+    { type: "calendar:alarm-dismiss", position: center - 1, config: {} },
+    { type: "calendar:alarm-bell", position: center, config: {} },
+    { type: "calendar:alarm-snooze", position: center + 1, config: {} },
+  ]
+  if (center + columns < keyCount - 1) {
+    const titleCenter = center >= columns ? center - columns : center + columns
+    const titlePositions =
+      columns >= 5
+        ? [titleCenter - 1, titleCenter, titleCenter + 1]
+        : [titleCenter]
+    titlePositions
+      .filter((position) => position < keyCount - 1)
+      .forEach((position, part) =>
+        buttons.push({
+          type: "calendar:alarm-title",
+          position,
+          config: { part, parts: titlePositions.length },
+        }),
+      )
+  }
+  if (center >= columns) {
+    const timingCenter = center + columns
+    buttons.push({
+      type: "calendar:alarm-countdown",
+      position: timingCenter - 1,
+      config: {},
+    })
+    buttons.push({
+      type: "calendar:alarm-clock",
+      position: timingCenter + 1,
+      config: {},
+    })
+    buttons.push({
+      type: "calendar:alarm-arrow",
+      position: timingCenter,
+      config: {},
+    })
+  } else if (keyCount === 6) {
+    buttons.push({
+      type: "calendar:alarm-compact-info",
+      position: 3,
+      config: {},
+    })
+  }
+  decks["calendar:alarm"] = { name: "Calendar alarm", buttons }
   return decks
 }

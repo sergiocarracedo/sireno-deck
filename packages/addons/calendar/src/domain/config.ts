@@ -20,6 +20,9 @@ const calendarSelection = {
   clientId: z.string().min(1),
   clientSecretCredential: identifier.optional(),
   calendarIds: z.array(z.string().min(1)).min(1),
+  calendarColors: z
+    .record(z.string().min(1), z.string().regex(/^#[0-9a-fA-F]{6}$/))
+    .optional(),
   calendarAlarms: z.record(z.string().min(1), alarmSettings).optional(),
 }
 const feedSource = z.union([
@@ -46,7 +49,8 @@ const provider = z.union([
 export const calendarConfigSchema = z
   .object({
     providers: z.array(provider).default([]),
-    alarms: alarmSettings.default({ enabled: true, offsetsMinutes: [] }),
+    alarms: alarmSettings.default({ enabled: true, offsetsMinutes: [-5, 0] }),
+    useCalendarReminders: z.boolean().default(false),
     snoozeMinutes: z.number().int().positive().default(5),
     repeatMinutes: z.number().int().positive().default(1),
     missedGraceMinutes: z.number().int().nonnegative().default(60),

@@ -23,6 +23,9 @@ export type EventTime =
 export interface CalendarEvent {
   readonly identity: EventIdentity
   readonly title: string
+  readonly calendarName?: string
+  readonly calendarColor?: string
+  readonly eventColor?: string
   readonly time: EventTime
   readonly status: "confirmed" | "cancelled"
   /** Notification-style offsets in minutes relative to event start. */

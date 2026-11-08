@@ -211,11 +211,29 @@ export const bridgeAddonServices = async (
 
     const ctx: AddonServiceContext = {
       getDataDirectory,
-      interruptDeck: (deckId) => {
+      interruptDeck: (deckId, options) => {
         if (abortController.signal.aborted) return null
-        const release = runtime.interruptDeck(deckId)
+        const release = runtime.interruptDeck(deckId, options)
         if (release === null) return null
         const ownedRelease = () => {
+          interruptions.delete(ownedRelease)
+          release()
+        }
+        interruptions.add(ownedRelease)
+        return ownedRelease
+      },
+      showModal: (deckId, options) => {
+        if (abortController.signal.aborted) return null
+        let ownedRelease: () => void
+        const release = runtime.showModal(deckId, {
+          onOk: async () => {
+            interruptions.delete(ownedRelease)
+            if (abortController.signal.aborted) return
+            await options?.onOk?.()
+          },
+        })
+        if (release === null) return null
+        ownedRelease = () => {
           interruptions.delete(ownedRelease)
           release()
         }

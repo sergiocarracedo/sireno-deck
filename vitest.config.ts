@@ -12,6 +12,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./packages/cli/src", import.meta.url)),
+      "@sirenodeck/sirenodeck/ui/surfaces/IconLabelSurface": resolve(
+        here,
+        "packages/cli/src/ui/surfaces/IconLabelSurface.tsx",
+      ),
       "@sirenodeck/sirenodeck": resolve(here, "packages/cli/src/index.ts"),
       "@sirenodeck/sirenodeck/": resolve(here, "packages/cli/src/") + "/",
       "sirenodeck/react": resolve(here, "packages/cli/src/api/react/index.ts"),

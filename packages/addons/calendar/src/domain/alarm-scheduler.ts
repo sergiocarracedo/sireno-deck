@@ -4,7 +4,7 @@ import {
   dismissOccurrence,
   nextActiveAlarm,
   reconcileAlarms,
-  snoozeAlarm,
+  snoozeOccurrence,
   type AlarmRecord,
   type AlarmSchedule,
 } from "./alarm-queue.js"
@@ -24,6 +24,8 @@ interface SchedulerOptions {
     save(alarms: readonly AlarmRecord[]): Promise<void>
   }
   readonly globalSettings: AlarmSettings
+  readonly useCalendarReminders?: boolean
+  readonly keepStoredAlarm?: (alarm: AlarmRecord) => boolean
   readonly onAlert: (alarm: AlarmRecord) => void
   readonly onChange?: () => void
   readonly onError?: (error: unknown) => void
@@ -47,7 +49,13 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
   ) {
     throw new Error("Invalid alarm timing")
   }
-  let alarms = advanceAlarms(await options.storage.load(), now(), graceMs)
+  let alarms = advanceAlarms(
+    (await options.storage.load()).filter(
+      options.keepStoredAlarm ?? (() => true),
+    ),
+    now(),
+    graceMs,
+  )
   await options.storage.save(alarms)
   let timer: ReturnType<typeof setTimeout> | undefined
   let disposed = false
@@ -130,6 +138,7 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
             event,
             options.globalSettings,
             calendarSettings,
+            options.useCalendarReminders,
           )) {
             const dueAtMs = startMs + offset * 60_000
             if (!Number.isFinite(dueAtMs))
@@ -167,7 +176,9 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
       run(async () => {
         const current = active()
         if (current)
-          await replace(snoozeAlarm(alarms, current.id, now() + snoozeMs))
+          await replace(
+            snoozeOccurrence(alarms, current.occurrence, now() + snoozeMs),
+          )
       }),
     dismiss: () =>
       run(async () => {

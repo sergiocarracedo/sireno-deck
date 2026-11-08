@@ -19,6 +19,108 @@ import {
 } from "./__fixtures__/runtime-test-helpers"
 
 describe("createRuntime", () => {
+  it("queues modal decks and delivers OK once without changing history", async () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "modal-a",
+        buttons: [{ id: "ok-a", type: "core:modal-ok" }],
+      }),
+      makeDeck({
+        id: "modal-b",
+        buttons: [{ id: "ok-b", type: "core:modal-ok" }],
+      }),
+    ])
+    const first = vi.fn()
+    const second = vi.fn()
+    runtime.showModal("modal-a", { onOk: first })
+    runtime.showModal("modal-b", { onOk: second })
+    expect(runtime.getActiveDeckId()).toBe("modal-a")
+    runtime.navigateToDeck("main")
+    expect(runtime.getActiveDeckId()).toBe("modal-a")
+    await runtime.dispatchGesture("modal-a:ok-a", "tap")
+    expect(first).toHaveBeenCalledOnce()
+    expect(runtime.getActiveDeckId()).toBe("modal-b")
+    await runtime.dispatchGesture("modal-b:ok-b", "tap")
+    expect(second).toHaveBeenCalledOnce()
+    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.navStackDepth()).toBe(1)
+  })
+
+  it("suspends a modal during lock and restores it on unlock", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "core:lock" }),
+      makeDeck({ id: "modal" }),
+    ])
+    runtime.showModal("modal")
+    const snapshot = runtime.enterLock()
+    expect(runtime.getActiveDeckId()).toBe("core:lock")
+    runtime.restoreFromLock(snapshot)
+    expect(runtime.getActiveDeckId()).toBe("modal")
+  })
+  it("cancels a queued modal without affecting the visible modal", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "first" }),
+      makeDeck({ id: "second" }),
+    ])
+    const close = runtime.showModal("first")!
+    const cancel = runtime.showModal("second")!
+    cancel()
+    expect(runtime.getActiveDeckId()).toBe("first")
+    close()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+  it("queues modal requests during lock and presents them after unlock", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "core:lock" }),
+      makeDeck({ id: "modal" }),
+    ])
+    const snapshot = runtime.enterLock()
+    runtime.showModal("modal")
+    expect(runtime.getActiveDeckId()).toBe("core:lock")
+    runtime.restoreFromLock(snapshot)
+    expect(runtime.getActiveDeckId()).toBe("modal")
+  })
+  it("lets the modal OK key complete on a hold gesture too", async () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "modal", buttons: [{ id: "ok", type: "core:modal-ok" }] }),
+    ])
+    const onOk = vi.fn()
+    runtime.showModal("modal", { onOk })
+    await runtime.dispatchGesture("modal:ok", "hold")
+    expect(onOk).toHaveBeenCalledOnce()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+  it("defers overlay changes until the last modal closes", () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "modal" }),
+      makeDeck({ id: "overlay" }),
+    ])
+    const close = runtime.showModal("modal")!
+    runtime.setOverlay("overlay", { source: "autoShow" })
+    expect(runtime.getActiveDeckId()).toBe("modal")
+    close()
+    expect(runtime.getActiveDeckId()).toBe("overlay")
+  })
+  it("routes back taps on an interruption to its owner without dismissing it", async () => {
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "alarm", buttons: [{ id: "back", type: "core:back" }] }),
+    ])
+    const onBack = vi.fn()
+    const release = runtime.interruptDeck("alarm", { onBack })!
+    await runtime.dispatchGesture("alarm:back", "tap")
+    await Promise.resolve()
+    expect(onBack).toHaveBeenCalledOnce()
+    expect(runtime.getActiveDeckId()).toBe("alarm")
+    release()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
   it("navigating from an interruption to the underlying deck does not duplicate history", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),

@@ -4,6 +4,14 @@ import {
   CalendarEventButton,
   CalendarDetailButton,
   CalendarNavigationButton,
+  CalendarAlarmBell,
+  CalendarAlarmCountdown,
+  CalendarAlarmClock,
+  CalendarAlarmTitle,
+  CalendarAlarmDismiss,
+  CalendarAlarmSnooze,
+  CalendarAlarmArrow,
+  CalendarAlarmCompactInfo,
 } from "./frontend.js"
 import { createCalendarDecks } from "./decks.js"
 import { createCalendarRuntime, type CalendarSnapshot } from "./runtime.js"
@@ -13,7 +21,14 @@ type Context = {
   credentials?: Parameters<typeof createCalendarRuntime>[0]["credentials"]
   publish(data: unknown): void
   getDataDirectory?: () => Promise<string>
-  interruptDeck?: (deckId: string) => (() => void) | null
+  interruptDeck?: (
+    deckId: string,
+    options?: { onBack?: () => void | Promise<void> },
+  ) => (() => void) | null
+  showModal?: (
+    deckId: string,
+    options?: { onOk?: () => void | Promise<void> },
+  ) => (() => void) | null
   notify?: (args: { title: string; body: string }) => Promise<void>
   requestDeckRebuild?: () => void
 }
@@ -30,6 +45,20 @@ const empty: CalendarSnapshot = {
 }
 let release: (() => void) | null = null
 let interrupted = false
+let initialDeckRebuild = false
+let lastDeckEvents: string | undefined
+
+const rebuildWhenEventsChange = (state: CalendarSnapshot) => {
+  const events = JSON.stringify(state.events)
+  if (
+    initialDeckRebuild ||
+    (lastDeckEvents !== undefined && events !== lastDeckEvents)
+  ) {
+    initialDeckRebuild = false
+    context?.requestDeckRebuild?.()
+  }
+  lastDeckEvents = events
+}
 
 export const globalService = {
   pollers: [
@@ -38,11 +67,9 @@ export const globalService = {
       channel: "calendar:state",
       intervalMs: 300_000,
       async poll() {
-        const before = JSON.stringify(runtime?.snapshot().events ?? [])
         await runtime?.refresh()
         const state = runtime?.snapshot() ?? empty
-        if (JSON.stringify(state.events) !== before)
-          context?.requestDeckRebuild?.()
+        rebuildWhenEventsChange(state)
         return state
       },
     },
@@ -56,6 +83,9 @@ export const globalService = {
     async dismiss() {
       await runtime?.dismiss()
     },
+    async snooze() {
+      await runtime?.snooze()
+    },
     async dismissAll() {
       await runtime?.dismissAll()
     },
@@ -68,6 +98,9 @@ export const globalService = {
     selectedUrl() {
       return runtime?.selectedUrl()
     },
+    nextUrl() {
+      return runtime?.nextUrl()
+    },
   },
   async onLoad(ctx: Context, config?: unknown) {
     context = ctx
@@ -75,9 +108,15 @@ export const globalService = {
     const dataDirectory = await ctx.getDataDirectory?.()
     const update = () => {
       const state = runtime?.snapshot() ?? empty
+      rebuildWhenEventsChange(state)
       if (state.alarm && settings.interrupt && !interrupted) {
-        release = ctx.interruptDeck?.("calendar:alarm") ?? null
-        interrupted = true
+        release =
+          ctx.showModal?.("calendar:alarm", {
+            onOk: async () => {
+              await runtime?.snooze()
+            },
+          }) ?? null
+        interrupted = release !== null
       } else if (!state.alarm && interrupted) {
         release?.()
         release = null
@@ -104,6 +143,7 @@ export const globalService = {
     })
     try {
       await runtime.start()
+      initialDeckRebuild = true
     } catch (error) {
       ctx.publish({ ...empty, error: "Calendar state unavailable" })
       throw error
@@ -114,6 +154,8 @@ export const globalService = {
     release?.()
     release = null
     interrupted = false
+    initialDeckRebuild = false
+    lastDeckEvents = undefined
     runtime = undefined
     context = undefined
   },
@@ -127,24 +169,19 @@ export const manifest = {
       frontend: CalendarButton,
       service: {
         configSchema: z.object({}).strict(),
-        gestureHandlers: ["tap", "hold", "dbl-tap"] as const,
+        gestureHandlers: ["tap", "hold"] as const,
         onTap(ctx: {
-          methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
-        }) {
-          return ctx.methods["calendar:nextPage"]?.()
-        },
-        onHold(ctx: {
-          methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
           coreMethods?: { navigateToDeck(args: { id: string }): void }
         }) {
-          if (ctx.methods["calendar:hasAlarm"]?.())
-            return ctx.methods["calendar:dismiss"]?.()
-          ctx.coreMethods?.navigateToDeck({ id: "calendar:events" })
+          ctx.coreMethods?.navigateToDeck({ id: "calendar:deck" })
         },
-        onDblTap(ctx: {
+        async onHold(ctx: {
           methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
+          coreMethods?: { dispatch(value: string): Promise<void> }
         }) {
-          return ctx.methods["calendar:dismissAll"]?.()
+          const url = ctx.methods["calendar:nextUrl"]?.()
+          if (typeof url === "string")
+            await ctx.coreMethods?.dispatch(`url://${url}`)
         },
       },
     },
@@ -156,13 +193,19 @@ export const manifest = {
           .object({ slot: z.number().int().nonnegative() })
           .strict(),
         gestureHandlers: ["tap"] as const,
-        onTap(ctx: {
+        async onTap(ctx: {
           config: { slot: number }
           methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
-          coreMethods: { navigateToDeck(args: { id: string }): void }
+          coreMethods: {
+            navigateToDeck(args: { id: string }): void
+            dispatch(value: string): Promise<void>
+          }
         }) {
-          if (ctx.methods["calendar:selectEvent"]?.(ctx.config.slot))
-            ctx.coreMethods.navigateToDeck({ id: "calendar:detail" })
+          if (!ctx.methods["calendar:selectEvent"]?.(ctx.config.slot)) return
+          const url = ctx.methods["calendar:selectedUrl"]?.()
+          if (typeof url === "string")
+            await ctx.coreMethods.dispatch(`url://${url}`)
+          else ctx.coreMethods.navigateToDeck({ id: "calendar:detail" })
         },
       },
     },
@@ -189,7 +232,7 @@ export const manifest = {
         configSchema: z
           .object({ target: z.string(), label: z.string() })
           .strict(),
-        gestureHandlers: ["tap"] as const,
+        gestureHandlers: ["tap", "hold"] as const,
         onTap(ctx: {
           config: { target: string }
           coreMethods: { navigateToDeck(args: { id: string }): void }
@@ -214,14 +257,71 @@ export const manifest = {
         },
       },
     },
+    "calendar:alarm-bell": {
+      frontend: CalendarAlarmBell,
+      service: { internal: true, full: true },
+    },
+    "calendar:alarm-countdown": {
+      frontend: CalendarAlarmCountdown,
+      service: { internal: true, full: true },
+    },
+    "calendar:alarm-clock": {
+      frontend: CalendarAlarmClock,
+      service: { internal: true, full: true },
+    },
+    "calendar:alarm-title": {
+      frontend: CalendarAlarmTitle,
+      service: { internal: true, full: true },
+    },
+    "calendar:alarm-arrow": {
+      frontend: CalendarAlarmArrow,
+      service: { internal: true, full: true },
+    },
+    "calendar:alarm-compact-info": {
+      frontend: CalendarAlarmCompactInfo,
+      service: { internal: true, full: true },
+    },
+    "calendar:alarm-dismiss": {
+      frontend: CalendarAlarmDismiss,
+      service: {
+        internal: true,
+        configSchema: z.object({}).strict(),
+        gestureHandlers: ["tap", "hold"] as const,
+        onTap(ctx: {
+          methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
+        }) {
+          // Dismiss must clear every reminder of this occurrence: with two
+          // offsets active at once, dismissing only the earliest leaves the
+          // next one active and the modal re-presents immediately.
+          return ctx.methods["calendar:dismissAll"]?.()
+        },
+        onHold(ctx: {
+          methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
+        }) {
+          return ctx.methods["calendar:dismissAll"]?.()
+        },
+      },
+    },
+    "calendar:alarm-snooze": {
+      frontend: CalendarAlarmSnooze,
+      service: {
+        internal: true,
+        configSchema: z.object({}).strict(),
+        gestureHandlers: ["tap", "hold"] as const,
+        onTap(ctx: {
+          methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
+        }) {
+          return ctx.methods["calendar:snooze"]?.()
+        },
+        onHold(ctx: {
+          methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
+        }) {
+          return ctx.methods["calendar:snooze"]?.()
+        },
+      },
+    },
   },
   decks: [
-    {
-      id: "calendar:alarm",
-      name: "Calendar alarm",
-      internal: true,
-      buttons: [{ type: "calendar:upcoming", config: {} }],
-    },
     {
       createDecks: ({ keyCount }: { keyCount: number }) =>
         createCalendarDecks(runtime?.snapshot().events ?? [], keyCount),

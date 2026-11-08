@@ -79,6 +79,12 @@ daemon that does — a refused start is required to change nothing at all.
 `start` and `run` both go through the same `runRealModePipeline` (or, in
 emulator mode, `runEmulatorLifecycle`).
 
+An interactive or CLI `start` stops the installed service first, then gracefully
+stops any remaining verified Sireno Deck daemon before starting the invoking
+CLI's version. It refuses to signal an unverified PID or remove a held lock
+whose owner cannot be identified. The standard Linux service's executable path
+is updated to the invoking installation while preserving other unit options.
+
 `preflight()` runs once at startup: load config, register builtins, validate,
 load theme, pick a device, connect to the Stream Deck, create the runtime
 (`createDeckRuntime({decks, logger})`), and create the system providers
@@ -98,6 +104,14 @@ load theme, pick a device, connect to the Stream Deck, create the runtime
 - `invokeAction` — bypasses the gesture stream and runs the action directly (used by frontend-UI clicks).
 - `setGestureListener(fn)` — addon-handler-bridge subscribes here.
 - `navStackDepth` — getter.
+
+Modal decks use `showModal(id, {onOk})`: requests queue in order above regular
+and overlay navigation. The final key becomes OK; tapping it closes the active
+modal and notifies its owner. The returned handle cancels that request. Session
+lock suspends modals until unlock, and addon unload cancels owned requests. The
+frontend uses the theme's `modalDeckBgr` color for the entire modal (falling
+back to the default button-surface background for older themes);
+display-only addon buttons can use `full` to omit their individual frames.
 
 Internal state:
 

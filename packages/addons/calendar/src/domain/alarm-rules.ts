@@ -4,18 +4,18 @@ export type AlarmSettings =
   | { readonly enabled: false }
   | { readonly enabled: true; readonly offsetsMinutes: readonly number[] }
 
-/** Calendar settings replace global settings; event notification reminders win when present. */
+/** Calendar settings replace global settings; provider reminders are opt-in. */
 export const resolveAlarmOffsets = (
   event: CalendarEvent,
   global: AlarmSettings,
   calendar?: AlarmSettings,
+  useCalendarReminders = false,
 ): readonly number[] => {
   const settings = calendar ?? global
   if (!settings.enabled || event.status === "cancelled") return []
-  const reminders = event.notificationReminders
-  const offsets =
-    reminders !== undefined && reminders.length > 0
-      ? reminders
-      : settings.offsetsMinutes
+  const offsets = [
+    ...settings.offsetsMinutes,
+    ...(useCalendarReminders ? (event.notificationReminders ?? []) : []),
+  ]
   return [...new Set(offsets)].sort((a, b) => a - b)
 }

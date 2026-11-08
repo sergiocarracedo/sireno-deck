@@ -27,11 +27,11 @@ Ship a third-party Calendar addon with multiple Google Calendar, Microsoft 365/O
 
 - **Provider scope:** Google Calendar, Microsoft 365/Outlook and iCalendar feeds share one normalized addon model (session-settled: user-directed — chosen over Google-only: support common calendar accounts and feeds).
 - **Alarm presentation:** interruption is configurable and enabled by default; active alarms queue one at a time (session-settled: user-directed — chosen over no interruption: alarms should be actionable on the deck).
-- **Alarm controls:** tap snoozes, hold dismisses the current alarm, and double-tap dismisses all alarms for that occurrence (session-settled: user-directed — chosen over separate controls: keep actions on one button).
+- **Alarm controls:** the alarm modal's Dismiss button dismisses every reminder for that occurrence (a single-reminder dismiss leaves the next active reminder re-presenting the modal immediately), Snooze and OK snooze the active reminder; holds are not handled (session-settled: user-directed — dedicated buttons replaced the earlier one-button gesture scheme).
 - **Timing defaults:** snooze 5 minutes, repeat every minute, recover alarms missed within one hour, and use 09:00 local time for all-day events; each is configurable (session-settled: user-approved — chosen over gentler timings: provide prompt reminders while permitting adjustment).
 - **Reminder edits:** preserve snooze and dismissal state for unchanged offsets; remove deleted offsets and schedule new ones (session-settled: user-approved — chosen over resetting every alarm: avoid repeating already handled reminders).
 - **Moved events:** clear previous alarm actions for the moved occurrence and schedule its new times (session-settled: user-directed — chosen over preserving earlier actions: treat the move as a new schedule).
-- **Event links:** hold the event-detail button to open a usable provider link (session-settled: user-approved — chosen over double-tap: keep tap for details).
+- **Event links:** tap an event to open its usable provider link; events without a link open the detail deck. Holding the event-detail button also opens an available link.
 - **Google onboarding:** use a shared Sireno Deck desktop OAuth client when available, with user-provided client credentials as a fallback (session-settled: user-approved — chosen over requiring every user to register a client: simplify sign-in while retaining a usable fallback).
 
 ## Provider constraints

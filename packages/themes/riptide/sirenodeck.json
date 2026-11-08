@@ -6,6 +6,7 @@
   "description": "Riptide — neon yellow + pink halftone icons on a black deck with cyan stripes. Inspired by late-night surf-posters.",
   "colorTokens": {
     "background": "#0a0e1a",
+    "modalDeckBgr": "#05070d",
     "frame": "#00d4ff",
     "foreground": "#fff89e",
     "foreground-contrast": "#0a0e1a",

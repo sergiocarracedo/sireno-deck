@@ -79,6 +79,17 @@ export const snoozeAlarm = (
       : alarm,
   )
 
+export const snoozeOccurrence = (
+  alarms: readonly AlarmRecord[],
+  occurrence: string,
+  untilMs: number,
+): AlarmRecord[] =>
+  alarms.map((alarm) =>
+    alarm.occurrence === occurrence && alarm.state !== "dismissed"
+      ? { ...alarm, state: "snoozed", snoozedUntilMs: untilMs }
+      : alarm,
+  )
+
 export const dismissAlarm = (
   alarms: readonly AlarmRecord[],
   id: string,

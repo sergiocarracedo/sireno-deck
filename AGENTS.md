@@ -13,6 +13,7 @@ TypeScript (strict, ESM), React 19, Vite 6, Tailwind 4, Node ≥20, pnpm workspa
 
 ## Conventions
 
+- **Reuse standard UI**: use existing primitives and surfaces whenever possible; for icon-and-label actions, use the standard `IconLabelSurface` rather than a custom button layout.
 - **No default exports** for new logic — named exports only. Existing default exports in `packages/cli/src/builtin-addons/*/index.ts` predate this rule and are kept for addon-API compatibility; new modules should not add them.
 - **Zod schemas** with `.strict()` for config/protocol. Avoid `.refine()`; if cross-field validation is required, prefer composition (`z.intersection`) or a follow-up `.superRefine` with explicit error codes.
 - **Boundaries**: oxlint forbids `packages/cli/src/**` → `frontend/` or `emulator/` imports. Cross-process comms go through the WS bridge only.

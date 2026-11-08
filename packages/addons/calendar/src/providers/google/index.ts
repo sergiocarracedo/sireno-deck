@@ -14,6 +14,7 @@ type GoogleEvent = {
   originalStartTime?: DateValue
   status?: string
   summary?: string
+  colorId?: string
   start?: DateValue
   end?: DateValue
   location?: string
@@ -25,8 +26,15 @@ type Page<T> = {
   nextPageToken?: string
   timeZone?: string
   defaultReminders?: Reminder[]
+  summary?: string
 }
-type GoogleCalendar = { id: string; summary?: string; timeZone?: string }
+type GoogleCalendar = {
+  id: string
+  summary?: string
+  summaryOverride?: string
+  timeZone?: string
+  backgroundColor?: string
+}
 
 export interface GoogleCalendarOptions {
   readonly instanceId: string
@@ -42,6 +50,7 @@ export interface CalendarSelection {
   readonly id: string
   readonly name: string
   readonly timeZone?: string
+  readonly color?: string
 }
 
 export interface GoogleCalendarProvider extends CalendarProvider {
@@ -154,6 +163,8 @@ export const createGoogleCalendarProvider = (
   const readEvents: GoogleCalendarProvider["readEvents"] = async () => {
     const events: CalendarEvent[] = []
     const cancellations: EventIdentity[] = []
+    let eventColors: Record<string, { background?: string }> | undefined
+    let colorsLoaded = false
     for (const calendarId of options.calendarIds) {
       const url = new URL(
         `calendars/${encodeURIComponent(calendarId)}/events`,
@@ -168,6 +179,7 @@ export const createGoogleCalendarProvider = (
       const defaults = result.find(
         (page) => page.defaultReminders !== undefined,
       )?.defaultReminders
+      const calendarName = result.find((page) => page.summary)?.summary
       for (const page of result)
         for (const event of page.items ?? []) {
           const identity = identityFor(options.instanceId, calendarId, event)
@@ -181,9 +193,28 @@ export const createGoogleCalendarProvider = (
               : event.reminders?.useDefault === false
                 ? reminderOffsets(event.reminders.overrides ?? [])
                 : undefined
+          if (event.colorId && !colorsLoaded) {
+            colorsLoaded = true
+            try {
+              eventColors = (
+                await request<{
+                  event?: Record<string, { background?: string }>
+                }>(new URL("colors", base))
+              ).event
+            } catch {
+              // Calendar colors remain usable if event-color metadata is unavailable.
+            }
+          }
+          const eventColor = event.colorId
+            ? eventColors?.[event.colorId]?.background
+            : undefined
           events.push({
             identity,
             title: event.summary ?? "",
+            ...(calendarName ? { calendarName } : {}),
+            ...(eventColor && /^#[0-9a-f]{6}$/i.test(eventColor)
+              ? { eventColor }
+              : {}),
             time: eventTime(event, timeZone),
             status: "confirmed",
             ...(reminders === undefined
@@ -210,14 +241,33 @@ export const createGoogleCalendarProvider = (
       return result.flatMap((page) =>
         (page.items ?? []).map((calendar) => ({
           id: calendar.id,
-          name: calendar.summary ?? calendar.id,
+          name: calendar.summaryOverride ?? calendar.summary ?? calendar.id,
+          ...(calendar.backgroundColor
+            ? { color: calendar.backgroundColor }
+            : {}),
           ...(calendar.timeZone ? { timeZone: calendar.timeZone } : {}),
         })),
       )
     },
     readEvents,
     async fetchEvents() {
-      return (await readEvents()).events
+      const [result, calendars] = await Promise.all([
+        readEvents(),
+        options.calendarIds.length
+          ? this.listCalendars().catch(() => [])
+          : Promise.resolve([]),
+      ])
+      const byId = new Map(calendars.map((calendar) => [calendar.id, calendar]))
+      return result.events.map((event) => {
+        const calendar = byId.get(event.identity.calendarId)
+        return {
+          ...event,
+          ...(calendar?.name ? { calendarName: calendar.name } : {}),
+          ...(calendar?.color && /^#[0-9a-f]{6}$/i.test(calendar.color)
+            ? { calendarColor: calendar.color }
+            : {}),
+        }
+      })
     },
   }
 }
