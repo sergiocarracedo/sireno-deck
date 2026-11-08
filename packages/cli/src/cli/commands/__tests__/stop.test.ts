@@ -3,9 +3,15 @@ import { mkdirSync, rmSync, writeFileSync, existsSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { createLogger } from "@/util/logger"
+
+const { isUnitInstalled, invokeManager } = vi.hoisted(() => ({
+  isUnitInstalled: vi.fn(() => false),
+  invokeManager: vi.fn(async () => undefined),
+}))
+vi.mock("../service-manager", () => ({ isUnitInstalled, invokeManager }))
 
 import { stop } from "../stop"
 
@@ -14,6 +20,8 @@ const silentLogger = () => createLogger({ level: "silent" })
 const TEST_DIR = join(tmpdir(), `sirenodeck-stop-test-${process.pid}`)
 
 beforeEach(() => {
+  vi.clearAllMocks()
+  isUnitInstalled.mockReturnValue(false)
   if (existsSync(TEST_DIR)) rmSync(TEST_DIR, { recursive: true, force: true })
   mkdirSync(TEST_DIR, { recursive: true })
   process.env["XDG_RUNTIME_DIR"] = TEST_DIR
@@ -61,6 +69,40 @@ const writeDaemonFiles = (pid: number, childPids: number[]): void => {
 }
 
 describe("stop", () => {
+  it("stops the service manager even when the pid file is missing", async () => {
+    isUnitInstalled.mockReturnValue(true)
+    const logger = silentLogger()
+    await stop({ logger })
+    expect(invokeManager).toHaveBeenCalledWith({ action: "stop", logger })
+  })
+
+  it("stops the service before terminating a remaining daemon", async () => {
+    isUnitInstalled.mockReturnValue(true)
+    const daemon = spawnLongLivedChild()
+    writeDaemonFiles(daemon.pid!, [])
+    invokeManager.mockImplementationOnce(async () => {
+      expect(daemon.exitCode).toBeNull()
+    })
+    await stop({ logger: silentLogger() })
+    expect(invokeManager).toHaveBeenCalledOnce()
+    expect(await waitForExit(daemon.pid!)).toBe(true)
+  })
+
+  it("does not kill a daemon when stopping its service fails", async () => {
+    isUnitInstalled.mockReturnValue(true)
+    invokeManager.mockRejectedValueOnce(new Error("service stop failed"))
+    const daemon = spawnLongLivedChild()
+    writeDaemonFiles(daemon.pid!, [])
+    try {
+      await expect(stop({ logger: silentLogger() })).rejects.toThrow(
+        "service stop failed",
+      )
+      expect(existsSync(join(TEST_DIR, "sirenodeck.pid"))).toBe(true)
+      expect(daemon.exitCode).toBeNull()
+    } finally {
+      daemon.kill()
+    }
+  })
   it("returns silently when no daemon is running", async () => {
     await stop({ logger: silentLogger() })
     expect(existsSync(join(TEST_DIR, "sirenodeck.pid"))).toBe(false)

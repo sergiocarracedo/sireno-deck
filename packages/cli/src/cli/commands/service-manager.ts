@@ -37,10 +37,6 @@ export const refreshStaleUnit = (
     !exists(currentScript)
   )
     return content
-  const brewUpgrade =
-    oldScript.includes("/Cellar/sirenodeck/") &&
-    currentScript.includes("/Cellar/sirenodeck/")
-  if (exists(oldScript) && !brewUpgrade) return content
   return content.replace(
     match[0],
     `ExecStart="${nodePath}" "${currentScript}" start`,
@@ -210,7 +206,9 @@ export const invokeManager = async (
       // still holding throws, so go through the retry.
       await bootstrapWithRetry(uid, plist, DAEMON_NAME)
     } else if (action === "stop") {
-      launchctl("bootout", [`gui/${uid}/${DAEMON_NAME}`])
+      if (isJobLoaded(uid, DAEMON_NAME)) {
+        launchctl("bootout", [`gui/${uid}/${DAEMON_NAME}`])
+      }
     } else if (action === "restart") {
       try {
         launchctl("bootout", [`gui/${uid}/${DAEMON_NAME}`])

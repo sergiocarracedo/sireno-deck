@@ -13,6 +13,7 @@ import {
   resolveDaemonPaths,
 } from "@/util/daemon"
 import { removeDaemonControl } from "@/util/daemon-control"
+import { invokeManager, isUnitInstalled } from "./service-manager"
 import {
   readDaemonEventsFromSnapshot,
   snapshotDaemonLog,
@@ -61,6 +62,9 @@ const killGracefully = async (
 }
 
 export const stop = async ({ logger }: StopOptions): Promise<void> => {
+  if (isUnitInstalled()) {
+    await invokeManager({ action: "stop", logger })
+  }
   const pid = readPid()
   if (pid === null) {
     logger.info("stop: no running daemon found")
