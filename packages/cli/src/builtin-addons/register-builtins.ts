@@ -4,7 +4,6 @@ import { registerBuiltInThemes, registerSiblingThemes } from "@/themes/loader"
 
 import { manifest as codingAgentsManifest } from "./coding-agents"
 import { registerCodingAgentsAddon } from "./coding-agents"
-import brightnessAddon from "./brightness/index"
 import { coreAddon } from "./core/index"
 import dateTimeAddon from "./date-time/index"
 import emojiSelectorAddon from "./emoji-selector/index"
@@ -27,7 +26,6 @@ export const registerBuiltins = (registry: AddonRegistry): void => {
   registry.load(systemStatusAddon)
   registry.load(valueDisplayAddon)
   registry.load(weatherAddon)
-  registry.load(brightnessAddon)
   registerCodingAgentsAddon(registry)
 }
 
@@ -60,6 +58,5 @@ export const BUILTIN_MANIFESTS: ReadonlyMap<string, unknown> = new Map<
   ["system-status", systemStatusAddon],
   ["value-display", valueDisplayAddon],
   ["weather", weatherAddon],
-  ["brightness", brightnessAddon],
   ["coding-agents", codingAgentsManifest],
 ])

@@ -1,5 +1,7 @@
 import { useEffect, useState, type CSSProperties } from "react"
 import { IconLabelSurface } from "@sirenodeck/sirenodeck/ui/surfaces/IconLabelSurface"
+import { BinaryToggleSurface } from "@sirenodeck/sirenodeck/ui/surfaces/BinaryToggleSurface"
+import { LoadingSurface } from "@sirenodeck/sirenodeck/ui/surfaces/LoadingSurface"
 import type { CalendarSnapshot } from "./runtime.js"
 import {
   agendaDateLabel,
@@ -74,19 +76,36 @@ const CalendarIcon = ({
   </svg>
 )
 
+export const CalendarSettingButton = ({
+  config,
+}: {
+  config: { instanceId: string; calendarId: string }
+}) => {
+  const data = globalThis.__calendarUseAddonChannel?.<
+    CalendarSnapshot & { loading?: boolean }
+  >("calendar:state").data
+  const calendar = data?.calendars.find(
+    (item) =>
+      item.instanceId === config.instanceId && item.id === config.calendarId,
+  )
+  if (!calendar || data?.loading) return <LoadingSurface />
+  return (
+    <BinaryToggleSurface
+      label={calendar.name}
+      labelColor={calendar.color}
+      details={calendar.instanceId}
+      status={calendar.enabled}
+    />
+  )
+}
+
 export const CalendarButton = () => {
-  const data =
-    globalThis.__calendarUseAddonChannel?.<CalendarSnapshot>(
-      "calendar:state",
-    ).data
-  if (!data)
-    return (
-      <div style={centered}>
-        Agenda
-        <br />
-        Loading…
-      </div>
-    )
+  const data = globalThis.__calendarUseAddonChannel?.<
+    CalendarSnapshot & { loading?: boolean }
+  >("calendar:state").data
+  if (!data || data.loading) return <LoadingSurface />
+  if (data.error)
+    return <div style={{ ...centered, color: foreground }}>{data.error}</div>
   const problem = data.providers.find(
     (provider) => provider.status === "unavailable",
   )
@@ -188,7 +207,7 @@ const EventContents = ({
       <strong
         style={{
           color: event.color ?? accent,
-          fontSize: "0.7em",
+          fontSize: "1.15em",
           lineHeight: 1,
         }}
       >

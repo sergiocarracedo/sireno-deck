@@ -14,6 +14,13 @@ import { BUILTIN_MANIFESTS } from "../register-builtins"
  * map has to be checked against the addons that actually ship.
  */
 describe("BUILTIN_MANIFESTS", () => {
+  it("does not register the removed standalone brightness addon", async () => {
+    expect(BUILTIN_MANIFESTS.has("brightness")).toBe(false)
+    expect(
+      (await scanBuiltinAddons()).map((addon) => addon.name),
+    ).not.toContain("brightness")
+  })
+
   // `test-buildin` is a fixture directory used by the scanner's own tests; it
   // is deliberately not registered, so it is not expected in the map.
   const FIXTURES = new Set(["test-buildin"])

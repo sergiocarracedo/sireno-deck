@@ -31,6 +31,7 @@ interface SchedulerOptions {
   readonly onError?: (error: unknown) => void
   readonly snoozeMinutes?: number
   readonly repeatMinutes?: number
+  readonly autoDismissMinutes?: number
   readonly missedGraceMinutes?: number
   readonly now?: () => number
 }
@@ -41,20 +42,38 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
   const snoozeMs = (options.snoozeMinutes ?? 5) * 60_000
   const repeatMs = (options.repeatMinutes ?? 1) * 60_000
   const graceMs = (options.missedGraceMinutes ?? 60) * 60_000
+  const autoDismissMs = (options.autoDismissMinutes ?? 10) * 60_000
   if (
     !(snoozeMs > 0) ||
     !(repeatMs > 0) ||
     !(graceMs >= 0) ||
-    ![snoozeMs, repeatMs, graceMs].every(Number.isFinite)
+    !(autoDismissMs >= 0) ||
+    ![snoozeMs, repeatMs, graceMs, autoDismissMs].every(Number.isFinite)
   ) {
     throw new Error("Invalid alarm timing")
   }
-  let alarms = advanceAlarms(
-    (await options.storage.load()).filter(
-      options.keepStoredAlarm ?? (() => true),
+  const expire = (
+    records: readonly AlarmRecord[],
+    time: number,
+  ): AlarmRecord[] =>
+    records.map((alarm) => {
+      if (
+        alarm.state === "dismissed" ||
+        time < alarm.eventStartMs + autoDismissMs
+      )
+        return alarm
+      const { snoozedUntilMs: _until, ...rest } = alarm
+      return { ...rest, state: "dismissed" }
+    })
+  let alarms = expire(
+    advanceAlarms(
+      (await options.storage.load()).filter(
+        options.keepStoredAlarm ?? (() => true),
+      ),
+      now(),
+      graceMs,
     ),
     now(),
-    graceMs,
   )
   await options.storage.save(alarms)
   let timer: ReturnType<typeof setTimeout> | undefined
@@ -75,6 +94,9 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
           ? [alarm.snoozedUntilMs]
           : [],
     )
+    for (const alarm of alarms)
+      if (alarm.state !== "dismissed")
+        deadlines.push(alarm.eventStartMs + autoDismissMs)
     if (active()) deadlines.push(lastAlertAt + repeatMs)
     // Wake periodically even after a wall-clock change.
     const delay = Math.max(
@@ -89,7 +111,7 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
     if (disposed) return Promise.resolve()
     const task = pending.then(async () => {
       await change()
-      const next = advanceAlarms(alarms, now())
+      const next = expire(advanceAlarms(alarms, now()), now())
       if (next.some((record, index) => record !== alarms[index])) {
         await options.storage.save(next)
         alarms = next
@@ -123,6 +145,23 @@ export const createAlarmScheduler = async (options: SchedulerOptions) => {
   await run(async () => {})
   return {
     active,
+    disableCalendar: (instanceId: string, calendarId: string) =>
+      run(async () => {
+        await replace(
+          alarms.filter((alarm) => {
+            try {
+              const key: unknown = JSON.parse(alarm.occurrence)
+              return (
+                !Array.isArray(key) ||
+                key[0] !== instanceId ||
+                key[1] !== calendarId
+              )
+            } catch {
+              return true
+            }
+          }),
+        )
+      }),
     refresh: (instanceId: string, events: readonly ScheduledEvent[]) =>
       run(async () => {
         const schedule: AlarmSchedule[] = []

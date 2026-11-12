@@ -31,6 +31,7 @@ describe("calendar service configuration", () => {
     expect(result.alarms).toEqual({ enabled: true, offsetsMinutes: [-5, 0] })
     expect(result.useCalendarReminders).toBe(false)
     expect(result.repeatMinutes).toBe(1)
+    expect(result.autoDismissMinutes).toBe(10)
     expect(result.missedGraceMinutes).toBe(60)
     expect(result.allDayTime).toBe("09:00")
     expect(result.lookaheadDays).toBe(7)
@@ -62,6 +63,9 @@ describe("calendar service configuration", () => {
     expect(calendarConfigSchema.safeParse({ snoozeMinutes: 0 }).success).toBe(
       false,
     )
+    expect(
+      calendarConfigSchema.safeParse({ autoDismissMinutes: -1 }).success,
+    ).toBe(false)
     expect(
       calendarConfigSchema.safeParse({
         providers: [

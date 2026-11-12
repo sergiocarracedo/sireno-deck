@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react"
 const BRIGHTNESS_CHANNEL = "sireno:settings:brightness"
 const PROGRESS_VISIBLE_MS = 2000
 
-export type BrightnessVariant = "down" | "up"
+export type BrightnessVariant = "down" | "up" | "compact"
 
 interface BrightnessButtonFrontendProps {
   readonly variant: BrightnessVariant
@@ -23,7 +23,12 @@ export const BrightnessButtonFrontend = ({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    if (gesture?.gesture !== "tap" && gesture?.gesture !== "dbl-tap") return
+    if (
+      gesture?.gesture !== "tap" &&
+      gesture?.gesture !== "dbl-tap" &&
+      gesture?.gesture !== "hold"
+    )
+      return
     setShowProgress(true)
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(
@@ -42,7 +47,13 @@ export const BrightnessButtonFrontend = ({
   return (
     <IconLabelProgressSurface
       source={`icon://${variant === "down" ? "sun-dim" : "sun"}`}
-      label={variant === "down" ? "Darker" : "Lighter"}
+      label={
+        variant === "compact"
+          ? "Tap + / Hold −"
+          : variant === "down"
+            ? "Darker"
+            : "Lighter"
+      }
       progress={progress}
       visible={showProgress}
     />

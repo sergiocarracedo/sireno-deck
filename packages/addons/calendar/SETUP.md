@@ -31,6 +31,9 @@ offsetsMinutes: [-5, 0] }` under the addon's `config.service` to change the
 offsets. Set `useCalendarReminders: true` there to also schedule the calendar's
 popup reminders; duplicate offsets are only scheduled once. Calendar-specific
 alarm settings replace the global custom offsets and can disable alarms.
+Alerts are dismissed 10 minutes after the event starts, including snoozed and
+queued reminders. Set `autoDismissMinutes` under `config.service` to change
+this deadline; reminders scheduled at or after it will not be displayed.
 
 The command above is for a source checkout; a distributed addon must include
 the compiled `dist/setup.js` and its imported files, and users must pass the

@@ -40,6 +40,82 @@ const item = (e: CalendarEvent, startMs: number) => ({ event: e, startMs })
 afterEach(() => vi.useRealTimers())
 
 describe("alarm scheduler", () => {
+  it("dismisses an event's reminders ten minutes after its start", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(0)
+    const store = storage()
+    const onChange = vi.fn()
+    const scheduler = await createAlarmScheduler({
+      storage: store,
+      globalSettings: { enabled: true, offsetsMinutes: [-5, 0] },
+      onAlert: () => {},
+      onChange,
+    })
+    const start = 300_000
+    await scheduler.refresh("a", [item(event("a", "one"), start)])
+    expect(scheduler.active()).toBeDefined()
+    await vi.advanceTimersByTimeAsync(899_999)
+    expect(scheduler.active()).toBeDefined()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(scheduler.active()).toBeUndefined()
+    expect(store.records().every((alarm) => alarm.state === "dismissed")).toBe(
+      true,
+    )
+    expect(onChange).toHaveBeenCalled()
+    await scheduler.refresh("a", [item(event("a", "one"), start)])
+    expect(scheduler.active()).toBeUndefined()
+    await scheduler.dispose()
+  })
+
+  it("uses the configured deadline for snoozed and recovered alarms", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(0)
+    const store = storage()
+    const scheduler = await createAlarmScheduler({
+      storage: store,
+      globalSettings: settings,
+      autoDismissMinutes: 2,
+      snoozeMinutes: 5,
+      onAlert: () => {},
+    })
+    await scheduler.refresh("a", [item(event("a", "one"), 0)])
+    await scheduler.snooze()
+    await vi.advanceTimersByTimeAsync(120_000)
+    expect(store.records()[0]?.state).toBe("dismissed")
+    await scheduler.dispose()
+    const recovered = await createAlarmScheduler({
+      storage: store,
+      globalSettings: settings,
+      autoDismissMinutes: 2,
+      onAlert: () => {},
+    })
+    expect(recovered.active()).toBeUndefined()
+    await recovered.dispose()
+  })
+
+  it("expires overdue stored alarms before emitting an alert on startup", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(600_000)
+    const alert = vi.fn()
+    const store = storage([
+      {
+        id: "old",
+        occurrence: "old",
+        eventStartMs: 0,
+        dueAtMs: 0,
+        state: "active",
+      },
+    ])
+    const scheduler = await createAlarmScheduler({
+      storage: store,
+      globalSettings: settings,
+      onAlert: alert,
+    })
+    expect(scheduler.active()).toBeUndefined()
+    expect(store.records()[0]?.state).toBe("dismissed")
+    expect(alert).not.toHaveBeenCalled()
+    await scheduler.dispose()
+  })
   it("merges configured and calendar offsets only when opted in", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(0)
@@ -205,6 +281,7 @@ describe("alarm scheduler", () => {
     const scheduler = await createAlarmScheduler({
       storage: store,
       globalSettings: settings,
+      autoDismissMinutes: 1000,
       onAlert: () => {},
     })
     expect(store.records().map((r) => r.state)).toEqual([
@@ -224,6 +301,7 @@ describe("alarm scheduler", () => {
     const scheduler = await createAlarmScheduler({
       storage: store,
       globalSettings: settings,
+      autoDismissMinutes: 1000,
       onAlert: () => {},
     })
     await scheduler.refresh("a", [

@@ -1,6 +1,7 @@
 import { z } from "zod"
 import {
   CalendarButton,
+  CalendarSettingButton,
   CalendarEventButton,
   CalendarDetailButton,
   CalendarNavigationButton,
@@ -20,6 +21,7 @@ import { calendarConfigSchema } from "./domain/config.js"
 type Context = {
   credentials?: Parameters<typeof createCalendarRuntime>[0]["credentials"]
   publish(data: unknown): void
+  poll?: (id: string) => Promise<void>
   getDataDirectory?: () => Promise<string>
   interruptDeck?: (
     deckId: string,
@@ -40,6 +42,7 @@ const empty: CalendarSnapshot = {
   detail: undefined,
   page: 0,
   providers: [],
+  calendars: [],
   alarm: undefined,
   error: undefined,
 }
@@ -47,9 +50,13 @@ let release: (() => void) | null = null
 let interrupted = false
 let initialDeckRebuild = false
 let lastDeckEvents: string | undefined
+let loading = true
+let started = false
+let pollPending = false
+let startupFailed = false
 
 const rebuildWhenEventsChange = (state: CalendarSnapshot) => {
-  const events = JSON.stringify(state.events)
+  const events = JSON.stringify([state.events, state.calendars])
   if (
     initialDeckRebuild ||
     (lastDeckEvents !== undefined && events !== lastDeckEvents)
@@ -67,18 +74,53 @@ export const globalService = {
       channel: "calendar:state",
       intervalMs: 300_000,
       async poll() {
-        await runtime?.refresh()
+        if (!started) {
+          if (startupFailed)
+            return {
+              ...empty,
+              loading: false,
+              error: "Calendar state unavailable",
+            }
+          pollPending = true
+          return { ...(runtime?.snapshot() ?? empty), loading: true }
+        }
+        try {
+          await runtime?.refresh()
+        } catch {
+          loading = false
+          return {
+            ...(runtime?.snapshot() ?? empty),
+            loading,
+            error: "Calendar state unavailable",
+          }
+        }
+        loading = false
         const state = runtime?.snapshot() ?? empty
         rebuildWhenEventsChange(state)
-        return state
+        return { ...state, loading }
       },
     },
   ],
   methods: {
+    async toggleCalendar(instanceId: unknown, calendarId: unknown) {
+      if (typeof instanceId !== "string" || typeof calendarId !== "string")
+        return
+      const calendar = runtime
+        ?.snapshot()
+        .calendars.find(
+          (item) => item.instanceId === instanceId && item.id === calendarId,
+        )
+      if (calendar)
+        await runtime?.setCalendarEnabled(
+          instanceId,
+          calendarId,
+          !calendar.enabled,
+        )
+    },
     async nextPage() {
       if (runtime?.snapshot().alarm) await runtime.snooze()
       else runtime?.nextPage()
-      context?.publish(runtime?.snapshot() ?? empty)
+      context?.publish({ ...(runtime?.snapshot() ?? empty), loading })
     },
     async dismiss() {
       await runtime?.dismiss()
@@ -104,6 +146,7 @@ export const globalService = {
   },
   async onLoad(ctx: Context, config?: unknown) {
     context = ctx
+    loading = true
     const settings = calendarConfigSchema.parse(config ?? {})
     const dataDirectory = await ctx.getDataDirectory?.()
     const update = () => {
@@ -122,7 +165,7 @@ export const globalService = {
         release = null
         interrupted = false
       }
-      ctx.publish(state)
+      ctx.publish({ ...state, loading })
     }
     runtime = createCalendarRuntime({
       config,
@@ -139,13 +182,24 @@ export const globalService = {
             .catch(() => {})
       },
       onError: () =>
-        ctx.publish({ ...empty, error: "Calendar state unavailable" }),
+        ctx.publish({
+          ...empty,
+          loading: false,
+          error: "Calendar state unavailable",
+        }),
     })
     try {
       await runtime.start()
       initialDeckRebuild = true
+      started = true
+      if (pollPending) {
+        pollPending = false
+        await ctx.poll?.("state")
+      }
     } catch (error) {
-      ctx.publish({ ...empty, error: "Calendar state unavailable" })
+      loading = false
+      startupFailed = true
+      ctx.publish({ ...empty, loading, error: "Calendar state unavailable" })
       throw error
     }
   },
@@ -156,6 +210,10 @@ export const globalService = {
     interrupted = false
     initialDeckRebuild = false
     lastDeckEvents = undefined
+    loading = true
+    started = false
+    pollPending = false
+    startupFailed = false
     runtime = undefined
     context = undefined
   },
@@ -163,8 +221,32 @@ export const globalService = {
 export const manifest = {
   apiVersion: 1 as const,
   name: "calendar",
+  settings: {
+    label: "Calendar",
+    icon: "icon://calendar-days",
+    deck: "calendar:settings",
+  },
   defaultButton: "calendar:upcoming",
   buttonTypes: {
+    "calendar:setting": {
+      frontend: CalendarSettingButton,
+      service: {
+        internal: true,
+        configSchema: z
+          .object({ instanceId: z.string(), calendarId: z.string() })
+          .strict(),
+        gestureHandlers: ["tap"] as const,
+        onTap(ctx: {
+          config: { instanceId: string; calendarId: string }
+          methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
+        }) {
+          return ctx.methods["calendar:toggleCalendar"]?.(
+            ctx.config.instanceId,
+            ctx.config.calendarId,
+          )
+        },
+      },
+    },
     "calendar:upcoming": {
       frontend: CalendarButton,
       service: {
@@ -197,7 +279,6 @@ export const manifest = {
           config: { slot: number }
           methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
           coreMethods: {
-            navigateToDeck(args: { id: string }): void
             dispatch(value: string): Promise<void>
           }
         }) {
@@ -205,7 +286,6 @@ export const manifest = {
           const url = ctx.methods["calendar:selectedUrl"]?.()
           if (typeof url === "string")
             await ctx.coreMethods.dispatch(`url://${url}`)
-          else ctx.coreMethods.navigateToDeck({ id: "calendar:detail" })
         },
       },
     },
@@ -324,7 +404,11 @@ export const manifest = {
   decks: [
     {
       createDecks: ({ keyCount }: { keyCount: number }) =>
-        createCalendarDecks(runtime?.snapshot().events ?? [], keyCount),
+        createCalendarDecks(
+          runtime?.snapshot().events ?? [],
+          keyCount,
+          runtime?.snapshot().calendars ?? [],
+        ),
       internal: true,
     },
   ],

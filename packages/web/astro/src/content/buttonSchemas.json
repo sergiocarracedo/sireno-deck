@@ -1,27 +1,4 @@
 {
-  "brightness:brightness": {
-    "jsonSchema": {
-      "type": "object",
-      "properties": {
-        "action": {
-          "default": "up",
-          "title": "Brightness action",
-          "type": "string",
-          "enum": ["up", "down", "set"]
-        },
-        "value": {
-          "title": "Brightness (%)",
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 100
-        }
-      },
-      "additionalProperties": false
-    },
-    "example": {
-      "action": "up"
-    }
-  },
   "coding-agents:summary": {
     "jsonSchema": {
       "type": "object",

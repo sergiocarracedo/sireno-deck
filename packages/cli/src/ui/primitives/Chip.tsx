@@ -46,6 +46,7 @@ export function chipBase(props: ChipProps): ReactElement {
         TONE_CLASS[tone],
       ])}
       size={props.size ?? "sm"}
+      tone={tone}
       data-sireno-ui-chip="true"
       text={props.text}
     />

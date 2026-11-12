@@ -105,6 +105,7 @@ vi.mock("@/render/state-publisher", () => ({
   }),
 }))
 let configChangeCallback: (() => void) | null = null
+let lockModeCallback: ((payload: unknown) => void) | null = null
 let presentationRefresh: ReturnType<typeof vi.fn> | null = null
 vi.mock("@/core/watcher", () => ({
   ConfigWatcher: vi.fn(function FakeConfigWatcher(_paths, opts) {
@@ -398,7 +399,10 @@ const setHappyPath = (
     },
     pubSub: {
       publish: () => undefined,
-      subscribe: () => () => undefined,
+      subscribe: (channel: string, callback: (payload: unknown) => void) => {
+        if (channel === "runtime:lock-mode") lockModeCallback = callback
+        return () => undefined
+      },
       clear: () => undefined,
     },
     store: {
@@ -851,6 +855,59 @@ describe("run", () => {
     configChangeCallback!()
     await waitFor(() => expect(presentationRefresh).toHaveBeenCalled())
     expect(presentationRefresh).toHaveBeenCalledWith({ force: true })
+    signals.trigger()
+    await runPromise
+  })
+
+  it("preserves updated decks and the config UI button after a lock transition", async () => {
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    let updated = false
+    loaderMock.mockImplementation(() => ({
+      config: {
+        decks: {
+          main: { buttons: [] },
+          "internal-settings:settings": { buttons: [] },
+          "calendar:settings": {
+            name: updated ? "Updated calendar" : "Initial calendar",
+            buttons: [],
+          },
+        },
+      },
+      configDir: "/dir",
+    }))
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+    await waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const runtime = (
+      (deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> })
+        .createDeckRuntime.mock.results[0]!.value as {
+        runtime: { setDecks: ReturnType<typeof vi.fn> }
+      }
+    ).runtime
+    updated = true
+    configChangeCallback!()
+    await waitFor(() => expect(runtime.setDecks).toHaveBeenCalled())
+    lockModeCallback!({ active: false })
+    const decks = runtime.setDecks.mock.lastCall![0] as Array<{
+      id: string
+      name: string
+      buttons: Array<{ id: string }>
+    }>
+    expect(decks.find((deck) => deck.id === "calendar:settings")?.name).toBe(
+      "Updated calendar",
+    )
+    expect(
+      decks.find((deck) => deck.id === "internal-settings:settings")?.buttons,
+    ).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "config-ui" })]),
+    )
     signals.trigger()
     await runPromise
   })

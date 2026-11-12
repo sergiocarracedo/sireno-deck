@@ -11,6 +11,14 @@ export default [
     dts: false,
     external: ["react", "react/jsx-runtime", "zod"],
     alias: {
+      "@sirenodeck/sirenodeck/ui/surfaces/LoadingSurface": new URL(
+        "./src/stubs/icon-label.ts",
+        import.meta.url,
+      ).pathname,
+      "@sirenodeck/sirenodeck/ui/surfaces/BinaryToggleSurface": new URL(
+        "./src/stubs/icon-label.ts",
+        import.meta.url,
+      ).pathname,
       "@sirenodeck/sirenodeck/ui/surfaces/IconLabelSurface": new URL(
         "./src/stubs/icon-label.ts",
         import.meta.url,

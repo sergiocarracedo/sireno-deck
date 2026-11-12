@@ -53,6 +53,7 @@ export const calendarConfigSchema = z
     useCalendarReminders: z.boolean().default(false),
     snoozeMinutes: z.number().int().positive().default(5),
     repeatMinutes: z.number().int().positive().default(1),
+    autoDismissMinutes: z.number().int().nonnegative().default(10),
     missedGraceMinutes: z.number().int().nonnegative().default(60),
     lookaheadDays: z.number().int().positive().default(7),
     allDayTime: z

@@ -6,6 +6,134 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 describe("calendar runtime", () => {
+  it("discovers calendars, persists toggles, and suppresses disabled events and alarms", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "calendar-selection-"))
+    const now = Date.parse("2026-11-05T12:00:00Z")
+    const config = {
+      providers: [
+        {
+          type: "google",
+          id: "work",
+          clientId: "client",
+          calendarIds: ["selected"],
+        },
+      ],
+      alarms: { enabled: true, offsetsMinutes: [0] },
+    }
+    const provider = (instance: { id: string; calendarIds: string[] }) => ({
+      instanceId: instance.id,
+      listCalendars: async () => [
+        { id: "selected", name: "Selected" },
+        { id: "other", name: "Other" },
+      ],
+      fetchEvents: async () =>
+        instance.calendarIds.map((calendarId) => ({
+          identity: {
+            providerInstanceId: instance.id,
+            calendarId,
+            eventId: "e",
+            occurrenceId: "e",
+          },
+          title: calendarId,
+          status: "confirmed" as const,
+          time: {
+            kind: "timed" as const,
+            start: "2026-11-05T12:00:00Z",
+            end: "2026-11-05T13:00:00Z",
+          },
+        })),
+    })
+    let runtime = createCalendarRuntime({
+      config,
+      dataDirectory: directory,
+      now: () => now,
+      provider,
+    })
+    try {
+      await runtime.start()
+      await runtime.refresh()
+      expect(runtime.snapshot().calendars).toEqual([
+        expect.objectContaining({ id: "selected", enabled: true }),
+        expect.objectContaining({ id: "other", enabled: false }),
+      ])
+      expect(runtime.snapshot().events.map((event) => event.title)).toEqual([
+        "selected",
+      ])
+      expect(runtime.snapshot().alarm?.title).toBe("selected")
+      await runtime.setCalendarEnabled("work", "selected", false)
+      expect(runtime.snapshot().events).toEqual([])
+      expect(runtime.snapshot().alarm).toBeUndefined()
+      await runtime.setCalendarEnabled("work", "other", true)
+      expect(runtime.snapshot().events.map((event) => event.title)).toEqual([
+        "other",
+      ])
+      await runtime.dispose()
+      runtime = createCalendarRuntime({
+        config,
+        dataDirectory: directory,
+        now: () => now,
+        provider,
+      })
+      await runtime.start()
+      await runtime.refresh()
+      expect(
+        runtime.snapshot().calendars.map(({ id, enabled }) => [id, enabled]),
+      ).toEqual([
+        ["selected", false],
+        ["other", true],
+      ])
+      expect(runtime.snapshot().events.map((event) => event.title)).toEqual([
+        "other",
+      ])
+    } finally {
+      await runtime.dispose()
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
+  it("uses the calendar name for an untitled alarm", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-11-05T12:00:00Z"))
+    const directory = await mkdtemp(join(tmpdir(), "calendar-untitled-"))
+    const runtime = createCalendarRuntime({
+      dataDirectory: directory,
+      config: {
+        alarms: { enabled: true, offsetsMinutes: [0] },
+        providers: [
+          { type: "google", id: "one", clientId: "client", calendarIds: ["c"] },
+        ],
+      },
+      provider: () => ({
+        instanceId: "one",
+        fetchEvents: async () => [
+          {
+            identity: {
+              providerInstanceId: "one",
+              calendarId: "c",
+              eventId: "e",
+              occurrenceId: "e",
+            },
+            title: "  ",
+            calendarName: "Work",
+            status: "confirmed" as const,
+            time: {
+              kind: "timed" as const,
+              start: "2026-11-05T12:00:00Z",
+              end: "2026-11-05T13:00:00Z",
+            },
+          },
+        ],
+      }),
+    })
+    try {
+      await runtime.start()
+      await runtime.refresh()
+      expect(runtime.snapshot().alarm?.title).toBe("Work")
+    } finally {
+      await runtime.dispose()
+      vi.useRealTimers()
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
   it("uses calendar names for untitled events and prefers event colors", async () => {
     const runtime = createCalendarRuntime({
       config: {
@@ -51,7 +179,7 @@ describe("calendar runtime", () => {
       color: "#ffff00",
     })
   })
-  it("opens an event's safe calendar link on tap and falls back to details without one", async () => {
+  it("opens an event's safe calendar link on tap and stays put without one", async () => {
     const dispatch = vi.fn().mockResolvedValue(undefined)
     const navigateToDeck = vi.fn()
     const select = vi.fn().mockReturnValue(true)
@@ -73,7 +201,8 @@ describe("calendar runtime", () => {
     )
     expect(navigateToDeck).not.toHaveBeenCalled()
     await manifest.buttonTypes["calendar:event"].service.onTap(ctx)
-    expect(navigateToDeck).toHaveBeenCalledWith({ id: "calendar:detail" })
+    expect(navigateToDeck).not.toHaveBeenCalled()
+    expect(dispatch).toHaveBeenCalledTimes(1)
   })
   it("hides ended events while retaining ongoing and upcoming events", async () => {
     const makeEvent = (id: string, start: string, end: string) => ({
@@ -230,6 +359,55 @@ describe("calendar runtime", () => {
       await globalService.pollers[0]!.poll()
       expect(requestDeckRebuild).toHaveBeenCalledOnce()
     } finally {
+      await globalService.onUnload()
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
+  it("reports loading until the initial calendar refresh finishes", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "calendar-loading-"))
+    const publish = vi.fn()
+    try {
+      await globalService.onLoad({
+        publish,
+        getDataDirectory: async () => directory,
+      })
+      expect(publish).toHaveBeenLastCalledWith(
+        expect.objectContaining({ loading: true }),
+      )
+      const first = await globalService.pollers[0]!.poll()
+      expect(first).toMatchObject({ loading: false })
+    } finally {
+      await globalService.onUnload()
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
+  it("keeps loading and retries the initial poll when startup has not finished", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "calendar-startup-race-"))
+    let unblock!: (directory: string) => void
+    const waiting = new Promise<string>((resolve) => {
+      unblock = resolve
+    })
+    const poll = vi.fn(async () => {
+      await globalService.pollers[0]!.poll()
+    })
+    const starting = globalService.onLoad({
+      publish: () => {},
+      poll,
+      getDataDirectory: () => waiting,
+    })
+    try {
+      expect(await globalService.pollers[0]!.poll()).toMatchObject({
+        loading: true,
+      })
+      unblock(directory)
+      await starting
+      expect(poll).toHaveBeenCalledWith("state")
+      expect(await globalService.pollers[0]!.poll()).toMatchObject({
+        loading: false,
+      })
+    } finally {
+      unblock(directory)
+      await starting
       await globalService.onUnload()
       await rm(directory, { recursive: true, force: true })
     }
@@ -643,6 +821,13 @@ describe("calendar runtime", () => {
         const url = String(input)
         if (url.includes("oauth2.googleapis.com"))
           return Response.json({ access_token: "private-access" })
+        if (url.includes("users/me/calendarList"))
+          return Response.json({
+            items: [
+              { id: "primary", summary: "primary" },
+              { id: "other", summary: "Other" },
+            ],
+          })
         return Response.json({
           items: [
             {
@@ -690,12 +875,19 @@ describe("calendar runtime", () => {
         coreMethods: { navigateToDeck },
       })
       expect(navigateToDeck).toHaveBeenCalledWith({ id: "calendar:deck" })
+      const eventDispatch = vi.fn(async () => {})
       await manifest.buttonTypes["calendar:event"].service.onTap({
         config: { slot: 0 },
-        methods: { "calendar:selectEvent": globalService.methods.selectEvent },
-        coreMethods: { navigateToDeck, dispatch: vi.fn(async () => {}) },
+        methods: {
+          "calendar:selectEvent": globalService.methods.selectEvent,
+          "calendar:selectedUrl": globalService.methods.selectedUrl,
+        },
+        coreMethods: { dispatch: eventDispatch },
       })
-      expect(navigateToDeck).toHaveBeenCalledWith({ id: "calendar:detail" })
+      expect(navigateToDeck).toHaveBeenCalledTimes(1)
+      expect(eventDispatch).toHaveBeenCalledWith(
+        "url://https://calendar.google.com/event?x=1%3Btouch%20file",
+      )
       expect(publish).toHaveBeenCalledWith(
         expect.objectContaining({
           detail: expect.objectContaining({
@@ -722,6 +914,33 @@ describe("calendar runtime", () => {
       )
       await globalService.pollers[0]!.poll()
       expect(requestDeckRebuild).toHaveBeenCalledOnce()
+      expect(state.calendars).toEqual([
+        expect.objectContaining({ id: "primary", enabled: true }),
+        expect.objectContaining({ id: "other", enabled: false }),
+      ])
+      const settingsDeck = manifest.decks[0]!.createDecks({ keyCount: 6 })[
+        "calendar:settings"
+      ]!
+      expect(
+        settingsDeck.buttons.filter(
+          (button) => button.type === "calendar:setting",
+        ),
+      ).toHaveLength(2)
+      await manifest.buttonTypes["calendar:setting"].service.onTap({
+        config: { instanceId: "work", calendarId: "primary" },
+        methods: {
+          "calendar:toggleCalendar": globalService.methods.toggleCalendar,
+        },
+      })
+      expect(publish).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          events: [],
+          calendars: [
+            expect.objectContaining({ id: "primary", enabled: false }),
+            expect.anything(),
+          ],
+        }),
+      )
       expect(JSON.stringify(publish.mock.calls)).not.toContain("private-")
     } finally {
       await globalService.onUnload()

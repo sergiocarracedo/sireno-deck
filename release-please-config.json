@@ -9,6 +9,7 @@
       "package-name": "@sirenodeck/sirenodeck",
       "component": "@sirenodeck/sirenodeck",
       "release-type": "node",
+      "release-as": "0.4.0",
       "include-component-in-tag": true,
       "include-v-in-tag": false,
       "changelog-path": "CHANGELOG.md",

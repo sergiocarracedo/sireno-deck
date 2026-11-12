@@ -4,7 +4,7 @@ import { AddonServiceContext, AddonGlobalService } from "@/addon/api"
 import {
   createBrightnessProvider,
   type BrightnessProvider,
-} from "@/builtin-addons/brightness/providers"
+} from "./brightness-providers"
 
 let brightnessProvider: BrightnessProvider | null = null
 

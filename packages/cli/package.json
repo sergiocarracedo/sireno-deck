@@ -69,6 +69,14 @@
       "types": "./src/ui/surfaces/IconLabelSurface.tsx",
       "default": "./src/ui/surfaces/IconLabelSurface.tsx"
     },
+    "./ui/surfaces/BinaryToggleSurface": {
+      "types": "./src/ui/surfaces/BinaryToggleSurface.tsx",
+      "default": "./src/ui/surfaces/BinaryToggleSurface.tsx"
+    },
+    "./ui/surfaces/LoadingSurface": {
+      "types": "./src/ui/surfaces/LoadingSurface.tsx",
+      "default": "./src/ui/surfaces/LoadingSurface.tsx"
+    },
     "./ui/surfaces/IconLabelProgressSurface": {
       "types": "./src/ui/surfaces/IconLabelProgressSurface.tsx",
       "default": "./src/ui/surfaces/IconLabelProgressSurface.tsx"

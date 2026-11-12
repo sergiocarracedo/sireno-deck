@@ -1,0 +1,18 @@
+{
+  "displayName": "Calendar",
+  "description": "See upcoming Google Calendar events and receive configurable reminders on your deck.",
+  "capabilities": [
+    "Browse upcoming events, open event links, and choose which calendars are enabled.",
+    "Show reminders with snooze and dismiss controls; alerts automatically dismiss after a configurable deadline."
+  ],
+  "category": "official",
+  "source": "monorepo",
+  "tags": ["productivity", "calendar", "reminders"],
+  "icon": "calendar-days",
+  "buttonTypes": ["calendar:upcoming"],
+  "decks": ["calendar:deck", "calendar:settings"],
+  "npm": "@sirenodeck/addon-calendar",
+  "repo": "https://github.com/sergiocarracedo/sireno-deck/tree/main/packages/addons/calendar",
+  "featured": false,
+  "order": 22
+}
