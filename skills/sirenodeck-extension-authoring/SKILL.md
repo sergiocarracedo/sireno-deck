@@ -17,6 +17,7 @@ Create extensions in the user's own repository. Do not direct them to upload ext
 ## Addon path
 
 - Follow the current `AddonManifestV1`/`sirenodeck.json` contract. Namespace button and deck IDs with the addon's manifest name. Check config schemas, lifecycle/gesture behavior, frontend entry, and any global backend against current `packages/cli/src/addon/api.ts` and working addons.
+- Addons can declare `settings: { label, icon, deck }` in the exported runtime manifest to place a link to their settings deck in global Settings. The target is a generated or static addon deck ID; this does not itself create the deck or its controls.
 - Addon-wide backend settings may be placed under `addons[].config.service`; the host passes that object as the second argument to `globalService.onLoad` and `onUnload`. The addon validates its own settings. Restart the service to apply changes. This field is excluded from generated deck configuration, but is not a credential vault.
 - `AddonServiceContext.credentials` is an optional, addon-scoped credential interface. Check availability and handle an absent or unavailable native store. This interface is not a sandbox for untrusted addons.
 - An addon may provide a Node setup module exporting `addonName` and `setupAddon(ctx)`, invoked with `sirenodeck addon-setup <module-path>`. The host scopes native credentials to `addonName` and supplies interactive prompts and browser opening. The module must be runnable by Node and should never print secrets.

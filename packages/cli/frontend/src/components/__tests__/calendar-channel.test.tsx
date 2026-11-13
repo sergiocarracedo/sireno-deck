@@ -5,6 +5,7 @@ import { ChannelRegistry } from "@/api/react/registry"
 import {
   CalendarButton,
   CalendarEventButton,
+  CalendarSettingButton,
 } from "../../../../../addons/calendar/src/frontend"
 import "../Deck"
 
@@ -13,13 +14,42 @@ afterEach(() => {
   ChannelRegistry.resetForTests()
 })
 
+it("shows loading until calendar discovery supplies the title", () => {
+  render(
+    <CalendarSettingButton
+      config={{ instanceId: "work", calendarId: "primary" }}
+    />,
+  )
+  const calendar = {
+    instanceId: "work",
+    id: "primary",
+    name: "primary",
+    enabled: true,
+  }
+  act(() =>
+    ChannelRegistry.instance().publish("calendar:state", {
+      loading: true,
+      calendars: [calendar],
+    }),
+  )
+  expect(screen.getByRole("status", { name: "Loading" })).toBeTruthy()
+  expect(screen.queryByText("primary")).toBeNull()
+  act(() =>
+    ChannelRegistry.instance().publish("calendar:state", {
+      loading: false,
+      calendars: [{ ...calendar, name: "Work calendar" }],
+    }),
+  )
+  expect(screen.getByText("Work calendar")).toBeTruthy()
+})
+
 it("renders calendar channel updates using the host bridge independently of pomodoro", () => {
   const host = globalThis as { __pomodoroUseAddonChannel?: unknown }
   const pomodoroHook = host.__pomodoroUseAddonChannel
   host.__pomodoroUseAddonChannel = undefined
   try {
     render(<CalendarButton />)
-    expect(screen.getByText(/Loading…/)).toBeTruthy()
+    expect(screen.getByRole("status", { name: "Loading" })).toBeTruthy()
 
     act(() => {
       ChannelRegistry.instance().publish("calendar:state", {
@@ -106,15 +136,16 @@ it("uses event color on both the main and event buttons", () => {
     container.querySelectorAll<HTMLElement>("span, strong"),
   ).filter((node) => node.style.color === "rgb(170, 85, 204)")
   expect(colored.length).toBeGreaterThanOrEqual(4)
-  const date = colored.find(
+  const dates = colored.filter(
     (node) => node.tagName === "SPAN" && node.style.borderRadius,
   )
-  const time = colored
-    .filter(
-      (node) => node.tagName === "STRONG" && node.textContent === "ALL DAY",
-    )
-    .at(-1)
-  expect(time?.style.fontSize).toBe(date?.style.fontSize)
+  const times = colored.filter(
+    (node) => node.tagName === "STRONG" && node.textContent === "ALL DAY",
+  )
+  expect(dates).toHaveLength(2)
+  expect(times).toHaveLength(2)
+  expect(dates[1]?.style.fontSize).toBe(dates[0]?.style.fontSize)
+  expect(times[1]?.style.fontSize).toBe(times[0]?.style.fontSize)
   expect(
     container.querySelectorAll<HTMLElement>('[style*="border-radius"]').length,
   ).toBeGreaterThanOrEqual(2)

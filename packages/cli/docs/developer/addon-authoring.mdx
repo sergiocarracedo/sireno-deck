@@ -106,6 +106,22 @@ export const GreetService: AddonButtonTypeService<{}> = {
 
 ## Button Types API
 
+### Addon settings deck
+
+Add an optional `settings` entry to the exported runtime manifest to expose an
+addon-owned deck in the global Settings deck:
+
+```ts
+settings: {
+  label: "My addon",
+  icon: "icon://settings",
+  deck: "my-addon:settings",
+},
+```
+
+The addon must provide the target deck itself. Every loaded addon declaring an
+entry appears in global Settings, which paginates as needed.
+
 ### AddonButtonTypeDef
 
 ```typescript

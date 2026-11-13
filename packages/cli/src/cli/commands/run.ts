@@ -46,7 +46,7 @@ import {
 } from "@/deck"
 import { paginateDeck } from "@/deck/paginate-deck"
 import { injectConfigUiButton } from "@/deck/inject-config-ui-button"
-import { positionSettingsVersionButton } from "@/deck/position-settings-version-button"
+import { buildAddonSettingsDecks } from "@/deck/addon-settings"
 import { positionButtons } from "@/deck/position-buttons"
 import { subscribeNavigateDeck } from "@/deck/runtime-subscriptions"
 import {
@@ -917,7 +917,11 @@ const buildRuntime = (
     config.lock?.buttons,
     addonConfigOverrides,
   )
-  const sourceDecks = positionSettingsVersionButton(materializedDecks, keyCount)
+  const sourceDecks = buildAddonSettingsDecks(
+    materializedDecks,
+    registry.listAddons(),
+    keyCount,
+  )
   const allDecsWithSystemButtons = injectSystemButtons(sourceDecks, keyCount, {
     lockActive,
   })
@@ -933,7 +937,11 @@ const buildRuntime = (
   )
   if (token.length > 0) configUiUrl.searchParams.set("token", token)
   configUiUrl.hash = "/config"
-  const runtimeDecks = injectConfigUiButton(allDecks, configUiUrl.toString())
+  const runtimeDecks = injectConfigUiButton(
+    allDecks,
+    configUiUrl.toString(),
+    keyCount,
+  )
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: runtimeDecks,
     logger,
@@ -1646,10 +1654,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     // session provider existed; if the OS is locked at boot, re-inject
     // without the n-1 so the deck structure is honest. Re-inject on every
     // subsequent lock transition so the source stays correct.
+    let currentLoadedConfig = loadedConfig
     const reInjectedDecks = (isLocked: boolean): ReadonlyArray<RuntimeDeck> =>
-      injectSystemButtons(loaded.sourceDecks, descriptor!.keyCount, {
-        lockActive: isLocked,
-      })
+      buildRuntime(options, currentLoadedConfig, descriptor!.keyCount, isLocked)
+        .decks
     if (providers.session.getState() === "locked") {
       const reInjected = reInjectedDecks(true)
       runtime.setDecks(reInjected)
@@ -1749,7 +1757,6 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     })
 
     const serviceDecks: RuntimeDeck[] = [...decks]
-    let currentLoadedConfig = loadedConfig
     const nextMainDeckId = (
       config: typeof currentLoadedConfig.config,
     ): string =>
@@ -1770,7 +1777,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       }
       const rebuilt = buildRuntime(
         options,
-        loadedConfig,
+        currentLoadedConfig,
         descriptor.keyCount,
         providers.session.getState() === "locked",
       ).decks

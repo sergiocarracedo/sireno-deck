@@ -1,5 +1,6 @@
 import {
   CalendarButton,
+  CalendarSettingButton,
   CalendarEventButton,
   CalendarDetailButton,
   CalendarNavigationButton,
@@ -18,6 +19,7 @@ export const manifest = {
   name: "calendar",
   buttonTypes: {
     "calendar:upcoming": { frontend: CalendarButton, service: {} },
+    "calendar:setting": { frontend: CalendarSettingButton, service: {} },
     "calendar:event": { frontend: CalendarEventButton, service: {} },
     "calendar:detail": { frontend: CalendarDetailButton, service: {} },
     "calendar:navigate": { frontend: CalendarNavigationButton, service: {} },

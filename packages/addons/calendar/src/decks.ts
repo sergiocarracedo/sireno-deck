@@ -20,6 +20,12 @@ export const safeEventUrl = (value: string | undefined): string | undefined => {
 export const createCalendarDecks = (
   events: readonly { day: string }[],
   keyCount: number,
+  calendars: readonly {
+    instanceId: string
+    id: string
+    name: string
+    enabled: boolean
+  }[] = [],
 ): Record<string, Deck> => {
   const decks: Record<string, Deck> = {}
   const pageSize = Math.max(1, keyCount - 3)
@@ -72,7 +78,6 @@ export const createCalendarDecks = (
       type: "calendar:day",
       config: { day, target: `calendar:day-${day}` },
     })),
-    "calendar:deck",
   )
   for (const day of days)
     paginate(
@@ -83,6 +88,34 @@ export const createCalendarDecks = (
   decks["calendar:detail"] = {
     name: "Event details",
     buttons: [{ type: "calendar:detail", position: 0, config: {} }],
+  }
+  const settingsPageSize = Math.max(1, keyCount - 2)
+  const settingsPages = Math.max(
+    1,
+    Math.ceil(calendars.length / settingsPageSize),
+  )
+  const settingsId = (page: number) =>
+    page === 0 ? "calendar:settings" : `calendar:settings-p${page + 1}`
+  for (let page = 0; page < settingsPages; page++) {
+    const buttons: Button[] = calendars
+      .slice(page * settingsPageSize, (page + 1) * settingsPageSize)
+      .map((calendar, position) => ({
+        type: "calendar:setting",
+        position,
+        config: { instanceId: calendar.instanceId, calendarId: calendar.id },
+      }))
+    if (settingsPages > 1)
+      buttons.push({
+        type: "core:page-nav",
+        position: keyCount - 2,
+        config: {
+          currentPage: page + 1,
+          totalPages: settingsPages,
+          prevDeckId: settingsId(Math.max(0, page - 1)),
+          nextDeckId: settingsId(Math.min(settingsPages - 1, page + 1)),
+        },
+      })
+    decks[settingsId(page)] = { name: "Calendar settings", buttons }
   }
   const columns =
     keyCount === 32

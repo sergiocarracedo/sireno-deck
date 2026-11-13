@@ -4,6 +4,7 @@ import appInfoBackend from "./buttons/app-info/backend"
 import appInfoFrontend from "./buttons/app-info/frontend"
 import brightnessDownBackend from "./buttons/brightness-down/backend"
 import brightnessDownFrontend from "./buttons/brightness-down/frontend"
+import { CompactBrightnessFrontend } from "./buttons/brightness-compact/frontend"
 import brightnessUpBackend from "./buttons/brightness-up/backend"
 import brightnessUpFrontend from "./buttons/brightness-up/frontend"
 import settingsDeck from "./decks/settings"
@@ -30,6 +31,20 @@ export const manifest: AddonManifestV1 = {
         ...withInternal(brightnessUpBackend),
         gestureHandlers: ["tap", "dbl-tap"] as const,
       },
+    },
+    "internal-settings:compact-brightness": {
+      frontend: CompactBrightnessFrontend,
+      service: {
+        ...withInternal(brightnessUpBackend),
+        gestureHandlers: ["tap", "dbl-tap", "hold"] as const,
+        onHold: ({ coreMethods }) => {
+          coreMethods.adjustBrightness({ direction: "down" })
+        },
+      },
+    },
+    "internal-settings:compact-app-info": {
+      frontend: appInfoFrontend,
+      service: { internal: true },
     },
     "internal-settings:app-info": {
       frontend: appInfoFrontend,

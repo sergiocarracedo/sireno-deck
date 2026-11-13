@@ -1,7 +1,9 @@
 export * from "./BarsSurface"
+export * from "./BinaryToggleSurface"
 export * from "./IconLabelProgressSurface"
 export * from "./IconLabelSurface"
 export * from "./LabelValueListSurface"
+export * from "./LoadingSurface"
 export * from "./TemporaryErrorSurface"
 export * from "./ValueChart"
 

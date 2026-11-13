@@ -440,7 +440,7 @@ All shipped from `packages/cli/src/builtin-addons/`. Each ships a
 `sirenodeck.json` discovery file + an `index.ts` entry exporting
 `manifest: AddonManifestV1`. Registered in `register-builtins.ts` in this
 order: themes, core, internal-settings, session, date-time,
-emoji-selector, media, system-status, value-display, weather, brightness.
+emoji-selector, media, system-status, value-display, weather, coding-agents.
 
 | Addon               | Button types                                                  | Publish / poll | Notes                                                            |
 | ------------------- | ------------------------------------------------------------- | -------------- | ---------------------------------------------------------------- |
@@ -453,7 +453,6 @@ emoji-selector, media, system-status, value-display, weather, brightness.
 | `system-status`     | `status`                                                      | `1000 ms`      | 1–2 metrics per tile.                                            |
 | `value-display`     | `display`                                                     | `5000 ms`      | 1–3 values per tile.                                             |
 | `weather`           | `weather`                                                     | `600_000 ms`   | Uses `subscriptions` (push) + an explicit `poll(id)` trigger.    |
-| `brightness`        | `brightness`                                                  | `2000 ms`      | Frontend reads brightness, backends trigger `executor`.          |
 
 > **`gestureHandlers` today:** only `media` and `emoji-selector` declare it on
 > their manifests. The runtime currently does **not** enforce it as a filter

@@ -12,6 +12,7 @@ import { createHash } from "node:crypto"
 import { createAlarmScheduler } from "./domain/alarm-scheduler.js"
 import { createAlarmStorage } from "./domain/alarm-storage.js"
 import { createProviderStorage } from "./domain/provider-storage.js"
+import { createCalendarSelectionStorage } from "./domain/calendar-selection-storage.js"
 import { occurrenceKey, type CalendarEvent } from "./domain/events.js"
 import { safeEventUrl } from "./decks.js"
 
@@ -43,6 +44,30 @@ export const createCalendarRuntime = (options: {
   let page = 0
   let selected: string | undefined
   let providerStorage: ReturnType<typeof createProviderStorage> | undefined
+  let selectionStorage:
+    | ReturnType<typeof createCalendarSelectionStorage>
+    | undefined
+  let enabledOverrides: Record<string, boolean> = {}
+  let selectionPending = Promise.resolve()
+  const selectionKey = (instanceId: string, calendarId: string) =>
+    JSON.stringify([instanceId, calendarId])
+  const isEnabled = (instanceId: string, calendarId: string) =>
+    enabledOverrides[selectionKey(instanceId, calendarId)] ??
+    config.providers.some(
+      (provider) =>
+        provider.id === instanceId &&
+        (provider.type === "ical" || provider.calendarIds.includes(calendarId)),
+    )
+  let calendars = config.providers.flatMap((provider) =>
+    provider.type === "google"
+      ? provider.calendarIds.map((id) => ({
+          instanceId: provider.id,
+          id,
+          name: id,
+          color: provider.calendarColors?.[id],
+        }))
+      : [],
+  )
   const selections = new Map(
     config.providers.flatMap((provider) =>
       provider.type === "google"
@@ -65,6 +90,10 @@ export const createCalendarRuntime = (options: {
   const start = async () => {
     if (!options.dataDirectory)
       throw new Error("Calendar data directory unavailable")
+    selectionStorage = createCalendarSelectionStorage(
+      join(options.dataDirectory, "calendar-selections-v1.json"),
+    )
+    enabledOverrides = await selectionStorage.load()
     providerStorage = createProviderStorage(
       join(options.dataDirectory, "provider-snapshots-v1.json"),
     )
@@ -83,7 +112,6 @@ export const createCalendarRuntime = (options: {
       globalSettings: config.alarms,
       useCalendarReminders: config.useCalendarReminders,
       keepStoredAlarm: (alarm) => {
-        if (config.useCalendarReminders) return true
         try {
           const id: unknown = JSON.parse(alarm.id)
           const identity: unknown = JSON.parse(alarm.occurrence)
@@ -91,10 +119,13 @@ export const createCalendarRuntime = (options: {
             !Array.isArray(id) ||
             id[0] !== alarm.occurrence ||
             !Array.isArray(identity) ||
+            typeof identity[0] !== "string" ||
             typeof identity[1] !== "string" ||
             typeof id[1] !== "number"
           )
             return false
+          if (!isEnabled(identity[0], identity[1])) return false
+          if (config.useCalendarReminders) return true
           const provider = config.providers.find(
             (item) => item.id === identity[0],
           )
@@ -112,6 +143,7 @@ export const createCalendarRuntime = (options: {
       },
       snoozeMinutes: config.snoozeMinutes,
       repeatMinutes: config.repeatMinutes,
+      autoDismissMinutes: config.autoDismissMinutes,
       missedGraceMinutes: config.missedGraceMinutes,
       now,
       onAlert: () => options.onAlert?.(),
@@ -190,35 +222,81 @@ export const createCalendarRuntime = (options: {
           -Math.min(0, ...offsets) * 60_000,
         ),
     ).toISOString()
-    const providers = config.providers.map((instance): CalendarProvider => {
-      if (instance.type !== "google")
-        return {
-          instanceId: instance.id,
-          fetchEvents: async () => {
-            throw new Error("Provider unsupported")
-          },
-        }
-      if (options.provider) return options.provider(instance, timeMin, timeMax)
-      return {
-        instanceId: instance.id,
-        async fetchEvents() {
-          if (!options.credentials)
-            throw new Error("Credential store unavailable")
-          const accessToken = await refreshGoogleToken({
+    const providers = await Promise.all(
+      config.providers.map(async (instance): Promise<CalendarProvider> => {
+        if (instance.type !== "google")
+          return {
             instanceId: instance.id,
-            clientId: instance.clientId,
-            credentials: options.credentials,
-          })
+            fetchEvents: async () => {
+              throw new Error("Provider unsupported")
+            },
+          }
+        let token: string | undefined
+        const makeProvider = (calendarIds: string[]): CalendarProvider => {
+          if (options.provider)
+            return options.provider(
+              { ...instance, calendarIds },
+              timeMin,
+              timeMax,
+            )
           return createGoogleCalendarProvider({
             instanceId: instance.id,
-            calendarIds: instance.calendarIds,
+            calendarIds,
             timeMin,
             timeMax,
-            accessToken,
-          }).fetchEvents()
-        },
-      }
-    })
+            accessToken: token,
+          })
+        }
+        try {
+          if (!options.provider) {
+            if (!options.credentials)
+              throw new Error("Credential store unavailable")
+            token = await refreshGoogleToken({
+              instanceId: instance.id,
+              clientId: instance.clientId,
+              credentials: options.credentials,
+            })
+          }
+          const discovered = await makeProvider([]).listCalendars?.()
+          if (discovered) {
+            calendars = [
+              ...calendars.filter(
+                (calendar) => calendar.instanceId !== instance.id,
+              ),
+              ...calendars.filter(
+                (calendar) =>
+                  calendar.instanceId === instance.id &&
+                  !discovered.some((item) => item.id === calendar.id),
+              ),
+              ...discovered.map((calendar) => ({
+                instanceId: instance.id,
+                id: calendar.id,
+                name: calendar.name,
+                color: calendar.color,
+              })),
+            ]
+          }
+        } catch {
+          // Keep known calendar names and cached events when discovery fails.
+        }
+        const calendarIds = calendars
+          .filter(
+            (calendar) =>
+              calendar.instanceId === instance.id &&
+              isEnabled(instance.id, calendar.id),
+          )
+          .map((calendar) => calendar.id)
+        const provider = makeProvider(calendarIds)
+        return {
+          instanceId: instance.id,
+          async fetchEvents() {
+            if (!options.provider && !token)
+              throw new Error("Credential store unavailable")
+            return provider.fetchEvents()
+          },
+        }
+      }),
+    )
     snapshots = await refreshProviders(snapshots, providers)
     if (providerStorage && snapshots.some((item) => item.status === "ok")) {
       try {
@@ -237,15 +315,19 @@ export const createCalendarRuntime = (options: {
         )
         await scheduler.refresh(
           item.instanceId,
-          item.events.map((event) => ({
-            event,
-            startMs: startTime(event),
-            calendarSettings:
-              instance && instance.type !== "ical"
-                ? (instance.calendarAlarms?.[event.identity.calendarId] ??
-                  instance.alarms)
-                : instance?.alarms,
-          })),
+          item.events
+            .filter((event) =>
+              isEnabled(item.instanceId, event.identity.calendarId),
+            )
+            .map((event) => ({
+              event,
+              startMs: startTime(event),
+              calendarSettings:
+                instance && instance.type !== "ical"
+                  ? (instance.calendarAlarms?.[event.identity.calendarId] ??
+                    instance.alarms)
+                  : instance?.alarms,
+            })),
         )
       }
   }
@@ -253,6 +335,13 @@ export const createCalendarRuntime = (options: {
     snapshots
       .flatMap((s) => s.events)
       .filter((event) => {
+        if (
+          !isEnabled(
+            event.identity.providerInstanceId,
+            event.identity.calendarId,
+          )
+        )
+          return false
         const current = now()
         const notEnded =
           event.time.kind === "timed"
@@ -315,7 +404,11 @@ export const createCalendarRuntime = (options: {
       detail: detail ? display(detail) : undefined,
       alarm: active
         ? {
-            title: alarmEvent?.title ?? "Calendar reminder",
+            title:
+              alarmEvent?.title.trim() ||
+              alarmEvent?.calendarName ||
+              alarmEvent?.identity.calendarId ||
+              "Calendar reminder",
             startMs: active.eventStartMs,
           }
         : undefined,
@@ -327,12 +420,69 @@ export const createCalendarRuntime = (options: {
           s.instanceId,
         status: s.status,
       })),
+      calendars: calendars.map((calendar) => ({
+        ...calendar,
+        enabled: isEnabled(calendar.instanceId, calendar.id),
+      })),
     }
   }
   return {
     start,
     refresh,
     snapshot,
+    setCalendarEnabled: (
+      instanceId: string,
+      calendarId: string,
+      enabled: boolean,
+    ) => {
+      const task = selectionPending.then(async () => {
+        if (
+          !calendars.some(
+            (calendar) =>
+              calendar.instanceId === instanceId && calendar.id === calendarId,
+          )
+        )
+          throw new Error("Unknown calendar")
+        const next = {
+          ...enabledOverrides,
+          [selectionKey(instanceId, calendarId)]: enabled,
+        }
+        if (!selectionStorage)
+          throw new Error("Calendar selection storage unavailable")
+        await selectionStorage.save(next)
+        enabledOverrides = next
+        const item = snapshots.find(
+          (snapshot) => snapshot.instanceId === instanceId,
+        )
+        const instance = config.providers.find(
+          (provider) => provider.id === instanceId,
+        )
+        if (scheduler && !enabled)
+          await scheduler.disableCalendar(instanceId, calendarId)
+        else if (scheduler && item)
+          await scheduler.refresh(
+            instanceId,
+            item.events
+              .filter((event) =>
+                isEnabled(instanceId, event.identity.calendarId),
+              )
+              .map((event) => ({
+                event,
+                startMs: startTime(event),
+                calendarSettings:
+                  instance && instance.type !== "ical"
+                    ? (instance.calendarAlarms?.[event.identity.calendarId] ??
+                      instance.alarms)
+                    : instance?.alarms,
+              })),
+          )
+        options.onChange?.()
+        if (enabled) await refresh()
+        options.onChange?.()
+      })
+      selectionPending = task.catch(() => {})
+      return task
+    },
     selectEvent: (slot: number) => {
       const event = visibleEvents()[slot]
       selected = event ? occurrenceKey(event.identity) : undefined
@@ -357,6 +507,7 @@ export const createCalendarRuntime = (options: {
     dismiss: () => scheduler?.dismiss(),
     dismissAll: () => scheduler?.dismissAll(),
     dispose: async () => {
+      await selectionPending
       await scheduler?.dispose()
       await providerStorage?.drain()
     },

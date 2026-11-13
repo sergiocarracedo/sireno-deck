@@ -3,6 +3,9 @@ import type { CalendarEvent } from "./events.js"
 export interface CalendarProvider {
   readonly instanceId: string
   fetchEvents(): Promise<readonly CalendarEvent[]>
+  listCalendars?(): Promise<
+    readonly { id: string; name: string; color?: string }[]
+  >
 }
 
 export interface ProviderSnapshot {

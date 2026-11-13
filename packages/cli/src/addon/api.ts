@@ -270,6 +270,12 @@ export interface AddonManifestV1 {
   readonly kind?: AddonKind
   readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDefAny>>
   readonly defaultButton?: string
+  /** Entry shown in the global Settings deck for this loaded addon. */
+  readonly settings?: {
+    readonly label: string
+    readonly icon: string
+    readonly deck: string
+  }
   readonly decks?: ReadonlyArray<AddonDeckEntry>
   readonly frontend?: AddonFrontend
   readonly poller?: {

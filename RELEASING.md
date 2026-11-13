@@ -89,9 +89,8 @@ configured once at <https://www.npmjs.com/>:
 6. Allow direct `npm publish` (new trusted-publisher configurations may default
    to staged publishing only).
 
-The calendar package is not currently present on the public npm registry; its
-initial package ownership and trusted publisher must be established before the
-automated publish can succeed. Do not assume a registry 404 proves name ownership.
+The calendar package exists on npm, but its Trusted Publisher configuration
+must be verified before relying on automated publication.
 
 This enables `npm publish --provenance` via OIDC — no `NPM_TOKEN` secret to
 manage or leak. The publish job runs directly in `release.yml`: npm Trusted

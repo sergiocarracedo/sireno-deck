@@ -18,6 +18,20 @@ describe("internal-settings sirenodeck.json", () => {
 })
 
 describe("internal-settings settings deck", () => {
+  it("increases brightness on tap and decreases it on hold on compact decks", () => {
+    const service =
+      manifest.buttonTypes["internal-settings:compact-brightness"]?.service
+    const directions: string[] = []
+    const context = {
+      coreMethods: {
+        adjustBrightness: ({ direction }: { direction: string }) =>
+          directions.push(direction),
+      },
+    }
+    service?.onTap?.(context as never)
+    service?.onHold?.(context as never)
+    expect(directions).toEqual(["up", "down"])
+  })
   it("uses the standard button frame for app info", () => {
     expect(
       manifest.buttonTypes["internal-settings:app-info"]?.service?.full,

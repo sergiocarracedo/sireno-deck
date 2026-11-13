@@ -2,6 +2,63 @@ import { describe, expect, it } from "vitest"
 import { createCalendarDecks, safeEventUrl } from "../decks.js"
 
 describe("calendar decks", () => {
+  it("paginates calendar settings and leaves the back slot free", () => {
+    const calendars = Array.from({ length: 7 }, (_, i) => ({
+      instanceId: "work",
+      id: `c${i}`,
+      name: `Calendar ${i}`,
+      enabled: i === 0,
+    }))
+    const decks = createCalendarDecks([], 6, calendars)
+    expect(
+      decks["calendar:settings"]?.buttons.filter(
+        (button) => button.type === "calendar:setting",
+      ),
+    ).toHaveLength(4)
+    expect(
+      decks["calendar:settings-p2"]?.buttons.filter(
+        (button) => button.type === "calendar:setting",
+      ),
+    ).toHaveLength(3)
+    expect(
+      decks["calendar:settings"]?.buttons.find(
+        (button) => button.type === "core:page-nav",
+      )?.position,
+    ).toBe(4)
+    expect(
+      decks["calendar:settings"]?.buttons.some(
+        (button) => button.position === 5,
+      ),
+    ).toBe(false)
+  })
+  it("does not add local settings buttons to calendar listing pages", () => {
+    const decks = createCalendarDecks(
+      Array.from({ length: 20 }, (_, i) => ({
+        day: `2026-11-${String(i + 1).padStart(2, "0")}`,
+      })),
+      15,
+    )
+    const pages = Object.entries(decks).filter(
+      ([id]) =>
+        id === "calendar:deck" ||
+        id.startsWith("calendar:deck-p") ||
+        id === "calendar:days" ||
+        id.startsWith("calendar:days-p") ||
+        id.startsWith("calendar:day-"),
+    )
+    expect(pages.length).toBeGreaterThan(3)
+    for (const [, deck] of pages) {
+      expect(
+        deck.buttons.some(
+          (button) => button.config.deck === "calendar:settings",
+        ),
+      ).toBe(false)
+      expect(new Set(deck.buttons.map((button) => button.position)).size).toBe(
+        deck.buttons.length,
+      )
+    }
+    expect(decks["calendar:settings"]).toBeDefined()
+  })
   it("paginates chronological events and groups them by day", () => {
     const events = [
       "2026-11-05",
@@ -41,6 +98,11 @@ describe("calendar decks", () => {
       ),
     ).toHaveLength(2)
     expect(decks["calendar:days-p2"]).toBeDefined()
+    expect(
+      decks["calendar:days"]?.buttons.some(
+        (button) => button.config.deck === "calendar:deck",
+      ),
+    ).toBe(false)
     expect(
       decks["calendar:day-2026-11-05"]?.buttons.filter(
         (button) => button.type === "calendar:event",
