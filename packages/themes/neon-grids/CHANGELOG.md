@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.4](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/theme-neon-grids-0.1.3...@sirenodeck/theme-neon-grids-0.1.4) (2026-11-13)
+
+
+### Features
+
+* **calendar:** add calendar alarms and prepare stable 0.3 release ([2a934b4](https://github.com/sergiocarracedo/sireno-deck/commit/2a934b49d11baf53b7d4bc5388db690ce56d7a5d))
+* **calendar:** add modal alarms and calendar color presentation ([ef24231](https://github.com/sergiocarracedo/sireno-deck/commit/ef24231415cc8d823202108408dc034d6059550a))
+* **config-ui:** make remote emulator phone-ready ([05d2c57](https://github.com/sergiocarracedo/sireno-deck/commit/05d2c5756872ba1d20ad5e2df9ca3cfbc90f6324))
+* **release:** rename cli package to sirenodeck ([1cd8714](https://github.com/sergiocarracedo/sireno-deck/commit/1cd87146c7a9ae2378db579fb0b78f64e018b742))
+
 ## [0.1.3](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/theme-neon-grids-0.1.2...@sirenodeck/theme-neon-grids-0.1.3) (2026-11-08)
 
 
