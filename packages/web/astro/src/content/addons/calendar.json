@@ -9,6 +9,8 @@
   "source": "monorepo",
   "tags": ["productivity", "calendar", "reminders"],
   "icon": "calendar-days",
+  "screenshot": "/captures/web-snapshot-calendar.png",
+  "screenshots": ["/captures/web-snapshot-calendar.png"],
   "buttonTypes": ["calendar:upcoming"],
   "decks": ["calendar:deck", "calendar:settings"],
   "npm": "@sirenodeck/addon-calendar",
