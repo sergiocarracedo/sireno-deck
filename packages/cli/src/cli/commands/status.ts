@@ -10,6 +10,14 @@ import {
   resolveDaemonPaths,
 } from "@/util/daemon"
 import { listDevices } from "@/device"
+import { requestDaemonHealth, requestDaemonToken } from "@/util/daemon-control"
+import {
+  probeBridgeInfo,
+  probeHttp,
+  probeWebIdentity,
+  type BuildIdentity,
+} from "./status-probes"
+import { runtimeIdentity } from "@/util/runtime-identity"
 
 import { cancel, intro, log, outro } from "@/cli/prompt"
 
@@ -37,6 +45,16 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
   if (pid === null) {
     intro("sirenodeck status")
     log.error("Daemon is not running")
+    for (const component of [
+      "Core",
+      "Bridge",
+      "Frontend",
+      "Config UI",
+      "Renderer",
+      "Device",
+    ]) {
+      log.info(`${component}:    unknown (daemon not running)`)
+    }
     cancel("✗ No daemon process found")
     return
   }
@@ -95,6 +113,54 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
   }
 
   if (alive && state !== null) {
+    const [
+      token,
+      health,
+      frontend,
+      configUi,
+      frontendIdentity,
+      configUiIdentity,
+    ] = await Promise.all([
+      requestDaemonToken(paths),
+      requestDaemonHealth(paths),
+      probeHttp(state.frontendUrl),
+      state.configUiUrl
+        ? probeHttp(state.configUiUrl)
+        : Promise.resolve("unknown" as const),
+      probeWebIdentity(state.frontendUrl, "frontend"),
+      state.configUiUrl
+        ? probeWebIdentity(state.configUiUrl, "config-ui")
+        : Promise.resolve(null),
+    ])
+    const bridge = await probeBridgeInfo(state.wsUrl, token)
+    const identityLabel = (identity: BuildIdentity | null): string => {
+      if (!identity) return "version/build unknown"
+      const matches =
+        identity.buildId && health?.identity?.buildId
+          ? identity.buildId === health.identity.buildId &&
+            identity.version === health.identity.version
+            ? "same source as daemon"
+            : "MISMATCH"
+          : "comparison unknown"
+      return `${identity.version} build ${identity.buildId?.slice(0, 12) ?? "unknown"} (${matches})`
+    }
+    log.info(`CLI:         ${identityLabel(runtimeIdentity)}`)
+    log.info(`Daemon:      ${identityLabel(health?.identity ?? null)}`)
+    log.info(
+      `Core:        ${health?.core ?? "unknown"} (${identityLabel(health?.identity ?? null)})`,
+    )
+    log.info(
+      `Bridge:      ${bridge.status} (${identityLabel(bridge.identity)}; authenticated WebSocket handshake)`,
+    )
+    log.info(`Frontend:    ${frontend} (HTTP check)`)
+    log.info(`Frontend build: ${identityLabel(frontendIdentity)}`)
+    log.info(`Config UI:   ${configUi} (HTTP check)`)
+    log.info(`Config UI build: ${identityLabel(configUiIdentity)}`)
+    log.info(
+      isEmulator
+        ? "Renderer:    not applicable (emulator mode)"
+        : `Renderer:    ${health?.renderer?.state === "healthy" && health.renderer.lastFrameAt !== null && Date.now() - health.renderer.lastFrameAt > 10_000 ? "degraded (no recent frame)" : (health?.renderer?.state ?? "unknown")} (last frame: ${health?.renderer?.lastFrameAt ? new Date(health.renderer.lastFrameAt).toISOString() : "unknown"}; ${identityLabel(health?.identity ?? null)})`,
+    )
     const frontendUrl = state.frontendUrl
     log.info(`Frontend URL : ${frontendUrl}`)
     if (state.configUiUrl.length > 0) {
@@ -103,7 +169,20 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
     log.info(`Bridge URL   : ${state.wsUrl}`)
     outro("✓ Status snapshot")
   } else {
-    cancel("✗ Stale pid file — run `p dev stop` to clean up")
+    for (const component of [
+      "Core",
+      "Bridge",
+      "Frontend",
+      "Config UI",
+      "Renderer",
+    ]) {
+      log.info(`${component}:    unknown (runtime state unavailable)`)
+    }
+    cancel(
+      alive
+        ? "✗ Daemon is running but runtime state is unavailable"
+        : "✗ Stale pid file — daemon process is not running",
+    )
   }
 }
 

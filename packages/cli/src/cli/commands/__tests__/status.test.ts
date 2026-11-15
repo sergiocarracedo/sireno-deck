@@ -12,6 +12,11 @@ const {
   readChildrenMock,
   readConfigPathMock,
   listDevicesMock,
+  requestTokenMock,
+  requestHealthMock,
+  probeHttpMock,
+  probeBridgeMock,
+  probeIdentityMock,
 } = vi.hoisted(() => ({
   introMock: vi.fn(),
   logMock: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
@@ -24,6 +29,21 @@ const {
   readChildrenMock: vi.fn(),
   readConfigPathMock: vi.fn(),
   listDevicesMock: vi.fn(),
+  requestTokenMock: vi.fn(),
+  requestHealthMock: vi.fn(),
+  probeHttpMock: vi.fn(),
+  probeBridgeMock: vi.fn(),
+  probeIdentityMock: vi.fn(),
+}))
+
+vi.mock("@/util/daemon-control", () => ({
+  requestDaemonToken: requestTokenMock,
+  requestDaemonHealth: requestHealthMock,
+}))
+vi.mock("../status-probes", () => ({
+  probeHttp: probeHttpMock,
+  probeBridgeInfo: probeBridgeMock,
+  probeWebIdentity: probeIdentityMock,
 }))
 
 vi.mock("@/cli/prompt", () => ({
@@ -65,6 +85,11 @@ beforeEach(() => {
   readChildrenMock.mockReturnValue(null)
   readConfigPathMock.mockReturnValue(null)
   listDevicesMock.mockResolvedValue([])
+  requestTokenMock.mockResolvedValue("secret")
+  requestHealthMock.mockResolvedValue(null)
+  probeHttpMock.mockResolvedValue("responding")
+  probeBridgeMock.mockResolvedValue({ status: "responding", identity: null })
+  probeIdentityMock.mockResolvedValue(null)
 })
 
 afterEach(() => {
@@ -157,6 +182,72 @@ describe("status", () => {
       expect.stringContaining("Token:"),
     )
     expect(outroMock).toHaveBeenCalledWith("✓ Status snapshot")
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining("Bridge:      responding"),
+    )
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining("Core:        unknown"),
+    )
+    expect(logMock.info).toHaveBeenCalledWith(
+      "Renderer:    not applicable (emulator mode)",
+    )
+  })
+
+  it("reports an unreachable frontend without claiming the runtime is healthy", async () => {
+    readPidMock.mockReturnValue(process.pid)
+    isRunningMock.mockReturnValue(true)
+    readRuntimeStateMock.mockReturnValue({
+      configUiUrl: "",
+      wsUrl: "ws://127.0.0.1:1",
+      frontendUrl: "http://127.0.0.1:2",
+      emulatorMode: false,
+      remote: false,
+      startedAt: Date.now(),
+    })
+    probeHttpMock.mockResolvedValue("unreachable")
+    await status({ logger: mockLogger })
+    expect(logMock.info).toHaveBeenCalledWith(
+      "Frontend:    unreachable (HTTP check)",
+    )
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining("Renderer:    unknown"),
+    )
+  })
+
+  it("reports live renderer health and mismatched component builds", async () => {
+    readPidMock.mockReturnValue(process.pid)
+    isRunningMock.mockReturnValue(true)
+    readRuntimeStateMock.mockReturnValue({
+      configUiUrl: "http://127.0.0.1:3",
+      wsUrl: "ws://127.0.0.1:1",
+      frontendUrl: "http://127.0.0.1:2",
+      emulatorMode: false,
+      remote: false,
+      startedAt: Date.now(),
+    })
+    requestHealthMock.mockResolvedValue({
+      identity: { version: "0.3.0-dev", buildId: "aaa" },
+      core: "ready",
+      renderer: { state: "healthy", lastFrameAt: Date.now() },
+    })
+    probeIdentityMock
+      .mockResolvedValueOnce({ version: "0.3.0-dev", buildId: "bbb" })
+      .mockResolvedValueOnce({ version: "0.3.0-dev", buildId: "aaa" })
+    await status({ logger: mockLogger })
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining("Core:        ready"),
+    )
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining("Renderer:    healthy"),
+    )
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining("Frontend build: 0.3.0-dev build bbb (MISMATCH)"),
+    )
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Config UI build: 0.3.0-dev build aaa (same source as daemon)",
+      ),
+    )
   })
 
   it("never includes tokens in URLs", async () => {

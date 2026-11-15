@@ -7,6 +7,7 @@ import type pino from "pino"
 
 import { BufferChangeTracker } from "./buffer-hash"
 import { CadenceTimer, EventDebouncer } from "./screenshot-cadence"
+import { runtimeHealth } from "@/util/runtime-health"
 
 export interface PlaywrightLike {
   chromium: {
@@ -48,6 +49,7 @@ export interface BrowserRendererOptions {
   readonly intervalMs?: number
   readonly eventDebounceMs?: number
   readonly playwrightFactory?: () => PlaywrightLike | Promise<PlaywrightLike>
+  readonly onFatalCrash?: () => Promise<void>
 }
 
 const DEFAULT_INTERVAL_MS = 500
@@ -77,6 +79,7 @@ export class BrowserRenderer {
   private context: ContextLike | null = null
   private page: PageLike | null = null
   private running = false
+  private recovering: Promise<void> | null = null
   private readonly logger: pino.Logger
 
   constructor(private readonly options: BrowserRendererOptions) {
@@ -126,14 +129,7 @@ export class BrowserRenderer {
       }
       throw err
     }
-    const { columns, rows } = gridForKeyCount(this.options.device.getKeyCount())
-    const vpWidth = columns * BUTTON_SIZE_PX
-    const vpHeight = rows * BUTTON_SIZE_PX
-    this.context = await this.browser.newContext({
-      viewport: { width: vpWidth, height: vpHeight },
-    })
-    this.page = await this.context.newPage()
-    await this.page.goto(this.options.frontendUrl, { waitUntil: "networkidle" })
+    await this.openPage()
     if (this.pubSub) {
       this.subscriptions.push(
         {
@@ -150,6 +146,17 @@ export class BrowserRenderer {
     }
     this.cadence.start()
     this.running = true
+  }
+
+  private async openPage(): Promise<void> {
+    const { columns, rows } = gridForKeyCount(this.options.device.getKeyCount())
+    const vpWidth = columns * BUTTON_SIZE_PX
+    const vpHeight = rows * BUTTON_SIZE_PX
+    this.context = await this.browser!.newContext({
+      viewport: { width: vpWidth, height: vpHeight },
+    })
+    this.page = await this.context.newPage()
+    await this.page.goto(this.options.frontendUrl, { waitUntil: "networkidle" })
   }
 
   /**
@@ -172,9 +179,12 @@ export class BrowserRenderer {
     this.debouncer.dispose()
     for (const sub of this.subscriptions) sub.unsubscribe()
     this.subscriptions.length = 0
-    if (this.page) await this.page.close()
-    if (this.context) await this.context.close()
-    if (this.browser) await this.browser.close()
+    await this.recovering
+    await Promise.allSettled([
+      this.page?.close(),
+      this.context?.close(),
+      this.browser?.close(),
+    ])
     this.page = null
     this.context = null
     this.browser = null
@@ -182,8 +192,43 @@ export class BrowserRenderer {
 
   private static readonly BLANK_THRESHOLD = 20
 
+  private async recover(): Promise<void> {
+    runtimeHealth.setRenderer("recovering")
+    const factory =
+      this.options.playwrightFactory ??
+      (async (): Promise<PlaywrightLike> =>
+        (await import("playwright")) as PlaywrightLike)
+    for (let attempt = 1; attempt <= 3 && this.running; attempt++) {
+      await Promise.allSettled([
+        this.page?.close(),
+        this.context?.close(),
+        this.browser?.close(),
+      ])
+      this.page = null
+      this.context = null
+      this.browser = null
+      if (!this.running) break
+      try {
+        const playwright = await factory()
+        this.browser = await playwright.chromium.launch({ headless: true })
+        await this.openPage()
+        await this.page!.screenshot({ type: "png" })
+        this.tracker.reset()
+        this.logger.info({ attempt }, "browser renderer recovered")
+        return
+      } catch (err) {
+        this.logger.warn({ err, attempt }, "browser renderer recovery failed")
+      }
+    }
+    if (this.running) {
+      this.cadence.stop()
+      runtimeHealth.setRenderer("failed")
+      await this.options.onFatalCrash?.()
+    }
+  }
+
   private async tick(source: "timer" | "event"): Promise<void> {
-    if (!this.page) return
+    if (!this.page || this.recovering) return
     try {
       const png = await this.page.screenshot({ type: "png" })
       const { columns, rows } = gridForKeyCount(
@@ -231,8 +276,19 @@ export class BrowserRenderer {
           )
         }
       }
+      runtimeHealth.setRenderer("healthy", Date.now())
     } catch (err) {
       this.logger.warn({ err, source }, "renderer tick failed")
+      if (
+        /target crashed|target page, context or browser has been closed/i.test(
+          (err as Error).message,
+        )
+      ) {
+        this.recovering ??= this.recover().finally(() => {
+          this.recovering = null
+        })
+        await this.recovering
+      }
     }
   }
 }

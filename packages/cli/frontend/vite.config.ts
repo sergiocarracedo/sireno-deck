@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url"
 import { readFileSync } from "node:fs"
 import { sirenoDeck2 } from "../src/vite/index"
 import { frontendBridgeUrl } from "../src/render/frontend-bridge-url"
+import { componentIdentity } from "../src/vite/component-identity"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -60,6 +61,7 @@ const themeFromEnv = ():
 
 export default defineConfig({
   plugins: [
+    componentIdentity(resolve(__dirname, ".."), "frontend"),
     react(),
     tailwindcss(),
     sirenoDeck2({

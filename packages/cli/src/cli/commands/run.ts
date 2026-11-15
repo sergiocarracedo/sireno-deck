@@ -96,6 +96,7 @@ import {
 import { getHostContext } from "@/deck/host-context"
 import { StatePublisher } from "@/render/state-publisher"
 import { startWsBridge, type WsBridge } from "@/render/ws-bridge"
+import { runtimeHealth } from "@/util/runtime-health"
 import { DEFAULT_BRIDGE_PORT } from "./emulator-mode"
 import { createConfigMutationService } from "@/config/mutation"
 import {
@@ -1933,6 +1934,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     })
 
     currentOutputHandle = outputHandle
+    runtimeHealth.setCore("ready")
+    if (options.emulator === true) runtimeHealth.setRenderer("not-applicable")
     let refreshQueue = Promise.resolve()
 
     // Note: do NOT overwrite the accumulated `trackedPids` Set with the initial
@@ -2149,6 +2152,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     await done
   } finally {
+    runtimeHealth.setCore("stopping")
     unsubscribeBrightnessSettings?.()
     settingsStore?.close()
     if (unregisterSignal !== null) unregisterSignal()

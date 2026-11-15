@@ -1,6 +1,16 @@
 import { defineConfig } from "tsdown"
+import { dirname } from "node:path"
+import { fileURLToPath } from "node:url"
+// Native config loading needs the explicit TypeScript extension.
+// eslint-disable-next-line import/extensions
+import { fingerprintBuildInputs } from "./src/util/build-fingerprint.ts"
 
 export default defineConfig({
+  define: {
+    __SIRENO_BUILD_ID__: JSON.stringify(
+      fingerprintBuildInputs(dirname(fileURLToPath(import.meta.url))),
+    ),
+  },
   entry: ["src/cli/main.ts"],
   format: ["esm"],
   target: "node20",

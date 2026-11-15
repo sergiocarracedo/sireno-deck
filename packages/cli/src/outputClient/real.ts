@@ -2,6 +2,7 @@ import { existsSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 
 import type pino from "pino"
+import sharp from "sharp"
 
 import { createGestureDetector } from "@/core/gesture-state"
 import { pushBlackFrame } from "@/device/black-frame"
@@ -294,10 +295,26 @@ export class RealOutputClient implements OutputClient {
 
       logger.info({ frontendUrl }, "real mode: frontend URL")
 
+      let rendererFailed = false
       renderer = new BrowserRenderer({
         frontendUrl: `${frontendUrl}${frontendUrl.includes("?") ? "&" : "?"}compact=1`,
         device,
         logger,
+        onFatalCrash: async () => {
+          rendererFailed = true
+          try {
+            const svg = Buffer.from(
+              '<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72"><rect width="72" height="72" fill="#7f1d1d"/><text x="36" y="28" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="12">RENDER</text><text x="36" y="47" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="12">ERROR</text></svg>',
+            )
+            const pixels = await sharp(svg).removeAlpha().raw().toBuffer()
+            for (let i = 0; i < device.getKeyCount(); i++)
+              await device.fillKeyBuffer(i, pixels)
+          } catch (err) {
+            logger.error({ err }, "failed to display renderer error")
+          } finally {
+            opts.onChildCrash?.()
+          }
+        },
         ...(opts.intervalMs !== undefined
           ? { intervalMs: opts.intervalMs }
           : {}),
@@ -330,7 +347,7 @@ export class RealOutputClient implements OutputClient {
         wsUrl: opts.bridge.url,
         childPids,
         async pushBlackFrame(): Promise<void> {
-          await pushBlackFrame(device, logger)
+          if (!rendererFailed) await pushBlackFrame(device, logger)
         },
         async pushRawImage(filePath: string): Promise<void> {
           try {

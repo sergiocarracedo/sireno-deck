@@ -6,6 +6,11 @@ import type pino from "pino"
 
 import type { DaemonPaths } from "./daemon"
 import { isSocketLive } from "./single-instance"
+import {
+  runtimeHealth,
+  runtimeHealthSchema,
+  type RuntimeHealth,
+} from "./runtime-health"
 
 const GET_TOKEN = "get-token\n"
 
@@ -33,6 +38,8 @@ export const startDaemonControl = async (
       socket.setEncoding("utf8")
       socket.on("data", (data) => {
         if (String(data).trim() === "get-token") socket.end(`${token}\n`)
+        else if (String(data).trim() === "get-health")
+          socket.end(`${JSON.stringify(runtimeHealth.snapshot())}\n`)
         else socket.destroy()
       })
     })
@@ -83,3 +90,37 @@ export const requestDaemonToken = (
 export const removeDaemonControl = (paths: DaemonPaths): void => {
   if (existsSync(paths.controlSocket)) unlinkSync(paths.controlSocket)
 }
+
+export const requestDaemonHealth = (
+  paths: DaemonPaths,
+  timeoutMs = 1_000,
+): Promise<RuntimeHealth | null> =>
+  new Promise((resolve) => {
+    if (!existsSync(paths.controlSocket)) return resolve(null)
+    const socket = connect(paths.controlSocket)
+    let data = ""
+    let settled = false
+    const finish = (value: RuntimeHealth | null): void => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      socket.destroy()
+      resolve(value)
+    }
+    const timer = setTimeout(() => finish(null), timeoutMs)
+    socket.setEncoding("utf8")
+    socket.on("connect", () => socket.write("get-health\n"))
+    socket.on("data", (chunk) => {
+      data += chunk
+      if (!data.includes("\n")) return
+      try {
+        const parsed: unknown = JSON.parse(data.split("\n", 1)[0]!)
+        const result = runtimeHealthSchema.safeParse(parsed)
+        finish(result.success ? result.data : null)
+      } catch {
+        finish(null)
+      }
+    })
+    socket.on("error", () => finish(null))
+    socket.on("close", () => finish(null))
+  })
