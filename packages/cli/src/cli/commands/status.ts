@@ -36,6 +36,39 @@ const formatUptime = (ms: number): string => {
   return `${seconds}s`
 }
 
+const group = (title: string, details: readonly string[]): string =>
+  [
+    title,
+    ...details.map((detail, i) => {
+      const separator = detail.indexOf(": ")
+      const formatted =
+        separator < 0
+          ? detail
+          : `${detail.slice(0, separator + 2)}${colorize(detail.slice(separator + 2), 97)}`
+      return `${i === details.length - 1 ? "└─" : "├─"} ${formatted}`
+    }),
+  ].join("\n")
+
+const colorize = (value: string, color: number): string => {
+  const enabled =
+    process.env.NO_COLOR === undefined &&
+    process.env.FORCE_COLOR !== "0" &&
+    (process.stdout.isTTY ||
+      (process.env.FORCE_COLOR !== undefined && process.env.FORCE_COLOR !== ""))
+  return enabled
+    ? `\u001b[${color}m${value.replaceAll("\u001b[39m", `\u001b[${color}m`)}\u001b[39m`
+    : value
+}
+
+const coloredStatus = (value: string): string => {
+  const color = /^(running|ready|healthy|responding|same source)/i.test(value)
+    ? 32
+    : /^(failed|unreachable|MISMATCH|stale)/i.test(value)
+      ? 31
+      : 33
+  return colorize(value, color)
+}
+
 export const status = async ({ logger }: StatusOptions): Promise<void> => {
   void logger // kept for callers that want pino logs out-of-band
 
@@ -68,11 +101,16 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
 
   intro("sirenodeck status")
 
+  let daemonDetails: string[] = []
   if (alive) {
     const startedAt = state?.startedAt ?? null
     const uptime =
       startedAt !== null ? formatUptime(Date.now() - startedAt) : "—"
-    log.info(`Status:    running for ${uptime} (pid ${pid})`)
+    daemonDetails = [
+      `PID: ${pid}`,
+      `Uptime: ${uptime}`,
+      `Children: ${childPids.length > 0 ? `${childPids.length} (${childPids.join(", ")})` : "none tracked"}`,
+    ]
   } else {
     log.warn(`Status:    stale pid file (pid ${pid} not alive)`)
   }
@@ -82,7 +120,7 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
     typeof flags?.deviceModel === "string" ? flags.deviceModel : "mk2"
 
   if (isEmulator) {
-    log.info(`Device :   Emulator (${deviceModel}) (emulator mode)`)
+    log.info(group("Device", [`Mode: emulator`, `Model: ${deviceModel}`]))
   } else {
     let hardwareLabel = "—"
     try {
@@ -95,20 +133,22 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
       // permission errors. Fall through to the "—" placeholder — status
       // must not blow up if device detection is unavailable.
     }
-    log.info(`Device :   ${hardwareLabel} (hardware mode)`)
+    log.info(group("Device", [`Mode: hardware`, `Model: ${hardwareLabel}`]))
   }
 
   const remoteOn = state?.remote === true || flags?.remote === true
-  log.info(`Remote:    ${remoteOn ? "on" : "off"}`)
-
-  log.info(`Config:    ${configPath ?? "—"}`)
-
   const theme = state?.theme ?? "default"
-  log.info(`Theme:     ${theme}`)
+  log.info(
+    group("Configuration", [
+      `Config: ${configPath ?? "—"}`,
+      `Theme: ${theme}`,
+      `Remote: ${remoteOn ? "on" : "off"}`,
+    ]),
+  )
 
-  if (childPids.length > 0) {
+  if (!alive && childPids.length > 0) {
     log.info(`Children:  ${childPids.length} (${childPids.join(", ")})`)
-  } else {
+  } else if (!alive) {
     log.info("Children:  none tracked")
   }
 
@@ -142,33 +182,64 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
             ? "same source as daemon"
             : "MISMATCH"
           : "comparison unknown"
-      return `${identity.version} build ${identity.buildId?.slice(0, 12) ?? "unknown"} (${matches})`
+      return `${identity.version} build ${identity.buildId?.slice(0, 12) ?? "unknown"} (${coloredStatus(matches)})`
     }
-    log.info(`CLI:         ${identityLabel(runtimeIdentity)}`)
-    log.info(`Daemon:      ${identityLabel(health?.identity ?? null)}`)
     log.info(
-      `Core:        ${health?.core ?? "unknown"} (${identityLabel(health?.identity ?? null)})`,
+      group(`Daemon: ${coloredStatus("running")}`, [
+        ...daemonDetails,
+        `Version: ${identityLabel(health?.identity ?? null)}`,
+      ]),
+    )
+    log.info(group("CLI", [`Version: ${identityLabel(runtimeIdentity)}`]))
+    log.info(
+      group(`Core: ${coloredStatus(health?.core ?? "unknown")}`, [
+        `Version: ${identityLabel(health?.identity ?? null)}`,
+      ]),
     )
     log.info(
-      `Bridge:      ${bridge.status} (${identityLabel(bridge.identity)}; authenticated WebSocket handshake)`,
+      group(`Bridge: ${coloredStatus(bridge.status)}`, [
+        `Check: authenticated WebSocket handshake`,
+        `URL: ${state.wsUrl}`,
+        `Version: ${identityLabel(bridge.identity)}`,
+      ]),
     )
-    log.info(`Frontend:    ${frontend} (HTTP check)`)
-    log.info(`Frontend build: ${identityLabel(frontendIdentity)}`)
-    log.info(`Config UI:   ${configUi} (HTTP check)`)
-    log.info(`Config UI build: ${identityLabel(configUiIdentity)}`)
     log.info(
-      isEmulator
-        ? "Renderer:    not applicable (emulator mode)"
-        : `Renderer:    ${health?.renderer?.state === "healthy" && health.renderer.lastFrameAt !== null && Date.now() - health.renderer.lastFrameAt > 10_000 ? "degraded (no recent frame)" : (health?.renderer?.state ?? "unknown")} (last frame: ${health?.renderer?.lastFrameAt ? new Date(health.renderer.lastFrameAt).toISOString() : "unknown"}; ${identityLabel(health?.identity ?? null)})`,
+      group(`Frontend: ${coloredStatus(frontend)}`, [
+        `Check: HTTP`,
+        `URL: ${state.frontendUrl}`,
+        `Version: ${identityLabel(frontendIdentity)}`,
+      ]),
     )
-    const frontendUrl = state.frontendUrl
-    log.info(`Frontend URL : ${frontendUrl}`)
-    if (state.configUiUrl.length > 0) {
-      log.info(`Config UI URL : ${state.configUiUrl}`)
+    log.info(
+      group(`Config UI: ${coloredStatus(configUi)}`, [
+        `Check: HTTP`,
+        ...(state.configUiUrl ? [`URL: ${state.configUiUrl}`] : []),
+        `Version: ${identityLabel(configUiIdentity)}`,
+      ]),
+    )
+    if (isEmulator) {
+      log.info("Renderer: not applicable (emulator mode)")
+    } else {
+      const rendererState =
+        health?.renderer?.state === "healthy" &&
+        health.renderer.lastFrameAt !== null &&
+        Date.now() - health.renderer.lastFrameAt > 10_000
+          ? "degraded (no recent frame)"
+          : (health?.renderer?.state ?? "unknown")
+      const lastFrame = health?.renderer?.lastFrameAt
+        ? new Date(health.renderer.lastFrameAt).toISOString()
+        : "unknown"
+      log.info(
+        group(`Renderer: ${coloredStatus(rendererState)}`, [
+          `Last frame: ${lastFrame}`,
+          `Version: ${identityLabel(health?.identity ?? null)}`,
+        ]),
+      )
     }
-    log.info(`Bridge URL   : ${state.wsUrl}`)
     outro("✓ Status snapshot")
   } else {
+    if (alive)
+      log.info(group(`Daemon: ${coloredStatus("running")}`, daemonDetails))
     for (const component of [
       "Core",
       "Bridge",
