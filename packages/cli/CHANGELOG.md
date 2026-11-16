@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.4.0...@sirenodeck/sirenodeck-0.4.1) (2026-11-16)
+
+
+### Features
+
+* report component health and recover renderer crashes ([#86](https://github.com/sergiocarracedo/sireno-deck/issues/86)) ([93e187a](https://github.com/sergiocarracedo/sireno-deck/commit/93e187a3076eb9b4e9104b44ace529cc7be7c0e8))
+
 ## [0.4.0](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.3.0...@sirenodeck/sirenodeck-0.4.0) (2026-11-13)
 
 
