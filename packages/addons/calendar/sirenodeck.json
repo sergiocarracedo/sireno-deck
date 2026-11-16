@@ -3,5 +3,6 @@
   "apiVersion": 1,
   "name": "calendar",
   "entry": "dist/index.js",
-  "frontendEntry": "dist/frontend.js"
+  "frontendEntry": "dist/frontend.js",
+  "setupEntry": "dist/setup.js"
 }

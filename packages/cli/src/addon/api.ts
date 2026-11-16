@@ -475,6 +475,8 @@ export interface AddonJsonManifest {
    * existing addons keep working untouched.
    */
   readonly frontendEntry?: string
+  /** Optional setup module path relative to the addon root. */
+  readonly setupEntry?: string
 }
 
 /** Validation schema for `AddonJsonManifest`; usable at scan time. */

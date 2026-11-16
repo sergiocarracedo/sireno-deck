@@ -36,7 +36,12 @@ import {
 } from "@/util/daemon"
 import { cancel, intro, log } from "./prompt"
 import { skillsCommand } from "./commands/skills"
-import { addonSetupCommand } from "./commands/addon-setup"
+import {
+  addonSetupCommand,
+  configuredAddonSetups,
+  runAddonSetup,
+} from "./commands/addon-setup"
+import { resolveConfigPath } from "./commands/pipeline/helpers"
 
 export interface GlobalOptions {
   verbose?: boolean
@@ -340,6 +345,21 @@ const installCommand: CommandModule<object, InstallArgs> = {
         ? { packageManager: argv.packageManager }
         : {}),
     } satisfies InstallOptions)
+    const configPath = resolveConfigPath({
+      config: argv.config,
+      logger: console as never,
+    }).path
+    const addon = configuredAddonSetups(configPath).find(
+      (item) => item.source === argv.packageName,
+    )
+    if (addon) {
+      if (process.stdin.isTTY && process.stdout.isTTY)
+        await runAddonSetup(addon.setupPath, configPath)
+      else
+        console.log(
+          `Run sirenodeck addon-setup ${addon.source} --config ${JSON.stringify(configPath)} in an interactive terminal.`,
+        )
+    }
   },
 }
 

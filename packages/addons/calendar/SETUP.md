@@ -5,12 +5,14 @@ type **Desktop app**. Configure the OAuth consent screen and add your Google
 account as a test user while the app is in testing. Have the client ID and
 client secret ready. The app requests read-only calendar access.
 
-Build the setup module, then run it in an interactive terminal:
+Run setup in an interactive terminal after installing and configuring the addon:
 
 ```sh
-pnpm --filter @sirenodeck/addon-calendar build:setup
-sirenodeck addon-setup packages/addons/calendar/dist/setup.js
+sirenodeck addon-setup @sirenodeck/addon-calendar
 ```
+
+`sirenodeck onboard` also offers setup for configured, installed addons. The
+install command starts setup automatically in an interactive terminal.
 
 Choose a unique account ID and select one or more calendars. Setup saves the
 provider to the active config, or asks for a config path if no daemon is running.
@@ -35,6 +37,6 @@ Alerts are dismissed 10 minutes after the event starts, including snoozed and
 queued reminders. Set `autoDismissMinutes` under `config.service` to change
 this deadline; reminders scheduled at or after it will not be displayed.
 
-The command above is for a source checkout; a distributed addon must include
-the compiled `dist/setup.js` and its imported files, and users must pass the
-path to that installed file instead.
+For a source checkout, build the setup module first with
+`pnpm --filter @sirenodeck/addon-calendar build:setup`. The explicit setup
+module path remains supported for development.

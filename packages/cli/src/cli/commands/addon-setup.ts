@@ -10,6 +10,10 @@ import { createLogger } from "@/util/logger"
 import { isRunning, readConfigPath, readPid } from "@/util/daemon"
 import { resolveUserPath } from "@/cli/cwd"
 import { saveAddonProvider } from "./addon-setup-config"
+import { discoverAddonSetups, packageNameOf } from "./addon-setup-discovery"
+import { resolveConfigPath } from "./pipeline/helpers"
+import { probeGlobalPackageRoots } from "../package-manager"
+import { addonNpmRoot } from "@/util/cache-paths"
 
 interface SetupModule {
   addonName: string
@@ -38,97 +42,158 @@ interface SetupModule {
   }): Promise<void>
 }
 
-export const addonSetupCommand: CommandModule<object, { module: string }> = {
+export const configuredAddonSetups = (configPath: string) =>
+  discoverAddonSetups(
+    configPath,
+    probeGlobalPackageRoots().roots,
+    addonNpmRoot(),
+  )
+
+export const onboardAddons = async (configPath: string): Promise<void> => {
+  const addons = configuredAddonSetups(configPath)
+  if (addons.length === 0) return
+  const selected = await multiselect({
+    message: "Choose addons to set up",
+    options: addons.map((addon) => ({
+      value: addon.setupPath,
+      label: addon.name,
+      hint: addon.source,
+    })),
+    required: false,
+  })
+  if (isCancel(selected)) throw new Error("Addon setup cancelled")
+  for (const path of selected) await runAddonSetup(path, configPath)
+}
+
+export const runAddonSetup = async (
+  module: string,
+  selectedConfigPath?: string,
+): Promise<void> => {
+  if (!process.stdin.isTTY || !process.stdout.isTTY)
+    throw new Error("Addon setup requires an interactive terminal")
+  const setup = (await import(
+    pathToFileURL(resolve(module)).href
+  )) as SetupModule
+  if (
+    !/^[a-z0-9][a-z0-9-]*$/.test(setup.addonName) ||
+    typeof setup.setupAddon !== "function"
+  )
+    throw new Error("Invalid addon setup module")
+  const logger = createLogger({})
+  const pid = selectedConfigPath ? null : readPid()
+  let configPath =
+    selectedConfigPath ??
+    (pid !== null && isRunning(pid) ? readConfigPath() : null)
+  console.log(`\n${setup.addonName}\n--------------------`)
+  await setup.setupAddon({
+    credentials: scopeCredentials(
+      createNativeCredentialBackend(),
+      setup.addonName,
+    ),
+    openUrl: (url) => {
+      console.log(`Open this URL if your browser does not start:\n${url}`)
+      openBrowser(url, logger)
+    },
+    text: async (message, secret) => {
+      const value = secret
+        ? await password({ message })
+        : await text({ message })
+      if (isCancel(value)) throw new Error("Addon setup cancelled")
+      return value
+    },
+    selectMany: async (message, options) => {
+      const value = await multiselect({
+        message,
+        options: options.map(({ color, ...option }) => {
+          const useColor =
+            process.stdout.isTTY &&
+            process.env["NO_COLOR"] === undefined &&
+            process.env["TERM"] !== "dumb"
+          const hex = /^#[0-9a-f]{6}$/i.test(color ?? "")
+            ? color!.slice(1)
+            : undefined
+          const rgb =
+            hex === undefined
+              ? undefined
+              : [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16))
+          const marker =
+            rgb && useColor ? `\x1b[38;2;${rgb.join(";")}m■\x1b[0m` : "■"
+          return {
+            ...option,
+            label: `${marker} ${useColor ? styleText("white", option.label) : option.label}`,
+          }
+        }),
+        required: true,
+      })
+      if (isCancel(value)) throw new Error("Addon setup cancelled")
+      return value
+    },
+    confirm: async (message) => {
+      const value = await confirm({ message, initialValue: false })
+      if (isCancel(value)) throw new Error("Addon setup cancelled")
+      return value
+    },
+    saveProvider: async (provider) => {
+      if (!configPath) {
+        const value = await text({
+          message: "Config file path (leave blank for manual instructions)",
+        })
+        if (isCancel(value)) throw new Error("Addon setup cancelled")
+        if (!value.trim()) return null
+        configPath = resolveUserPath(value.trim())
+      }
+      try {
+        await saveAddonProvider(configPath, setup.addonName, provider)
+        return configPath
+      } catch (error) {
+        console.error(
+          `Could not update config: ${error instanceof Error ? error.message : String(error)}`,
+        )
+        return null
+      }
+    },
+    print: (message) => console.log(message),
+  })
+}
+
+export const addonSetupCommand: CommandModule<
+  object,
+  { module: string; config?: string }
+> = {
   command: "addon-setup <module>",
   describe: "Run an installed addon's interactive setup module",
   builder: (yargs) =>
-    yargs.positional("module", {
-      type: "string",
-      demandOption: true,
-      description: "Path to the addon's setup module",
-    }),
-  handler: async ({ module }) => {
-    if (!process.stdin.isTTY || !process.stdout.isTTY)
-      throw new Error("Addon setup requires an interactive terminal")
-    const setup = (await import(
-      pathToFileURL(resolve(module)).href
-    )) as SetupModule
+    yargs
+      .option("config", { type: "string", description: "Path to config.yml" })
+      .positional("module", {
+        type: "string",
+        demandOption: true,
+        description: "Addon package name or path to its setup module",
+      }),
+  handler: async ({ module, config }) => {
     if (
-      !/^[a-z0-9][a-z0-9-]*$/.test(setup.addonName) ||
-      typeof setup.setupAddon !== "function"
-    )
-      throw new Error("Invalid addon setup module")
-    const logger = createLogger({})
+      module.startsWith(".") ||
+      module.startsWith("/") ||
+      module.endsWith(".js")
+    ) {
+      await runAddonSetup(module, config ? resolveUserPath(config) : undefined)
+      return
+    }
     const pid = readPid()
-    let configPath = pid !== null && isRunning(pid) ? readConfigPath() : null
-    await setup.setupAddon({
-      credentials: scopeCredentials(
-        createNativeCredentialBackend(),
-        setup.addonName,
-      ),
-      openUrl: (url) => {
-        console.log(`Open this URL if your browser does not start:\n${url}`)
-        openBrowser(url, logger)
-      },
-      text: async (message, secret) => {
-        const value = secret
-          ? await password({ message })
-          : await text({ message })
-        if (isCancel(value)) throw new Error("Addon setup cancelled")
-        return value
-      },
-      selectMany: async (message, options) => {
-        const value = await multiselect({
-          message,
-          options: options.map(({ color, ...option }) => {
-            const useColor =
-              process.stdout.isTTY &&
-              process.env["NO_COLOR"] === undefined &&
-              process.env["TERM"] !== "dumb"
-            const hex = /^#[0-9a-f]{6}$/i.test(color ?? "")
-              ? color!.slice(1)
-              : undefined
-            const rgb =
-              hex === undefined
-                ? undefined
-                : [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16))
-            const marker =
-              rgb && useColor ? `\x1b[38;2;${rgb.join(";")}m■\x1b[0m` : "■"
-            return {
-              ...option,
-              label: `${marker} ${useColor ? styleText("white", option.label) : option.label}`,
-            }
-          }),
-          required: true,
-        })
-        if (isCancel(value)) throw new Error("Addon setup cancelled")
-        return value
-      },
-      confirm: async (message) => {
-        const value = await confirm({ message, initialValue: false })
-        if (isCancel(value)) throw new Error("Addon setup cancelled")
-        return value
-      },
-      saveProvider: async (provider) => {
-        if (!configPath) {
-          const value = await text({
-            message: "Config file path (leave blank for manual instructions)",
-          })
-          if (isCancel(value)) throw new Error("Addon setup cancelled")
-          if (!value.trim()) return null
-          configPath = resolveUserPath(value.trim())
-        }
-        try {
-          await saveAddonProvider(configPath, setup.addonName, provider)
-          return configPath
-        } catch (error) {
-          console.error(
-            `Could not update config: ${error instanceof Error ? error.message : String(error)}`,
-          )
-          return null
-        }
-      },
-      print: (message) => console.log(message),
-    })
+    const configPath = config
+      ? resolveUserPath(config)
+      : ((pid !== null && isRunning(pid) ? readConfigPath() : null) ??
+        resolveConfigPath({ logger: console as never }).path)
+    const addon = configuredAddonSetups(configPath).find(
+      (item) =>
+        item.source === module ||
+        item.name === module ||
+        packageNameOf(item.source) === module,
+    )
+    if (!addon)
+      throw new Error(
+        `No configured installed addon with setup found: ${module}`,
+      )
+    await runAddonSetup(addon.setupPath, configPath)
   },
 }

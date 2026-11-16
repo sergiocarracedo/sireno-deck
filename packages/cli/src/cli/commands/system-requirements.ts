@@ -44,6 +44,8 @@ import {
 } from "@/cli/prompt"
 import { collectBuiltinAddonChecks, runAddonChecks } from "@/addon/check-runner"
 import { onboardCodingAgents } from "@/cli/coding-agents-onboarding"
+import { onboardAddons } from "./addon-setup"
+import { resolveConfigPath } from "./pipeline/helpers"
 
 const execFileAsync = promisify(execFile)
 
@@ -684,6 +686,20 @@ export const systemRequirementsCommand: CommandModule<
     }
     try {
       await systemRequirements(options)
+      if (
+        argv._.includes("onboard") &&
+        !argv.nonInteractive &&
+        !argv.yes &&
+        process.stdin.isTTY &&
+        process.stdout.isTTY &&
+        !process.exitCode
+      ) {
+        const path = resolveConfigPath({
+          config: argv.config,
+          logger,
+        } as never).path
+        await onboardAddons(path)
+      }
     } catch (err) {
       const e = err as { message?: string }
       logger.error(
