@@ -8,7 +8,7 @@ client secret ready. The app requests read-only calendar access.
 Run setup in an interactive terminal after installing and configuring the addon:
 
 ```sh
-sirenodeck addon-setup @sirenodeck/addon-calendar
+sirenodeck addon setup @sirenodeck/addon-calendar
 ```
 
 `sirenodeck onboard` also offers setup for configured, installed addons. The

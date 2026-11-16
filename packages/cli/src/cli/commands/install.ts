@@ -22,6 +22,7 @@ export interface InstallOptions {
   readonly homeDir?: string
   readonly xdgConfigHome?: string
   readonly configure?: boolean
+  readonly expectedKind?: "addon" | "theme"
 }
 
 const configPathFor = (
@@ -67,6 +68,10 @@ export const installPackage = async (
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
     kind?: string
   }
+  if (options.expectedKind && manifest.kind !== options.expectedKind)
+    throw new Error(
+      `Package '${options.packageName}' is not ${options.expectedKind === "addon" ? "an addon" : "a theme"}.`,
+    )
   const raw = parse(readFileSync(configPath, "utf8")) as Record<string, unknown>
   if (options.configure === false) return
   if (manifest.kind === "theme") {

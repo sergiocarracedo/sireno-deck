@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
 }))
 vi.mock("../commands/install", () => ({ installPackage: mocks.install }))
 vi.mock("../commands/addon-setup", () => ({
-  addonSetupCommand: { command: "addon-setup <module>" },
+  addonSetupCommand: { command: "setup <module>" },
   configuredAddonSetups: mocks.discover,
   runAddonSetup: mocks.setup,
 }))
@@ -50,7 +50,7 @@ it("prints a setup command after non-interactive installation", async () => {
     })
     expect(log).toHaveBeenCalledWith(
       expect.stringContaining(
-        "sirenodeck addon-setup @sirenodeck/addon-calendar",
+        "sirenodeck addon setup @sirenodeck/addon-calendar",
       ),
     )
     expect(mocks.setup).not.toHaveBeenCalled()

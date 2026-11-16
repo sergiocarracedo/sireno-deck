@@ -46,11 +46,18 @@ Install an npm addon or theme and configure it in `config.yml`.
 ```bash
 sirenodeck install <package>
 sirenodeck install --global <package>
+sirenodeck addon install <package>
+sirenodeck theme install <package>
+sirenodeck addon setup <addon>
 ```
 
 The command checks for pnpm, npm, or Yarn, preferring pnpm. Use `--global` to
 keep the package in the package manager's global installation and mark the
 config reference accordingly.
+The generic command determines the package type from its manifest. The addon
+and theme commands require a package of the matching type. Addon installation
+starts its setup when available; in non-interactive terminals it prints the
+setup command instead.
 
 ### run
 

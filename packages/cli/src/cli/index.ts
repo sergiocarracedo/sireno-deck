@@ -319,6 +319,37 @@ const restartCommand: CommandModule<object, RestartArgs> = {
   },
 }
 
+const handleInstall = async (
+  argv: InstallArgs,
+  expectedKind?: "addon" | "theme",
+) => {
+  await installPackage({
+    packageName: argv.packageName,
+    ...(argv.config !== undefined ? { config: argv.config } : {}),
+    ...(argv.global === true ? { global: true } : {}),
+    ...(argv.packageManager !== undefined
+      ? { packageManager: argv.packageManager }
+      : {}),
+    ...(expectedKind !== undefined ? { expectedKind } : {}),
+  } satisfies InstallOptions)
+  if (expectedKind === "theme") return
+  const configPath = resolveConfigPath({
+    config: argv.config,
+    logger: console as never,
+  }).path
+  const addon = configuredAddonSetups(configPath).find(
+    (item) => item.source === argv.packageName,
+  )
+  if (addon) {
+    if (process.stdin.isTTY && process.stdout.isTTY)
+      await runAddonSetup(addon.setupPath, configPath)
+    else
+      console.log(
+        `Run sirenodeck addon setup ${addon.source} --config ${JSON.stringify(configPath)} in an interactive terminal.`,
+      )
+  }
+}
+
 const installCommand: CommandModule<object, InstallArgs> = {
   command: "install <packageName>",
   describe: "Install and configure an addon or theme",
@@ -336,31 +367,36 @@ const installCommand: CommandModule<object, InstallArgs> = {
         description: "Install globally",
       })
       .option("package-manager", { choices: ["pnpm", "npm", "yarn"] as const }),
-  handler: async (argv) => {
-    await installPackage({
-      packageName: argv.packageName,
-      ...(argv.config !== undefined ? { config: argv.config } : {}),
-      ...(argv.global === true ? { global: true } : {}),
-      ...(argv.packageManager !== undefined
-        ? { packageManager: argv.packageManager }
-        : {}),
-    } satisfies InstallOptions)
-    const configPath = resolveConfigPath({
-      config: argv.config,
-      logger: console as never,
-    }).path
-    const addon = configuredAddonSetups(configPath).find(
-      (item) => item.source === argv.packageName,
-    )
-    if (addon) {
-      if (process.stdin.isTTY && process.stdout.isTTY)
-        await runAddonSetup(addon.setupPath, configPath)
-      else
-        console.log(
-          `Run sirenodeck addon-setup ${addon.source} --config ${JSON.stringify(configPath)} in an interactive terminal.`,
-        )
-    }
-  },
+  handler: async (argv) => handleInstall(argv),
+}
+
+const addonCommand: CommandModule = {
+  command: "addon <command>",
+  describe: "Install and set up addons",
+  builder: (yargs) =>
+    yargs
+      .command({
+        ...installCommand,
+        describe: "Install an addon",
+        handler: (argv) => handleInstall(argv, "addon"),
+      })
+      .command(addonSetupCommand)
+      .demandCommand(1),
+  handler: () => {},
+}
+
+const themeCommand: CommandModule = {
+  command: "theme <command>",
+  describe: "Install themes",
+  builder: (yargs) =>
+    yargs
+      .command({
+        ...installCommand,
+        describe: "Install a theme",
+        handler: (argv) => handleInstall(argv, "theme"),
+      })
+      .demandCommand(1),
+  handler: () => {},
 }
 
 export const buildCli = async (): Promise<{
@@ -381,7 +417,8 @@ export const buildCli = async (): Promise<{
       logsCommand as CommandModule<object, GlobalOptions>,
       systemRequirementsCommand as CommandModule<object, GlobalOptions>,
       installCommand as CommandModule<object, GlobalOptions>,
-      addonSetupCommand as CommandModule<object, GlobalOptions>,
+      addonCommand as CommandModule<object, GlobalOptions>,
+      themeCommand as CommandModule<object, GlobalOptions>,
       skillsCommand as CommandModule<object, GlobalOptions>,
     ],
     packageName: PACKAGE_NAME,

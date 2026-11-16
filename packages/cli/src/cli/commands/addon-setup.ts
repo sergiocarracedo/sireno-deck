@@ -160,7 +160,7 @@ export const addonSetupCommand: CommandModule<
   object,
   { module: string; config?: string }
 > = {
-  command: "addon-setup <module>",
+  command: "setup <module>",
   describe: "Run an installed addon's interactive setup module",
   builder: (yargs) =>
     yargs
