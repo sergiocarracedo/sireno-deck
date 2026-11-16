@@ -158,6 +158,57 @@ describe("RealOutputClient.init", () => {
     vi.restoreAllMocks()
   })
 
+  it("writes a renderer error and preserves it during shutdown", async () => {
+    const device = {
+      serial: "ABC",
+      path: "/dev/hidraw0",
+      model: "mk2",
+      getKeyCount: () => 2,
+      setBrightness: vi.fn(async () => undefined),
+      fillKeyBuffer: vi.fn(async () => undefined),
+      onKeyEvent: vi.fn(() => () => undefined),
+      onError: vi.fn(() => () => undefined),
+      close: vi.fn(async () => undefined),
+    }
+    mocks.connectStreamDeck.mockResolvedValue(device)
+    const client = new RealOutputClient({ xdgConfigHome: "/tmp" })
+    await client.selectDevice(
+      [
+        {
+          id: "ABC",
+          model: "mk2",
+          keyCount: 2,
+          label: "ABC",
+          transport: "real",
+        },
+      ],
+      null,
+      silentLogger(),
+    )
+    const onChildCrash = vi.fn()
+    const handle = await client.init({
+      bridge: { port: 52937, url: "ws://127.0.0.1:52937", setDevice: vi.fn() },
+      runtime: { getBrightness: () => 64 },
+      pubSub: { publish: vi.fn(), subscribe: vi.fn(() => () => undefined) },
+      store: {},
+      decks: [],
+      theme: { name: "default", apiVersion: 1 },
+      themeDir: "/themes",
+      frontendUrl: "http://127.0.0.1:5180",
+      configUiUrl: "http://127.0.0.1:5181",
+      logger: silentLogger(),
+      onChildCrash,
+    } as never)
+    const { BrowserRenderer } = await import("@/render/browser-renderer")
+    const options = vi.mocked(BrowserRenderer).mock.calls.at(-1)![0]
+    await options.onFatalCrash!()
+    expect(device.fillKeyBuffer).toHaveBeenCalledTimes(2)
+    expect(onChildCrash).toHaveBeenCalledOnce()
+    await handle.pushBlackFrame!()
+    expect(mocks.pushBlackFrame).not.toHaveBeenCalled()
+    await handle.stop()
+  })
+
   it("clears the device when initialization fails after connecting", async () => {
     const device = {
       serial: "ABC",

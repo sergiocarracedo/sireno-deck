@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite"
 import { resolve } from "node:path"
 import { sirenoDeck2 } from "../src/vite/index"
 import { frontendBridgeUrl } from "../src/render/frontend-bridge-url"
+import { componentIdentity } from "../src/vite/component-identity"
 
 const wsUrl = frontendBridgeUrl()
 const frontendUrl =
@@ -66,6 +67,7 @@ const addonsFromEnv = () => {
 export default defineConfig({
   root: __dirname,
   plugins: [
+    componentIdentity(resolve(__dirname, ".."), "config-ui"),
     react(),
     tailwindcss(),
     sirenoDeck2({

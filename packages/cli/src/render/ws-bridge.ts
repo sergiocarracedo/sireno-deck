@@ -1,6 +1,7 @@
 import type { Server as HttpServer } from "node:http"
 import { WebSocketServer, type WebSocket } from "ws"
 import type pino from "pino"
+import { runtimeIdentity } from "@/util/runtime-identity"
 
 import type { DeviceDescriptor } from "@/device/registry"
 import { createLogger } from "@/util/logger"
@@ -161,6 +162,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
           const ack = helloAckMessageSchema.parse({
             type: "hello-ack",
             version: PROTOCOL_VERSION,
+            build: runtimeIdentity,
             ...(currentDevice !== null ? { device: currentDevice } : {}),
             config:
               currentTheme !== undefined ? { theme: currentTheme.name } : {},

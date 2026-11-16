@@ -42,6 +42,10 @@ export const helloAckMessageSchema = baseServerMessage
     type: z.literal("hello-ack"),
     version: z.literal(PROTOCOL_VERSION),
     device: deviceInfoSchema.optional(),
+    build: z
+      .object({ version: z.string(), buildId: z.string().nullable() })
+      .strict()
+      .optional(),
     config: z.unknown(),
   })
   .strict()

@@ -121,6 +121,59 @@ describe("BrowserRenderer", () => {
     await r.stop()
   })
 
+  it("restarts the browser after its page crashes", async () => {
+    const first = makeMockPlaywright()
+    const second = makeMockPlaywright()
+    vi.mocked(first.page.screenshot).mockRejectedValue(
+      new Error("page.screenshot: Target crashed"),
+    )
+    vi.mocked(first.playwright.chromium.launch)
+      .mockResolvedValueOnce(first.browser)
+      .mockResolvedValue(second.browser)
+    const r = new BrowserRenderer({
+      frontendUrl: "http://test",
+      device: {
+        getKeyCount: () => 1,
+        fillKeyBuffer: vi.fn(async () => undefined),
+      },
+      logger: silentLogger(),
+      intervalMs: 5,
+      playwrightFactory: () => first.playwright,
+    })
+    await r.start()
+    await vi.advanceTimersByTimeAsync(30)
+    expect(first.playwright.chromium.launch).toHaveBeenCalledTimes(2)
+    expect(second.page.screenshot).toHaveBeenCalled()
+    await r.stop()
+  })
+
+  it("reports a fatal crash after three failed restart attempts", async () => {
+    const { playwright, page, browser } = makeMockPlaywright()
+    vi.mocked(page.screenshot).mockRejectedValue(
+      new Error("page.screenshot: Target crashed"),
+    )
+    vi.mocked(playwright.chromium.launch)
+      .mockResolvedValueOnce(browser)
+      .mockRejectedValue(new Error("launch failed"))
+    const onFatalCrash = vi.fn(async () => undefined)
+    const r = new BrowserRenderer({
+      frontendUrl: "http://test",
+      device: {
+        getKeyCount: () => 1,
+        fillKeyBuffer: vi.fn(async () => undefined),
+      },
+      logger: silentLogger(),
+      intervalMs: 5,
+      playwrightFactory: () => playwright,
+      onFatalCrash,
+    })
+    await r.start()
+    await vi.advanceTimersByTimeAsync(30)
+    expect(playwright.chromium.launch).toHaveBeenCalledTimes(4)
+    expect(onFatalCrash).toHaveBeenCalledOnce()
+    await r.stop()
+  })
+
   it("stop() closes page + context + browser", async () => {
     const { playwright, page, browser, context } = makeMockPlaywright()
     const device = {
