@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/addon-calendar-0.1.1...@sirenodeck/addon-calendar-0.1.2) (2026-11-16)
+
+
+### Features
+
+* **cli:** group addon and theme commands ([84a8a16](https://github.com/sergiocarracedo/sireno-deck/commit/84a8a16a961f556a7b6e6fc9bd44798f5b10a065))
+* **cli:** streamline addon onboarding ([d270fbb](https://github.com/sergiocarracedo/sireno-deck/commit/d270fbb656200f19df12fec09f8b861ae1c98121))
+
 ## [0.1.1](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/addon-calendar-0.1.0...@sirenodeck/addon-calendar-0.1.1) (2026-11-13)
 
 
