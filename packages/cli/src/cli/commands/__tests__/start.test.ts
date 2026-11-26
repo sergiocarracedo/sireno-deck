@@ -100,6 +100,7 @@ vi.mock("@/util/daemon", () => ({
 vi.mock("@/cli/prompt", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/cli/prompt")>()),
   select: vi.fn(async () => "restart"),
+  confirm: vi.fn(async () => false),
   isCancel: vi.fn(() => false),
 }))
 vi.mock("@/util/single-instance", () => ({
@@ -493,6 +494,100 @@ describe("start", () => {
     vi.mocked(daemon.readPid).mockReturnValue(undefined as never)
     vi.mocked(daemon.isRunning).mockReturnValue(false)
   })
+
+  it.each([true, false])(
+    "asks before force-stopping an unresponsive verified daemon (answer: %s)",
+    async (answer) => {
+      setHappyPath()
+      const daemon = await import("@/util/daemon")
+      const identity = await import("../port-identity")
+      const prompt = await import("@/cli/prompt")
+      let alive = true
+      const kill = vi
+        .spyOn(process, "kill")
+        .mockImplementation((_pid, signal) => {
+          if (signal === "SIGKILL") alive = false
+          return true
+        })
+      vi.spyOn(identity, "isOurDaemon").mockReturnValue(true)
+      vi.mocked(daemon.readPid).mockReturnValue(4242)
+      vi.mocked(daemon.isRunning).mockImplementation(() => alive)
+      vi.mocked(prompt.confirm).mockResolvedValue(answer)
+      let clock = 0
+      vi.spyOn(Date, "now").mockImplementation(() => (clock += 30_000))
+      const tty = Object.getOwnPropertyDescriptor(process.stdin, "isTTY")
+      Object.defineProperty(process.stdin, "isTTY", {
+        value: true,
+        configurable: true,
+      })
+      try {
+        const result = start({
+          config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+          logger: silentLogger(),
+        })
+        if (answer) await expect(result).resolves.toBe("started")
+        else await expect(result).rejects.toThrow("did not exit after SIGTERM")
+        expect(prompt.confirm).toHaveBeenCalledOnce()
+        expect(kill).toHaveBeenCalledWith(4242, "SIGTERM")
+        expect(kill.mock.calls.some(([, signal]) => signal === "SIGKILL")).toBe(
+          answer,
+        )
+      } finally {
+        if (tty) Object.defineProperty(process.stdin, "isTTY", tty)
+        else Reflect.deleteProperty(process.stdin, "isTTY")
+        vi.mocked(daemon.readPid).mockReturnValue(undefined as never)
+        vi.mocked(daemon.isRunning).mockReturnValue(false)
+      }
+    },
+  )
+
+  it.each(["non-interactive", "identity changed"])(
+    "never force-stops an unresponsive daemon when %s",
+    async (scenario) => {
+      setHappyPath()
+      const daemon = await import("@/util/daemon")
+      const identity = await import("../port-identity")
+      const prompt = await import("@/cli/prompt")
+      const kill = vi.spyOn(process, "kill").mockReturnValue(true)
+      vi.spyOn(identity, "isOurDaemon")
+        .mockReturnValueOnce(true)
+        .mockReturnValue(false)
+      vi.mocked(daemon.readPid).mockReturnValue(4242)
+      vi.mocked(daemon.isRunning).mockReturnValue(true)
+      vi.mocked(prompt.confirm).mockResolvedValue(true)
+      let clock = 0
+      vi.spyOn(Date, "now").mockImplementation(() => (clock += 30_000))
+      const tty = Object.getOwnPropertyDescriptor(process.stdin, "isTTY")
+      Object.defineProperty(process.stdin, "isTTY", {
+        value: scenario !== "non-interactive",
+        configurable: true,
+      })
+      try {
+        await expect(
+          start({
+            config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+            logger: silentLogger(),
+          }),
+        ).rejects.toThrow(
+          scenario === "non-interactive"
+            ? "force-stop not approved"
+            : "Refusing to force-stop unverified",
+        )
+        expect(kill).toHaveBeenCalledWith(4242, "SIGTERM")
+        expect(kill.mock.calls.some(([, signal]) => signal === "SIGKILL")).toBe(
+          false,
+        )
+        if (scenario === "non-interactive")
+          expect(prompt.confirm).not.toHaveBeenCalled()
+        expect(daemon.removePidFile).not.toHaveBeenCalled()
+      } finally {
+        if (tty) Object.defineProperty(process.stdin, "isTTY", tty)
+        else Reflect.deleteProperty(process.stdin, "isTTY")
+        vi.mocked(daemon.readPid).mockReturnValue(undefined as never)
+        vi.mocked(daemon.isRunning).mockReturnValue(false)
+      }
+    },
+  )
 
   it("does not warn about the production frontend dist in dev mode", async () => {
     setHappyPath()
