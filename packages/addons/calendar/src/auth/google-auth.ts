@@ -1,6 +1,10 @@
 import { createHash, randomBytes } from "node:crypto"
 import { createServer } from "node:http"
 
+export const SIRENO_GOOGLE_CLIENT_ID =
+  "876921078438-idpd33n9csa186500kjh9580m6okggms.apps.googleusercontent.com"
+const SIRENO_GOOGLE_CLIENT_SECRET = "__SIRENO_GOOGLE_CLIENT_SECRET__"
+
 interface Credentials {
   availability(): Promise<"available" | "locked" | "unavailable">
   get(name: string): Promise<string | undefined>
@@ -33,7 +37,16 @@ async function tokenRequest(
   body: URLSearchParams,
 ): Promise<{ access: string; refresh?: string }> {
   body.set("client_id", options.clientId)
-  if (options.clientSecret) body.set("client_secret", options.clientSecret)
+  const clientSecret =
+    options.clientId === SIRENO_GOOGLE_CLIENT_ID
+      ? process.env["SIRENO_GOOGLE_CLIENT_SECRET"] ||
+        SIRENO_GOOGLE_CLIENT_SECRET
+      : options.clientSecret
+  if (clientSecret?.startsWith("__SIRENO_GOOGLE_"))
+    throw new Error(
+      "Sireno Deck Google client credentials are not configured in this build",
+    )
+  if (clientSecret) body.set("client_secret", clientSecret)
   let response: Response
   try {
     response = await (options.fetch ?? globalThis.fetch)(
@@ -56,6 +69,8 @@ async function tokenRequest(
   if (!response.ok) {
     if (data?.error === "invalid_grant")
       throw new Error("Google authorization expired; reauthorize this account")
+    if (data?.error === "invalid_client")
+      throw new Error("Google rejected the OAuth client credentials")
     throw new Error("Google token request failed")
   }
   if (
@@ -82,10 +97,18 @@ export async function refreshGoogleToken(
   const refresh = await options.credentials.get(key)
   if (!refresh) throw new Error("Google account requires reauthorization")
   const clientSecret =
-    options.clientSecret ??
-    (await options.credentials.get(secretName(options.instanceId)))
+    options.clientId === SIRENO_GOOGLE_CLIENT_ID
+      ? undefined
+      : (options.clientSecret ??
+        (await options.credentials.get(secretName(options.instanceId))))
   const tokens = await tokenRequest(
-    { ...options, ...(clientSecret ? { clientSecret } : {}) },
+    {
+      instanceId: options.instanceId,
+      clientId: options.clientId,
+      credentials: options.credentials,
+      ...(options.fetch ? { fetch: options.fetch } : {}),
+      ...(clientSecret ? { clientSecret } : {}),
+    },
     new URLSearchParams({
       grant_type: "refresh_token",
       refresh_token: refresh,

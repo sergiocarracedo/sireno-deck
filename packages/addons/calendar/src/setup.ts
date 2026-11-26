@@ -1,4 +1,4 @@
-import { authorizeGoogle } from "./auth/google-auth.js"
+import { authorizeGoogle, SIRENO_GOOGLE_CLIENT_ID } from "./auth/google-auth.js"
 import { createGoogleCalendarProvider } from "./providers/google/index.js"
 
 export const addonName = "calendar"
@@ -30,23 +30,21 @@ interface SetupContext {
 /** Authorize one Google account and return its non-secret service configuration. */
 export async function setupAddon(ctx: SetupContext): Promise<void> {
   ctx.print(
-    "Create a Google Cloud OAuth desktop client, enable the Google Calendar API, and add your Google account as a test user if required.",
+    "Sign in with Google to select the calendars to display on your deck.",
   )
   do {
-    const id = (await ctx.text("Account ID (letters, numbers, . _ -)")).trim()
+    const id = (
+      await ctx.text(
+        "Account ID (letters, numbers, . _ -)\nName the account to identify it on Sireno Deck",
+      )
+    ).trim()
     if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,95}$/.test(id))
       throw new Error("Invalid Google account ID")
-    const clientId = (await ctx.text("Google OAuth client ID")).trim()
-    if (!clientId) throw new Error("Google OAuth client ID is required")
-    const clientSecret = (
-      await ctx.text("Google OAuth client secret (leave blank if none)", true)
-    ).trim()
     const accessToken = await authorizeGoogle({
       instanceId: id,
-      clientId,
+      clientId: SIRENO_GOOGLE_CLIENT_ID,
       credentials: ctx.credentials,
       openUrl: ctx.openUrl,
-      ...(clientSecret ? { clientSecret } : {}),
     })
     const provider = createGoogleCalendarProvider({
       instanceId: id,
@@ -78,7 +76,7 @@ export async function setupAddon(ctx: SetupContext): Promise<void> {
     const config = {
       id,
       type: "google",
-      clientId,
+      clientId: SIRENO_GOOGLE_CLIENT_ID,
       calendarIds: [...new Set(selected)],
       calendarColors: Object.fromEntries(
         calendars

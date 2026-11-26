@@ -1,9 +1,14 @@
 # Google Calendar setup
 
-Enable the Google Calendar API in Google Cloud and create an OAuth client of
-type **Desktop app**. Configure the OAuth consent screen and add your Google
-account as a test user while the app is in testing. Have the client ID and
-client secret ready. The app requests read-only calendar access.
+Sireno Deck uses its own Google OAuth desktop client and requests read-only
+calendar access. Google may show an unverified-app warning until verification
+is complete; while the app is in testing, your account must be a test user.
+
+For local development, `build` and `build:setup` accept the build credential
+from `SIRENO_GOOGLE_CLIENT_SECRET` or `GCANEDAR_APP_SECRET` in this addon's
+gitignored `.env`. Release builds can provide `SIRENO_GOOGLE_CLIENT_SECRET`
+through the build environment. The credential is embedded in the built addon
+and is therefore extractable; never commit the `.env` file or build artifacts.
 
 Run setup in an interactive terminal after installing and configuring the addon:
 
@@ -19,8 +24,8 @@ provider to the active config, or asks for a config path if no daemon is running
 You can add another account when prompted. If the config cannot be updated,
 setup prints the provider and manual instructions. Restart Sireno Deck to apply
 changes. Use the same account ID to reauthorize or change the calendar
-selection. The client secret and refresh token are kept in the native
-credential store, not the printed configuration. Setup requires that store to
+selection. The refresh token is kept in the native credential store, not the
+printed configuration. Setup requires that store to
 be available; unlocking the desktop keyring may be necessary.
 
 Setup saves the selected Google calendar colors in `calendarColors` so event

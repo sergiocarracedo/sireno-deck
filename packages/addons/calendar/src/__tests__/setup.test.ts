@@ -3,7 +3,10 @@ import { authorizeGoogle } from "../auth/google-auth.js"
 import { createGoogleCalendarProvider } from "../providers/google/index.js"
 import { setupAddon } from "../setup.js"
 
-vi.mock("../auth/google-auth.js", () => ({ authorizeGoogle: vi.fn() }))
+vi.mock("../auth/google-auth.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../auth/google-auth.js")>()),
+  authorizeGoogle: vi.fn(),
+}))
 vi.mock("../providers/google/index.js", () => ({
   createGoogleCalendarProvider: vi.fn(),
 }))
@@ -34,11 +37,7 @@ beforeEach(() => {
 
 describe("Google setup", () => {
   it("authorizes and outputs selected calendars without secrets", async () => {
-    const text = vi
-      .fn()
-      .mockResolvedValueOnce("work")
-      .mockResolvedValueOnce("client")
-      .mockResolvedValueOnce("secret")
+    const text = vi.fn().mockResolvedValueOnce("work")
     const selectMany = vi.fn().mockResolvedValue(["a@example.com", "b"])
     const print = vi.fn()
     await setupAddon({
@@ -50,11 +49,14 @@ describe("Google setup", () => {
       confirm,
       saveProvider,
     })
-    expect(text).toHaveBeenCalledWith("Account ID (letters, numbers, . _ -)")
+    expect(text).toHaveBeenCalledWith(
+      "Account ID (letters, numbers, . _ -)\nName the account to identify it on Sireno Deck",
+    )
+    expect(text).toHaveBeenCalledTimes(1)
     expect(authorizeGoogle).toHaveBeenCalledWith({
       instanceId: "work",
-      clientId: "client",
-      clientSecret: "secret",
+      clientId:
+        "876921078438-idpd33n9csa186500kjh9580m6okggms.apps.googleusercontent.com",
       credentials,
       openUrl,
     })
@@ -73,7 +75,8 @@ describe("Google setup", () => {
     expect(saveProvider).toHaveBeenCalledWith({
       id: "work",
       type: "google",
-      clientId: "client",
+      clientId:
+        "876921078438-idpd33n9csa186500kjh9580m6okggms.apps.googleusercontent.com",
       calendarIds: ["a@example.com", "b"],
       calendarColors: { "a@example.com": "#ff0000" },
     })
@@ -98,11 +101,7 @@ describe("Google setup", () => {
   })
 
   it("rejects empty or unknown selections", async () => {
-    const text = vi
-      .fn()
-      .mockResolvedValueOnce("work")
-      .mockResolvedValueOnce("client")
-      .mockResolvedValueOnce("")
+    const text = vi.fn().mockResolvedValueOnce("work")
     await expect(
       setupAddon({
         credentials,
@@ -120,11 +119,7 @@ describe("Google setup", () => {
     const text = vi
       .fn()
       .mockResolvedValueOnce("first")
-      .mockResolvedValueOnce("client")
-      .mockResolvedValueOnce("")
       .mockResolvedValueOnce("second")
-      .mockResolvedValueOnce("client")
-      .mockResolvedValueOnce("")
     const confirm = vi
       .fn()
       .mockResolvedValueOnce(true)
@@ -147,11 +142,7 @@ describe("Google setup", () => {
   })
 
   it("prints manual instructions only when saving is unavailable", async () => {
-    const text = vi
-      .fn()
-      .mockResolvedValueOnce("work")
-      .mockResolvedValueOnce("client")
-      .mockResolvedValueOnce("")
+    const text = vi.fn().mockResolvedValueOnce("work")
     const print = vi.fn()
     await setupAddon({
       credentials,
