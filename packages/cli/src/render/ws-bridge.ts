@@ -85,10 +85,11 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
     const lastChannels: Record<string, unknown> = {}
     const cacheablePollers = new Map<string, () => unknown | Promise<unknown>>()
     const pendingChannelSubs = new Map<string, Set<WebSocket>>()
+    const authenticated = new Set<WebSocket>()
     let currentDevice: DeviceDescriptor | null = null
 
     const sendToSocket = (socket: WebSocket, message: WsMessage): void => {
-      if (socket.readyState === socket.OPEN) {
+      if (authenticated.has(socket) && socket.readyState === socket.OPEN) {
         socket.send(JSON.stringify(message))
       }
     }
@@ -158,6 +159,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
             return
           }
           handshakeDone = true
+          authenticated.add(socket)
           clearTimeout(handshakeTimer)
           const ack = helloAckMessageSchema.parse({
             type: "hello-ack",
@@ -213,10 +215,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
                   type: "state",
                   channels: { [channel]: value },
                 }
-                const payload = JSON.stringify(msg)
-                for (const client of wss.clients) {
-                  if (client.readyState === client.OPEN) client.send(payload)
-                }
+                for (const client of authenticated) sendToSocket(client, msg)
               })
               .catch(() => {
                 // poll on demand failed — ignore, next interval will retry
@@ -233,6 +232,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
       })
 
       socket.on("close", () => {
+        authenticated.delete(socket)
         for (const subs of pendingChannelSubs.values()) {
           subs.delete(socket)
         }
@@ -254,10 +254,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
         setDevice: (device) => {
           currentDevice = device
           const msg: WsMessage = { type: "device-info", device }
-          const payload = JSON.stringify(msg)
-          for (const client of wss.clients) {
-            if (client.readyState === client.OPEN) client.send(payload)
-          }
+          for (const client of authenticated) sendToSocket(client, msg)
         },
         setAddonInventory: (inventory) => {
           addonInventory = inventory
@@ -272,10 +269,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
           if (message.type === "state") {
             Object.assign(lastChannels, message.channels)
           }
-          const payload = JSON.stringify(message)
-          for (const client of wss.clients) {
-            if (client.readyState === client.OPEN) client.send(payload)
-          }
+          for (const client of authenticated) sendToSocket(client, message)
         },
         sendToCaller: (socket, message) => sendToSocket(socket, message),
         registerCacheablePoller: (channel, pollFn) => {
