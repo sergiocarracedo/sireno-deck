@@ -88,7 +88,7 @@ export const Shell = ({
               </strong>
             </span>
             <span className="hidden truncate sm:inline" title={wsUrl}>
-              ws://{wsUrl.replace(/^wss?:\/\//, "")}
+              {wsUrl}
             </span>
             <a
               href={frontendUrl}

@@ -10,6 +10,7 @@ import {
 } from "@/device/models"
 
 import { token } from "virtual:sireno/token"
+import { browserBridgeUrl, browserFrontendUrl } from "@/api/browser-bridge-url"
 
 import { createWsClient, type WsClient, type WsStatus } from "./bridge"
 import { DeckFrame } from "./DeckFrame"
@@ -89,10 +90,25 @@ const isValidSection = (s: string | null): s is (typeof SECTIONS)[number] =>
   s !== null && (SECTIONS as ReadonlyArray<string>).includes(s)
 
 export const App = ({
-  wsUrl = ENV_WS_URL,
+  wsUrl = typeof window === "undefined"
+    ? ENV_WS_URL
+    : browserBridgeUrl(
+        ENV_WS_URL,
+        import.meta.env.VITE_SECURE_GATEWAY === true,
+        window.location.href,
+      ),
   initialDeviceModel,
   initialSection = "config",
 }: AppProps = {}): React.ReactElement => {
+  const frontendUrl =
+    typeof window === "undefined"
+      ? ENV_FRONTEND_URL
+      : browserFrontendUrl(
+          ENV_FRONTEND_URL,
+          import.meta.env.VITE_SECURE_GATEWAY === true,
+          window.location.href,
+          Number(import.meta.env.VITE_SECURE_FRONTEND_PORT),
+        )
   const [activeSection, setActiveSection] = useState<string>(initialSection)
   const [deckOnly] = useState<boolean>(
     () =>
@@ -439,7 +455,7 @@ export const App = ({
               result={editorResult}
               validation={editorValidation}
               addonInventory={addonInventory}
-              frontendUrl={ENV_FRONTEND_URL}
+              frontendUrl={frontendUrl}
               device={deviceModel}
               token={token}
               onGesture={sendButtonAction}
@@ -522,7 +538,7 @@ export const App = ({
           : activeSection.replaceAll("-", " ")
       }
       wsUrl={wsUrl}
-      frontendUrl={ENV_FRONTEND_URL}
+      frontendUrl={frontendUrl}
       connectionStatus={connectionStatus}
       emulatorMode={ENV_EMULATOR_MODE}
       devMode={ENV_DEV_MODE}
@@ -555,7 +571,7 @@ export const App = ({
                   }}
                 >
                   <DeckFrame
-                    frontendUrl={ENV_FRONTEND_URL}
+                    frontendUrl={frontendUrl}
                     device={deviceModel}
                     deckId={deckId}
                     token={token}
@@ -579,7 +595,7 @@ export const App = ({
                       </p>
                     ) : (
                       <DeckFrame
-                        frontendUrl={ENV_FRONTEND_URL}
+                        frontendUrl={frontendUrl}
                         device={deviceModel}
                         deckId={deckId}
                         token={token}

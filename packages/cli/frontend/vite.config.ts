@@ -124,6 +124,9 @@ export default defineConfig({
     ],
   },
   define: {
+    "import.meta.env.VITE_SECURE_GATEWAY": JSON.stringify(
+      process.env.SIRENO_SECURE_GATEWAY === "true",
+    ),
     "import.meta.env.VITE_WS_URL": JSON.stringify(wsUrl),
     "import.meta.env.VITE_WS_PROXY_URL": JSON.stringify(proxyUrl),
     "import.meta.env.SIRENO_CONFIG_DIR": JSON.stringify(

@@ -593,7 +593,9 @@ const runInProcessSetup = async (
   const runtimeFlags = buildRuntimeFlags(options)
   const installRoot = resolveInstallRoot()
   const installedFrontendUrl =
-    installRoot !== null && runtimeFlags.emulator !== true
+    installRoot !== null &&
+    runtimeFlags.emulator !== true &&
+    runtimeFlags.remote !== true
       ? `http://127.0.0.1:${runtimeFlags.httpPort}`
       : undefined
   writeConfigPath(configPath)

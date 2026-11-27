@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { browserFrontendUrl } from "@/api/browser-bridge-url"
 
 import {
   BUTTON_SIZE_PX,
@@ -141,7 +142,14 @@ export const DeckFrame = ({
   const resolvedFrontendUrl = ((): string => {
     if (typeof window === "undefined") return frontendUrl
     try {
-      const parsed = new URL(frontendUrl)
+      const parsed = new URL(
+        browserFrontendUrl(
+          frontendUrl,
+          import.meta.env.VITE_SECURE_GATEWAY === true,
+          window.location.href,
+          Number(import.meta.env.VITE_SECURE_FRONTEND_PORT),
+        ),
+      )
       return `${parsed.protocol}//${window.location.hostname}:${parsed.port}${parsed.pathname}${parsed.search}${parsed.hash}`
     } catch {
       return frontendUrl
@@ -159,7 +167,14 @@ export const DeckFrame = ({
     parsed.searchParams.set("_r", String(reloadNonce))
     parsed.searchParams.set("compact", "0")
     parsed.searchParams.set("gap", String(gap))
-    if (token.length > 0) parsed.searchParams.set("token", token)
+    if (
+      token.length > 0 &&
+      !(
+        import.meta.env.VITE_SECURE_GATEWAY === true &&
+        parsed.protocol === "https:"
+      )
+    )
+      parsed.searchParams.set("token", token)
     const base = parsed.toString()
     // ponytail: --remote puts the deck behind the daemon's token. The
     // config UI's own bundle already authenticates via the sireno-token

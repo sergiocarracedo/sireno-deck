@@ -61,7 +61,10 @@ export class RemoteMirrorOutputClient implements OutputClient {
     const token = process.env["SIRENO_TOKEN"] ?? ""
     const realHandle = await this.real.init({
       ...opts,
-      frontendUrl: `http://127.0.0.1:5180${token.length > 0 ? `?token=${encodeURIComponent(token)}` : ""}`,
+      frontendUrl:
+        process.env.SIRENO_SECURE_GATEWAY === "true"
+          ? emulatorHandle.frontendUrl
+          : `http://127.0.0.1:5180${token.length > 0 ? `?token=${encodeURIComponent(token)}` : ""}`,
       configUiUrl: emulatorHandle.configUiUrl,
     })
 

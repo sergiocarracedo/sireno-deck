@@ -230,6 +230,25 @@ describe("printDaemonUrl", () => {
     expect(text).toContain("token=tok123")
   })
 
+  it("prints the secure remote URL without placing its token in the URL", async () => {
+    const output = vi.fn()
+    await printDaemonUrl(
+      makeState({
+        remote: true,
+        configUiUrl: "https://192.0.2.10:43210/",
+        certificatePath: "/safe/ca.pem",
+        certificateFingerprint: "synthetic-fingerprint",
+      }),
+      "synthetic-token",
+      output,
+    )
+    const text = output.mock.calls.map((call: string[]) => call[0]!).join("")
+    expect(text).toContain("https://192.0.2.10:43210/?deckOnly=1")
+    expect(text).not.toContain("token=synthetic-token")
+    expect(text).toContain("Access token: synthetic-token")
+    expect(text).toContain("synthetic-fingerprint")
+  })
+
   it("does not print the frontend URL", async () => {
     const output = vi.fn()
     await printDaemonUrl(makeState({ emulatorMode: false }), "tok123", output)

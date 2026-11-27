@@ -324,6 +324,20 @@ export const printDaemonUrl = async (
 ): Promise<void> => {
   const token = typeof tokenOrOutput === "string" ? tokenOrOutput : ""
   const write = typeof tokenOrOutput === "function" ? tokenOrOutput : output
+  if (state.remote && state.configUiUrl.startsWith("https://")) {
+    const url = new URL(state.configUiUrl)
+    if (state.emulatorMode) url.searchParams.set("deckOnly", "1")
+    write(`\n  Secure remote: ${url.toString()}\n`)
+    if (state.certificatePath)
+      write(`  Trust certificate: ${state.certificatePath}\n`)
+    if (state.certificateFingerprint)
+      write(`  Certificate SHA-256: ${state.certificateFingerprint}\n`)
+    if (token) write(`  Access token: ${token}\n`)
+    write(
+      "  Verify the fingerprint before trusting the certificate on your remote device.\n",
+    )
+    return
+  }
   if (state.emulatorMode) {
     const port = state.configUiUrl.split(":").pop() ?? ""
     const buildUrl = (host: string, deckOnly: boolean): string => {
