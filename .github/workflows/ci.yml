@@ -29,3 +29,11 @@ jobs:
       - run: pnpm typecheck
 
       - run: pnpm test --run
+
+      # The root vitest config only covers packages/cli. The published addons
+      # carry their own suites, and the calendar addon's cover the Google
+      # data-handling behaviour the privacy policy describes. The pomodoro
+      # suite loads its built bundle, so it needs a build first.
+      - run: pnpm --filter @sirenodeck/addon-calendar test
+      - run: pnpm --filter @sirenodeck/addon-pomodoro build
+      - run: pnpm --filter @sirenodeck/addon-pomodoro test

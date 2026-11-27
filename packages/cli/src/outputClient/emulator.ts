@@ -119,9 +119,10 @@ export class EmulatorOutputClient implements OutputClient {
     let shuttingDown = false
 
     const remote = opts.remote === true
-    const host: "127.0.0.1" | "0.0.0.0" = remote ? "0.0.0.0" : "127.0.0.1"
+    const host = "127.0.0.1" as const
     const token = process.env["SIRENO_TOKEN"] ?? ""
-    const requireToken = remote ? token : undefined
+    const requireToken =
+      remote && process.env.SIRENO_SECURE_GATEWAY !== "true" ? token : undefined
 
     // ponytail: supervise each vite child independently — frontend crash
     // respawns only the frontend, config UI crash respawns only the config UI.

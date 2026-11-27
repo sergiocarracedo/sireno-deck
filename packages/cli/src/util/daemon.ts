@@ -414,6 +414,8 @@ export interface RuntimeState {
   readonly remote: boolean
   readonly startedAt: number
   readonly theme?: string
+  readonly certificatePath?: string
+  readonly certificateFingerprint?: string
 }
 
 export const RUNTIME_STATE_FILE = "runtime-state.json"
@@ -455,6 +457,12 @@ export const readRuntimeState = (
         remote: p.remote,
         startedAt: typeof p.startedAt === "number" ? p.startedAt : Date.now(),
         theme: typeof p.theme === "string" ? p.theme : "default",
+        ...(typeof p.certificatePath === "string"
+          ? { certificatePath: p.certificatePath }
+          : {}),
+        ...(typeof p.certificateFingerprint === "string"
+          ? { certificateFingerprint: p.certificateFingerprint }
+          : {}),
       }
     }
   } catch {

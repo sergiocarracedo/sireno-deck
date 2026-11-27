@@ -126,6 +126,10 @@ const spawnViteAndWaitForReady = (
       return
     }
     const env: Record<string, string> = { ...process.env, FORCE_COLOR: "0" }
+    // The secure gateway authenticates clients itself and injects the bridge
+    // token upstream, so the Vite layer must not demand one of its own.
+    const secureGateway = env.SIRENO_SECURE_GATEWAY === "true"
+    if (secureGateway) delete env.SIRENO_REQUIRE_TOKEN
     if (wsUrl !== undefined) {
       env["SIRENO_WS_URL"] = wsUrl
     }
@@ -141,7 +145,7 @@ const spawnViteAndWaitForReady = (
     if (host !== undefined) {
       env["SIRENO_VITE_HOST"] = host
     }
-    if (requireToken !== undefined) {
+    if (requireToken !== undefined && !secureGateway) {
       env["SIRENO_REQUIRE_TOKEN"] = requireToken
     }
     if (emulatorMode !== undefined) {

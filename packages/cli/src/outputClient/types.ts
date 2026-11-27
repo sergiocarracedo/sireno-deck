@@ -35,8 +35,8 @@ export interface InitOptions {
   readonly port?: number
   readonly intervalMs?: number
   /**
-   * --remote: bind WS bridge and Vite to 0.0.0.0 and token-gate the HTTP
-   * servers. The CLI prints a LAN-accessible QR code. Default false.
+   * --remote: expose the deck through authenticated HTTPS gateways while
+   * keeping the underlying bridge and Vite servers on loopback. Default false.
    */
   readonly remote?: boolean
   /**

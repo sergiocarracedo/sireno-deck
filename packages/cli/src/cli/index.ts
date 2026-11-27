@@ -123,7 +123,7 @@ const startCommand: CommandModule<object, StartArgs> = {
         type: "boolean",
         default: false,
         description:
-          "Open the emulator server to LAN clients. Implies --emulator. Binds 0.0.0.0; prints a QR for the deck-only view with token-gated HTTP.",
+          "Enable an authenticated HTTPS remote deck interface using a locally trusted certificate.",
       })
       .option("device-model", {
         type: "string",

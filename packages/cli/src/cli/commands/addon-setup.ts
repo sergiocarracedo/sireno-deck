@@ -1,15 +1,27 @@
 import { resolve } from "node:path"
 import { styleText } from "node:util"
 import { pathToFileURL } from "node:url"
-import { confirm, isCancel, multiselect, password, text } from "@clack/prompts"
+import {
+  confirm,
+  isCancel,
+  multiselect,
+  password,
+  select,
+  text,
+} from "@clack/prompts"
 import type { CommandModule } from "yargs"
 import { scopeCredentials } from "@/system/credentials/store"
 import { createNativeCredentialBackend } from "@/system/credentials/native"
+import { createAddonDataDirectory } from "@/addon/data-directory"
 import { openBrowser } from "@/outputClient/open-browser"
 import { createLogger } from "@/util/logger"
 import { isRunning, readConfigPath, readPid } from "@/util/daemon"
 import { resolveUserPath } from "@/cli/cwd"
-import { saveAddonProvider } from "./addon-setup-config"
+import {
+  listAddonProviders,
+  removeAddonProvider,
+  saveAddonProvider,
+} from "./addon-setup-config"
 import { discoverAddonSetups, packageNameOf } from "./addon-setup-discovery"
 import { resolveConfigPath } from "./pipeline/helpers"
 import { probeGlobalPackageRoots } from "../package-manager"
@@ -30,6 +42,14 @@ interface SetupModule {
         color?: string
       }[],
     ): Promise<string[]>
+    selectOne(
+      message: string,
+      options: readonly {
+        value: string
+        label: string
+        hint?: string
+      }[],
+    ): Promise<string>
     confirm(message: string): Promise<boolean>
     saveProvider(provider: {
       id: string
@@ -38,6 +58,12 @@ interface SetupModule {
       calendarIds: string[]
       calendarColors?: Record<string, string>
     }): Promise<string | null>
+    /** Account IDs currently configured for this addon. */
+    listProviders(): Promise<string[]>
+    /** Remove one configured account. Returns the config path, or null on failure. */
+    removeProvider(id: string): Promise<string | null>
+    /** Host-scoped persistent directory for this addon's non-secret data. */
+    getDataDirectory(): Promise<string>
     print(message: string): void
   }): Promise<void>
 }
@@ -133,6 +159,32 @@ export const runAddonSetup = async (
       if (isCancel(value)) throw new Error("Addon setup cancelled")
       return value
     },
+    selectOne: async (message, options) => {
+      const value = await select({ message, options: [...options] })
+      if (isCancel(value)) throw new Error("Addon setup cancelled")
+      return value
+    },
+    listProviders: async () => {
+      if (!configPath) return []
+      try {
+        return await listAddonProviders(configPath, setup.addonName)
+      } catch {
+        return []
+      }
+    },
+    removeProvider: async (id) => {
+      if (!configPath) return null
+      try {
+        await removeAddonProvider(configPath, setup.addonName, id)
+        return configPath
+      } catch (error) {
+        console.error(
+          `Could not update config: ${error instanceof Error ? error.message : String(error)}`,
+        )
+        return null
+      }
+    },
+    getDataDirectory: () => createAddonDataDirectory(setup.addonName)(),
     saveProvider: async (provider) => {
       if (!configPath) {
         const value = await text({

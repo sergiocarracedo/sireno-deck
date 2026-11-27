@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "tsdown && pnpm build:setup",
-    "build:setup": "tsc -p tsconfig.setup.json",
+    "build:setup": "tsc -p tsconfig.setup.json && node scripts/inject-google-client.mjs",
     "test": "vitest run src",
     "typecheck": "tsc --noEmit"
   },

@@ -274,6 +274,48 @@ an accessible Secret Service; the host does not fall back to a temporary
 kernel keyring. Native stores depend on the daemon's user login context.
 Installed addon code is trusted and this API is not a security sandbox.
 
+## Setup Modules
+
+An addon can ship an interactive setup module. Declare `setupEntry` in
+`sirenodeck.json` and export `addonName` plus `setupAddon(ctx)` from that
+module:
+
+```typescript
+export const addonName = "my-addon"
+
+export async function setupAddon(ctx: SetupContext): Promise<void> {
+  const id = await ctx.text("Account ID")
+  await ctx.saveProvider({
+    id,
+    type: "google",
+    clientId: "client-id",
+    calendarIds: ["primary"],
+  })
+}
+```
+
+The host provides:
+
+| Capability                     | Purpose                                                                                                  |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `credentials`                  | Addon-scoped native credential store, as above.                                                          |
+| `openUrl(url)`                 | Opens a URL in the user's browser.                                                                       |
+| `text(message, secret?)`       | Reads one line of input; `secret` hides the value.                                                       |
+| `selectMany(message, options)` | Multi-select over `{ value, label, hint?, color? }`.                                                     |
+| `selectOne(message, options)`  | Single-select over `{ value, label, hint? }`.                                                            |
+| `confirm(message)`             | Yes/no confirmation.                                                                                     |
+| `saveProvider(provider)`       | Writes one provider into the addon's config; returns the config path, or `null` when it could not save.  |
+| `listProviders()`              | Account IDs currently configured for this addon.                                                         |
+| `removeProvider(id)`           | Removes one configured account; returns the config path, or `null` when the config could not be updated. |
+| `getDataDirectory()`           | The host-scoped persistent directory for this addon's non-secret data.                                   |
+| `print(message)`               | Prints a line to the user.                                                                               |
+
+A setup module must not print secrets, must not pass secrets to
+`saveProvider`, and must provide manual instructions when `saveProvider` or
+`removeProvider` returns `null`. Removing an account does not withdraw the
+grant at the identity provider; point the user at the provider's own account
+page for that.
+
 ## Store API
 
 Persist data per-addon:

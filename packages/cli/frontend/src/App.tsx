@@ -9,6 +9,7 @@ import {
 } from "virtual:sireno/themes/manifest"
 
 import { ChannelRegistry } from "sirenodeck/react"
+import { browserBridgeUrl } from "@/api/browser-bridge-url"
 import { ThemeProvider, type ThemeContextValue } from "@/themes/index"
 import {
   AssetCacheProvider,
@@ -83,6 +84,12 @@ const resolvePortFromWindow = (): number | undefined => {
 
 const wsUrl = (): string => {
   if (typeof window === "undefined") return ENV_WS_URL
+  const secureUrl = browserBridgeUrl(
+    ENV_WS_URL,
+    import.meta.env.VITE_SECURE_GATEWAY === true,
+    window.location.href,
+  )
+  if (secureUrl !== ENV_WS_URL) return secureUrl
   // An explicit capture/debugging proxy is an endpoint, not a service bridge:
   // retain its host instead of rewriting it to the page's current hostname.
   if (ENV_WS_PROXY_URL.length > 0) return ENV_WS_PROXY_URL

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 import { createCalendarRuntime } from "../runtime.js"
 import { globalService, manifest } from "../index.js"
-import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises"
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
@@ -649,7 +649,7 @@ describe("calendar runtime", () => {
       await rm(directory, { recursive: true, force: true })
     }
   })
-  it("recovers stale events and snoozed alarms after an offline restart", async () => {
+  it("does not persist events and retains only alarm metadata after an offline restart", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date("2026-11-05T12:00:00Z"))
     const directory = await mkdtemp(join(tmpdir(), "calendar-offline-"))
@@ -689,9 +689,9 @@ describe("calendar runtime", () => {
       await first.snooze()
       await first.dispose()
       const path = join(directory, "provider-snapshots-v1.json")
-      expect((await stat(path)).mode & 0o077).toBe(0)
-      const saved = await readFile(path, "utf8")
-      expect(saved).not.toContain("client")
+      await expect(readFile(path, "utf8")).rejects.toMatchObject({
+        code: "ENOENT",
+      })
       const second = createCalendarRuntime({
         config,
         dataDirectory: directory,
@@ -704,21 +704,23 @@ describe("calendar runtime", () => {
       })
       await second.start()
       await second.refresh()
-      expect(await readFile(path, "utf8")).toBe(saved)
+      await expect(readFile(path, "utf8")).rejects.toMatchObject({
+        code: "ENOENT",
+      })
       expect(second.snapshot().providers).toEqual([
-        { name: "one", status: "stale" },
+        { name: "one", status: "unavailable" },
       ])
-      expect(second.snapshot().events[0]?.title).toBe("Meeting")
+      expect(second.snapshot().events).toEqual([])
       expect(second.snapshot().alarm).toBeUndefined()
       await vi.advanceTimersByTimeAsync(300_000)
       await second.dispose()
-      expect(second.snapshot().alarm?.title).toBe("Meeting")
+      expect(second.snapshot().alarm?.title).toBe("Calendar reminder")
     } finally {
       vi.useRealTimers()
       await rm(directory, { recursive: true, force: true })
     }
   })
-  it("retains corrupt provider state and rejects startup rather than overwriting it", async () => {
+  it("removes obsolete event snapshots even if malformed", async () => {
     const directory = await mkdtemp(join(tmpdir(), "calendar-corrupt-"))
     const path = join(directory, "provider-snapshots-v1.json")
     try {
@@ -727,10 +729,98 @@ describe("calendar runtime", () => {
         config: {},
         dataDirectory: directory,
       })
-      await expect(runtime.start()).rejects.toThrow(
-        "Invalid calendar provider state",
+      await runtime.start()
+      await runtime.dispose()
+      await expect(readFile(path, "utf8")).rejects.toMatchObject({
+        code: "ENOENT",
+      })
+    } finally {
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
+  it("removes the legacy event cache without deleting other local files", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "calendar-cache-migration-"))
+    const cache = join(directory, "provider-snapshots-v1.json")
+    const unrelated = join(directory, "unrelated.json")
+    const runtime = createCalendarRuntime({
+      config: {},
+      dataDirectory: directory,
+    })
+    try {
+      await writeFile(
+        cache,
+        JSON.stringify({
+          version: 1,
+          providers: [{ events: [{ title: "synthetic private event" }] }],
+        }),
       )
-      expect(await readFile(path, "utf8")).toBe("not json")
+      await writeFile(unrelated, "keep")
+      await runtime.start()
+      await expect(readFile(cache, "utf8")).rejects.toMatchObject({
+        code: "ENOENT",
+      })
+      expect(await readFile(unrelated, "utf8")).toBe("keep")
+    } finally {
+      await runtime.dispose()
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
+  it("encrypts the stored reminder metadata when a credential store is available", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "calendar-encrypted-"))
+    const values = new Map<string, string>()
+    const credentials = {
+      availability: async () => "available" as const,
+      get: async (name: string) => values.get(name),
+      set: async (name: string, value: string) => {
+        values.set(name, value)
+      },
+      delete: async () => {},
+    }
+    const runtime = createCalendarRuntime({
+      config: {
+        alarms: { enabled: true, offsetsMinutes: [0] },
+        providers: [
+          {
+            type: "google",
+            id: "one",
+            clientId: "client",
+            calendarIds: ["c"],
+          },
+        ],
+      },
+      dataDirectory: directory,
+      credentials,
+      provider: () => ({
+        instanceId: "one",
+        fetchEvents: async () => [
+          {
+            identity: {
+              providerInstanceId: "one",
+              calendarId: "c",
+              eventId: "synthetic-private-id",
+              occurrenceId: "synthetic-private-id",
+            },
+            title: "Synthetic private meeting",
+            status: "confirmed" as const,
+            time: {
+              kind: "timed" as const,
+              start: "2026-11-06T12:00:00Z",
+              end: "2026-11-06T13:00:00Z",
+            },
+            notificationReminders: [0],
+          },
+        ],
+      }),
+    })
+    try {
+      await runtime.start()
+      await runtime.refresh()
+      await runtime.dispose()
+      const raw = await readFile(join(directory, "alarms-v1.json"), "utf8")
+      expect(raw).not.toContain("synthetic-private-id")
+      expect(raw).not.toContain("Synthetic private meeting")
+      expect(JSON.parse(raw)).toMatchObject({ alg: "aes-256-gcm" })
+      expect(values.size).toBeGreaterThan(0)
     } finally {
       await rm(directory, { recursive: true, force: true })
     }
@@ -757,11 +847,9 @@ describe("calendar runtime", () => {
       })
       await second.start()
       await second.dispose()
-      expect(
-        JSON.parse(
-          await readFile(join(directory, "provider-snapshots-v1.json"), "utf8"),
-        ).providers,
-      ).toEqual([])
+      await expect(
+        readFile(join(directory, "provider-snapshots-v1.json"), "utf8"),
+      ).rejects.toMatchObject({ code: "ENOENT" })
     } finally {
       await rm(directory, { recursive: true, force: true })
     }

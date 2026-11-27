@@ -3,7 +3,11 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { afterEach, describe, expect, it } from "vitest"
 import { parse } from "yaml"
-import { saveAddonProvider } from "../addon-setup-config"
+import {
+  listAddonProviders,
+  removeAddonProvider,
+  saveAddonProvider,
+} from "../addon-setup-config"
 
 const dirs: string[] = []
 afterEach(() => {
@@ -71,5 +75,51 @@ describe("saveAddonProvider", () => {
     writeFileSync(join(path, "..", "decks.yml"), "main:\n  buttons: []\n")
     await saveAddonProvider(path, "calendar", provider)
     expect(readFileSync(path, "utf8")).toContain("!include decks.yml")
+  })
+})
+
+describe("listAddonProviders", () => {
+  it("lists the configured account IDs in config order", async () => {
+    const path = fixture(
+      "addons:\n  - src: calendar\n    config:\n      service:\n        providers:\n          - id: work\n            type: google\n          - id: personal\n            type: google\ndecks:\n  main:\n    buttons: []\n",
+    )
+    expect(await listAddonProviders(path, "calendar")).toEqual([
+      "work",
+      "personal",
+    ])
+  })
+  it("returns nothing when the addon has no providers", async () => {
+    const path = fixture(
+      "addons:\n  - src: calendar\ndecks:\n  main:\n    buttons: []\n",
+    )
+    expect(await listAddonProviders(path, "calendar")).toEqual([])
+  })
+})
+
+describe("removeAddonProvider", () => {
+  it("removes only the selected account", async () => {
+    const path = fixture(
+      "# keep this\naddons:\n  - src: calendar\n    config:\n      service:\n        providers:\n          - id: work\n            type: google\n            clientId: old\n            calendarIds: [work]\n          - id: personal\n            type: google\n            clientId: other\n            calendarIds: [primary]\ndecks:\n  main:\n    buttons: []\n",
+    )
+    await removeAddonProvider(path, "calendar", "work")
+    const output = readFileSync(path, "utf8")
+    expect(output).toContain("# keep this")
+    expect(parse(output).addons[0].config.service.providers).toEqual([
+      {
+        id: "personal",
+        type: "google",
+        clientId: "other",
+        calendarIds: ["primary"],
+      },
+    ])
+  })
+  it("refuses to remove an unknown account", async () => {
+    const contents =
+      "addons:\n  - src: calendar\n    config:\n      service:\n        providers:\n          - id: work\n            type: google\ndecks:\n  main:\n    buttons: []\n"
+    const path = fixture(contents)
+    await expect(
+      removeAddonProvider(path, "calendar", "missing"),
+    ).rejects.toThrow("Unknown account ID")
+    expect(readFileSync(path, "utf8")).toBe(contents)
   })
 })

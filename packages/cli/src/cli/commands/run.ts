@@ -74,7 +74,9 @@ import {
 import { resolveAddonCacheDir } from "@/util/cache-paths"
 import { probeGlobalPackageRoots } from "../package-manager"
 import { installPackage } from "./install"
-import { DEFAULT_CONFIG_UI_PORT } from "./emulator-mode"
+import { DEFAULT_CONFIG_UI_PORT, DEFAULT_FRONTEND_PORT } from "./emulator-mode"
+import { startRemoteSurfaces } from "@/render/remote-surfaces"
+import { resolveDaemonPaths, writeRuntimeState } from "@/util/daemon"
 import { isNpmAddonSpec } from "@/addon/spec"
 import { confirm } from "@/cli/prompt"
 import { createCommandExecutor } from "./command-executor"
@@ -936,7 +938,8 @@ const buildRuntime = (
   const configUiUrl = new URL(
     options.configUiUrl ?? `http://127.0.0.1:${DEFAULT_CONFIG_UI_PORT}/`,
   )
-  if (token.length > 0) configUiUrl.searchParams.set("token", token)
+  if (token.length > 0 && options.remote !== true)
+    configUiUrl.searchParams.set("token", token)
   configUiUrl.hash = "/config"
   const runtimeDecks = injectConfigUiButton(
     allDecks,
@@ -1535,6 +1538,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   let providers: Awaited<ReturnType<typeof startSystemProviders>> | null = null
   let addonBundle: Awaited<ReturnType<typeof buildAddonBundle>> | null = null
   let bridge: Awaited<ReturnType<typeof startWsBridge>> | null = null
+  let remoteSurfaces: Awaited<ReturnType<typeof startRemoteSurfaces>> | null =
+    null
+  const previousSecureGateway = process.env.SIRENO_SECURE_GATEWAY
+  const previousSecureFrontendPort = process.env.SIRENO_SECURE_FRONTEND_PORT
   let addonServices: ReturnType<typeof setupAddonServices> | null = null
   let hostPolicy: ReturnType<typeof createHostPolicyCoordinator> | null = null
   let presentation: ReturnType<typeof createDeckPresentationPublisher> | null =
@@ -1625,15 +1632,44 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       ? selectLanAddresses({ networkInterfaces: networkInterfaces })
       : []
     const lanHost = remote ? lanAddresses[0]?.address : undefined
-    const bridgeHost: "127.0.0.1" | "0.0.0.0" = remote ? "0.0.0.0" : "127.0.0.1"
+    const bridgeHost = "127.0.0.1" as const
     const bridgePort = options.port ?? DEFAULT_BRIDGE_PORT
 
     bridge = await startWsBridge({
       port: bridgePort,
       host: bridgeHost,
-      ...(lanHost !== undefined ? { lanHost } : {}),
       expectedToken: process.env["SIRENO_TOKEN"] ?? "",
     })
+
+    if (remote) {
+      if (
+        options.frontendUrl !== undefined ||
+        options.configUiUrl !== undefined
+      )
+        throw new Error(
+          "Secure remote mode cannot use externally supplied frontend URLs",
+        )
+      const addresses = lanAddresses.map((item) => item.address)
+      remoteSurfaces = await startRemoteSurfaces({
+        root: resolveDaemonPaths().dataDir,
+        addresses,
+        frontendPort: DEFAULT_FRONTEND_PORT,
+        configPort: DEFAULT_CONFIG_UI_PORT,
+        bridgePort: bridge.port,
+        token: process.env.SIRENO_TOKEN ?? "",
+      })
+      process.env.SIRENO_SECURE_GATEWAY = "true"
+      process.env.SIRENO_SECURE_FRONTEND_PORT = String(
+        remoteSurfaces.frontendPort,
+      )
+      logger.info(
+        {
+          caPath: remoteSurfaces.caPath,
+          fingerprint: remoteSurfaces.fingerprint,
+        },
+        "remote certificate ready",
+      )
+    }
 
     // ponytail: register external addon dirs (from config's `addons:` list) so
     // `addon://<name>/assets/icon.png` resolves for overlay deck icons. The
@@ -1934,6 +1970,21 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     })
 
     currentOutputHandle = outputHandle
+    if (remoteSurfaces) {
+      writeRuntimeState({
+        configUiUrl: remoteSurfaces.configUrl,
+        frontendUrl: remoteSurfaces.frontendUrl,
+        wsUrl: bridge.url,
+        lanHost: lanHost ?? "127.0.0.1",
+        addresses: lanAddresses.map((item) => item.address),
+        emulatorMode: options.emulator === true,
+        remote: true,
+        startedAt: Date.now(),
+        theme: loaded.theme.name,
+        certificatePath: remoteSurfaces.caPath,
+        certificateFingerprint: remoteSurfaces.fingerprint,
+      })
+    }
     runtimeHealth.setCore("ready")
     if (options.emulator === true) runtimeHealth.setRenderer("not-applicable")
     let refreshQueue = Promise.resolve()
@@ -2152,6 +2203,12 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     await done
   } finally {
+    if (previousSecureGateway === undefined)
+      delete process.env.SIRENO_SECURE_GATEWAY
+    else process.env.SIRENO_SECURE_GATEWAY = previousSecureGateway
+    if (previousSecureFrontendPort === undefined)
+      delete process.env.SIRENO_SECURE_FRONTEND_PORT
+    else process.env.SIRENO_SECURE_FRONTEND_PORT = previousSecureFrontendPort
     runtimeHealth.setCore("stopping")
     unsubscribeBrightnessSettings?.()
     settingsStore?.close()
@@ -2189,6 +2246,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       providers !== null ? providers.session.stop() : Promise.resolve(),
       providers !== null ? providers.keyMacro.stop() : Promise.resolve(),
       bridge !== null ? bridge.close() : Promise.resolve(),
+      remoteSurfaces !== null ? remoteSurfaces.close() : Promise.resolve(),
     ])
     logger.info("shutdown complete")
   }

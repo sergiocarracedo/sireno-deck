@@ -86,6 +86,12 @@ export default defineConfig({
     ],
   },
   define: {
+    "import.meta.env.VITE_SECURE_GATEWAY": JSON.stringify(
+      process.env.SIRENO_SECURE_GATEWAY === "true",
+    ),
+    "import.meta.env.VITE_SECURE_FRONTEND_PORT": JSON.stringify(
+      Number(process.env.SIRENO_SECURE_FRONTEND_PORT ?? "0"),
+    ),
     "import.meta.env.VITE_WS_URL": JSON.stringify(wsUrl),
     "import.meta.env.VITE_FRONTEND_URL": JSON.stringify(frontendUrl),
     "import.meta.env.VITE_EMULATOR_MODE": JSON.stringify(
@@ -95,7 +101,8 @@ export default defineConfig({
       process.env.SIRENO_DEV_MODE === "true",
     ),
     "import.meta.env.VITE_REMOTE_MODE": JSON.stringify(
-      process.env.SIRENO_REQUIRE_TOKEN !== undefined,
+      process.env.SIRENO_REQUIRE_TOKEN !== undefined ||
+        process.env.SIRENO_SECURE_GATEWAY === "true",
     ),
   },
   server: {

@@ -54,6 +54,7 @@ Options:
 - `--config <path>` — Path to config.yml
 - `--port <number>` — Local server port
 - `--emulator` — Run in emulator mode
+- `--remote` — Enable an authenticated HTTPS remote deck interface
 - `--device-model <model>` — Device model
 - `--http-port <number>` — HTTP server port (default: 3939)
 - `--system` — Install as system service (requires root)
@@ -71,6 +72,42 @@ sireno start --logs
 # Start as system service
 sudo sireno start --system
 ```
+
+### Secure remote access
+
+Start with `sireno start --remote` (add `--emulator` to use a virtual device).
+The CLI prints an HTTPS address, an access token, the path to a local CA
+certificate, and its SHA-256 fingerprint. The internal frontend and WebSocket
+servers remain on the host's loopback interface; the remote interface uses
+HTTPS and WSS.
+
+Transfer **only the public CA certificate** to the device you will use, using a
+trusted channel. Compare its SHA-256 fingerprint with the one printed on the
+host before trusting it. For example, on a machine with OpenSSL:
+
+```bash
+openssl x509 -in /path/to/ca.pem -noout -fingerprint -sha256
+```
+
+OpenSSL separates the hexadecimal pairs with colons; the CLI prints the same
+fingerprint without separators.
+
+Install the certificate as a trusted CA using that device's certificate
+settings, then open the printed HTTPS address and enter the access token.
+Browser and operating-system trust procedures differ; some applications do not
+honor user-installed CAs. Do not bypass a certificate warning if the identity
+has not been verified. The access token is a password: share it only with
+people authorized to control the deck. It changes when the daemon restarts.
+
+Trusting a local CA lets it authenticate other sites as well as Sireno Deck.
+Keep its private key on the host and do not share or export it. Remove the CA
+from each device's trust settings when remote access is no longer needed. If
+the host address changes, restart the daemon and use the new HTTPS address;
+the existing CA remains the trust anchor. A damaged or unavailable CA key
+requires recovery and re-establishing trust, not bypassing verification.
+The key is stored as a local file, not encrypted by Sireno Deck. On POSIX
+systems the certificate directory and key files use owner-only permissions;
+on Windows protection depends on the user's directory access controls.
 
 ### `sireno stop`
 

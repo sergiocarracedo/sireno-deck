@@ -434,7 +434,34 @@ const stopExisting = async (
     await new Promise((r) => setTimeout(r, 100))
   }
   if (isRunning(pid)) {
-    throw new Error(`Existing daemon ${pid} did not exit after SIGTERM`)
+    const approved = process.stdin.isTTY
+      ? await confirm({
+          message: `Existing daemon ${pid} did not exit after SIGTERM. Force-stop it? Unsaved work may be lost.`,
+          initialValue: false,
+        })
+      : false
+    if (isRunning(pid)) {
+      if (approved !== true)
+        throw new Error(
+          `Existing daemon ${pid} did not exit after SIGTERM; force-stop not approved`,
+        )
+      if (readPid() !== pid || !isOurDaemon(pid))
+        throw new Error(`Refusing to force-stop unverified daemon PID ${pid}`)
+      try {
+        process.kill(pid, "SIGKILL")
+      } catch (err) {
+        if (isRunning(pid))
+          throw new Error(`Failed to force-stop existing daemon ${pid}`, {
+            cause: err,
+          })
+      }
+      const forceDeadline = Date.now() + 5_000
+      while (Date.now() < forceDeadline && isRunning(pid)) {
+        await new Promise((r) => setTimeout(r, 100))
+      }
+      if (isRunning(pid))
+        throw new Error(`Existing daemon ${pid} did not exit after SIGKILL`)
+    }
   }
   await terminateChildren({ logger, timeoutMs: 2_000 })
   removePidFile()
@@ -566,7 +593,9 @@ const runInProcessSetup = async (
   const runtimeFlags = buildRuntimeFlags(options)
   const installRoot = resolveInstallRoot()
   const installedFrontendUrl =
-    installRoot !== null && runtimeFlags.emulator !== true
+    installRoot !== null &&
+    runtimeFlags.emulator !== true &&
+    runtimeFlags.remote !== true
       ? `http://127.0.0.1:${runtimeFlags.httpPort}`
       : undefined
   writeConfigPath(configPath)

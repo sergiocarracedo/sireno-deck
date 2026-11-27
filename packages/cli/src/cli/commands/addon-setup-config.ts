@@ -1,20 +1,12 @@
 import { basename, dirname, resolve } from "node:path"
 import { existsSync, readFileSync } from "node:fs"
-import { isMap, isScalar, isSeq, parseDocument } from "yaml"
+import { isMap, isScalar, isSeq, parseDocument, type Document } from "yaml"
 import { createConfigMutationService } from "@/config/mutation"
 
-export const saveAddonProvider = async (
-  path: string,
+const findAddonEntry = (
+  mutation: ReturnType<typeof createConfigMutationService>,
   addonName: string,
-  provider: {
-    id: string
-    type: string
-    clientId: string
-    calendarIds: string[]
-    calendarColors?: Record<string, string>
-  },
-): Promise<void> => {
-  const mutation = createConfigMutationService({ configPath: path })
+): { path: string; index: number } => {
   const candidates: Array<{ path: string; index: number }> = []
   for (const source of mutation.sources()) {
     const doc = parseDocument(readFileSync(source, "utf8"))
@@ -46,7 +38,81 @@ export const saveAddonProvider = async (
     throw new Error(
       `Expected one ${addonName} addon entry; found ${candidates.length}`,
     )
-  const target = candidates[0]!
+  return candidates[0]!
+}
+
+const providerIds = (document: Document.Parsed, index: number): string[] => {
+  const providers = document.getIn([
+    "addons",
+    index,
+    "config",
+    "service",
+    "providers",
+  ])
+  if (!isSeq(providers)) return []
+  return providers.items.flatMap((entry) => {
+    const id = isMap(entry) ? entry.get("id") : undefined
+    return typeof id === "string" ? [id] : []
+  })
+}
+
+/** Account IDs currently configured for an addon, in config order. */
+export const listAddonProviders = async (
+  path: string,
+  addonName: string,
+): Promise<string[]> => {
+  const mutation = createConfigMutationService({ configPath: path })
+  const target = findAddonEntry(mutation, addonName)
+  const document = parseDocument(mutation.readSource(target.path))
+  return providerIds(document, target.index)
+}
+
+/** Remove one account from an addon's provider list, keeping other accounts. */
+export const removeAddonProvider = async (
+  path: string,
+  addonName: string,
+  id: string,
+): Promise<void> => {
+  const mutation = createConfigMutationService({ configPath: path })
+  const target = findAddonEntry(mutation, addonName)
+  const document = parseDocument(mutation.readSource(target.path), {
+    keepSourceTokens: true,
+  })
+  const providersPath = [
+    "addons",
+    target.index,
+    "config",
+    "service",
+    "providers",
+  ]
+  const providers = document.getIn(providersPath)
+  if (!isSeq(providers)) throw new Error("Calendar providers must be a list")
+  const matches = providers.items.filter(
+    (entry) => isMap(entry) && entry.get("id") === id,
+  )
+  if (matches.length !== 1)
+    throw new Error(`Unknown account ID in config: ${id}`)
+  providers.items.splice(providers.items.indexOf(matches[0]!), 1)
+  await mutation.apply({
+    kind: "edit-source",
+    path: target.path,
+    content: document.toString(),
+  })
+}
+
+export const saveAddonProvider = async (
+  path: string,
+  addonName: string,
+  provider: {
+    id: string
+    type: string
+    clientId: string
+    calendarIds: string[]
+    calendarColors?: Record<string, string>
+  },
+): Promise<void> => {
+  const mutation = createConfigMutationService({ configPath: path })
+  const target = findAddonEntry(mutation, addonName)
   const document = parseDocument(mutation.readSource(target.path), {
     keepSourceTokens: true,
   })

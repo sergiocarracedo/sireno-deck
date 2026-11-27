@@ -1,9 +1,11 @@
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { createHash } from "node:crypto"
 import { authorizeGoogle, refreshGoogleToken } from "../google-auth.js"
 
 describe("Google authentication", () => {
+  afterEach(() => vi.unstubAllEnvs())
   it("uses a loopback callback with state and PKCE and stores the refresh token", async () => {
+    vi.stubEnv("SIRENO_GOOGLE_CLIENT_SECRET", "synthetic-secret")
     const set = vi.fn(async () => {})
     const credentials = {
       availability: async () => "available" as const,
@@ -13,6 +15,7 @@ describe("Google authentication", () => {
     }
     const fetchToken = vi.fn(async (_url: unknown, init?: RequestInit) => {
       const body = new URLSearchParams(String(init?.body))
+      expect(body.get("client_secret")).toBe("synthetic-secret")
       expect(
         createHash("sha256")
           .update(body.get("code_verifier")!)
@@ -22,7 +25,8 @@ describe("Google authentication", () => {
     })
     let challenge = ""
     const result = await authorizeGoogle({
-      clientId: "client",
+      clientId:
+        "876921078438-idpd33n9csa186500kjh9580m6okggms.apps.googleusercontent.com",
       instanceId: "work",
       credentials,
       fetch: fetchToken as typeof fetch,
@@ -41,6 +45,56 @@ describe("Google authentication", () => {
     })
     expect(result).toBe("access")
     expect(set).toHaveBeenCalledWith("google.work.refresh-token", "refresh")
+  })
+
+  it("refreshes the shared desktop client with its own secret instead of a previously stored secret", async () => {
+    vi.stubEnv("SIRENO_GOOGLE_CLIENT_SECRET", "synthetic-secret")
+    const credentials = {
+      availability: async () => "available" as const,
+      get: vi.fn(async (name: string) =>
+        name.endsWith("refresh-token") ? "refresh" : "old-secret",
+      ),
+      set: vi.fn(),
+      delete: vi.fn(),
+    }
+    const fetchToken = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      expect(new URLSearchParams(String(init?.body)).get("client_secret")).toBe(
+        "synthetic-secret",
+      )
+      return Response.json({ access_token: "access" })
+    })
+    await refreshGoogleToken({
+      instanceId: "work",
+      clientId:
+        "876921078438-idpd33n9csa186500kjh9580m6okggms.apps.googleusercontent.com",
+      credentials,
+      fetch: fetchToken as typeof fetch,
+    })
+  })
+
+  it("reports a rejected OAuth client without exposing the response", async () => {
+    vi.stubEnv("SIRENO_GOOGLE_CLIENT_SECRET", "synthetic-secret")
+    const credentials = {
+      availability: async () => "available" as const,
+      get: vi.fn(async () => "refresh"),
+      set: vi.fn(),
+      delete: vi.fn(),
+    }
+    const fetchToken = vi.fn(async () =>
+      Response.json(
+        { error: "invalid_client", error_description: "sensitive detail" },
+        { status: 401 },
+      ),
+    )
+    await expect(
+      refreshGoogleToken({
+        instanceId: "work",
+        clientId:
+          "876921078438-idpd33n9csa186500kjh9580m6okggms.apps.googleusercontent.com",
+        credentials,
+        fetch: fetchToken as typeof fetch,
+      }),
+    ).rejects.toThrow("Google rejected the OAuth client credentials")
   })
 
   it("persists rotated refresh tokens and reports invalid grants without deleting credentials", async () => {

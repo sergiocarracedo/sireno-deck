@@ -157,6 +157,66 @@ describe("ws bridge", () => {
     b.close()
   })
 
+  it("does not broadcast state or device information before authentication", async () => {
+    bridge = await startWsBridge({ expectedToken: "synthetic-token" })
+    const socket = new WebSocket(`ws://127.0.0.1:${bridge.port}`)
+    const received: unknown[] = []
+    socket.on("message", (raw) => received.push(JSON.parse(raw.toString())))
+    await new Promise<void>((resolve, reject) => {
+      socket.once("open", resolve)
+      socket.once("error", reject)
+    })
+    bridge.broadcast({
+      type: "state",
+      channels: { calendar: { title: "Synthetic event" } },
+    })
+    bridge.setDevice({
+      id: "synthetic",
+      model: "mk2",
+      keyCount: 15,
+      label: "Synthetic device",
+      transport: "emulated",
+    })
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    socket.close()
+    expect(received).toEqual([])
+  })
+
+  it("sends on-demand poll results only to authenticated clients", async () => {
+    bridge = await startWsBridge({ expectedToken: "synthetic-token" })
+    bridge.registerCacheablePoller("calendar", () => ({
+      title: "Synthetic event",
+    }))
+    const pending = new WebSocket(`ws://127.0.0.1:${bridge.port}`)
+    const received: unknown[] = []
+    pending.on("message", (raw) => received.push(JSON.parse(raw.toString())))
+    await new Promise<void>((resolve, reject) => {
+      pending.once("open", resolve)
+      pending.once("error", reject)
+    })
+    const client = await openClient(bridge.port, "synthetic-token")
+    const state = new Promise<unknown>((resolve) => {
+      client.on("message", (raw) => {
+        const message = JSON.parse(raw.toString())
+        if (message.type === "hello-ack") {
+          client.send(
+            JSON.stringify({
+              type: "subscribe-channels",
+              channels: ["calendar"],
+            }),
+          )
+        } else if (message.type === "state") resolve(message)
+      })
+    })
+    expect(await state).toMatchObject({
+      channels: { calendar: { title: "Synthetic event" } },
+    })
+    await new Promise((resolve) => setTimeout(resolve, 30))
+    client.close()
+    pending.close()
+    expect(received).toEqual([])
+  })
+
   it("onMessage receives button-action after handshake", async () => {
     bridge = await startWsBridge({ expectedToken: "" })
     const handler = new Promise<unknown>((resolve) => {

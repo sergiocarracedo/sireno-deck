@@ -1,7 +1,8 @@
-import { randomUUID } from "node:crypto"
-import { mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises"
-import { dirname } from "node:path"
 import { z } from "zod"
+import {
+  createSecureJsonStorage,
+  type StorageCredentials,
+} from "./secure-storage.js"
 
 const schema = z
   .object({
@@ -10,25 +11,22 @@ const schema = z
   })
   .strict()
 
-export const createCalendarSelectionStorage = (path: string) => ({
-  async load(): Promise<Record<string, boolean>> {
-    try {
-      return schema.parse(JSON.parse(await readFile(path, "utf8"))).selections
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "ENOENT") return {}
-      throw error
-    }
-  },
-  async save(selections: Record<string, boolean>): Promise<void> {
-    const contents = JSON.stringify(schema.parse({ version: 1, selections }))
-    await mkdir(dirname(path), { recursive: true, mode: 0o700 })
-    const temporary = `${path}.${randomUUID()}.tmp`
-    try {
-      await writeFile(temporary, contents, { mode: 0o600, flag: "wx" })
-      await rename(temporary, path)
-    } catch (error) {
-      await unlink(temporary).catch(() => {})
-      throw error
-    }
-  },
-})
+export const createCalendarSelectionStorage = (
+  path: string,
+  credentials?: StorageCredentials,
+) => {
+  const storage = createSecureJsonStorage({
+    path,
+    ...(credentials ? { credentials } : {}),
+  })
+  return {
+    async load(): Promise<Record<string, boolean>> {
+      const data = await storage.load()
+      if (data === undefined) return {}
+      return schema.parse(data).selections
+    },
+    async save(selections: Record<string, boolean>): Promise<void> {
+      await storage.save(schema.parse({ version: 1, selections }))
+    },
+  }
+}
