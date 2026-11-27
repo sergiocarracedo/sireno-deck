@@ -1,4 +1,5 @@
 import type { Server as HttpServer } from "node:http"
+import { createServer as createHttpsServer } from "node:https"
 import { WebSocketServer, type WebSocket } from "ws"
 import type pino from "pino"
 import { runtimeIdentity } from "@/util/runtime-identity"
@@ -29,6 +30,7 @@ export interface WsBridgeOptions {
    */
   lanHost?: string
   expectedToken: string
+  tls?: { key: Buffer | string; cert: Buffer | string }
   handshakeTimeoutMs?: number
   activeTheme?: { name: string; version?: number }
   logger?: pino.Logger
@@ -67,6 +69,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
     host = "127.0.0.1",
     lanHost,
     expectedToken,
+    tls,
     handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS,
     activeTheme,
     logger = createLogger({ level: "warn", component: "ws-bridge" }),
@@ -76,7 +79,14 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
   let deckTree: Omit<DeckTreeMessage, "type"> | undefined
 
   return new Promise((resolve, reject) => {
-    const wss = new WebSocketServer({ port, host })
+    const https = tls ? createHttpsServer(tls) : undefined
+    const wss = https
+      ? new WebSocketServer({ server: https })
+      : new WebSocketServer({ port, host })
+    if (https) {
+      https.once("error", reject)
+      https.listen(port, host)
+    }
 
     const messageHandlers: Array<
       (message: WsMessage, socket: WebSocket) => void
@@ -247,7 +257,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
       }
       const port = addr.port
       const urlHost = lanHost ?? host
-      const url = `ws://${urlHost}:${port}`
+      const url = `${https ? "wss" : "ws"}://${urlHost}:${port}`
       const bridge: WsBridge = {
         port,
         url,
@@ -300,7 +310,10 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
           new Promise<void>((res) => {
             pendingChannelSubs.clear()
             for (const client of wss.clients) client.close(1000)
-            wss.close(() => res())
+            wss.close(() => {
+              if (https) https.close(() => res())
+              else res()
+            })
           }),
       }
       resolve(bridge)
