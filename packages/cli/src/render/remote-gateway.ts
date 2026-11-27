@@ -1,6 +1,7 @@
 import { randomBytes, timingSafeEqual } from "node:crypto"
 import { request as httpRequest } from "node:http"
 import { createServer } from "node:https"
+import type { Duplex } from "node:stream"
 
 export async function startRemoteGateway(options: {
   host: string
@@ -10,17 +11,32 @@ export async function startRemoteGateway(options: {
   token: string
   key: Buffer | string
   cert: Buffer | string
-  allowedOrigins?: readonly string[]
+  allowedOrigins?: readonly string[] | Set<string>
   sessions?: Set<string>
 }) {
   if (!options.token) throw new Error("Remote authentication is unavailable")
+  const allowedOrigins =
+    options.allowedOrigins instanceof Set
+      ? options.allowedOrigins
+      : new Set(options.allowedOrigins ?? [])
   if (
     (options.host === "0.0.0.0" || options.host === "::") &&
-    !options.allowedOrigins?.length
+    allowedOrigins.size === 0
   )
     throw new Error("Remote gateway requires allowed origins")
   const sessions = options.sessions ?? new Set<string>()
-  const allowedOrigins = new Set(options.allowedOrigins ?? [])
+  const MAX_SESSIONS = 64
+  const issueSession = (): string => {
+    // Bounded so repeated logins cannot grow the set without limit.
+    while (sessions.size >= MAX_SESSIONS) {
+      const oldest = sessions.values().next().value
+      if (oldest === undefined) break
+      sessions.delete(oldest)
+    }
+    const session = randomBytes(32).toString("base64url")
+    sessions.add(session)
+    return session
+  }
   const authorized = (cookie: string | undefined) => {
     const session = cookie
       ?.split(";")
@@ -34,13 +50,27 @@ export async function startRemoteGateway(options: {
     (req, res) => {
       res.setHeader("Cache-Control", "no-store")
       res.setHeader("X-Content-Type-Options", "nosniff")
+      // Only the addon's own surfaces may frame this one; the session cookie
+      // is SameSite=Strict, so a third-party frame would not authenticate.
+      res.setHeader(
+        "Content-Security-Policy",
+        `frame-ancestors 'self' ${[...allowedOrigins].join(" ")}`,
+      )
       const origin = req.headers.origin
       if (origin && !allowedOrigins.has(origin)) {
         res.writeHead(403).end("Invalid origin")
         return
       }
       const path = req.url ?? "/"
-      if (path === "/login" && req.method === "POST") {
+      let requestUrl: URL
+      try {
+        requestUrl = new URL(path, "https://localhost")
+      } catch {
+        res.writeHead(400).end("Invalid request URL")
+        return
+      }
+      const deckOnly = requestUrl.searchParams.get("deckOnly") === "1"
+      if (requestUrl.pathname === "/login" && req.method === "POST") {
         if (!origin || !allowedOrigins.has(origin)) {
           res.writeHead(403).end("Invalid origin")
           return
@@ -63,11 +93,10 @@ export async function startRemoteGateway(options: {
             res.writeHead(403).end("Invalid token")
             return
           }
-          const session = randomBytes(32).toString("base64url")
-          sessions.add(session)
+          const session = issueSession()
           res
             .writeHead(303, {
-              Location: "/",
+              Location: deckOnly ? "/?deckOnly=1" : "/",
               "Set-Cookie": `__Host-sireno-session=${session}; Path=/; Secure; HttpOnly; SameSite=Strict`,
             })
             .end()
@@ -78,7 +107,7 @@ export async function startRemoteGateway(options: {
         res
           .writeHead(401, { "Content-Type": "text/html; charset=utf-8" })
           .end(
-            '<!doctype html><html lang="en"><title>Sireno Deck</title><form method="post" action="/login"><label for="token">Access token</label><input id="token" name="token" type="password" autocomplete="current-password" required><button type="submit">Connect</button></form></html>',
+            `<!doctype html><html lang="en"><title>Sireno Deck</title><form method="post" action="${deckOnly ? "/login?deckOnly=1" : "/login"}"><label for="token">Access token</label><input id="token" name="token" type="password" autocomplete="current-password" required><button type="submit">Connect</button></form></html>`,
           )
         return
       }
@@ -106,6 +135,11 @@ export async function startRemoteGateway(options: {
       req.pipe(proxy)
     },
   )
+  const sockets = new Set<Duplex>()
+  server.on("connection", (socket) => {
+    sockets.add(socket)
+    socket.once("close", () => sockets.delete(socket))
+  })
   server.on("upgrade", (req, socket, head) => {
     socket.on("error", () => socket.destroy())
     const origin = req.headers.origin
@@ -145,6 +179,7 @@ export async function startRemoteGateway(options: {
       socket.pipe(remote).pipe(socket)
       remote.on("error", () => socket.destroy())
       socket.on("error", () => remote.destroy())
+      socket.on("close", () => remote.destroy())
     })
     upstream.on("response", () => socket.destroy())
     upstream.on("error", () => socket.destroy())
@@ -164,8 +199,9 @@ export async function startRemoteGateway(options: {
   return {
     port: address.port,
     close: () =>
-      new Promise<void>((resolve, reject) =>
-        server.close((error) => (error ? reject(error) : resolve())),
-      ),
+      new Promise<void>((resolve, reject) => {
+        server.close((error) => (error ? reject(error) : resolve()))
+        for (const socket of sockets) socket.destroy()
+      }),
   }
 }

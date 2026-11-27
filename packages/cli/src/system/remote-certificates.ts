@@ -38,7 +38,17 @@ export async function ensureRemoteCertificates(
   await mkdir(dir, { recursive: true, mode: 0o700 })
   if (process.platform !== "win32") await chmod(dir, 0o700)
   const lockPath = join(dir, "provision.lock")
-  const lock = await open(lockPath, "wx", 0o600)
+  let lock: Awaited<ReturnType<typeof open>>
+  try {
+    lock = await open(lockPath, "wx", 0o600)
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "EEXIST")
+      throw new Error(
+        `Remote certificate provisioning is locked. If no Sireno Deck process is provisioning certificates, remove the stale lock file: ${lockPath}`,
+        { cause: error },
+      )
+    throw error
+  }
   try {
     return await provisionCertificates(dir, addresses)
   } finally {
@@ -110,6 +120,7 @@ async function provisionCertificates(
   const caCert = new NodeCertificate(ca)
   if (
     !caCert.ca ||
+    Date.parse(caCert.validFrom) > Date.now() ||
     Date.parse(caCert.validTo) <= Date.now() ||
     !createPublicKey(createPrivateKey(caKey)).equals(caCert.publicKey)
   )
@@ -157,7 +168,9 @@ async function provisionCertificates(
         signingKey,
         signingAlgorithm,
         notBefore: new Date(now - 60_000),
-        notAfter: new Date(now + 365 * 86_400_000),
+        notAfter: new Date(
+          Math.min(now + 365 * 86_400_000, Date.parse(caCert.validTo)),
+        ),
         extensions: [
           new x509.BasicConstraintsExtension(false),
           new x509.SubjectAlternativeNameExtension(
