@@ -11,6 +11,50 @@ import Layout from "../layouts/ProsePage.astro"
     </section>
 
     <section>
+      <h2>Google Calendar and Google user data</h2>
+      <p>The first-party calendar addon can read your Google Calendar. It runs entirely on your own machine and talks directly to Google. There is no Sireno Deck server in the middle: we do not receive, store, sell, or share your calendar data, and we do not use it for advertising or for machine-learning training.</p>
+
+      <h3>What is accessed</h3>
+      <p>Signing in requests the Google Calendar API scope <code>https://www.googleapis.com/auth/calendar.readonly</code>. It grants read-only access: Sireno Deck cannot create, change, or delete anything in your calendar.</p>
+      <p>The grant covers every calendar your Google account can reach, not only the calendars you pick for display. Google may include additional fields in an API response that the addon does not use; those fields are received in memory while the response is processed and are not written to disk.</p>
+      <p>The data read is:</p>
+      <ul>
+        <li><strong>Calendar list:</strong> calendar identifier, display name, color, and time zone.</li>
+        <li><strong>Events:</strong> event identifier, recurring-event identifier, occurrence identifier, title, start and end time or date, time zone, location, status, calendar color, and the reminder offsets configured on the event or on the calendar.</li>
+        <li><strong>Event links:</strong> the web link Google returns for the event, used only when you tap the event to open it in your browser.</li>
+      </ul>
+      <p>Setup asks for your consent before the sign-in flow starts, and shows this policy link at that point. Setup can be cancelled before any authorization is requested.</p>
+
+      <h3>How it is used</h3>
+      <p>Calendar data is used to show event titles and times on your deck, to build the calendar decks in the configuration interface, and to trigger the reminders you configure. Optional system notifications use a generic message and do not include the event title. Tapping an event, or holding the next-event button, opens the event's web link in your browser, which is a transfer to Google and to whichever site the link points at.</p>
+      <p>Event details are held in memory while the addon runs; current releases do not write them to disk. An older release kept a cache file named <code>provider-snapshots-v1.json</code> in the addon's data directory, and current releases delete that file when they start. If you ran an older release, you can also delete the file yourself at any time.</p>
+
+      <h3>Who receives it</h3>
+      <p>Google receives the authorization request and the Calendar API requests, including the access token needed to make them. Clients you connect to Sireno Deck receive the data that is displayed: your browser or device running the interface, the physical Stream Deck, and — if you enable remote access — the remote clients you authorize with the access token you are given. Anyone who obtains that token can see the same displayed calendar information and control your deck, so treat the token as a password.</p>
+      <p>Third-party addons are separate projects. If you install one, it may access and transfer data under its own terms; we do not control or endorse that behavior.</p>
+
+      <h3>How it is protected</h3>
+      <p>Requests to Google use HTTPS. Authorization uses the OAuth authorization code flow with PKCE and a random state value, and it completes through a short-lived listener on <code>127.0.0.1</code>. The refresh token is kept in your operating system's credential store — Secret Service on Linux, Keychain on macOS, Credential Manager on Windows — not in the configuration file. The Google OAuth client identifier is a public identifier; a desktop client secret, where one is used, is embedded in the application and is not a user secret.</p>
+      <p>What Sireno Deck stores locally, in the addon's own private directory, is limited to:</p>
+      <ul>
+        <li><strong>Calendar selections:</strong> which calendars you switched on or off, per calendar identifier.</li>
+        <li><strong>Reminder metadata:</strong> event identifiers, calendar identifiers, scheduled reminder times, and reminder state such as snoozed or dismissed. Event titles and locations are not part of this data.</li>
+      </ul>
+      <p>These files are created with owner-only permissions on POSIX systems. They are not encrypted by Sireno Deck, so anyone who can read your user files can read them. On Windows, protection depends on your user directory access controls. The credential store is the only place where the refresh token is held.</p>
+      <p>Remote access is opt-in. When you enable it, Sireno Deck serves an HTTPS interface using a certificate authority it generates on your machine, and the internal services stay on the loopback interface. You must install that certificate on each device you connect from and verify its fingerprint against the value the command prints. The connection is protected by TLS, and clients must additionally present the access token. The generated certificate authority key is stored locally with owner-only permissions and is not encrypted by Sireno Deck.</p>
+      <p>Older releases exposed the interface directly on the local network over plain HTTP. If you use remote access, update to a current release so that the connection is encrypted.</p>
+
+      <h3>Retention and deletion</h3>
+      <p>Event details are not retained: they live in memory only and disappear when the process exits. The stored calendar selections and reminder metadata remain until you change them or disconnect the account.</p>
+      <p>To disconnect a Google account, run the calendar addon's setup and choose to disconnect it. That removes the account from your configuration, deletes its stored refresh token, and deletes its calendar selections and reminder metadata. Other accounts are left untouched. You can also remove the configuration entry by hand and delete the addon's data directory.</p>
+      <p>Disconnecting does not withdraw the grant at Google. To withdraw it, remove Sireno Deck's access in your Google account permissions at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>. That also affects the other Google permissions Sireno Deck holds for that account, and it does not delete data that was already displayed, exported, or copied elsewhere. Backups and copies made by other software are outside Sireno Deck's control.</p>
+      <p>This policy describes Sireno Deck's own handling. Data that Google retains under its own policies, and any data already shown on your deck or copied by another application, is not covered by the deletion steps above.</p>
+
+      <h3>Limited Use</h3>
+      <p>Sireno Deck's use and transfer of Google user data adheres to the Google API Services User Data Policy, including the Limited Use requirements of that policy. Sireno Deck uses Google user data only to provide the calendar display and reminder features described above.</p>
+    </section>
+
+    <section>
       <h2>Third-party addons</h2>
       <p>Addons made by third parties can access and process data independently, including sending it to external services. We do not control their behavior or privacy practices and are not responsible for them. Review an addon's source, permissions, and privacy policy before installing it.</p>
     </section>

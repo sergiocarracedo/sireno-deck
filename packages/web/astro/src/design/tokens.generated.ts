@@ -4,6 +4,7 @@
 
 export const colors = {
   background: "#2e3540",
+  modalDeckBgr: "#252b34",
   frame: "#53738B",
   foreground: "#eef2f7",
   "foreground-contrast": "#333",
