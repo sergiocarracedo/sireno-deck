@@ -765,6 +765,66 @@ describe("calendar runtime", () => {
       await rm(directory, { recursive: true, force: true })
     }
   })
+  it("encrypts the stored reminder metadata when a credential store is available", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "calendar-encrypted-"))
+    const values = new Map<string, string>()
+    const credentials = {
+      availability: async () => "available" as const,
+      get: async (name: string) => values.get(name),
+      set: async (name: string, value: string) => {
+        values.set(name, value)
+      },
+      delete: async () => {},
+    }
+    const runtime = createCalendarRuntime({
+      config: {
+        alarms: { enabled: true, offsetsMinutes: [0] },
+        providers: [
+          {
+            type: "google",
+            id: "one",
+            clientId: "client",
+            calendarIds: ["c"],
+          },
+        ],
+      },
+      dataDirectory: directory,
+      credentials,
+      provider: () => ({
+        instanceId: "one",
+        fetchEvents: async () => [
+          {
+            identity: {
+              providerInstanceId: "one",
+              calendarId: "c",
+              eventId: "synthetic-private-id",
+              occurrenceId: "synthetic-private-id",
+            },
+            title: "Synthetic private meeting",
+            status: "confirmed" as const,
+            time: {
+              kind: "timed" as const,
+              start: "2026-11-06T12:00:00Z",
+              end: "2026-11-06T13:00:00Z",
+            },
+            notificationReminders: [0],
+          },
+        ],
+      }),
+    })
+    try {
+      await runtime.start()
+      await runtime.refresh()
+      await runtime.dispose()
+      const raw = await readFile(join(directory, "alarms-v1.json"), "utf8")
+      expect(raw).not.toContain("synthetic-private-id")
+      expect(raw).not.toContain("Synthetic private meeting")
+      expect(JSON.parse(raw)).toMatchObject({ alg: "aes-256-gcm" })
+      expect(values.size).toBeGreaterThan(0)
+    } finally {
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
   it("removes snapshots for accounts no longer configured", async () => {
     const directory = await mkdtemp(join(tmpdir(), "calendar-removed-"))
     const config = {

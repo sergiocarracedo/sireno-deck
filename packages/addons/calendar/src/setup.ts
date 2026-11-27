@@ -42,7 +42,11 @@ const DISCLOSURE =
 const forgetAccount = async (ctx: SetupContext, id: string): Promise<void> => {
   await ctx.credentials.delete(`google.${id}.refresh-token`)
   await ctx.credentials.delete(`google.${id}.client-secret`)
-  await removeAccountLocalData(await ctx.getDataDirectory(), id)
+  await removeAccountLocalData(
+    await ctx.getDataDirectory(),
+    id,
+    ctx.credentials,
+  )
 }
 
 const removeAccount = async (ctx: SetupContext): Promise<void> => {

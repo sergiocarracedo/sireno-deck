@@ -33,7 +33,9 @@ fails while the addon is running, the last successful events can remain visible
 until a later refresh or restart. After a restart, events and their titles are
 unavailable until a refresh succeeds. Alarm metadata and calendar selections
 remain stored locally; a recovered reminder may show a generic title until its
-event has been fetched again. On startup, the addon removes its older unencrypted
+event has been fetched again. Those local files are encrypted with a key kept
+in the operating system's credential store, so they are unreadable while the
+keyring is locked. On startup, the addon removes its older unencrypted
 `provider-snapshots-v1.json` event cache, if present. Copies in backups or other
 locations are not removed automatically.
 

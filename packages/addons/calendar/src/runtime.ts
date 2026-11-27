@@ -12,6 +12,7 @@ import { unlink } from "node:fs/promises"
 import { createAlarmScheduler } from "./domain/alarm-scheduler.js"
 import { createAlarmStorage } from "./domain/alarm-storage.js"
 import { createCalendarSelectionStorage } from "./domain/calendar-selection-storage.js"
+import type { StorageCredentials } from "./domain/secure-storage.js"
 import { occurrenceKey, type CalendarEvent } from "./domain/events.js"
 import { safeEventUrl } from "./decks.js"
 
@@ -19,7 +20,8 @@ type GoogleConfig = Extract<
   CalendarConfig["providers"][number],
   { type: "google" }
 >
-type Credentials = Parameters<typeof refreshGoogleToken>[0]["credentials"]
+type Credentials = Parameters<typeof refreshGoogleToken>[0]["credentials"] &
+  StorageCredentials
 
 export const createCalendarRuntime = (options: {
   config: unknown
@@ -71,6 +73,7 @@ export const createCalendarRuntime = (options: {
       throw new Error("Calendar data directory unavailable")
     selectionStorage = createCalendarSelectionStorage(
       join(options.dataDirectory, "calendar-selections-v1.json"),
+      options.credentials,
     )
     enabledOverrides = await selectionStorage.load()
     // Remove the old unencrypted event cache; do not restore event details from disk.
@@ -82,6 +85,7 @@ export const createCalendarRuntime = (options: {
     scheduler = await createAlarmScheduler({
       storage: createAlarmStorage(
         join(options.dataDirectory, "alarms-v1.json"),
+        options.credentials,
       ),
       globalSettings: config.alarms,
       useCalendarReminders: config.useCalendarReminders,

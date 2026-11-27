@@ -1,6 +1,19 @@
-import { mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises"
-import { randomUUID } from "node:crypto"
-import { dirname, join } from "node:path"
+import { unlink } from "node:fs/promises"
+import { join } from "node:path"
+import {
+  createSecureJsonStorage,
+  type StorageCredentials,
+} from "./secure-storage.js"
+
+interface StoredAlarms {
+  readonly version: 1
+  readonly alarms: readonly { readonly occurrence?: unknown }[]
+}
+
+interface StoredSelections {
+  readonly version: 1
+  readonly selections?: Record<string, boolean>
+}
 
 /** Alarm records reference their provider instance through the occurrence key. */
 const belongsToInstance = (occurrence: string, instanceId: string): boolean => {
@@ -12,30 +25,6 @@ const belongsToInstance = (occurrence: string, instanceId: string): boolean => {
   }
 }
 
-const writeJson = async (path: string, value: unknown): Promise<void> => {
-  await mkdir(dirname(path), { recursive: true, mode: 0o700 })
-  const temporary = `${path}.${randomUUID()}.tmp`
-  try {
-    await writeFile(temporary, JSON.stringify(value), {
-      mode: 0o600,
-      flag: "wx",
-    })
-    await rename(temporary, path)
-  } catch (error) {
-    await unlink(temporary).catch(() => {})
-    throw error
-  }
-}
-
-const readJson = async (path: string): Promise<unknown> => {
-  try {
-    return JSON.parse(await readFile(path, "utf8"))
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined
-    throw error
-  }
-}
-
 /**
  * Delete the local reminders and calendar toggles of one account.
  * Other accounts keep their own selections and alarms.
@@ -43,41 +32,42 @@ const readJson = async (path: string): Promise<unknown> => {
 export const removeAccountLocalData = async (
   dataDirectory: string,
   instanceId: string,
+  credentials?: StorageCredentials,
 ): Promise<void> => {
   const selectionsPath = join(dataDirectory, "calendar-selections-v1.json")
-  const selections = await readJson(selectionsPath)
-  if (selections !== undefined) {
-    const stored = (selections as { selections?: Record<string, boolean> })
-      .selections
-    if (stored && typeof stored === "object") {
-      const kept = Object.fromEntries(
-        Object.entries(stored).filter(([key]) => {
-          try {
-            const parsed: unknown = JSON.parse(key)
-            return !(Array.isArray(parsed) && parsed[0] === instanceId)
-          } catch {
-            return true
-          }
-        }),
-      )
-      await writeJson(selectionsPath, { version: 1, selections: kept })
-    }
+  const selections = createSecureJsonStorage({
+    path: selectionsPath,
+    ...(credentials ? { credentials } : {}),
+  })
+  const storedSelections = (await selections.load()) as
+    | StoredSelections
+    | undefined
+  if (storedSelections?.selections) {
+    const kept = Object.fromEntries(
+      Object.entries(storedSelections.selections).filter(([key]) => {
+        try {
+          const parsed: unknown = JSON.parse(key)
+          return !(Array.isArray(parsed) && parsed[0] === instanceId)
+        } catch {
+          return true
+        }
+      }),
+    )
+    await selections.save({ version: 1, selections: kept })
   }
   const alarmsPath = join(dataDirectory, "alarms-v1.json")
-  const alarms = await readJson(alarmsPath)
-  if (alarms !== undefined) {
-    const records = (alarms as { alarms?: unknown[] }).alarms
-    if (Array.isArray(records)) {
-      const kept = records.filter(
-        (record) =>
-          typeof (record as { occurrence?: unknown }).occurrence !== "string" ||
-          !belongsToInstance(
-            (record as { occurrence: string }).occurrence,
-            instanceId,
-          ),
-      )
-      await writeJson(alarmsPath, { version: 1, alarms: kept })
-    }
+  const alarms = createSecureJsonStorage({
+    path: alarmsPath,
+    ...(credentials ? { credentials } : {}),
+  })
+  const storedAlarms = (await alarms.load()) as StoredAlarms | undefined
+  if (storedAlarms?.alarms) {
+    const kept = storedAlarms.alarms.filter(
+      (record) =>
+        typeof record.occurrence !== "string" ||
+        !belongsToInstance(record.occurrence, instanceId),
+    )
+    await alarms.save({ version: 1, alarms: kept })
   }
   await unlink(join(dataDirectory, "provider-snapshots-v1.json")).catch(
     (error: NodeJS.ErrnoException) => {

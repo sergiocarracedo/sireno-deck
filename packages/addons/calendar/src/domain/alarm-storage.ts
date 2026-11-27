@@ -1,7 +1,8 @@
-import { randomUUID } from "node:crypto"
-import { mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises"
-import { dirname } from "node:path"
 import type { AlarmRecord } from "./alarm-queue.js"
+import {
+  createSecureJsonStorage,
+  type StorageCredentials,
+} from "./secure-storage.js"
 
 interface StoredAlarms {
   readonly version: 1
@@ -28,24 +29,20 @@ const validAlarm = (value: unknown): value is AlarmRecord => {
 }
 
 /** Atomic file replacement; storage contains alarm metadata, never event titles or credentials. */
-export const createAlarmStorage = (path: string) => {
-  let pending: Promise<void> = Promise.resolve()
+export const createAlarmStorage = (
+  path: string,
+  credentials?: StorageCredentials,
+) => {
+  let pending = Promise.resolve()
+  const storage = createSecureJsonStorage({
+    path,
+    ...(credentials ? { credentials } : {}),
+  })
   return {
     load: async (): Promise<AlarmRecord[]> => {
       await pending
-      let raw: string
-      try {
-        raw = await readFile(path, "utf8")
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException).code === "ENOENT") return []
-        throw error
-      }
-      let data: unknown
-      try {
-        data = JSON.parse(raw)
-      } catch {
-        throw new Error("Invalid alarm state")
-      }
+      const data = await storage.load()
+      if (data === undefined) return []
       if (
         typeof data !== "object" ||
         data === null ||
@@ -58,22 +55,9 @@ export const createAlarmStorage = (path: string) => {
       return [...(data as StoredAlarms).alarms]
     },
     save: (alarms: readonly AlarmRecord[]): Promise<void> => {
-      const snapshot = JSON.stringify({
-        version: 1,
-        alarms,
-      } satisfies StoredAlarms)
-      const write = async (): Promise<void> => {
-        await mkdir(dirname(path), { recursive: true, mode: 0o700 })
-        const temp = `${path}.${randomUUID()}.tmp`
-        try {
-          await writeFile(temp, snapshot, { mode: 0o600, flag: "wx" })
-          await rename(temp, path)
-        } catch (error) {
-          await unlink(temp).catch(() => {})
-          throw error
-        }
-      }
-      const result = pending.then(write)
+      const result = pending.then(() =>
+        storage.save({ version: 1, alarms } satisfies StoredAlarms),
+      )
       pending = result.catch(() => {})
       return result
     },
