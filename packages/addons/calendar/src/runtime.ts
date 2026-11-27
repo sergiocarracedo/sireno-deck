@@ -8,10 +8,9 @@ import { refreshGoogleToken } from "./auth/google-auth.js"
 import { localDay } from "./presentation.js"
 import { createGoogleCalendarProvider } from "./providers/google/index.js"
 import { join } from "node:path"
-import { createHash } from "node:crypto"
+import { unlink } from "node:fs/promises"
 import { createAlarmScheduler } from "./domain/alarm-scheduler.js"
 import { createAlarmStorage } from "./domain/alarm-storage.js"
-import { createProviderStorage } from "./domain/provider-storage.js"
 import { createCalendarSelectionStorage } from "./domain/calendar-selection-storage.js"
 import { occurrenceKey, type CalendarEvent } from "./domain/events.js"
 import { safeEventUrl } from "./decks.js"
@@ -43,7 +42,6 @@ export const createCalendarRuntime = (options: {
   let error: string | undefined
   let page = 0
   let selected: string | undefined
-  let providerStorage: ReturnType<typeof createProviderStorage> | undefined
   let selectionStorage:
     | ReturnType<typeof createCalendarSelectionStorage>
     | undefined
@@ -68,25 +66,6 @@ export const createCalendarRuntime = (options: {
         }))
       : [],
   )
-  const selections = new Map(
-    config.providers.flatMap((provider) =>
-      provider.type === "google"
-        ? [
-            [
-              provider.id,
-              createHash("sha256")
-                .update(
-                  JSON.stringify([
-                    provider.clientId,
-                    [...provider.calendarIds].sort(),
-                  ]),
-                )
-                .digest("hex"),
-            ] as const,
-          ]
-        : [],
-    ),
-  )
   const start = async () => {
     if (!options.dataDirectory)
       throw new Error("Calendar data directory unavailable")
@@ -94,17 +73,12 @@ export const createCalendarRuntime = (options: {
       join(options.dataDirectory, "calendar-selections-v1.json"),
     )
     enabledOverrides = await selectionStorage.load()
-    providerStorage = createProviderStorage(
+    // Remove the old unencrypted event cache; do not restore event details from disk.
+    await unlink(
       join(options.dataDirectory, "provider-snapshots-v1.json"),
-    )
-    const stored = await providerStorage.load()
-    snapshots = stored
-      .filter((item) => selections.get(item.instanceId) === item.selection)
-      .map((item) => ({
-        instanceId: item.instanceId,
-        events: item.events,
-        status: "stale" as const,
-      }))
+    ).catch((cause: NodeJS.ErrnoException) => {
+      if (cause.code !== "ENOENT") throw cause
+    })
     scheduler = await createAlarmScheduler({
       storage: createAlarmStorage(
         join(options.dataDirectory, "alarms-v1.json"),
@@ -154,17 +128,6 @@ export const createCalendarRuntime = (options: {
         options.onChange?.()
       },
     })
-    try {
-      for (const item of stored) {
-        if (selections.get(item.instanceId) !== item.selection)
-          await scheduler.refresh(item.instanceId, [])
-      }
-      if (snapshots.length !== stored.length)
-        await providerStorage.save(snapshots, selections)
-    } catch (cause) {
-      await scheduler.dispose()
-      throw cause
-    }
     options.onChange?.()
   }
   const startTime = (event: CalendarEvent) => {
@@ -298,15 +261,6 @@ export const createCalendarRuntime = (options: {
       }),
     )
     snapshots = await refreshProviders(snapshots, providers)
-    if (providerStorage && snapshots.some((item) => item.status === "ok")) {
-      try {
-        await providerStorage.save(snapshots, selections)
-      } catch (cause) {
-        error = "Calendar provider state unavailable"
-        options.onError?.(cause)
-        options.onChange?.()
-      }
-    }
     if (scheduler)
       for (const item of snapshots) {
         if (item.status !== "ok") continue
@@ -509,7 +463,6 @@ export const createCalendarRuntime = (options: {
     dispose: async () => {
       await selectionPending
       await scheduler?.dispose()
-      await providerStorage?.drain()
     },
     nextPage: () => {
       page++

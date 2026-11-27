@@ -28,6 +28,15 @@ selection. The refresh token is kept in the native credential store, not the
 printed configuration. Setup requires that store to
 be available; unlocking the desktop keyring may be necessary.
 
+Event details are kept in memory, not saved for offline restart. If a refresh
+fails while the addon is running, the last successful events can remain visible
+until a later refresh or restart. After a restart, events and their titles are
+unavailable until a refresh succeeds. Alarm metadata and calendar selections
+remain stored locally; a recovered reminder may show a generic title until its
+event has been fetched again. On startup, the addon removes its older unencrypted
+`provider-snapshots-v1.json` event cache, if present. Copies in backups or other
+locations are not removed automatically.
+
 Setup saves the selected Google calendar colors in `calendarColors` so event
 dates can use them. Re-run setup for an existing account to capture colors;
 calendars without a saved color use the active theme's accent.
