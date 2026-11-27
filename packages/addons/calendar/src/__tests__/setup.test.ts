@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
+import { mkdtemp, readFile, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { authorizeGoogle } from "../auth/google-auth.js"
+import { createSecureJsonStorage } from "../domain/secure-storage.js"
 import { createGoogleCalendarProvider } from "../providers/google/index.js"
 import { setupAddon } from "../setup.js"
 
@@ -14,11 +15,16 @@ vi.mock("../providers/google/index.js", () => ({
   createGoogleCalendarProvider: vi.fn(),
 }))
 
+const credentialValues = new Map<string, string>()
 const credentials = {
   availability: async () => "available" as const,
-  get: vi.fn(),
-  set: vi.fn(),
-  delete: vi.fn(),
+  get: vi.fn(async (name: string) => credentialValues.get(name)),
+  set: vi.fn(async (name: string, value: string) => {
+    credentialValues.set(name, value)
+  }),
+  delete: vi.fn(async (name: string) => {
+    credentialValues.delete(name)
+  }),
 }
 const openUrl = vi.fn()
 const confirm = vi.fn()
@@ -31,6 +37,7 @@ const print = vi.fn()
 
 beforeEach(() => {
   vi.clearAllMocks()
+  credentialValues.clear()
   confirm.mockReset().mockResolvedValueOnce(true).mockResolvedValue(false)
   listProviders.mockReset().mockResolvedValue([])
   removeProvider.mockReset().mockResolvedValue("/config.yml")
@@ -197,35 +204,31 @@ describe("Google setup", () => {
     const directory = await mkdtemp(join(tmpdir(), "calendar-disconnect-"))
     dataDirectory = directory
     try {
-      await writeFile(
-        join(directory, "alarms-v1.json"),
-        JSON.stringify({
-          version: 1,
-          alarms: [
-            {
-              id: "a",
-              occurrence: '["work","c","e","e"]',
-              eventStartMs: 1,
-              dueAtMs: 1,
-              state: "pending",
-            },
-            {
-              id: "b",
-              occurrence: '["personal","c","e","e"]',
-              eventStartMs: 1,
-              dueAtMs: 1,
-              state: "pending",
-            },
-          ],
-        }),
-      )
-      await writeFile(
-        join(directory, "calendar-selections-v1.json"),
-        JSON.stringify({
-          version: 1,
-          selections: { '["work","c"]': true, '["personal","c"]': true },
-        }),
-      )
+      const storage = (path: string) =>
+        createSecureJsonStorage({ path, credentials })
+      await storage(join(directory, "alarms-v1.json")).save({
+        version: 1,
+        alarms: [
+          {
+            id: "a",
+            occurrence: '["work","c","e","e"]',
+            eventStartMs: 1,
+            dueAtMs: 1,
+            state: "pending",
+          },
+          {
+            id: "b",
+            occurrence: '["personal","c","e","e"]',
+            eventStartMs: 1,
+            dueAtMs: 1,
+            state: "pending",
+          },
+        ],
+      })
+      await storage(join(directory, "calendar-selections-v1.json")).save({
+        version: 1,
+        selections: { '["work","c"]': true, '["personal","c"]': true },
+      })
       listProviders.mockResolvedValue(["work", "personal"])
       await setupAddon(
         ctx({
@@ -248,14 +251,17 @@ describe("Google setup", () => {
       expect(authorizeGoogle).not.toHaveBeenCalled()
       const printed = JSON.stringify(print.mock.calls)
       expect(printed).toContain("myaccount.google.com/permissions")
-      const alarms = JSON.parse(
-        await readFile(join(directory, "alarms-v1.json"), "utf8"),
-      ) as { alarms: { id: string }[] }
+      const alarms = (await storage(
+        join(directory, "alarms-v1.json"),
+      ).load()) as { alarms: { id: string }[] }
       expect(alarms.alarms.map((alarm) => alarm.id)).toEqual(["b"])
-      const selections = JSON.parse(
-        await readFile(join(directory, "calendar-selections-v1.json"), "utf8"),
-      ) as { selections: Record<string, boolean> }
+      const selections = (await storage(
+        join(directory, "calendar-selections-v1.json"),
+      ).load()) as { selections: Record<string, boolean> }
       expect(Object.keys(selections.selections)).toEqual(['["personal","c"]'])
+      const raw = await readFile(join(directory, "alarms-v1.json"), "utf8")
+      expect(raw).not.toContain("work")
+      expect(JSON.parse(raw)).toMatchObject({ alg: "aes-256-gcm" })
     } finally {
       await rm(directory, { recursive: true, force: true })
     }
