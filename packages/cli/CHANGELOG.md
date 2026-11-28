@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.4.1...@sirenodeck/sirenodeck-0.4.2) (2026-11-28)
+
+
+### Features
+
+* **cli:** group addon and theme commands ([84a8a16](https://github.com/sergiocarracedo/sireno-deck/commit/84a8a16a961f556a7b6e6fc9bd44798f5b10a065))
+* **cli:** streamline addon onboarding ([d270fbb](https://github.com/sergiocarracedo/sireno-deck/commit/d270fbb656200f19df12fec09f8b861ae1c98121))
+* secure remote access and Google Calendar privacy remediation ([#89](https://github.com/sergiocarracedo/sireno-deck/issues/89)) ([9596f2d](https://github.com/sergiocarracedo/sireno-deck/commit/9596f2d380f2e22f5bb4fffe9cc42d82fda00944))
+
 ## [0.4.1](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.4.0...@sirenodeck/sirenodeck-0.4.1) (2026-11-16)
 
 
