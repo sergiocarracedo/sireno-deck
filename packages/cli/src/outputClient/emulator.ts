@@ -303,20 +303,18 @@ export class EmulatorOutputClient implements OutputClient {
       "emulator mode ready",
     )
     if (remote) {
-      process.stdout.write(`\n  Config UI:  ${configUiUrl}\n\n`)
-      const lanHost = opts.lanHost ?? "127.0.0.1"
-      const state: RuntimeState = {
-        configUiUrl,
-        wsUrl: opts.bridge.url,
-        frontendUrl,
-        lanHost,
-        addresses: opts.lanAddresses ?? [],
-        emulatorMode: true,
-        remote: true,
-        startedAt: Date.now(),
-        theme: opts.theme.name,
-      }
-      writeRuntimeState(state)
+      // The HTTPS gateways own the operator-facing URL and the runtime state
+      // in remote mode. Printing the loopback Vite URL here would point the
+      // operator at a plaintext surface that remote clients cannot use, and
+      // writing the state from here would race the gateway's own state.
+      logger.info(
+        {
+          configUiUrl,
+          frontendUrl,
+          wsUrl: opts.bridge.url,
+        },
+        "emulator mode ready",
+      )
     } else {
       const frontendLine =
         process.env.SIRENO_DEV_MODE === "true"

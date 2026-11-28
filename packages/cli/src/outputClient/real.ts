@@ -326,18 +326,22 @@ export class RealOutputClient implements OutputClient {
       const configUiPid = configUiSupervisor?.process.pid ?? 0
       const childPids = [frontendVitePid, configUiPid].filter((pid) => pid > 0)
 
-      const state: RuntimeState = {
-        configUiUrl,
-        wsUrl: opts.bridge.url,
-        frontendUrl,
-        lanHost: opts.lanHost ?? "127.0.0.1",
-        addresses: opts.lanAddresses ?? [],
-        emulatorMode: false,
-        remote: opts.remote === true,
-        startedAt: Date.now(),
-        theme: opts.theme.name,
+      if (opts.remote !== true) {
+        // In remote mode the HTTPS gateways own the runtime state, so the
+        // plaintext Vite URLs must not overwrite the gateway's state.
+        const state: RuntimeState = {
+          configUiUrl,
+          wsUrl: opts.bridge.url,
+          frontendUrl,
+          lanHost: opts.lanHost ?? "127.0.0.1",
+          addresses: opts.lanAddresses ?? [],
+          emulatorMode: false,
+          remote: false,
+          startedAt: Date.now(),
+          theme: opts.theme.name,
+        }
+        writeRuntimeState(state)
       }
-      writeRuntimeState(state)
       logger.info({ frontendUrl }, "real mode: runtime state written")
 
       return {

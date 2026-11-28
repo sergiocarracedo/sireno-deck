@@ -260,9 +260,8 @@ describe("printDaemonUrl", () => {
     )
   })
 
-  it("includes LAN lines when addresses present", async () => {
+  it("includes the secure address when remote is enabled", async () => {
     const output = vi.fn()
-    // Force non-TTY so we get plain URL output
     const original = process.stdout.isTTY
     Object.defineProperty(process.stdout, "isTTY", {
       value: false,
@@ -270,7 +269,11 @@ describe("printDaemonUrl", () => {
     })
     try {
       await printDaemonUrl(
-        makeState({ remote: true, addresses: ["192.168.1.10"] }),
+        makeState({
+          remote: true,
+          configUiUrl: "https://192.168.1.10:43210/",
+          addresses: ["192.168.1.10"],
+        }),
         output,
       )
     } finally {
@@ -280,11 +283,11 @@ describe("printDaemonUrl", () => {
       })
     }
     const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
-    expect(text).toContain("192.168.1.10")
+    expect(text).toContain("https://192.168.1.10:43210/")
     expect(text).toContain("deckOnly=1")
   })
 
-  it("prints a single device-only QR for the selected adapter", async () => {
+  it("never prints a plaintext LAN address for a remote daemon", async () => {
     const output = vi.fn()
     const original = process.stdout.isTTY
     Object.defineProperty(process.stdout, "isTTY", {
@@ -297,6 +300,37 @@ describe("printDaemonUrl", () => {
           remote: true,
           addresses: ["192.168.1.10", "10.0.0.2"],
         }),
+        "tok123",
+        output,
+      )
+    } finally {
+      Object.defineProperty(process.stdout, "isTTY", {
+        value: original,
+        configurable: true,
+      })
+    }
+    const text = output.mock.calls.map((call: string[]) => call[0]!).join("")
+    expect(text).toContain("not encrypted")
+    expect(text).not.toContain("192.168.1.10")
+    expect(text).not.toContain("10.0.0.2")
+    expect(text).not.toContain("token=tok123")
+    expect(text).not.toContain("Emulator (LAN)")
+  })
+
+  it("prints a QR for the secure remote address", async () => {
+    const output = vi.fn()
+    const original = process.stdout.isTTY
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: true,
+      configurable: true,
+    })
+    try {
+      await printDaemonUrl(
+        makeState({
+          remote: true,
+          configUiUrl: "https://192.168.1.10:43210/",
+          addresses: ["192.168.1.10", "10.0.0.2"],
+        }),
         output,
       )
     } finally {
@@ -307,10 +341,10 @@ describe("printDaemonUrl", () => {
     }
 
     const text = output.mock.calls.map((call: string[]) => call[0]!).join("")
-    expect(text).toContain("192.168.1.10")
-    expect(text).toContain("deckOnly=1")
+    expect(text).toContain("https://192.168.1.10:43210/?deckOnly=1")
     expect(text).not.toContain("10.0.0.2")
-    expect(text.match(/Emulator \(LAN\):/g)).toHaveLength(1)
+    expect(text).not.toContain("Emulator (LAN)")
+    expect(text).toMatch(/[\u2580-\u259f]/)
   })
 
   it("omits LAN section when remote is false (emulator mode)", async () => {
@@ -331,32 +365,9 @@ describe("printDaemonUrl", () => {
         configurable: true,
       })
     }
-    const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
+    const text = output.mock.calls.map((call: string[]) => call[0]!).join("")
     expect(text).not.toContain("192.168.1.10")
     expect(text).not.toContain("Emulator (LAN)")
-  })
-
-  it("includes LAN URL when remote is true (non-TTY format)", async () => {
-    const output = vi.fn()
-    const original = process.stdout.isTTY
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: false,
-      configurable: true,
-    })
-    try {
-      await printDaemonUrl(
-        makeState({ remote: true, addresses: ["192.168.1.10"] }),
-        output,
-      )
-    } finally {
-      Object.defineProperty(process.stdout, "isTTY", {
-        value: original,
-        configurable: true,
-      })
-    }
-    const text = output.mock.calls.map((c: string[]) => c[0]!).join("")
-    expect(text).toContain("192.168.1.10")
-    expect(text).toContain("deckOnly=1")
   })
 })
 

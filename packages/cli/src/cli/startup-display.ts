@@ -324,18 +324,36 @@ export const printDaemonUrl = async (
 ): Promise<void> => {
   const token = typeof tokenOrOutput === "string" ? tokenOrOutput : ""
   const write = typeof tokenOrOutput === "function" ? tokenOrOutput : output
-  if (state.remote && state.configUiUrl.startsWith("https://")) {
-    const url = new URL(state.configUiUrl)
-    if (state.emulatorMode) url.searchParams.set("deckOnly", "1")
-    write(`\n  Secure remote: ${url.toString()}\n`)
-    if (state.certificatePath)
-      write(`  Trust certificate: ${state.certificatePath}\n`)
-    if (state.certificateFingerprint)
-      write(`  Certificate SHA-256: ${state.certificateFingerprint}\n`)
-    if (token) write(`  Access token: ${token}\n`)
+  if (state.remote) {
+    if (state.configUiUrl.startsWith("https://")) {
+      const url = new URL(state.configUiUrl)
+      if (state.emulatorMode) url.searchParams.set("deckOnly", "1")
+      write(`\n  Secure remote: ${url.toString()}\n`)
+      if (state.certificatePath)
+        write(`  Trust certificate: ${state.certificatePath}\n`)
+      if (state.certificateFingerprint)
+        write(`  Certificate SHA-256: ${state.certificateFingerprint}\n`)
+      if (token) write(`  Access token: ${token}\n`)
+      write(
+        "  Verify the fingerprint before trusting the certificate on your remote device.\n",
+      )
+      // The token is never put in the URL, so the QR only opens the login page.
+      if (state.emulatorMode && process.stdout.isTTY) {
+        const qr = await qrcode.toString(url.toString(), {
+          type: "terminal",
+          small: true,
+        })
+        write(`\n${qr}\n`)
+      }
+      return
+    }
+    // A remote daemon without the secure gateway, or a stale state file from
+    // an older release. Never print a plaintext LAN address: it would send
+    // the operator to an unencrypted interface with the token in the URL.
     write(
-      "  Verify the fingerprint before trusting the certificate on your remote device.\n",
+      "\n  Remote mode is not encrypted on this daemon. Update Sireno Deck to use the authenticated HTTPS remote interface.\n",
     )
+    write(`  Local interface: ${state.configUiUrl}\n`)
     return
   }
   if (state.emulatorMode) {
@@ -349,24 +367,6 @@ export const printDaemonUrl = async (
     const localUrl = buildUrl("127.0.0.1", false)
     write(`  Config UI:  ${localUrl}#/config\n`)
     write(`\n  Emulator:  ${localUrl}\n`)
-    if (state.remote && state.addresses.length > 0) {
-      const isTty = Boolean(process.stdout.isTTY)
-      if (isTty) {
-        write("\n  Emulator (LAN):\n")
-        for (const addr of state.addresses.slice(0, 1)) {
-          const url = buildUrl(addr, true)
-          const qr = await qrcode.toString(url, {
-            type: "terminal",
-            small: true,
-          })
-          write(`\n${qr}  ${url}\n`)
-        }
-      } else {
-        for (const addr of state.addresses.slice(0, 1)) {
-          write(`  ${addr}: ${buildUrl(addr, true)}\n`)
-        }
-      }
-    }
     write("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
   } else {
     const configUiUrl = state.configUiUrl
