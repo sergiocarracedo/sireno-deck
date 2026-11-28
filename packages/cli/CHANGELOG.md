@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.4.2...@sirenodeck/sirenodeck-0.4.3) (2026-11-28)
+
+
+### Bug Fixes
+
+* **cli:** stop advertising a plaintext remote address ([1fa3362](https://github.com/sergiocarracedo/sireno-deck/commit/1fa3362d8eb32638bc825f36fd43abe05bda5656))
+
 ## [0.4.2](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.4.1...@sirenodeck/sirenodeck-0.4.2) (2026-11-28)
 
 
