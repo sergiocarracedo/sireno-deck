@@ -117,10 +117,14 @@ freely — they don't trigger bumps but still appear in the changelog.
 3. The resulting package tags trigger npm publishing automatically.
 
 Grouped release PRs use the literal title `chore: release`; package versions
-are recorded per component in the release PR body. Keep this title pattern
-aligned with the generated PR because Release Please parses it when tagging a
-merged release. One-time `release-as` overrides should be removed after the
-target versions are recorded in the manifest.
+are recorded per component in the release PR body. The group title pattern
+must still contain a `${component}` placeholder: Release Please turns the
+pattern into a regular expression and only parses a merged release title when
+that expression has a named capture group. A pattern with no placeholder
+renders the same title but cannot be read back, so the release is never
+tagged and the merged release PR blocks every later one. One-time `release-as`
+overrides should be removed after the target versions are recorded in the
+manifest.
 
 Do not edit package versions manually. The release PR owns version bumps,
 changelogs, and the manifest update.
