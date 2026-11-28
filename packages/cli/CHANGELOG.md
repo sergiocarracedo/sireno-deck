@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.4](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.4.3...@sirenodeck/sirenodeck-0.4.4) (2026-11-28)
+
+
+### Features
+
+* **cli:** rebuild the remote login page and restore the QR scan flow ([45e0aac](https://github.com/sergiocarracedo/sireno-deck/commit/45e0aacc3edb8f4cc94b8918854779d6752b02ef))
+
 ## [0.4.3](https://github.com/sergiocarracedo/sireno-deck/compare/@sirenodeck/sirenodeck-0.4.2...@sirenodeck/sirenodeck-0.4.3) (2026-11-28)
 
 
