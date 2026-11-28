@@ -149,11 +149,23 @@ describe("remote HTTPS gateway", () => {
         expect((await send("/")).status).toBe(401)
         expect((await send("http://[")).status).toBe(400)
         expect((await send("/")).status).toBe(401)
-        expect((await send("/?deckOnly=1")).body).toContain("/login?deckOnly=1")
+        const page = await send("/")
+        expect(page.body).toContain("<title>Sireno Deck</title>")
+        expect(page.body).toContain('class="brand"')
+        expect(page.body).toContain("/logo.png")
+        expect(page.body).toContain("Sireno Deck")
+        expect(page.body).toMatch(/class="version">v[\w.-]+</)
+        expect(page.body).toContain("Access token")
+        expect(page.body).toContain('action="/login"')
+        const deckPage = await send("/?deckOnly=1")
+        expect(deckPage.body).toContain('action="/login?deckOnly=1"')
         expect(
           (await send("/login", { method: "POST", body: "token=wrong" }))
             .status,
         ).toBe(403)
+        expect(
+          (await send("/login", { method: "POST", body: "token=wrong" })).body,
+        ).toContain("was not accepted")
         const login = await send("/login", {
           method: "POST",
           body: "token=synthetic-token",
@@ -248,6 +260,79 @@ describe("remote HTTPS gateway", () => {
         await bridge.close()
       }
     } finally {
+      await new Promise<void>((resolve, reject) =>
+        backend.close((error) => (error ? reject(error) : resolve())),
+      )
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it("exchanges a token in the URL for a session and redirects to a clean URL", async () => {
+    const root = await mkdtemp(join(tmpdir(), "sireno-gateway-exchange-"))
+    const backend = createServer((_req, res) => {
+      res.writeHead(200, { "Content-Type": "text/plain" }).end("protected")
+    })
+    await new Promise<void>((resolve) =>
+      backend.listen(0, "127.0.0.1", resolve),
+    )
+    const address = backend.address()
+    if (!address || typeof address === "string") throw new Error("No port")
+    const certs = await ensureRemoteCertificates(root, ["127.0.0.1"])
+    const sessions = new Set<string>()
+    const gateway = await startRemoteGateway({
+      host: "127.0.0.1",
+      port: 0,
+      targetPort: address.port,
+      token: "synthetic-token",
+      key: await readFile(certs.keyPath),
+      cert: await readFile(certs.certPath),
+      sessions,
+      allowedOrigins: ["https://127.0.0.1:8443"],
+    })
+    const ca = await readFile(certs.caPath)
+    const get = (path: string) =>
+      new Promise<{
+        status: number
+        location: string | undefined
+        cookie: string | undefined
+      }>((resolve, reject) => {
+        const req = request(
+          {
+            hostname: "127.0.0.1",
+            port: gateway.port,
+            path,
+            ca,
+          },
+          (res) => {
+            res.resume()
+            res.on("end", () =>
+              resolve({
+                status: res.statusCode ?? 0,
+                location: res.headers.location,
+                cookie: res.headers["set-cookie"]?.[0],
+              }),
+            )
+          },
+        )
+        req.on("error", reject)
+        req.end()
+      })
+    try {
+      const exchange = await get("/?token=synthetic-token&deckOnly=1")
+      expect(exchange.status).toBe(303)
+      // The token is dropped from the URL the browser ends up on.
+      expect(exchange.location).toBe("/?deckOnly=1")
+      expect(exchange.cookie).toContain("__Host-sireno-session=")
+      expect(exchange.cookie).toContain("HttpOnly")
+      expect(exchange.cookie).toContain("Secure")
+      expect(sessions.size).toBe(1)
+      const wrong = await get("/?token=not-the-token")
+      expect(wrong.status).toBe(401)
+      expect(sessions.size).toBe(1)
+      const logo = await get("/logo.png")
+      expect(logo.status).toBe(200)
+    } finally {
+      await gateway.close()
       await new Promise<void>((resolve, reject) =>
         backend.close((error) => (error ? reject(error) : resolve())),
       )

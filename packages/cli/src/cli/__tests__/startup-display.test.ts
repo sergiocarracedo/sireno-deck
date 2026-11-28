@@ -1,5 +1,6 @@
 import { createServer, type Server } from "node:net"
 
+import qrcode from "qrcode"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 const { introMock, outroMock, cancelMock, readRuntimeStateMock, logMock } =
@@ -247,6 +248,51 @@ describe("printDaemonUrl", () => {
     expect(text).not.toContain("token=synthetic-token")
     expect(text).toContain("Access token: synthetic-token")
     expect(text).toContain("synthetic-fingerprint")
+  })
+
+  it("puts the token in the QR code so a phone can connect by scanning", async () => {
+    const output = vi.fn()
+    const original = process.stdout.isTTY
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: true,
+      configurable: true,
+    })
+    try {
+      await printDaemonUrl(
+        makeState({
+          remote: true,
+          configUiUrl: "https://192.0.2.10:43210/",
+          certificateFingerprint: "synthetic-fingerprint",
+        }),
+        "synthetic-token",
+        output,
+      )
+    } finally {
+      Object.defineProperty(process.stdout, "isTTY", {
+        value: original,
+        configurable: true,
+      })
+    }
+    const text = output.mock.calls.map((call: string[]) => call[0]!).join("")
+    // The QR is an encoded matrix, so compare its rendered form against the
+    // expected payload instead of looking for plaintext.
+    const blocks = text.split("\n").filter((line) => /[▀-▟]/.test(line))
+    expect(blocks.length).toBeGreaterThan(0)
+    const withToken = await qrcode.toString(
+      "https://192.0.2.10:43210/?deckOnly=1&token=synthetic-token",
+      { type: "terminal", small: true },
+    )
+    const bare = await qrcode.toString("https://192.0.2.10:43210/?deckOnly=1", {
+      type: "terminal",
+      small: true,
+    })
+    const normalize = (value: string): string =>
+      value
+        .split("\n")
+        .filter((line) => /[▀-▟]/.test(line))
+        .join("\n")
+    expect(normalize(blocks.join("\n"))).toBe(normalize(withToken))
+    expect(normalize(blocks.join("\n"))).not.toBe(normalize(bare))
   })
 
   it("does not print the frontend URL", async () => {

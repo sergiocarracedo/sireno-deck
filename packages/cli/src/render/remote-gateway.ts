@@ -1,7 +1,32 @@
 import { randomBytes, timingSafeEqual } from "node:crypto"
 import { request as httpRequest } from "node:http"
 import { createServer } from "node:https"
+import { readFile } from "node:fs/promises"
+import { fileURLToPath } from "node:url"
+import { existsSync } from "node:fs"
 import type { Duplex } from "node:stream"
+import { renderLoginPage } from "./remote-login.js"
+
+// ponytail: the login page shows the project logo. Serve it from the CLI's
+// own assets rather than proxying it, so the page renders even when the
+// frontend is not up yet.
+let logoPromise: Promise<Buffer | null> | undefined
+const loadLogo = (): Promise<Buffer | null> => {
+  logoPromise ??= (async () => {
+    const candidates = [
+      new URL("../assets/logo72x72.png", import.meta.url),
+      new URL("../src/assets/logo72x72.png", import.meta.url),
+    ].map((url) => fileURLToPath(url))
+    const path = candidates.find((candidate) => existsSync(candidate))
+    if (!path) return null
+    try {
+      return await readFile(path)
+    } catch {
+      return null
+    }
+  })()
+  return logoPromise
+}
 
 export async function startRemoteGateway(options: {
   host: string
@@ -50,6 +75,9 @@ export async function startRemoteGateway(options: {
     (req, res) => {
       res.setHeader("Cache-Control", "no-store")
       res.setHeader("X-Content-Type-Options", "nosniff")
+      // The token can travel in the URL when a phone scans the QR code, so
+      // keep it out of any Referer the browser sends onward.
+      res.setHeader("Referrer-Policy", "no-referrer")
       // Only the addon's own surfaces may frame this one; the session cookie
       // is SameSite=Strict, so a third-party frame would not authenticate.
       res.setHeader(
@@ -70,6 +98,30 @@ export async function startRemoteGateway(options: {
         return
       }
       const deckOnly = requestUrl.searchParams.get("deckOnly") === "1"
+      const tokenMatches = (supplied: string): boolean => {
+        const actual = Buffer.from(supplied)
+        const expected = Buffer.from(options.token)
+        return (
+          actual.length === expected.length && timingSafeEqual(actual, expected)
+        )
+      }
+      const sessionCookie = (session: string): string =>
+        `__Host-sireno-session=${session}; Path=/; Secure; HttpOnly; SameSite=Strict`
+      if (requestUrl.pathname === "/logo.png") {
+        void loadLogo().then((logo) => {
+          if (!logo) {
+            res.writeHead(404).end()
+            return
+          }
+          res
+            .writeHead(200, {
+              "Content-Type": "image/png",
+              "Cache-Control": "public, max-age=86400",
+            })
+            .end(logo)
+        })
+        return
+      }
       if (requestUrl.pathname === "/login" && req.method === "POST") {
         if (!origin || !allowedOrigins.has(origin)) {
           res.writeHead(403).end("Invalid origin")
@@ -82,33 +134,48 @@ export async function startRemoteGateway(options: {
           if (body.length > 4096) req.destroy()
         })
         req.on("end", () => {
-          const supplied = Buffer.from(
-            new URLSearchParams(body).get("token") ?? "",
-          )
-          const expected = Buffer.from(options.token)
-          if (
-            supplied.length !== expected.length ||
-            !timingSafeEqual(supplied, expected)
-          ) {
-            res.writeHead(403).end("Invalid token")
+          const supplied = new URLSearchParams(body).get("token") ?? ""
+          if (!tokenMatches(supplied)) {
+            res
+              .writeHead(403, { "Content-Type": "text/html; charset=utf-8" })
+              .end(
+                renderLoginPage({
+                  deckOnly,
+                  error:
+                    "That access token was not accepted. Copy it again from the daemon output.",
+                }),
+              )
             return
           }
           const session = issueSession()
           res
             .writeHead(303, {
               Location: deckOnly ? "/?deckOnly=1" : "/",
-              "Set-Cookie": `__Host-sireno-session=${session}; Path=/; Secure; HttpOnly; SameSite=Strict`,
+              "Set-Cookie": sessionCookie(session),
             })
             .end()
         })
         return
       }
       if (!authorized(req.headers.cookie)) {
+        // A scanned QR code carries the token in the URL. Exchange it for a
+        // session and redirect to the clean URL, so the token does not stay
+        // in the address bar or the browser history.
+        const supplied = requestUrl.searchParams.get("token")
+        if (supplied !== null && tokenMatches(supplied)) {
+          requestUrl.searchParams.delete("token")
+          const session = issueSession()
+          res
+            .writeHead(303, {
+              Location: `${requestUrl.pathname}${requestUrl.search}`,
+              "Set-Cookie": sessionCookie(session),
+            })
+            .end()
+          return
+        }
         res
           .writeHead(401, { "Content-Type": "text/html; charset=utf-8" })
-          .end(
-            `<!doctype html><html lang="en"><title>Sireno Deck</title><form method="post" action="${deckOnly ? "/login?deckOnly=1" : "/login"}"><label for="token">Access token</label><input id="token" name="token" type="password" autocomplete="current-password" required><button type="submit">Connect</button></form></html>`,
-          )
+          .end(renderLoginPage({ deckOnly }))
         return
       }
       const proxy = httpRequest(

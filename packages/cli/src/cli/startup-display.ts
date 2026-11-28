@@ -328,6 +328,11 @@ export const printDaemonUrl = async (
     if (state.configUiUrl.startsWith("https://")) {
       const url = new URL(state.configUiUrl)
       if (state.emulatorMode) url.searchParams.set("deckOnly", "1")
+      // The QR carries the token so a phone can connect by scanning alone.
+      // The gateway exchanges it for a session and redirects to the clean
+      // URL, so it does not linger in the address bar.
+      const scanUrl = new URL(url)
+      if (token) scanUrl.searchParams.set("token", token)
       write(`\n  Secure remote: ${url.toString()}\n`)
       if (state.certificatePath)
         write(`  Trust certificate: ${state.certificatePath}\n`)
@@ -337,9 +342,8 @@ export const printDaemonUrl = async (
       write(
         "  Verify the fingerprint before trusting the certificate on your remote device.\n",
       )
-      // The token is never put in the URL, so the QR only opens the login page.
-      if (state.emulatorMode && process.stdout.isTTY) {
-        const qr = await qrcode.toString(url.toString(), {
+      if (process.stdout.isTTY) {
+        const qr = await qrcode.toString(scanUrl.toString(), {
           type: "terminal",
           small: true,
         })
